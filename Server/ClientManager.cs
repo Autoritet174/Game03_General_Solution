@@ -2,6 +2,8 @@
 using System.Net.WebSockets;
 using System.Text;
 
+namespace Server;
+
 /// <summary>
 /// Управляет всеми подключёнными клиентами.
 /// </summary>
@@ -22,7 +24,7 @@ public class ClientManager {
     /// Добавляет WebSocket клиенту.
     /// </summary>
     public void AddSocket(string userId, WebSocket socket) {
-        var client = _clients.GetOrAdd(userId, _ => new ConnectedClient(userId));
+        ConnectedClient client = _clients.GetOrAdd(userId, _ => new ConnectedClient(userId));
         client.AddSocket(socket);
 
         Console.WriteLine($"[+] Подключился пользователь '{userId}', всего клиентов: {_clients.Count}");
@@ -32,13 +34,13 @@ public class ClientManager {
     /// Удаляет WebSocket клиента.
     /// </summary>
     public void RemoveSocket(string userId, WebSocket socket) {
-        if (_clients.TryGetValue(userId, out var client)) {
+        if (_clients.TryGetValue(userId, out ConnectedClient? client)) {
             client.RemoveSocket(socket);
             Console.WriteLine($"[-] Отключён WebSocket от '{userId}'");
 
             // Удаляем клиента, если у него не осталось соединений
             if (!client.GetSockets().Any()) {
-                _clients.TryRemove(userId, out _);
+                _ = _clients.TryRemove(userId, out _);
                 Console.WriteLine($"[x] Клиент '{userId}' полностью отключён, всего клиентов: {_clients.Count}");
             }
         }
@@ -48,25 +50,27 @@ public class ClientManager {
     /// Рассылка случайного сообщения через случайный WebSocket.
     /// </summary>
     private void BroadcastRandomMessage() {
-        var allClients = _clients.Values.ToList();
-        if (allClients.Count == 0)
+        List<ConnectedClient> allClients = [.. _clients.Values];
+        if (allClients.Count == 0) {
             return;
+        }
 
         // Случайный клиент
         //var client = allClients[_random.Next(allClients.Count)];
-        foreach (var client in allClients) {
+        foreach (ConnectedClient? client in allClients) {
 
 
-            var sockets = client.GetSockets().ToList();
-            if (sockets.Count == 0)
-                return;
+            List<WebSocket> sockets = [.. client.GetSockets()];
+            if (sockets.Count == 0) {
+                continue;
+            }
 
             // Случайный сокет этого клиента
-            var indexSocket = _random.Next(sockets.Count);
-            var socket = sockets[indexSocket];
+            int indexSocket = _random.Next(sockets.Count);
+            WebSocket socket = sockets[indexSocket];
 
-            var message = $"{DateTime.Now:yyyy.MM.dd HH:mm:ss.fffffff}: ws={indexSocket}; test message";
-            var buffer = Encoding.UTF8.GetBytes(message);
+            string message = $"{DateTime.Now:yyyy.MM.dd HH:mm:ss.fffffff}: ws={indexSocket}; test message";
+            byte[] buffer = Encoding.UTF8.GetBytes(message);
 
             try {
                 socket.SendAsync(
@@ -93,5 +97,7 @@ public class ClientManager {
     /// <summary>
     /// Возвращает всех клиентов.
     /// </summary>
-    public IEnumerable<ConnectedClient> GetAllClients() => _clients.Values;
+    public IEnumerable<ConnectedClient> GetAllClients() {
+        return _clients.Values;
+    }
 }

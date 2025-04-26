@@ -1,40 +1,49 @@
 ﻿using System.Collections.Concurrent;
 using System.Net.WebSockets;
 
+namespace Server;
+
 /// <summary>
 /// Хранит список WebSocket-соединений одного клиента.
 /// </summary>
-public class ConnectedClient {
-    public string UserId { get; }
+public class ConnectedClient(string userId) {
+    public string UserId { get; } = userId;
 
     /// <summary>
     /// Потокобезопасный список WebSocket-соединений.
     /// </summary>
-    private readonly ConcurrentBag<WebSocket> _sockets = new();
-
-    public ConnectedClient(string userId) {
-        UserId = userId;
-    }
+    private readonly ConcurrentBag<WebSocket> _sockets = [];
+    private readonly Lock _sockets_lock = new();
 
     /// <summary>
     /// Добавляет WebSocket.
     /// </summary>
     public void AddSocket(WebSocket socket) {
-        _sockets.Add(socket);
+        lock (_sockets_lock) {
+            _sockets.Add(socket);
+        }
     }
 
     /// <summary>
     /// Удаляет WebSocket.
     /// </summary>
     public void RemoveSocket(WebSocket socket) {
-        // ConcurrentBag не поддерживает удаление напрямую — создаём новый список
-        var sockets = _sockets.ToArray().Where(s => s != socket).ToList();
-        _sockets.Clear();
-        foreach (var s in sockets) _sockets.Add(s);
+        // Синхронизация доступа, если нужно обеспечить потокобезопасность
+        lock (_sockets_lock) {
+            WebSocket[] socketsArray = [.. _sockets];
+            _sockets.Clear();
+
+            // Фильтрация и добавление обратно
+            foreach (WebSocket? s in socketsArray.Where(s => s != socket)) {
+                _sockets.Add(s);
+            }
+        }
     }
 
     /// <summary>
     /// Возвращает все активные WebSocket'ы клиента.
     /// </summary>
-    public IEnumerable<WebSocket> GetSockets() => _sockets.Where(s => s.State == WebSocketState.Open);
+    public IEnumerable<WebSocket> GetSockets() {
+        return _sockets.Where(s => s.State == WebSocketState.Open);
+    }
 }
