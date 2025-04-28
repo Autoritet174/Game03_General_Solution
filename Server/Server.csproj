@@ -4,6 +4,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+	<LangVersion>13.0</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,6 +15,10 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.4" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.9.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.9.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\General\General.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Server.UserAuth_NS;
+using Server.Http.Middleware;
+using Server.Jwt_NS;
 using Server.WebSocket_NS;
 using System.Text;
 
@@ -10,10 +11,11 @@ internal class Program {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
         // Инициализация параметров для AuthOptions при старте приложения
-        AuthOptions.Initialize(builder.Configuration);
+        JwtCash.Initialize(builder.Configuration);
 
         // Добавление контроллеров
         _ = builder.Services.AddControllers();
+        _ = builder.Services.AddHttpLogging();
 
         // Регистрация ClientManager как singleton
         _ = builder.Services.AddSingleton<ClientManager>();
@@ -39,6 +41,34 @@ internal class Program {
 
         WebApplication app = builder.Build();
 
+        Configure(app);
+
+        // Маршрутизация контроллеров
+        _ = app.MapControllers();
+
+        app.Run();
+    }
+
+
+    public static void Configure(WebApplication app) {
+
+        //Миддлвар 1 - Обработка ошибок
+        _ = app.UseExceptionHandler("/Home/Error");
+
+        //Миддлвар 2 - Логирование
+        _ = app.UseHttpLogging();
+
+        //Миддлвар 3 - Статические файлы
+        //_ = app.UseStaticFiles();
+
+
+        _ = app.UseHttpsRedirection();
+        _ = app.UseHsts();
+
+        // Добавляем заголовки безопасности
+        _ = app.UseMiddleware<SecurityHeadersMiddleware>();
+
+
         // Разрешение WebSocket соединений
         _ = app.UseWebSockets();
 
@@ -49,9 +79,17 @@ internal class Program {
         _ = app.UseAuthentication();
         _ = app.UseAuthorization();
 
-        // Маршрутизация контроллеров
-        _ = app.MapControllers();
 
-        app.Run();
+        // Ответы с кешированием (если требуется)
+        //app.UseResponseCaching();
+
+        // Маршрутизация
+        //app.UseRouting();
+
+        // CORS
+        //app.UseCors("AllowSpecificOrigins");
+
+
+
     }
 }

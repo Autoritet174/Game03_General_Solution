@@ -11,8 +11,8 @@ namespace Server.WebSocket_NS;
 /// <remarks>
 /// Конструктор.
 /// </remarks>
-public class WebSocketMiddleware(RequestDelegate next, ClientManager clientManager, IConfiguration configuration) {
-    private readonly JwtValidator _jwtValidator = new(configuration);
+public class WebSocketMiddleware(RequestDelegate next, ClientManager clientManager) {
+    private readonly JwtValidator _jwtValidator = new();
 
     /// <summary>
     /// Вызывается при входящем HTTP/WebSocket запросе.

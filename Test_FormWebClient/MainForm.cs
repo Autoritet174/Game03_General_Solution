@@ -1,3 +1,4 @@
+using General;
 using Newtonsoft.Json;
 using System.Net.WebSockets;
 using System.Text;
@@ -44,7 +45,7 @@ public partial class MainForm : Form {
     /// </summary>
     private async Task AuthorizeAsync() {
         using HttpClient client = new();
-        var payload = new { Username = "testUser", Password = "testPassword" };
+        LoginRequest payload = new(){ Username = Guid.NewGuid().ToString(), Password = "testPassword" };
         string json = JsonConvert.SerializeObject(payload);
         StringContent content = new(json, Encoding.UTF8, "application/json");
 
@@ -60,7 +61,7 @@ public partial class MainForm : Form {
                 }
 
                 string result = await response.Content.ReadAsStringAsync();
-                dynamic obj = JsonConvert.DeserializeObject(result);
+                dynamic obj = JsonConvert.DeserializeObject(result) ?? "";
                 _token = obj.token;
                 _ = log.AppendLine("авторизован");
             }

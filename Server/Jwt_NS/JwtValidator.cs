@@ -15,16 +15,15 @@ public class JwtValidator {
     /// <summary>
     /// Инициализация валидатора, кэширование ключей и параметров.
     /// </summary>
-    public JwtValidator(IConfiguration configuration) {
+    public JwtValidator() {
         _tokenHandler = new JwtSecurityTokenHandler();
-
-        byte[] key = Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? throw new ArgumentNullException(configuration["Jwt:Key"]));
+        byte[] key = Encoding.UTF8.GetBytes(JwtCash.JwtKey);
 
         _validationParameters = new TokenValidationParameters {
             ValidateIssuer = true,
             ValidateAudience = true,
-            ValidIssuer = configuration["Jwt:Issuer"],
-            ValidAudience = configuration["Jwt:Audience"],
+            ValidIssuer = JwtCash.Issuer,//configuration["Jwt:Issuer"],
+            ValidAudience = JwtCash.Audience,//configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(key),
             ValidateLifetime = true,
             ClockSkew = TimeSpan.Zero // Нет допустимого времени расхождения

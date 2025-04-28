@@ -12,15 +12,16 @@ public class ConnectedClient(string userId) {
     /// <summary>
     /// Потокобезопасный список WebSocket-соединений.
     /// </summary>
-    private readonly ConcurrentBag<WebSocket> _sockets = [];
+    //private readonly ConcurrentBag<WebSocket> _sockets = [];
+    private readonly ConcurrentDictionary<string, WebSocket> _sockets = new();
     private readonly Lock _sockets_lock = new();
 
     /// <summary>
     /// Добавляет WebSocket.
     /// </summary>
-    public void AddSocket(WebSocket socket) {
+    public void AddSocket(string name, WebSocket socket) {
         lock (_sockets_lock) {
-            _sockets.Add(socket);
+            _ = _sockets.TryAdd(name, socket);
         }
     }
 
@@ -29,13 +30,61 @@ public class ConnectedClient(string userId) {
     /// </summary>
     public void RemoveSocket(WebSocket socket) {
         // Синхронизация доступа, если нужно обеспечить потокобезопасность
-        lock (_sockets_lock) {
-            WebSocket[] socketsArray = [.. _sockets];
-            _sockets.Clear();
+        //lock (_sockets_lock) {
+        //    //KeyValuePair<string, WebSocket>[] socketsArray = [.. _sockets];
+        //    KeyValuePair<string, WebSocket> s = _sockets.FirstOrDefault(a => a.Value == socket1);
+        //    string key = s.Key;
+        //    try {
 
-            // Фильтрация и добавление обратно
-            foreach (WebSocket? s in socketsArray.Where(s => s != socket)) {
-                _sockets.Add(s);
+        //        _ = _sockets.TryRemove(s.Key, out _);
+        //    }
+        //    catch {
+
+        //    }
+        //    if (_sockets.TryRemove(key, out WebSocket? socket)) {
+        //        try {
+        //            // Проверяем, открыт ли сокет
+        //            if (socket.State == WebSocketState.Open || socket.State == WebSocketState.CloseReceived) {
+        //                // Отправляем корректное закрытие соединения
+        //                await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
+        //            }
+        //        }
+        //        catch {
+        //            // Игнорируем ошибки при закрытии (например, если сокет уже оборван)
+        //        }
+        //        finally {
+        //            // Освобождаем ресурсы сокета
+        //            socket.Dispose();
+        //        }
+        //    }
+        //    //_sockets.Clear();
+
+        //    //// Фильтрация и добавление обратно
+        //    //foreach (WebSocket? s in socketsArray.Where(s => s != socket)) {
+        //    //    _sockets.Add(s);
+        //    //}
+        //}
+
+        lock (_sockets_lock) {
+            try {
+                if (socket.State is WebSocketState.Open or WebSocketState.CloseReceived) {
+                    // Закрытие соединения
+                    Task closeTask = socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
+                    closeTask.Wait(); // Ждём завершения внутри lock
+                }
+            }
+            catch (Exception ex) {
+                // Логируем или игнорируем ошибку закрытия
+                Console.WriteLine($"Ошибка при закрытии сокета: {ex.Message}");
+            }
+            finally {
+                try {
+                    socket.Dispose();
+                }
+                catch (Exception ex) {
+                    // Логируем или игнорируем ошибку освобождения ресурсов
+                    Console.WriteLine($"Ошибка при освобождении сокета: {ex.Message}");
+                }
             }
         }
     }
@@ -44,6 +93,6 @@ public class ConnectedClient(string userId) {
     /// Возвращает все активные WebSocket'ы клиента.
     /// </summary>
     public IEnumerable<WebSocket> GetSockets() {
-        return _sockets.Where(s => s.State == WebSocketState.Open);
+        return _sockets.Where(s => s.Value.State == WebSocketState.Open).Select(a => a.Value);
     }
 }

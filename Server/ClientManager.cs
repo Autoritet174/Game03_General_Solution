@@ -8,6 +8,10 @@ namespace Server;
 /// Управляет всеми подключёнными клиентами.
 /// </summary>
 public class ClientManager {
+
+    /// <summary>
+    /// Все клиенты у которых есть хотя бы один открытый веб сокет
+    /// </summary>
     private readonly ConcurrentDictionary<string, ConnectedClient> _clients = new();
     private readonly Timer _broadcastTimer;
     private readonly Random _random = new();
@@ -25,7 +29,7 @@ public class ClientManager {
     /// </summary>
     public void AddSocket(string userId, WebSocket socket) {
         ConnectedClient client = _clients.GetOrAdd(userId, _ => new ConnectedClient(userId));
-        client.AddSocket(socket);
+        client.AddSocket("name_01",socket);
 
         Console.WriteLine($"[+] Подключился пользователь '{userId}', всего клиентов: {_clients.Count}");
     }
