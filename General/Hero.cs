@@ -1,12 +1,8 @@
-﻿using System.Net;
-using System.Threading.Tasks;
-using System;
-using System.Net.WebSockets;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
-using System.Threading;
 
-namespace General {
-    public class Hero {
-       
-    }
+namespace General;
+public class Hero(HeroStats heroStat) {
+    public HeroStats HeroStat { get => heroStat; }
 }

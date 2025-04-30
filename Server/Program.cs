@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Server.Http.Middleware;
+using Server.Http_NS.Middleware_NS;
 using Server.Jwt_NS;
 using Server.WebSocket_NS;
+using System;
 using System.Text;
 
 namespace Server;
@@ -38,6 +41,24 @@ internal class Program {
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig_key))
             };
         });
+
+
+        // Добавляем контекст БД (SQL Server)
+        //builder.Services.AddDbContext<DbContextEf>(options =>
+        //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+        // Добавляем контекст БД (MySql)
+        //string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+        //if (connectionString == null) {
+        //    Console.WriteLine("connectionString = null");
+        //    return;
+        //}
+        //Microsoft.EntityFrameworkCore.ServerVersion serverVersion = ServerVersion.AutoDetect(connectionString);
+        //builder.Services.AddDbContext<DbContextEf>(options =>
+        //    options.UseMySql(connectionString, serverVersion));
+      
+       
+
 
         WebApplication app = builder.Build();
 
