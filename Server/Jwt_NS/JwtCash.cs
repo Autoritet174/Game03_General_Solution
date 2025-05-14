@@ -12,7 +12,6 @@ public static class JwtCash {
     /// <summary>
     /// Секретный ключ для генерации JWT токенов.
     /// </summary>
-    //public const string SecretKey = "SuperSecretKey12345"; // Ключ должен быть достаточно длинным
     private static SigningCredentials? signingCredentials;
 
     public static string Issuer { get; private set; } = "";

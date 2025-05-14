@@ -1,10 +1,10 @@
-﻿using MySql.Data.MySqlClient;
-using Dapper;
+﻿
+//using Dapper;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-namespace General;
+namespace Server.Game03;
 public class BattleField {
-    private readonly string _connectionString = "Server=127.0.0.1;Database=Game03;User=root;Password=;SslMode=none";
+    //private readonly string _connectionString = "Server=127.0.0.1;Database=Game03;User=root;Password=;SslMode=none";
 
     //public async Task<IEnumerable<User>> GetUsersAsync() {
     //    using (var connection = new MySqlConnection(_connectionString)) {

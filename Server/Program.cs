@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Server.Http_NS.Controllers_NS;
 using Server.Http_NS.Middleware_NS;
 using Server.Jwt_NS;
 using Server.UserAuth_NS;
@@ -68,7 +69,12 @@ internal class Program {
         // Маршрутизация контроллеров
         _ = app.MapControllers();
 
+
+        HeroesController.Init();
+
+
         app.Run();
+
     }
 
 

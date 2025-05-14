@@ -15,7 +15,7 @@ namespace Server.Http_NS.Controllers_NS;
 /// </remarks>
 /// <param name="configuration">Конфигурация приложения для получения секретного ключа и параметров JWT.</param>
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class AuthController() : ControllerBase {
 
     /// <summary>

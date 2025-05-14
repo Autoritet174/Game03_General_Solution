@@ -7,7 +7,8 @@ using System.Text;
 /// Главная форма приложения.
 /// </summary>
 public partial class MainForm : Form {
-    private readonly Uri _loginUri = new("http://localhost:5141/api/auth/login"); // URL авторизации
+    private readonly Uri _loginUri = new("http://localhost:5141/auth/login"); // URL авторизации
+    //private readonly Uri _loginUri = new("http://localhost:5141/heroes/getall"); // URL авторизации
     private readonly Uri _wsUri = new("ws://localhost:5141/ws"); // URL WebSocket
 
     private string? _token = null;
