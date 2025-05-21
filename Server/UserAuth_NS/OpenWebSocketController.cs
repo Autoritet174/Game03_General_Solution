@@ -1,4 +1,4 @@
-﻿using General;
+﻿using General.DataBaseModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Server.Jwt_NS;

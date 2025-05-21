@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using General;
+using General.DataBaseModels;
 using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
 namespace Server.Http_NS.Controllers_NS;
@@ -31,7 +32,7 @@ public class HeroesController : ControllerBase {
             Timestamp = DateTime.UtcNow,
             Heroes = _cachedHeroes
         };
-
+        
         return Ok(response);
     }
 

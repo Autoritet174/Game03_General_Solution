@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace General;
+namespace General.DataBaseModels;
 
 /// <summary>
 /// Базовые характеристики героя

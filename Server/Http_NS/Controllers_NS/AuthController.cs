@@ -1,6 +1,9 @@
-﻿using General;
+﻿using Dapper;
+using General;
+using General.DataBaseModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MySql.Data.MySqlClient;
 using Server.Jwt_NS;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -25,7 +28,29 @@ public class AuthController() : ControllerBase {
     /// <returns>JWT токен при успешной аутентификации или ошибка 401.</returns>
     [HttpPost("login")]
     [AllowAnonymous]
-    public IActionResult Login([FromBody] LoginRequest request) {
+    public async Task<IActionResult> Login([FromBody] LoginRequest request) {
+        using MySqlConnection connection = new(DataBase.ConnectionString);
+        await connection.OpenAsync();
+        IEnumerable<HeroStats> heroes = await connection.QueryAsync<HeroStats>(
+            """
+            SELECT id AS Id
+            , name_en AS NameEn
+            , name_ru AS NameRu
+            , health AS Health
+            , attack AS Attack
+            , strength AS Strength
+            , agility AS Agility
+            , intelligence AS Intelligence
+            FROM heroes
+            """);
+
+
+
+
+
+
+
+
         // Проверяем корректность имени пользователя и пароля
         if (/*request.Username != "testUser" || */request.Password != "testPassword") {
             // Неверные учетные данные
