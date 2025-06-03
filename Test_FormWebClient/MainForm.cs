@@ -1,4 +1,5 @@
 using General;
+using General.DataBaseModels;
 using Newtonsoft.Json;
 using System.Net.WebSockets;
 using System.Text;
