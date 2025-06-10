@@ -45,6 +45,8 @@ internal class Program {
         });
 
 
+       
+
         // Добавляем контекст БД (SQL Server)
         //builder.Services.AddDbContext<DbContextEf>(options =>
         //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -58,8 +60,8 @@ internal class Program {
         //Microsoft.EntityFrameworkCore.ServerVersion serverVersion = ServerVersion.AutoDetect(connectionString);
         //builder.Services.AddDbContext<DbContextEf>(options =>
         //    options.UseMySql(connectionString, serverVersion));
-      
-       
+
+
 
 
         WebApplication app = builder.Build();

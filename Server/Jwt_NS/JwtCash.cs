@@ -31,6 +31,8 @@ public static class JwtCash {
         Audience = configuration["Jwt:Audience"] ?? throw new ArgumentNullException(configuration["Jwt:Audience"]);
         JwtKey = configuration["Jwt:Key"] ?? throw new ArgumentNullException(configuration["Jwt:Key"]);
 
+        string s = Environment.GetEnvironmentVariable("") ?? "";
+
         string jwtKey = configuration["Jwt:Key"] ?? throw new ArgumentNullException(configuration["Jwt:Key"]);
         SymmetricSecurityKey Key = new(Encoding.UTF8.GetBytes(jwtKey));
         SigningCredentials = new SigningCredentials(Key, SecurityAlgorithms.HmacSha256);

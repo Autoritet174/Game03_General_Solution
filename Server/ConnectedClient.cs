@@ -13,15 +13,15 @@ public class ConnectedClient(string userId) {
     /// Потокобезопасный список WebSocket-соединений.
     /// </summary>
     //private readonly ConcurrentBag<WebSocket> _sockets = [];
-    private readonly ConcurrentDictionary<string, WebSocket> _sockets = new();
+    private WebSocket? _socket = null;
     private readonly Lock _sockets_lock = new();
 
     /// <summary>
     /// Добавляет WebSocket.
     /// </summary>
-    public void AddSocket(string name, WebSocket socket) {
+    public void AddSocket(WebSocket socket) {
         lock (_sockets_lock) {
-            _ = _sockets.TryAdd(name, socket);
+            _socket = socket;
         }
     }
 
@@ -92,7 +92,7 @@ public class ConnectedClient(string userId) {
     /// <summary>
     /// Возвращает все активные WebSocket'ы клиента.
     /// </summary>
-    public IEnumerable<WebSocket> GetSockets() {
-        return _sockets.Where(s => s.Value.State == WebSocketState.Open).Select(a => a.Value);
+    public WebSocket GetSockets() {
+        return _socket;
     }
 }

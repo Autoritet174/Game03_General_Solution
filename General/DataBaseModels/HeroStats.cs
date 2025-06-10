@@ -9,11 +9,8 @@ public class HeroStats {
     [JsonPropertyName("id")]
     public ulong Id { get; set; }
 
-    [JsonPropertyName("nameEn")]
-    public string? NameEn { get; set; }
-
-    [JsonPropertyName("nameRu")]
-    public string? NameRu { get; set; }
+    [JsonPropertyName("name")]
+    public string? Name { get; set; }
 
     [JsonPropertyName("health")]
     public float Health { get; set; }
@@ -29,4 +26,15 @@ public class HeroStats {
 
     [JsonPropertyName("intelligence")]
     public float Intelligence { get; set; }
+
+    public static string Sql { get; } = """
+            SELECT id AS Id
+            , name AS Name
+            , health AS Health
+            , attack AS Attack
+            , strength AS Strength
+            , agility AS Agility
+            , intelligence AS Intelligence
+            FROM heroes
+            """;
 }

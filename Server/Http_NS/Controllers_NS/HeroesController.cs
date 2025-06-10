@@ -43,19 +43,7 @@ public class HeroesController : ControllerBase {
     private static async Task<List<HeroStats>> GetHeroesFromDatabase() {
         using MySqlConnection connection = new(DataBase.ConnectionString);
         await connection.OpenAsync();
-        IEnumerable<HeroStats> heroes = await connection.QueryAsync<HeroStats>(
-            """
-            SELECT id AS Id
-            , name_en AS NameEn
-            , name_ru AS NameRu
-            , health AS Health
-            , attack AS Attack
-            , strength AS Strength
-            , agility AS Agility
-            , intelligence AS Intelligence
-            FROM heroes
-            """);
-            
+        IEnumerable<HeroStats> heroes = await connection.QueryAsync<HeroStats>(HeroStats.Sql);
         return [.. heroes];
     }
 }

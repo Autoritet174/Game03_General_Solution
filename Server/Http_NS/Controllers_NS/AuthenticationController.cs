@@ -19,38 +19,19 @@ namespace Server.Http_NS.Controllers_NS;
 /// <param name="configuration">Конфигурация приложения для получения секретного ключа и параметров JWT.</param>
 [ApiController]
 [Route("[controller]")]
-public class AuthController() : ControllerBase {
+public class AuthenticationController() : ControllerBase {
 
     /// <summary>
     /// Выполняет аутентификацию и возвращает JWT токен.
     /// </summary>
     /// <param name="request">Модель с именем пользователя и паролем.</param>
     /// <returns>JWT токен при успешной аутентификации или ошибка 401.</returns>
-    [HttpPost("login")]
+    [HttpPost("Authentication")]
     [AllowAnonymous]
-    public async Task<IActionResult> Login([FromBody] LoginRequest request) {
+    public async Task<IActionResult> Authentication([FromBody] LoginRequest request) {
         using MySqlConnection connection = new(DataBase.ConnectionString);
         await connection.OpenAsync();
-        IEnumerable<HeroStats> heroes = await connection.QueryAsync<HeroStats>(
-            """
-            SELECT id AS Id
-            , name_en AS NameEn
-            , name_ru AS NameRu
-            , health AS Health
-            , attack AS Attack
-            , strength AS Strength
-            , agility AS Agility
-            , intelligence AS Intelligence
-            FROM heroes
-            """);
-
-
-
-
-
-
-
-
+       
         // Проверяем корректность имени пользователя и пароля
         if (/*request.Username != "testUser" || */request.Password != "testPassword") {
             // Неверные учетные данные
@@ -63,6 +44,8 @@ public class AuthController() : ControllerBase {
         // Возвращаем токен в формате JSON
         return Ok(new { token });
     }
+
+
 
 
     /// <summary>
