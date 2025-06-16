@@ -1,13 +1,9 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Server.Http_NS.Controllers_NS;
 using Server.Http_NS.Middleware_NS;
 using Server.Jwt_NS;
-using Server.UserAuth_NS;
 using Server.WebSocket_NS;
-using System;
 using System.Text;
 
 namespace Server;
@@ -45,7 +41,7 @@ internal class Program {
         });
 
 
-       
+
 
         // Добавляем контекст БД (SQL Server)
         //builder.Services.AddDbContext<DbContextEf>(options =>
