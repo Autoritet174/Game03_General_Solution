@@ -17,13 +17,13 @@ public class JwtValidator {
     /// </summary>
     public JwtValidator() {
         _tokenHandler = new JwtSecurityTokenHandler();
-        byte[] key = Encoding.UTF8.GetBytes(JwtCash.JwtKey);
+        byte[] key = Encoding.UTF8.GetBytes(Jwt.JwtKey);
 
         _validationParameters = new TokenValidationParameters {
             ValidateIssuer = true,
             ValidateAudience = true,
-            ValidIssuer = JwtCash.Issuer,//configuration["Jwt:Issuer"],
-            ValidAudience = JwtCash.Audience,//configuration["Jwt:Audience"],
+            ValidIssuer = Jwt.Issuer,//configuration["Jwt:Issuer"],
+            ValidAudience = Jwt.Audience,//configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(key),
             ValidateLifetime = true,
             ClockSkew = TimeSpan.Zero // Нет допустимого времени расхождения

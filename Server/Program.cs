@@ -12,7 +12,7 @@ internal class Program {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
         // »нициализаци€ параметров дл€ AuthOptions при старте приложени€
-        JwtCash.Initialize(builder.Configuration);
+        Jwt.Initialize(builder.Configuration);
 
         // ƒобавление контроллеров
         _ = builder.Services.AddControllers();

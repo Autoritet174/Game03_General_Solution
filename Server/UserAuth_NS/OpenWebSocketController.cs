@@ -56,11 +56,11 @@ public class OpenWebSocketController() : ControllerBase {
 
         // Настройка параметров токена
         JwtSecurityToken token = new(
-            issuer: JwtCash.Issuer,
-            audience: JwtCash.Audience,
+            issuer: Jwt.Issuer,
+            audience: Jwt.Audience,
             claims: claims,
-            expires: DateTime.UtcNow.AddSeconds(JwtCash.SecondsExp), // Время жизни токена
-            signingCredentials: JwtCash.SigningCredentials
+            expires: DateTime.UtcNow.AddSeconds(Jwt.SecondsExp), // Время жизни токена
+            signingCredentials: Jwt.SigningCredentials
         );
 
         // Генерация строки токена

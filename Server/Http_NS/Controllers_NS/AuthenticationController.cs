@@ -39,7 +39,7 @@ public class AuthenticationController() : ControllerBase {
         }
 
         // Создаем JWT токен
-        string token = GenerateJwtToken(request.Username);
+        string token = Jwt.GenerateJwtToken(request.Username);
 
         // Возвращаем токен в формате JSON
         return Ok(new { token });
@@ -48,29 +48,4 @@ public class AuthenticationController() : ControllerBase {
 
 
 
-    /// <summary>
-    /// Генерирует JWT токен для указанного пользователя.
-    /// </summary>
-    /// <param name="username">Имя пользователя.</param>
-    /// <returns>Строка токена JWT.</returns>
-    private static string GenerateJwtToken(string username) {
-        // Создание набора требований (claims)
-        Claim[] claims =
-        [
-            new Claim(JwtRegisteredClaimNames.Sub, username),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        ];
-
-        // Настройка параметров токена
-        JwtSecurityToken token = new(
-            issuer: JwtCash.Issuer,
-            audience: JwtCash.Audience,
-            claims: claims,
-            expires: DateTime.UtcNow.AddSeconds(JwtCash.SecondsExp), // Время жизни токена
-            signingCredentials: JwtCash.SigningCredentials
-        );
-
-        // Генерация строки токена
-        return new JwtSecurityTokenHandler().WriteToken(token);
-    }
 }
