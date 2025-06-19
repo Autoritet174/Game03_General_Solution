@@ -26,26 +26,28 @@ public class AuthenticationController() : ControllerBase {
     /// </summary>
     /// <param name="request">Модель с именем пользователя и паролем.</param>
     /// <returns>JWT токен при успешной аутентификации или ошибка 401.</returns>
-    [HttpPost("Authentication")]
+    [HttpPost]
     [AllowAnonymous]
     public async Task<IActionResult> Authentication([FromBody] LoginRequest request) {
         using MySqlConnection connection = new(DataBase.ConnectionString);
         await connection.OpenAsync();
-       
+
         // Проверяем корректность имени пользователя и пароля
-        if (/*request.Username != "testUser" || */request.Password != "testPassword") {
+        if (request.Username == "SuperAdmin@mail.ru") {
+            //SuperAdmin@mail.ru​
+            if (request.Password == "testPassword") { 
+                
+            }
+        }
+        else {
             // Неверные учетные данные
             return Unauthorized();
         }
 
-        // Создаем JWT токен
-        string token = Jwt.GenerateJwtToken(request.Username);
+            // Создаем JWT токен
+            string token = Jwt.GenerateJwtToken(request.Username);
 
         // Возвращаем токен в формате JSON
         return Ok(new { token });
     }
-
-
-
-
 }

@@ -23,7 +23,7 @@ public partial class MainForm : Form {
     public MainForm() {
         InitializeComponent();
         Text = "WebSocket Client";
-
+        //System.Net.Mail.MailAddress.TryCreate
         // Инициализация элементов формы
         Button button = new() { Text = "Отправить", Width = 100, Top = 10, Left = 10 };
         TextBox box = new() { Name = "TextInput", Top = 10, Left = 120, Width = 300 };
