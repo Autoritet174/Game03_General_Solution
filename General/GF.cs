@@ -2,7 +2,11 @@
 using System.Net.Mail;
 
 namespace General;
-public static class Functions {
+
+/// <summary>
+/// Global Functions
+/// </summary>
+public static class GF {
 
     /// <summary>
     /// Пытается создать объект MailAddress из строки. Возвращает обратно входную строку без изменений при успехи, иначе null.
@@ -30,4 +34,5 @@ public static class Functions {
             return null;
         }
     }
+
 }

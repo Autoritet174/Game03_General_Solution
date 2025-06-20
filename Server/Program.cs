@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Server.Http_NS.Controllers_NS;
+using Server.Http_NS.Controllers_NS.Game;
 using Server.Http_NS.Middleware_NS;
 using Server.Jwt_NS;
 using Server.WebSocket_NS;
@@ -22,20 +22,22 @@ internal class Program {
         _ = builder.Services.AddSingleton<ClientManager>();
 
         // Добавление аутентификации с использованием JWT
-        _ = builder.Services.AddAuthentication(options => {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
+        _ = builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options => {
             IConfigurationSection jwtConfig = builder.Configuration.GetSection("Jwt");
             string jwtConfig_key = jwtConfig["Key"] ?? throw new ArgumentNullException(jwtConfig["Key"]);
             options.TokenValidationParameters = new TokenValidationParameters {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
+
+                ValidateIssuer = true,// Проверять издателя
                 ValidIssuer = jwtConfig["Issuer"],
+
+                ValidateAudience = true,// Проверять аудиторию
                 ValidAudience = jwtConfig["Audience"],
+
+                ValidateLifetime = true,// Проверять срок действия
+
+                ValidateIssuerSigningKey = true,// Проверять подпись
+
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig_key))
             };
         });
@@ -99,7 +101,7 @@ internal class Program {
         _ = app.UseWebSockets();
 
         // Подключение кастомного WebSocket middleware
-        _ = app.UseMiddleware<WebSocketMiddleware>();
+        //_ = app.UseMiddleware<WebSocketMiddleware>();
 
         // Подключение аутентификации и авторизации
         _ = app.UseAuthentication();

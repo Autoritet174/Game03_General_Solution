@@ -25,7 +25,7 @@ public class OpenWebSocketController() : ControllerBase {
     /// <returns>JWT токен при успешной аутентификации или ошибка 401.</returns>
     [HttpPost("OpenWebSocket")]
     [AllowAnonymous]
-    public IActionResult Login([FromBody] LoginRequest request) {
+    public IActionResult Login([FromBody] RequestLogin request) {
         // Проверяем корректность имени пользователя и пароля
         if (/*request.Username != "testUser" || */request.Password != "testPassword") {
             // Неверные учетные данные

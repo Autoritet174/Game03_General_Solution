@@ -3,14 +3,12 @@ using General;
 using General.DataBaseModels;
 using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
-namespace Server.Http_NS.Controllers_NS;
+namespace Server.Http_NS.Controllers_NS.Game;
 
 /// <summary>
 /// Контроллер для получения списка всех героев. Использует кэш в памяти.
 /// </summary>
-[ApiController]
-[Route("[controller]")]
-public class HeroesController : ControllerBase {
+public class HeroesController : ControllerBaseApi {
 
     /// <summary>
     /// Глобальный кэшированный список героев.

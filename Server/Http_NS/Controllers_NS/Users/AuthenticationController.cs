@@ -8,7 +8,7 @@ using Server.Jwt_NS;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
-namespace Server.Http_NS.Controllers_NS;
+namespace Server.Http_NS.Controllers_NS.Users;
 
 /// <summary>
 /// Контроллер для аутентификации пользователей.
@@ -17,9 +17,7 @@ namespace Server.Http_NS.Controllers_NS;
 /// Конструктор контроллера.
 /// </remarks>
 /// <param name="configuration">Конфигурация приложения для получения секретного ключа и параметров JWT.</param>
-[ApiController]
-[Route("[controller]")]
-public class AuthenticationController() : ControllerBase {
+public class AuthenticationController() : ControllerBaseApi {
 
     /// <summary>
     /// Выполняет аутентификацию и возвращает JWT токен.
@@ -28,26 +26,25 @@ public class AuthenticationController() : ControllerBase {
     /// <returns>JWT токен при успешной аутентификации или ошибка 401.</returns>
     [HttpPost]
     [AllowAnonymous]
-    public async Task<IActionResult> Authentication([FromBody] LoginRequest request) {
+    public async Task<IActionResult> Authentication([FromBody] RequestLogin request) {
         using MySqlConnection connection = new(DataBase.ConnectionString);
         await connection.OpenAsync();
 
         // Проверяем корректность имени пользователя и пароля
-        if (request.Username == "SuperAdmin@mail.ru") {
-            //SuperAdmin@mail.ru​
-            if (request.Password == "testPassword") { 
-                
-            }
+        if (string.Equals(request.Username, "SuperAdmin@mail.ru", StringComparison.OrdinalIgnoreCase) && 
+            string.Equals(request.Password, "testPassword", StringComparison.Ordinal)) {
+          
         }
         else {
             // Неверные учетные данные
             return Unauthorized();
         }
 
-            // Создаем JWT токен
-            string token = Jwt.GenerateJwtToken(request.Username);
+        // Создаем JWT токен
+        string token = Jwt.GenerateJwtToken(request.Username);
 
         // Возвращаем токен в формате JSON
         return Ok(new { token });
     }
+
 }
