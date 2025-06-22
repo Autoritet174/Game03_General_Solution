@@ -3,12 +3,13 @@ using Microsoft.IdentityModel.Tokens;
 using Server.Http_NS.Controllers_NS.Game;
 using Server.Http_NS.Middleware_NS;
 using Server.Jwt_NS;
-using Server.WebSocket_NS;
 using System.Text;
 
 namespace Server;
-internal class Program {
-    private static void Main(string[] args) {
+internal class Program
+{
+    private static void Main(string[] args)
+    {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
         // Инициализация параметров для AuthOptions при старте приложения
@@ -23,10 +24,12 @@ internal class Program {
 
         // Добавление аутентификации с использованием JWT
         _ = builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-        .AddJwtBearer(options => {
+        .AddJwtBearer(options =>
+        {
             IConfigurationSection jwtConfig = builder.Configuration.GetSection("Jwt");
             string jwtConfig_key = jwtConfig["Key"] ?? throw new ArgumentNullException(jwtConfig["Key"]);
-            options.TokenValidationParameters = new TokenValidationParameters {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
 
                 ValidateIssuer = true,// Проверять издателя
                 ValidIssuer = jwtConfig["Issuer"],
@@ -40,10 +43,34 @@ internal class Program {
 
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig_key))
             };
+
+            // Добавляем обработчик событий
+            //options.Events = new JwtBearerEvents {
+            //    OnAuthenticationFailed = ctx =>
+            //    {
+            //        var logger = ctx.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            //        logger.LogError(ctx.Exception, "JWT validation failed");
+            //        File.WriteAllText("__log.txt", ctx.Exception.ToString());
+            //        return Task.CompletedTask;
+            //    },
+            //    // Другие события можно добавить по необходимости
+            //    OnTokenValidated = ctx =>
+            //    {
+            //        Console.WriteLine("Токен успешно валидирован!");
+            //        return Task.CompletedTask;
+            //    }
+            //};
         });
 
-
-
+        _ = builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowAll", policy =>
+            {
+                _ = policy.AllowAnyHeader()
+                      .AllowAnyMethod()
+                      .AllowAnyOrigin();
+            });
+        });
 
         // Добавляем контекст БД (SQL Server)
         //builder.Services.AddDbContext<DbContextEf>(options =>
@@ -66,8 +93,6 @@ internal class Program {
 
         Configure(app);
 
-        // Маршрутизация контроллеров
-        _ = app.MapControllers();
 
 
         HeroesController.Init();
@@ -78,7 +103,8 @@ internal class Program {
     }
 
 
-    public static void Configure(WebApplication app) {
+    public static void Configure(WebApplication app)
+    {
 
         //Миддлвар 1 - Обработка ошибок
         _ = app.UseExceptionHandler("/Home/Error");
@@ -103,6 +129,11 @@ internal class Program {
         // Подключение кастомного WebSocket middleware
         //_ = app.UseMiddleware<WebSocketMiddleware>();
 
+        // Маршрутизация
+        _ = app.UseRouting();
+
+        _ = app.UseCors("AllowAll");
+
         // Подключение аутентификации и авторизации
         _ = app.UseAuthentication();
         _ = app.UseAuthorization();
@@ -111,13 +142,20 @@ internal class Program {
         // Ответы с кешированием (если требуется)
         //app.UseResponseCaching();
 
-        // Маршрутизация
-        //app.UseRouting();
 
         // CORS
         //app.UseCors("AllowSpecificOrigins");
 
+        // Лог запросов в консоль
+        //app.Use(async (ctx, next) =>
+        //{
+        //    Console.WriteLine($"Запрос: {ctx.Request.Path}");
+        //    await next();
+        //});
 
+
+        // Маршрутизация контроллеров
+        _ = app.MapControllers();
 
     }
 }
