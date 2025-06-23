@@ -54,29 +54,29 @@ public partial class MainForm : Form
         string json = JsonConvert.SerializeObject(payload);
         StringContent content = new(json, Encoding.UTF8, "application/json");
 
-        client.Timeout = TimeSpan.FromSeconds(5);
-      
-           
-            try
-            {
-                HttpResponseMessage response = await client.PostAsync(General.URLs.Uri_login, content);
-               
-                if (!response.IsSuccessStatusCode)
-                {
-                    _ = MessageBox.Show("Ошибка авторизации");
-                    return;
-                }
+        client.Timeout = TimeSpan.FromSeconds(10);
 
-                string result = await response.Content.ReadAsStringAsync();
-                dynamic obj = JsonConvert.DeserializeObject(result) ?? "";
-                _token = obj.token;
-                _ = MessageBox.Show("авторизован");
-            }
-            catch
-            {
 
+        try
+        {
+            HttpResponseMessage response = await client.PostAsync(General.URLs.Uri_login, content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _ = MessageBox.Show("Ошибка авторизации");
+                return;
             }
-        
+
+            string result = await response.Content.ReadAsStringAsync();
+            dynamic obj = JsonConvert.DeserializeObject(result) ?? "";
+            _token = obj.token;
+            _ = MessageBox.Show("авторизован");
+        }
+        catch
+        {
+
+        }
+
     }
 
     /// <summary>
@@ -232,7 +232,7 @@ public partial class MainForm : Form
         string json = JsonConvert.SerializeObject(payload);
         StringContent content = new(json, Encoding.UTF8, "application/json");
 
-        client.Timeout = TimeSpan.FromSeconds(5);
+        client.Timeout = TimeSpan.FromSeconds(10);
 
 
         try

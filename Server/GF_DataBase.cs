@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using General.DataBaseModels;
 using MySql.Data.MySqlClient;
 
 namespace Server;
@@ -21,25 +20,22 @@ public static class GF_DataBase
         return result > 0;
     }
 
-    public static async Task<bool> IsCorrectEmailPassword(string? email, string? password)
+    public static async Task<bool> IsCorrectEmailPassword(string email, string password)
     {
-        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
-        {
-            return false;
-        }
         await using MySqlConnection connection = new(General.DataBase.ConnectionString_UsersData);
         const string sql = """
-            SELECT email, password_hash
-            FROM users WHERE email = @email LIMIT 1
+            SELECT password_hash
+            FROM users
+            WHERE deleted_at IS NULL AND email = @email
+            LIMIT 1
             """;
-        User? qwe = await connection.QueryFirstOrDefaultAsync<User>(sql, new { email});
-        
+        dynamic? result = await connection.QueryFirstOrDefaultAsync(sql, new { email });
+        if (result != null)
+        {
+            string? password_hash = result.password_hash;
+            return UserRegAuth_NS.Password.Verify(email, password_hash ?? "", password);
+        }
 
-
-
-        await using MySqlConnection connection = new(General.DataBase.ConnectionString_UsersData);
-       
-
-        return result == 1;
+        return false;
     }
 }

@@ -1,7 +1,6 @@
 ﻿using General.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MySql.Data.MySqlClient;
 using Server.Jwt_NS;
 
 namespace Server.Http_NS.Controllers_NS.Users;
@@ -25,32 +24,18 @@ public class AuthenticationController() : ControllerBaseApi
     [HttpPost]
     public async Task<IActionResult> Authentication([FromBody] Login request)
     {
-        using MySqlConnection connection = new(General.DataBase.ConnectionString_GameData);
-        await connection.OpenAsync();
+        await Task.Delay(2000);//Намеренная задержка от брутфорса
 
-
-
-
-
-
-
-        // Проверяем корректность имени пользователя и пароля
-        if (string.Equals(request.Email, "SuperAdmin@mail.ru", StringComparison.OrdinalIgnoreCase) &&
-            string.Equals(request.Password, "testPassword", StringComparison.Ordinal))
+        if (!string.IsNullOrEmpty(request.Email) && !string.IsNullOrEmpty(request.Password))
         {
-
-        }
-        else
-        {
-            // Неверные учетные данные
-            return Unauthorized();
+            if (await GF_DataBase.IsCorrectEmailPassword(request.Email, request.Password))
+            {
+                string token = Jwt.GenerateJwtToken(request.Email);
+                return Ok(new { token });
+            }
         }
 
-        // Создаем JWT токен
-        string token = Jwt.GenerateJwtToken(request.Email);
-
-        // Возвращаем токен в формате JSON
-        return Ok(new { token });
+        return Unauthorized();
     }
 
 }
