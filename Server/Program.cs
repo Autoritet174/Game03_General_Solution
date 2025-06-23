@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Server.Http_NS.Controllers_NS.Game;
 using Server.Http_NS.Middleware_NS;
@@ -15,15 +16,17 @@ internal class Program
         // Инициализация параметров для AuthOptions при старте приложения
         Jwt.Initialize(builder.Configuration);
 
+        IServiceCollection services = builder.Services;
+
         // Добавление контроллеров
-        _ = builder.Services.AddControllers();
-        _ = builder.Services.AddHttpLogging();
+        _ = services.AddControllers();
+        _ = services.AddHttpLogging();
 
         // Регистрация ClientManager как singleton
-        _ = builder.Services.AddSingleton<ClientManager>();
+        _ = services.AddSingleton<ClientManager>();
 
         // Добавление аутентификации с использованием JWT
-        _ = builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        _ = services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
         {
             IConfigurationSection jwtConfig = builder.Configuration.GetSection("Jwt");
@@ -62,7 +65,7 @@ internal class Program
             //};
         });
 
-        _ = builder.Services.AddCors(options =>
+        _ = services.AddCors(options =>
         {
             options.AddPolicy("AllowAll", policy =>
             {
@@ -73,7 +76,7 @@ internal class Program
         });
 
         // Добавляем контекст БД (SQL Server)
-        //builder.Services.AddDbContext<DbContextEf>(options =>
+        //services.AddDbContext<DbContextEf>(options =>
         //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
         // Добавляем контекст БД (MySql)
@@ -83,10 +86,10 @@ internal class Program
         //    return;
         //}
         //Microsoft.EntityFrameworkCore.ServerVersion serverVersion = ServerVersion.AutoDetect(connectionString);
-        //builder.Services.AddDbContext<DbContextEf>(options =>
+        //services.AddDbContext<DbContextEf>(options =>
         //    options.UseMySql(connectionString, serverVersion));
 
-
+        //services.AddIdentity<IdentityUser, IdentityRole>();
 
 
         WebApplication app = builder.Build();

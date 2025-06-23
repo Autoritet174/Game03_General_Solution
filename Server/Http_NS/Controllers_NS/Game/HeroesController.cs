@@ -39,7 +39,7 @@ public class HeroesController : ControllerBaseApi {
     /// </summary>
     /// <returns>Список героев.</returns>
     private static async Task<List<HeroStats>> GetHeroesFromDatabase() {
-        using MySqlConnection connection = new(DataBase.ConnectionString);
+        using MySqlConnection connection = new(DataBase.ConnectionString_GameData);
         await connection.OpenAsync();
         IEnumerable<HeroStats> heroes = await connection.QueryAsync<HeroStats>(HeroStats.Sql);
         return [.. heroes];

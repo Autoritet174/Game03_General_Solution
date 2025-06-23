@@ -7,7 +7,7 @@ namespace General.DataBaseModels;
 /// </summary>
 public class HeroStats {
     [JsonPropertyName("id")]
-    public ulong Id { get; set; }
+    public long Id { get; set; }
 
     [JsonPropertyName("name")]
     public string? Name { get; set; }

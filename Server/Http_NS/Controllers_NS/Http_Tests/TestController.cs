@@ -1,14 +1,13 @@
-﻿using General.DataBaseModels;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Server.Jwt_NS;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace Server.Http_NS.Controllers_NS.Http_Tests;
 
-public class TestController: ControllerBaseApi {
+public class TestController : ControllerBaseApi
+{
     [HttpPost]
     //[AllowAnonymous]
-    public async Task<IActionResult> Main() {
+    public IActionResult Main()
+    {
         string blabla = "ЫЫЫЫЫ";
         return Ok(new { blabla });
     }

@@ -1,5 +1,3 @@
-using General;
-using General.DataBaseModels;
 using Newtonsoft.Json;
 using System.Net.WebSockets;
 using System.Text;
@@ -7,8 +5,9 @@ using System.Text;
 /// <summary>
 /// Главная форма приложения.
 /// </summary>
-public partial class MainForm : Form {
-    private readonly Uri _loginUri = new("http://localhost:5141/auth/Authentication"); // URL авторизации
+public partial class MainForm : Form
+{
+
     //private readonly Uri _loginUri = new("http://localhost:5141/heroes/getall"); // URL авторизации
     private readonly Uri _wsUri = new("ws://localhost:5141/ws"); // URL WebSocket
 
@@ -20,7 +19,8 @@ public partial class MainForm : Form {
     /// <summary>
     /// Конструктор формы.
     /// </summary>
-    public MainForm() {
+    public MainForm()
+    {
         InitializeComponent();
         Text = "WebSocket Client";
         //System.Net.Mail.MailAddress.TryCreate
@@ -30,34 +30,39 @@ public partial class MainForm : Form {
         Controls.Add(button);
         Controls.Add(box);
 
-        button.Click += async (s, e) => {
+        button.Click += async (s, e) =>
+        {
             string text = box.Text;
             await SendToAllSocketsAsync(text);
         };
 
         // Запуск инициализации после загрузки
-        Load += async (s, e) => {
-            await AuthorizeAsync();
-            await ConnectAllSocketsAsync();
-        };
+        //Load += async (s, e) =>
+        //{
+        //    await AuthorizeAsync();
+        //    await ConnectAllSocketsAsync();
+        //};
     }
 
     /// <summary>
     /// Выполняет авторизацию по логину и паролю.
     /// </summary>
-    private async Task AuthorizeAsync() {
+    private async Task AuthorizeAsync()
+    {
         using HttpClient client = new();
-        LoginRequest payload = new(){ Username = Guid.NewGuid().ToString(), Password = "testPassword" };
+        General.Requests.Login payload = new() { Email = textBox_email.Text, Password = textBox_password.Text };
         string json = JsonConvert.SerializeObject(payload);
         StringContent content = new(json, Encoding.UTF8, "application/json");
 
-        client.Timeout = TimeSpan.FromSeconds(60);
-        for (int i = 1; i <= 10; i++) {
-            _ = log.AppendLine($"{i} попытка авторизоваться");
-            try {
-                HttpResponseMessage response = await client.PostAsync(_loginUri, content);
-                i = 99999;
-                if (!response.IsSuccessStatusCode) {
+        client.Timeout = TimeSpan.FromSeconds(5);
+      
+           
+            try
+            {
+                HttpResponseMessage response = await client.PostAsync(General.URLs.Uri_login, content);
+               
+                if (!response.IsSuccessStatusCode)
+                {
                     _ = MessageBox.Show("Ошибка авторизации");
                     return;
                 }
@@ -65,19 +70,22 @@ public partial class MainForm : Form {
                 string result = await response.Content.ReadAsStringAsync();
                 dynamic obj = JsonConvert.DeserializeObject(result) ?? "";
                 _token = obj.token;
-                _ = log.AppendLine("авторизован");
+                _ = MessageBox.Show("авторизован");
             }
-            catch {
+            catch
+            {
 
             }
-        }
+        
     }
 
     /// <summary>
     /// Устанавливает WebSocket соединения.
     /// </summary>
-    private async Task ConnectAllSocketsAsync() {
-        for (int i = 0; i < 3; i++) {
+    private async Task ConnectAllSocketsAsync()
+    {
+        for (int i = 0; i < 3; i++)
+        {
             int socketIndex = i;
             _sockets[i] = new ClientWebSocket();
             _cts[i] = new CancellationTokenSource();
@@ -91,11 +99,14 @@ public partial class MainForm : Form {
     /// <summary>
     /// Подключает WebSocket с автоматическими попытками переподключения.
     /// </summary>
-    private async Task ConnectSocketAsync(int index) {
+    private async Task ConnectSocketAsync(int index)
+    {
         int attempts = 0;
 
-        while (attempts < 10) {
-            try {
+        while (attempts < 10)
+        {
+            try
+            {
                 // Формируем URI с токеном в query строке
                 Uri uriWithToken = new($"{_wsUri}?access_token={_token}");
 
@@ -108,7 +119,8 @@ public partial class MainForm : Form {
                 // Успешное подключение
                 return;
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 _ = log.AppendLine($"WebSocket[{index}] ошибка: {ex.Message}");
                 attempts++;
                 await Task.Delay(5000);
@@ -122,15 +134,18 @@ public partial class MainForm : Form {
     /// <summary>
     /// Отправляет текст во все WebSocket подключения.
     /// </summary>
-    private async Task SendToAllSocketsAsync(string message) {
+    private async Task SendToAllSocketsAsync(string message)
+    {
 
         ClientWebSocket? socket = _sockets.First();
         {
-            if (socket?.State == WebSocketState.Open) {
+            if (socket?.State == WebSocketState.Open)
+            {
                 // Создаём объект с токеном и сообщением
-                var payload = new {
+                var payload = new
+                {
                     token = _token,
-                    message = message
+                    message
                 };
 
                 // Сериализуем объект в JSON
@@ -172,18 +187,23 @@ public partial class MainForm : Form {
     /// <summary>
     /// Цикл получения сообщений с конкретного WebSocket.
     /// </summary>
-    private async Task ReceiveLoop(int index) {
+    private async Task ReceiveLoop(int index)
+    {
         byte[] buffer = new byte[1024];
 
-        while (true) {
-            try {
-                if (_sockets[index].State != WebSocketState.Open) {
+        while (true)
+        {
+            try
+            {
+                if (_sockets[index].State != WebSocketState.Open)
+                {
                     break;
                 }
 
                 WebSocketReceiveResult result = await _sockets[index].ReceiveAsync(new ArraySegment<byte>(buffer), _cts[index].Token);
 
-                if (result.MessageType == WebSocketMessageType.Close) {
+                if (result.MessageType == WebSocketMessageType.Close)
+                {
                     await _sockets[index].CloseAsync(WebSocketCloseStatus.NormalClosure, "Closed", CancellationToken.None);
                     break;
                 }
@@ -193,13 +213,52 @@ public partial class MainForm : Form {
                 _ = log.AppendLine($"[{index}] => {message}");
 
             }
-            catch {
+            catch
+            {
                 await ConnectSocketAsync(index);
             }
         }
     }
 
-    private void timer1_Tick(object sender, EventArgs e) {
+    private void timer1_Tick(object sender, EventArgs e)
+    {
         textBox1.Text = log.ToString();
+    }
+
+    private async void button1_Click(object sender, EventArgs e)
+    {
+        using HttpClient client = new();
+        General.Requests.Login payload = new() { Email = textBox_email.Text, Password = textBox_password.Text };
+        string json = JsonConvert.SerializeObject(payload);
+        StringContent content = new(json, Encoding.UTF8, "application/json");
+
+        client.Timeout = TimeSpan.FromSeconds(5);
+
+
+        try
+        {
+            HttpResponseMessage response = await client.PostAsync(General.URLs.Uri_reg, content);
+            string result = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+            {
+                _ = MessageBox.Show("Ошибка reg");
+                return;
+            }
+
+
+            //dynamic obj = JsonConvert.DeserializeObject(result) ?? "";
+            //_token = obj.token;
+            _ = MessageBox.Show("зарегистрирован");
+        }
+        catch
+        {
+
+        }
+
+    }
+
+    private async void button2_Click(object sender, EventArgs e)
+    {
+        await AuthorizeAsync();
     }
 }

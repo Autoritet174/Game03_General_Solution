@@ -1,4 +1,4 @@
-﻿using General.DataBaseModels;
+﻿using General.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Server.Jwt_NS;
@@ -16,7 +16,8 @@ namespace Server.UserAuth_NS;
 /// <param name="configuration">Конфигурация приложения для получения секретного ключа и параметров JWT.</param>
 [ApiController]
 [Route("api/[controller]")]
-public class OpenWebSocketController() : ControllerBase {
+public class OpenWebSocketController() : ControllerBase
+{
 
     /// <summary>
     /// Выполняет аутентификацию и возвращает JWT токен.
@@ -25,16 +26,18 @@ public class OpenWebSocketController() : ControllerBase {
     /// <returns>JWT токен при успешной аутентификации или ошибка 401.</returns>
     [HttpPost("OpenWebSocket")]
     [AllowAnonymous]
-    public IActionResult Login([FromBody] RequestLogin request) {
+    public IActionResult Login([FromBody] Login request)
+    {
         // Проверяем корректность имени пользователя и пароля
-        if (/*request.Username != "testUser" || */request.Password != "testPassword") {
+        if (/*request.Username != "testUser" || */request.Password != "testPassword")
+        {
             // Неверные учетные данные
             return Unauthorized();
         }
-        
+
 
         // Создаем JWT токен
-        string token = GenerateJwtToken(request.Username);
+        string token = GenerateJwtToken(request.Email);
 
         // Возвращаем токен в формате JSON
         return Ok(new { token });
@@ -46,7 +49,8 @@ public class OpenWebSocketController() : ControllerBase {
     /// </summary>
     /// <param name="username">Имя пользователя.</param>
     /// <returns>Строка токена JWT.</returns>
-    private static string GenerateJwtToken(string username) {
+    private static string GenerateJwtToken(string username)
+    {
         // Создание набора требований (claims)
         Claim[] claims =
         [
