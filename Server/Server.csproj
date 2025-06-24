@@ -8,6 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="DataBaseModels\**" />
+    <Content Remove="DataBaseModels\**" />
+    <EmbeddedResource Remove="DataBaseModels\**" />
+    <None Remove="DataBaseModels\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="ClientManager.cs" />
   </ItemGroup>
 
@@ -21,10 +28,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\General\General.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="DataBaseModels\" />
   </ItemGroup>
 
 </Project>
