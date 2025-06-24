@@ -1,6 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Net.Mail;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace General;
 
@@ -41,35 +45,36 @@ public static class GF
             return null;
         }
     }
-    #pragma warning disable IDE0055 
+
+#pragma warning disable IDE0055 
 #pragma warning disable
      // 0x00FF0000 - Actions
      // 0x0000FF00 - Type
      // 0x000000FF - Success:0 OR Errors:>0
 
     //Action
-    private const int sr_Auth        = 0x00010000;
-    private const int sr_Reg         = 0x00020000;
+    private const int sr_Auth                 = 0x00010000;
+    private const int sr_Reg                  = 0x00020000;
 
     //Type
-    private const int sr_Email       = 0x00000100;
-    private const int sr_Password    = 0x00000200;
+    private const int sr_Email                = 0x00000100;
+    private const int sr_Password             = 0x00000200;
 
     //Success or Error
-    private const int sr_Success     = 0x00000000;
-    private const int sr_ErrorUnknown = 0x00000001;
-    private const int sr_ErrorEmpty  = 0x00000002;
-    private const int sr_ErrorBad    = 0x00000003;
-    private const int sr_ErrorExists = 0x00000004;
+    private const int sr_Success              = 0x00000000;
+    private const int sr_ErrorUnknown         = 0x00000001;
+    private const int sr_ErrorEmpty           = 0x00000002;
+    private const int sr_ErrorBad             = 0x00000003;
+    private const int sr_ErrorExists          = 0x00000004;
     public enum ServerResponseError
     {
-        Reg_Unknown        = sr_Reg + sr_ErrorUnknown,
+        Reg_Unknown                 = sr_Reg + sr_ErrorUnknown,
 
-        Reg_Email_Empty    = sr_Reg + sr_Email    + sr_ErrorEmpty,
-        Reg_Email_Bad      = sr_Reg + sr_Email    + sr_ErrorBad,
-        Reg_Email_Exists   = sr_Reg + sr_Email    + sr_ErrorExists,
+        Reg_Email_Empty             = sr_Reg + sr_Email    + sr_ErrorEmpty,
+        Reg_Email_Bad               = sr_Reg + sr_Email    + sr_ErrorBad,
+        Reg_Email_Exists            = sr_Reg + sr_Email    + sr_ErrorExists,
 
-        Reg_Password_Empty = sr_Reg + sr_Password + sr_ErrorEmpty,
+        Reg_Password_Empty          = sr_Reg + sr_Password + sr_ErrorEmpty,
     }
     //public enum ServerResponseOk {
     //    Reg_Success = sr_Reg  + sr_Success,
@@ -117,5 +122,14 @@ public static class GF
                 }
             }
         }
+    }
+
+    public static async Task<HttpResponseMessage> GetHttpResponseAsync(Uri uri, object content)
+    {
+        using HttpClient client = new();
+        client.Timeout = TimeSpan.FromSeconds(10);
+        string json = JsonConvert.SerializeObject(content);
+        StringContent stringContent = new(json, Encoding.UTF8, "application/json");
+        return await client.PostAsync(uri, stringContent);
     }
 }

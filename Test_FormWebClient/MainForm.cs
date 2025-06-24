@@ -49,34 +49,32 @@ public partial class MainForm : Form
     /// </summary>
     private async Task AuthorizeAsync()
     {
-        using HttpClient client = new();
-        General.Requests.Login payload = new() { Email = textBox_email.Text, Password = textBox_password.Text };
-        string json = JsonConvert.SerializeObject(payload);
-        StringContent content = new(json, Encoding.UTF8, "application/json");
-
-        client.Timeout = TimeSpan.FromSeconds(10);
-
-
         try
         {
-            HttpResponseMessage response = await client.PostAsync(General.URLs.Uri_login, content);
+            HttpResponseMessage response = await General.GF.GetHttpResponseAsync(
+                General.URLs.Uri_login,
+                new { 
+                    Email = textBox_email.Text, 
+                    Password = textBox_password.Text
+                });
 
-            if (!response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
-                _ = MessageBox.Show("Ошибка авторизации");
-                return;
+                string result = await response.Content.ReadAsStringAsync();
+                dynamic? obj = JsonConvert.DeserializeObject(result);
+                if (obj != null)
+                {
+                    _token = obj.token;
+                    _ = MessageBox.Show("авторизован");
+                    return;
+                }
             }
-
-            string result = await response.Content.ReadAsStringAsync();
-            dynamic obj = JsonConvert.DeserializeObject(result) ?? "";
-            _token = obj.token;
-            _ = MessageBox.Show("авторизован");
+            _ = MessageBox.Show("Ошибка авторизации");
         }
-        catch
+        catch (Exception ex) 
         {
-
+            _ = MessageBox.Show($"Ошибка: {ex}");
         }
-
     }
 
     /// <summary>
