@@ -21,7 +21,6 @@ public static class GF
     /// <returns>email, если создание прошло успешно; иначе null.</returns>
     public static string? GetEmailOrNull(string email)
     {
-
         // Проверка на null или пустую строку
         if (string.IsNullOrWhiteSpace(email))
         {
