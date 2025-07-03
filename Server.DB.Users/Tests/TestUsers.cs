@@ -19,8 +19,10 @@ public class TestUsers
         _userRepository = userRepository;
     }
 
-    public async Task CreateUserAsync(User user)
+    public async Task CreateUserAsync()
     {
-        await _userRepository.AddAsync(user);
+        string email = Guid.NewGuid().ToString() + "@mail.ru";
+        string passwordHash =Utilities.PasswordHasher.Create(email, Guid.NewGuid().ToString());
+        await _userRepository.AddAsync(email, passwordHash);
     }
 }

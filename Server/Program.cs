@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Server.DB.Users;
 using Server.DB.Users.Entities;
 using Server.DB.Users.Repositories;
+using Server.DB.Users.Tests;
 using Server.Http_NS.Controllers_NS.Game;
 using Server.Http_NS.Middleware_NS;
 using Server.Jwt_NS;
@@ -111,7 +112,7 @@ internal class Program
 
 
         //HeroesController.Init();
-        //Test(app);
+        Test(app);
 
         app.Run();
 
@@ -176,19 +177,16 @@ internal class Program
 
     private static async Task Test(WebApplication app)
     {
-        // 👉 Ваш вызов вручную после запуска контейнера
+        //Ваш вызов вручную после запуска контейнера
         using (var scope = app.Services.CreateScope())
         {
-            var userService = scope.ServiceProvider.GetRequiredService<UserRepository>();
+            var userService = scope.ServiceProvider.GetRequiredService<TestUsers>();
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 1; i++)
             {
-                await userService.AddAsync(new User
-                {
-                    Email = "john.doe@example.com_" + Guid.NewGuid().ToString(),
-                    PasswordHash = "secret"
-                });
+                await userService.CreateUserAsync();
             }
         }
+
     }
 }

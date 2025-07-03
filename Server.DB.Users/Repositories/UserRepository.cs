@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Server.DB.Users.Entities;
+using System;
 
 namespace Server.DB.Users.Repositories;
 
@@ -20,16 +21,24 @@ public class UserRepository(DB_Users dbContext)
     /// </summary>
     /// <param name="user">Новая сущность пользователя.</param>
     /// <exception cref="ArgumentNullException">Если пользователь не передан.</exception>
-    public async Task AddAsync(User user)
+    public async Task AddAsync(string email, string passwordHash)
     {
-        ArgumentNullException.ThrowIfNull(user);
+        //ArgumentNullException.ThrowIfNull(user);
+        User user = new() {
+            Id = UUIDNext.Uuid.NewDatabaseFriendly(UUIDNext.Database.PostgreSql),
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow,
+            Email = email,
+            PasswordHash = passwordHash
+        };
 
-        //user.Id = Guid.NewGuid();
-        //user.CreatedAt = DateTime.UtcNow;
-        //user.UpdatedAt = DateTime.UtcNow;
+
+        //user.Id = UUIDNext.Uuid.NewDatabaseFriendly(UUIDNext.Database.PostgreSql);
+        //user.CreatedAt = DateTimeOffset.UtcNow;
+        //user.UpdatedAt = DateTimeOffset.UtcNow;
+
         try
         {
-
             _ = _dbContext.Users.Add(user);
             _ = await _dbContext.SaveChangesAsync();
         }
@@ -63,7 +72,7 @@ public class UserRepository(DB_Users dbContext)
             throw new InvalidOperationException("Пользователь не найден или удалён.");
         }
 
-        user.UpdatedAt = DateTime.UtcNow;
+        user.UpdatedAt = DateTimeOffset.UtcNow;
 
         _ = _dbContext.Users.Update(user);
         _ = await _dbContext.SaveChangesAsync();
@@ -86,7 +95,7 @@ public class UserRepository(DB_Users dbContext)
         int affected = await _dbContext.Users
             .Where(u => u.Id == userId && u.DeletedAt == null)
             .ExecuteUpdateAsync(setters => setters
-                .SetProperty(u => u.DeletedAt, _ => DateTime.UtcNow));
+                .SetProperty(u => u.DeletedAt, _ => DateTimeOffset.UtcNow));
 
         if (affected == 0)
         {

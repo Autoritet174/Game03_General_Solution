@@ -7,12 +7,12 @@ namespace Server.DB.Users.Entities;
 /// </summary>
 public class User
 {
-    public Guid Id { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
-    public DateTime? DeletedAt { get; set; }
+    public required Guid Id { get; set; }
+    public required DateTimeOffset CreatedAt { get; set; }
+    public required DateTimeOffset UpdatedAt { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
     public required string Email { get; set; }
-    public DateTime? EmailVerifiedAt { get; set; }
+    public DateTimeOffset? EmailVerifiedAt { get; set; }
     public required string PasswordHash { get; set; }
     public string? TimeZone { get; set; }
 }
