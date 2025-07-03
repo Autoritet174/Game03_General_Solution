@@ -4,7 +4,7 @@ namespace Server.UserRegAuth_NS;
 
 public static class Password
 {
-    private static readonly PasswordHasher<object> _passwordHasher = new();
+    private static readonly Microsoft.AspNetCore.Identity.PasswordHasher<object> _passwordHasher = new();
 
     public static string Create(string user, string password)
     {

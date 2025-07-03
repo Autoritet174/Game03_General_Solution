@@ -28,7 +28,8 @@ public class AuthenticationController() : ControllerBaseApi
 
         if (!string.IsNullOrEmpty(request.Email) && !string.IsNullOrEmpty(request.Password))
         {
-            if (await GF_DataBase.IsCorrectEmailPassword(request.Email, request.Password))
+            bool isCorrect = await GF_DataBase.IsCorrectEmailPassword(request.Email, request.Password);
+            if (isCorrect)
             {
                 string token = Jwt.GenerateJwtToken(request.Email);
                 return Ok(new { token });

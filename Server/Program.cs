@@ -1,10 +1,15 @@
+п»їusing Google.Protobuf.WellKnownTypes;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Server.DB.Users;
+using Server.DB.Users.Entities;
+using Server.DB.Users.Repositories;
 using Server.Http_NS.Controllers_NS.Game;
 using Server.Http_NS.Middleware_NS;
 using Server.Jwt_NS;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Server;
 internal class Program
@@ -13,19 +18,19 @@ internal class Program
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-        // Инициализация параметров для AuthOptions при старте приложения
+        // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РїР°СЂР°РјРµС‚СЂРѕРІ РґР»СЏ AuthOptions РїСЂРё СЃС‚Р°СЂС‚Рµ РїСЂРёР»РѕР¶РµРЅРёСЏ
         Jwt.Initialize(builder.Configuration);
 
         IServiceCollection services = builder.Services;
 
-        // Добавление контроллеров
+        // Р”РѕР±Р°РІР»РµРЅРёРµ РєРѕРЅС‚СЂРѕР»Р»РµСЂРѕРІ
         _ = services.AddControllers();
         _ = services.AddHttpLogging();
 
-        // Регистрация ClientManager как singleton
+        // Р РµРіРёСЃС‚СЂР°С†РёСЏ ClientManager РєР°Рє singleton
         _ = services.AddSingleton<ClientManager>();
 
-        // Добавление аутентификации с использованием JWT
+        // Р”РѕР±Р°РІР»РµРЅРёРµ Р°СѓС‚РµРЅС‚РёС„РёРєР°С†РёРё СЃ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј JWT
         _ = services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
         {
@@ -34,20 +39,20 @@ internal class Program
             options.TokenValidationParameters = new TokenValidationParameters
             {
 
-                ValidateIssuer = true,// Проверять издателя
+                ValidateIssuer = true,// РџСЂРѕРІРµСЂСЏС‚СЊ РёР·РґР°С‚РµР»СЏ
                 ValidIssuer = jwtConfig["Issuer"],
 
-                ValidateAudience = true,// Проверять аудиторию
+                ValidateAudience = true,// РџСЂРѕРІРµСЂСЏС‚СЊ Р°СѓРґРёС‚РѕСЂРёСЋ
                 ValidAudience = jwtConfig["Audience"],
 
-                ValidateLifetime = true,// Проверять срок действия
+                ValidateLifetime = true,// РџСЂРѕРІРµСЂСЏС‚СЊ СЃСЂРѕРє РґРµР№СЃС‚РІРёСЏ
 
-                ValidateIssuerSigningKey = true,// Проверять подпись
+                ValidateIssuerSigningKey = true,// РџСЂРѕРІРµСЂСЏС‚СЊ РїРѕРґРїРёСЃСЊ
 
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig_key))
             };
 
-            // Добавляем обработчик событий
+            // Р”РѕР±Р°РІР»СЏРµРј РѕР±СЂР°Р±РѕС‚С‡РёРє СЃРѕР±С‹С‚РёР№
             //options.Events = new JwtBearerEvents {
             //    OnAuthenticationFailed = ctx =>
             //    {
@@ -56,10 +61,10 @@ internal class Program
             //        File.WriteAllText("__log.txt", ctx.Exception.ToString());
             //        return Task.CompletedTask;
             //    },
-            //    // Другие события можно добавить по необходимости
+            //    // Р”СЂСѓРіРёРµ СЃРѕР±С‹С‚РёСЏ РјРѕР¶РЅРѕ РґРѕР±Р°РІРёС‚СЊ РїРѕ РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё
             //    OnTokenValidated = ctx =>
             //    {
-            //        Console.WriteLine("Токен успешно валидирован!");
+            //        Console.WriteLine("РўРѕРєРµРЅ СѓСЃРїРµС€РЅРѕ РІР°Р»РёРґРёСЂРѕРІР°РЅ!");
             //        return Task.CompletedTask;
             //    }
             //};
@@ -75,11 +80,18 @@ internal class Program
             });
         });
 
-        // Добавляем контекст БД (SQL Server)
+        string connectionString_DbUsers = builder.Configuration.GetConnectionString("DB.Users") ?? throw new Exception("connectionString_DbUsers is empty");
+        _ = services.AddDbContext<DB_Users>(options => options.UseNpgsql(connectionString_DbUsers));
+
+        services.AddScoped<UserRepository>();
+
+        services.AddScoped<DB.Users.Tests.TestUsers>();
+
+        // Р”РѕР±Р°РІР»СЏРµРј РєРѕРЅС‚РµРєСЃС‚ Р‘Р” (SQL Server)
         //services.AddDbContext<DbContextEf>(options =>
         //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-        // Добавляем контекст БД (MySql)
+        // Р”РѕР±Р°РІР»СЏРµРј РєРѕРЅС‚РµРєСЃС‚ Р‘Р” (MySql)
         //string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
         //if (connectionString == null) {
         //    Console.WriteLine("connectionString = null");
@@ -98,8 +110,8 @@ internal class Program
 
 
 
-        HeroesController.Init();
-
+        //HeroesController.Init();
+        //Test(app);
 
         app.Run();
 
@@ -109,56 +121,74 @@ internal class Program
     public static void Configure(WebApplication app)
     {
 
-        //Миддлвар 1 - Обработка ошибок
+        //РњРёРґРґР»РІР°СЂ 1 - РћР±СЂР°Р±РѕС‚РєР° РѕС€РёР±РѕРє
         _ = app.UseExceptionHandler("/Home/Error");
 
-        //Миддлвар 2 - Логирование
+        //РњРёРґРґР»РІР°СЂ 2 - Р›РѕРіРёСЂРѕРІР°РЅРёРµ
         _ = app.UseHttpLogging();
 
-        //Миддлвар 3 - Статические файлы
+        //РњРёРґРґР»РІР°СЂ 3 - РЎС‚Р°С‚РёС‡РµСЃРєРёРµ С„Р°Р№Р»С‹
         //_ = app.UseStaticFiles();
 
 
         _ = app.UseHttpsRedirection();
         _ = app.UseHsts();
 
-        // Добавляем заголовки безопасности
+        // Р”РѕР±Р°РІР»СЏРµРј Р·Р°РіРѕР»РѕРІРєРё Р±РµР·РѕРїР°СЃРЅРѕСЃС‚Рё
         _ = app.UseMiddleware<SecurityHeadersMiddleware>();
 
 
-        // Разрешение WebSocket соединений
+        // Р Р°Р·СЂРµС€РµРЅРёРµ WebSocket СЃРѕРµРґРёРЅРµРЅРёР№
         _ = app.UseWebSockets();
 
-        // Подключение кастомного WebSocket middleware
+        // РџРѕРґРєР»СЋС‡РµРЅРёРµ РєР°СЃС‚РѕРјРЅРѕРіРѕ WebSocket middleware
         //_ = app.UseMiddleware<WebSocketMiddleware>();
 
-        // Маршрутизация
+        // РњР°СЂС€СЂСѓС‚РёР·Р°С†РёСЏ
         _ = app.UseRouting();
 
         _ = app.UseCors("AllowAll");
 
-        // Подключение аутентификации и авторизации
+        // РџРѕРґРєР»СЋС‡РµРЅРёРµ Р°СѓС‚РµРЅС‚РёС„РёРєР°С†РёРё Рё Р°РІС‚РѕСЂРёР·Р°С†РёРё
         _ = app.UseAuthentication();
         _ = app.UseAuthorization();
 
 
-        // Ответы с кешированием (если требуется)
+        // РћС‚РІРµС‚С‹ СЃ РєРµС€РёСЂРѕРІР°РЅРёРµРј (РµСЃР»Рё С‚СЂРµР±СѓРµС‚СЃСЏ)
         //app.UseResponseCaching();
 
 
         // CORS
         //app.UseCors("AllowSpecificOrigins");
 
-        // Лог запросов в консоль
+        // Р›РѕРі Р·Р°РїСЂРѕСЃРѕРІ РІ РєРѕРЅСЃРѕР»СЊ
         //app.Use(async (ctx, next) =>
         //{
-        //    Console.WriteLine($"Запрос: {ctx.Request.Path}");
+        //    Console.WriteLine($"Р—Р°РїСЂРѕСЃ: {ctx.Request.Path}");
         //    await next();
         //});
 
 
-        // Маршрутизация контроллеров
+        // РњР°СЂС€СЂСѓС‚РёР·Р°С†РёСЏ РєРѕРЅС‚СЂРѕР»Р»РµСЂРѕРІ
         _ = app.MapControllers();
 
+    }
+
+    private static async Task Test(WebApplication app)
+    {
+        // рџ‘‰ Р’Р°С€ РІС‹Р·РѕРІ РІСЂСѓС‡РЅСѓСЋ РїРѕСЃР»Рµ Р·Р°РїСѓСЃРєР° РєРѕРЅС‚РµР№РЅРµСЂР°
+        using (var scope = app.Services.CreateScope())
+        {
+            var userService = scope.ServiceProvider.GetRequiredService<UserRepository>();
+
+            for (int i = 0; i < 100; i++)
+            {
+                await userService.AddAsync(new User
+                {
+                    Email = "john.doe@example.com_" + Guid.NewGuid().ToString(),
+                    PasswordHash = "secret"
+                });
+            }
+        }
     }
 }
