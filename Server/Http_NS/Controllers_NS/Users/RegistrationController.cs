@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
+using Server.Utilities;
 namespace Server.Http_NS.Controllers_NS.Users;
 
 public class RegistrationController
@@ -17,23 +18,23 @@ public class RegistrationController
 
         if (string.IsNullOrEmpty(model.Email))
         {
-            return CBA_BadRequest(General.GF.ServerResponseError.Reg_Email_Empty);
+            return CBA_BadRequest(General.ServerErrors.Response.Reg_Email_Empty);
         }
 
         if (string.IsNullOrEmpty(model.Password))
         {
-            return CBA_BadRequest(General.GF.ServerResponseError.Reg_Password_Empty);
+            return CBA_BadRequest(General.ServerErrors.Response.Reg_Password_Empty);
         }
 
         if (!ModelState.IsValid)
         {// тут только проверка на email ли строка model.Email
-            return CBA_BadRequest(General.GF.ServerResponseError.Reg_Email_Bad);
+            return CBA_BadRequest(General.ServerErrors.Response.Reg_Email_Bad);
             //return BadRequest(ModelState);
         }
 
         if (!GF.IsValidEmail(model.Email))
         {
-            return CBA_BadRequest(General.GF.ServerResponseError.Reg_Email_Bad);
+            return CBA_BadRequest(General.ServerErrors.Response.Reg_Email_Bad);
         }
 
         // ТУТ СДЕЛАТЬ ПРОВЕРКУ СЛОЖНОСТИ ПАРОЛЯ
@@ -43,7 +44,7 @@ public class RegistrationController
         bool exist = await GF_DataBase.IsExistsEmail(model.Email);
         if (!exist)
         {
-            return CBA_BadRequest(General.GF.ServerResponseError.Reg_Email_Exists);
+            return CBA_BadRequest(General.ServerErrors.Response.Reg_Email_Exists);
         }
 
 
@@ -57,11 +58,11 @@ public class RegistrationController
 
         await using MySqlCommand command = new(sql, connection);
         _ = command.Parameters.AddWithValue("@email", model.Email);
-        _ = command.Parameters.AddWithValue("@password_hash", UserRegAuth_NS.Password.Create(model.Email, model.Password));
+        _ = command.Parameters.AddWithValue("@password_hash", PassHasher.Create(model.Email, model.Password));
 
         int count = await command.ExecuteNonQueryAsync();
 
-        return count > 0 ? Ok() : CBA_BadRequest(General.GF.ServerResponseError.Reg_Unknown);
+        return count > 0 ? Ok() : CBA_BadRequest(General.ServerErrors.Response.Reg_Unknown);
     }
 
 }

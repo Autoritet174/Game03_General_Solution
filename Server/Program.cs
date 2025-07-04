@@ -1,26 +1,29 @@
-﻿using Google.Protobuf.WellKnownTypes;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Org.BouncyCastle.Utilities.Collections;
 using Server.DB.Users;
-using Server.DB.Users.Entities;
 using Server.DB.Users.Repositories;
-using Server.DB.Users.Tests;
-using Server.Http_NS.Controllers_NS.Game;
 using Server.Http_NS.Middleware_NS;
 using Server.Jwt_NS;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Server;
 internal class Program
 {
     private static void Main(string[] args)
     {
+        Utilities.ConsoleWindow.Restore();
+        if (!General.ServerErrors.CheckEnumServerResponse()) {
+            Console.WriteLine("Bad enum ServerResponse");
+            Console.ReadLine();
+            return;
+        }
+        
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
         // Инициализация параметров для AuthOptions при старте приложения
-        Jwt.Initialize(builder.Configuration);
+        //Jwt.Initialize(builder.Configuration);
 
         IServiceCollection services = builder.Services;
 
@@ -31,7 +34,15 @@ internal class Program
         // Регистрация ClientManager как singleton
         _ = services.AddSingleton<ClientManager>();
 
+
+
+
+
         // Добавление аутентификации с использованием JWT
+        builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt")); // Jwt.Issuer, Jwt.Audience, Jwt.Lifetime из конфигурации
+
+        builder.Services.AddSingleton<JwtService>();
+
         _ = services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
         {
@@ -52,6 +63,10 @@ internal class Program
 
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig_key))
             };
+
+
+
+
 
             // Добавляем обработчик событий
             //options.Events = new JwtBearerEvents {
@@ -84,9 +99,8 @@ internal class Program
         string connectionString_DbUsers = builder.Configuration.GetConnectionString("DB.Users") ?? throw new Exception("connectionString_DbUsers is empty");
         _ = services.AddDbContext<DB_Users>(options => options.UseNpgsql(connectionString_DbUsers));
 
-        services.AddScoped<UserRepository>();
+        _ = services.AddScoped<UserRepository>();
 
-        services.AddScoped<DB.Users.Tests.TestUsers>();
 
         // Добавляем контекст БД (SQL Server)
         //services.AddDbContext<DbContextEf>(options =>
@@ -112,7 +126,7 @@ internal class Program
 
 
         //HeroesController.Init();
-        Test(app);
+        _ = Test(app);
 
         app.Run();
 
@@ -177,16 +191,15 @@ internal class Program
 
     private static async Task Test(WebApplication app)
     {
-        //Ваш вызов вручную после запуска контейнера
-        using (var scope = app.Services.CreateScope())
-        {
-            var userService = scope.ServiceProvider.GetRequiredService<TestUsers>();
+        using IServiceScope scope = app.Services.CreateScope();
+        //TestUsers userService = scope.ServiceProvider.GetRequiredService<TestUsers>();
 
-            for (int i = 0; i < 1; i++)
-            {
-                await userService.CreateUserAsync();
-            }
-        }
-
+        //for (int i = 0; i < 1; i++)
+        //{
+        //    await userService.CreateUserAsync();
+        //}
+        var userService = scope.ServiceProvider.GetRequiredService<UserRepository>();
+        var all = userService.GetUserByEmailAsync("sUpEraDmiN@maIl.RU").Result;
+        
     }
 }

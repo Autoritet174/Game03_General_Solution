@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Server.DB.Users.Entities;
 
-
-
 namespace Server.DB.Users;
 
 /// <summary>

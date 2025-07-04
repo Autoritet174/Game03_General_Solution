@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
 	<LangVersion>13.0</LangVersion>
 	<GenerateDocumentationFile>False</GenerateDocumentationFile>
+	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>

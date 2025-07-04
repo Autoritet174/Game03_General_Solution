@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server.DB.Users;
@@ -11,9 +12,11 @@ using Server.DB.Users;
 namespace Server.DB.Users.Migrations
 {
     [DbContext(typeof(DB_Users))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250704004607_Init")]
+    partial class Init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,13 +32,13 @@ namespace Server.DB.Users.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("NOW()");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
 
@@ -45,7 +48,7 @@ namespace Server.DB.Users.Migrations
                         .HasColumnType("character varying(255)")
                         .HasColumnName("email");
 
-                    b.Property<DateTime?>("EmailVerifiedAt")
+                    b.Property<DateTimeOffset?>("EmailVerifiedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("email_verified_at");
 
@@ -60,7 +63,7 @@ namespace Server.DB.Users.Migrations
                         .HasColumnType("character varying(64)")
                         .HasColumnName("time_zone");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at")

@@ -1,4 +1,4 @@
-dotnet ef migrations add Function_SetTimestamp_Update_1 --project "C:\UnityProjects\Game03_General_Solution\Server.DB.Users" --startup-project "C:\UnityProjects\Game03_General_Solution\Server"
+dotnet ef migrations add Init --project "C:\UnityProjects\Game03_General_Solution\Server.DB.Users" --startup-project "C:\UnityProjects\Game03_General_Solution\Server"
 
 
 

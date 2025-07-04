@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Server.DB.Users.Entities;
-using System;
 
 namespace Server.DB.Users.Repositories;
 
@@ -24,7 +23,8 @@ public class UserRepository(DB_Users dbContext)
     public async Task AddAsync(string email, string passwordHash)
     {
         //ArgumentNullException.ThrowIfNull(user);
-        User user = new() {
+        User user = new()
+        {
             Id = UUIDNext.Uuid.NewDatabaseFriendly(UUIDNext.Database.PostgreSql),
             CreatedAt = DateTimeOffset.UtcNow,
             UpdatedAt = DateTimeOffset.UtcNow,
@@ -42,8 +42,9 @@ public class UserRepository(DB_Users dbContext)
             _ = _dbContext.Users.Add(user);
             _ = await _dbContext.SaveChangesAsync();
         }
-        catch (Exception ex) { 
-            string s = ex.ToString();
+        catch (Exception ex)
+        {
+            _ = ex.ToString();
         }
     }
 
@@ -82,18 +83,13 @@ public class UserRepository(DB_Users dbContext)
     /// <summary>
     /// Выполняет мягкое удаление пользователя по идентификатору без загрузки сущности.
     /// </summary>
-    /// <param name="userId">Идентификатор пользователя.</param>
+    /// <param name="id">Идентификатор пользователя.</param>
     /// <exception cref="ArgumentException">Если идентификатор некорректен.</exception>
     /// <exception cref="InvalidOperationException">Если пользователь не найден.</exception>
-    public async Task SoftDeleteUserAsync(Guid userId)
+    public async Task SoftDeleteUserAsync(Guid id)
     {
-        if (userId == Guid.Empty)
-        {
-            throw new ArgumentException("Некорректный идентификатор пользователя.", nameof(userId));
-        }
-
         int affected = await _dbContext.Users
-            .Where(u => u.Id == userId && u.DeletedAt == null)
+            .Where(u => u.Id == id && u.DeletedAt == null)
             .ExecuteUpdateAsync(setters => setters
                 .SetProperty(u => u.DeletedAt, _ => DateTimeOffset.UtcNow));
 
@@ -104,4 +100,23 @@ public class UserRepository(DB_Users dbContext)
     }
 
 
+    public async Task<List<User>> GetAllUsersAsync()
+    {
+        return await _dbContext.Users.ToListAsync();
+    }
+
+    public async Task<User?> GetUserByIdAsync(Guid id)
+    {
+        return id == Guid.Empty ? null : await _dbContext.Users.FirstOrDefaultAsync(a => a.Id == id);
+    }
+
+    /// <summary>
+    /// Возвращает пользователя по e-mail (без учёта регистра).
+    /// </summary>
+    /// <param name="email">E-mail для поиска.</param>
+    /// <returns>Найденный пользователь или null.</returns>
+    public async Task<User?> GetUserByEmailAsync(string email)
+    {
+        return string.IsNullOrWhiteSpace(email) ? null : await _dbContext.Users.FirstOrDefaultAsync(u => EF.Functions.ILike(u.Email, email));
+    }
 }

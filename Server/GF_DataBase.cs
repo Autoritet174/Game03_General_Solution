@@ -1,5 +1,7 @@
 ﻿using Dapper;
+using Google.Protobuf.WellKnownTypes;
 using MySql.Data.MySqlClient;
+using Server.DB.Users.Repositories;
 
 namespace Server;
 
@@ -20,22 +22,4 @@ public static class GF_DataBase
         return result > 0;
     }
 
-    public static async Task<bool> IsCorrectEmailPassword(string email, string password)
-    {
-        await using MySqlConnection connection = new(General.DataBase.ConnectionString_UsersData);
-        const string sql = """
-            SELECT password_hash
-            FROM users
-            WHERE deleted_at IS NULL AND email = @email
-            LIMIT 1
-            """;
-        dynamic? result = await connection.QueryFirstOrDefaultAsync(sql, new { email });
-        if (result != null)
-        {
-            string? password_hash = result.password_hash;
-            return UserRegAuth_NS.Password.Verify(email, password_hash ?? "", password);
-        }
-
-        return false;
-    }
 }

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace Server.DB.Users.Utilities;
+namespace Server.Utilities;
 
-public static class PasswordHasher
+public static class PassHasher
 {
     private static readonly PasswordHasher<object> _passwordHasher = new();
 

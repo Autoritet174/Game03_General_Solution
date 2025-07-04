@@ -1,42 +1,49 @@
 ﻿using General.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Server.DB.Users.Entities;
+using Server.DB.Users.Repositories;
 using Server.Jwt_NS;
+using Server.Utilities;
+using SR = General.ServerErrors.Response;
 
 namespace Server.Http_NS.Controllers_NS.Users;
 
 /// <summary>
 /// Контроллер для аутентификации пользователей.
 /// </summary>
-/// <remarks>
-/// Конструктор контроллера.
-/// </remarks>
-/// <param name="configuration">Конфигурация приложения для получения секретного ключа и параметров JWT.</param>
-public class AuthenticationController() : ControllerBaseApi
+[AllowAnonymous]
+[Route("api/[controller]/[action]")]
+public class AuthenticationController(UserRepository userRepository, JwtService jwtService) : ControllerBaseApi
 {
+    private readonly UserRepository _userRepository = userRepository;
+    private readonly JwtService _jwtService = jwtService;
 
     /// <summary>
-    /// Выполняет аутентификацию и возвращает JWT токен.
+    /// Выполняет аутентификацию пользователя и возвращает JWT-токен.
     /// </summary>
-    /// <param name="request">Модель с именем пользователя и паролем.</param>
-    /// <returns>JWT токен при успешной аутентификации или ошибка 401.</returns>
-    [AllowAnonymous]
+    /// <param name="request">Данные для входа.</param>
+    /// <returns>JWT-токен при успешной аутентификации или код ошибки.</returns>
     [HttpPost]
     public async Task<IActionResult> Authentication([FromBody] Login request)
     {
-        await Task.Delay(2000);//Намеренная задержка от брутфорса
+        await Task.Delay(2000); // Защита от брутфорса
 
-        if (!string.IsNullOrEmpty(request.Email) && !string.IsNullOrEmpty(request.Password))
+        string email = request.Email?.Trim() ?? string.Empty;
+        string password = request.Password?.Trim() ?? string.Empty;
+
+        if (email == string.Empty || password == string.Empty)
         {
-            bool isCorrect = await GF_DataBase.IsCorrectEmailPassword(request.Email, request.Password);
-            if (isCorrect)
-            {
-                string token = Jwt.GenerateJwtToken(request.Email);
-                return Ok(new { token });
-            }
+            return CBA_BadRequest(SR.Auth_EmailOrPassword_Empty);
         }
 
-        return Unauthorized();
-    }
+        User? user = await _userRepository.GetUserByEmailAsync(email);
+        if (user == null || !PassHasher.Verify(email, user.PasswordHash, password))
+        {
+            return CBA_BadRequest(SR.Auth_EmailAndPassword_NotFound);
+        }
 
+        string token = _jwtService.GenerateToken(user.Id);
+        return Ok(new { token });
+    }
 }

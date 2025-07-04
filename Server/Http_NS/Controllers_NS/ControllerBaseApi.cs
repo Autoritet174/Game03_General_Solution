@@ -1,7 +1,5 @@
-﻿//using Google.Rpc;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Server.Http_NS.Controllers_NS;
 
@@ -25,9 +23,9 @@ public abstract class ControllerBaseApi : ControllerBase
     /// </summary>
     /// <param name="serverResponse"></param>
     /// <returns></returns>
-    protected IActionResult CBA_BadRequest(General.GF.ServerResponseError serverResponse)
+    protected IActionResult CBA_BadRequest(General.ServerErrors.Response serverResponse)
     {
-        return BadRequest(new { code = (int)serverResponse });
+        return BadRequest(new { code = (long)serverResponse });
     }
 
 }

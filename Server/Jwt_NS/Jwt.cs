@@ -1,73 +1,135 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
 namespace Server.Jwt_NS;
 
+/// <summary>
+/// Параметры JWT, считываемые из конфигурации <c>appsettings.json</c> либо переменных
+/// окружения <c>JWT__Issuer</c> / <c>JWT__Audience</c>. <strong>Секретный ключ</strong> берётся
+/// исключительно из переменной окружения <c>JWT_SECRET</c> и в конфигурации храниться не должен.
+/// </summary>
+public sealed record JwtOptions
+{
+    /// <summary>Эмитент токена.</summary>
+    public required string Issuer { get; init; }
+
+    /// <summary>Аудитория токена.</summary>
+    public required string Audience { get; init; }
+
+    /// <summary>Время жизни токена.</summary>
+    public TimeSpan Lifetime { get; init; } = TimeSpan.FromHours(2);
+}
 
 /// <summary>
-/// Статический класс для хранения параметров аутентификации.
+/// Сервис генерации и валидации JWT-токенов. Секретный ключ извлекается только из
+/// переменной окружения <c>JWT_SECRET</c>, что исключает хранение секретов в файлах.
 /// </summary>
-public static class Jwt {
+public sealed class JwtService
+{
+    private const string SecretEnvName = "JWT_SECRET";
+
+    private readonly JwtOptions _options;
+    private readonly JwtSecurityTokenHandler _handler = new();
+    private readonly SigningCredentials _signingCredentials;
 
     /// <summary>
-    /// Секретный ключ для генерации JWT токенов.
+    /// Создаёт экземпляр <see cref="JwtService"/>, валидируя наличие и размер секретного ключа.
     /// </summary>
-    private static SigningCredentials? signingCredentials;
+    /// <param name="options">Параметры JWT (Issuer, Audience, Lifetime), внедрённые через DI.</param>
+    /// <exception cref="InvalidOperationException">Если переменная окружения <c>JWT_SECRET</c> отсутствует.</exception>
+    /// <exception cref="ArgumentException">Если длина секрета меньше 32&nbsp;байт.</exception>
+    public JwtService(IOptions<JwtOptions> options)
+    {
+        _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
 
-    public static string Issuer { get; private set; } = "";
-    public static string Audience { get; private set; } = "";
-    public static string JwtKey { get; private set; } = "";
-    public static SigningCredentials SigningCredentials { get => signingCredentials!; private set => signingCredentials = value; }
+        string? secret = Environment.GetEnvironmentVariable(SecretEnvName);
+        if (string.IsNullOrWhiteSpace(secret))
+        {
+            throw new InvalidOperationException($"Environment variable '{SecretEnvName}' is not set.");
+        }
 
-    public static double SecondsExp { get; private set; } = 60d * 60d * 24d * 365d;
+        if (Encoding.UTF8.GetByteCount(secret) < 32)
+        {
+            throw new ArgumentException("JWT secret key must be at least 32 bytes.", secret);
+        }
 
-    /// <summary>
-    /// Метод для инициализации
-    /// </summary>
-    /// <param name="configuration"></param>
-    /// <exception cref="ArgumentNullException"></exception>
-    public static void Initialize(IConfiguration configuration) {
-        Issuer = configuration["Jwt:Issuer"] ?? throw new ArgumentNullException(configuration["Jwt:Issuer"]);
-        Audience = configuration["Jwt:Audience"] ?? throw new ArgumentNullException(configuration["Jwt:Audience"]);
-        JwtKey = configuration["Jwt:Key"] ?? throw new ArgumentNullException(configuration["Jwt:Key"]);
-
-        string s = Environment.GetEnvironmentVariable("") ?? "";
-
-        string jwtKey = configuration["Jwt:Key"] ?? throw new ArgumentNullException(configuration["Jwt:Key"]);
-        SymmetricSecurityKey Key = new(Encoding.UTF8.GetBytes(jwtKey));
-        SigningCredentials = new SigningCredentials(Key, SecurityAlgorithms.HmacSha256);
+        _signingCredentials = new SigningCredentials(
+            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
+            SecurityAlgorithms.HmacSha256);
     }
 
-
     /// <summary>
-    /// Генерирует JWT токен для указанного пользователя.
+    /// Генерирует JWT-токен для указанного пользователя.
     /// </summary>
-    /// <param name="username">Имя пользователя.</param>
-    /// <returns>Строка токена JWT.</returns>
-    public static string GenerateJwtToken(string username) {
-        byte[] randomBytes = System.Security.Cryptography.RandomNumberGenerator.GetBytes(16);
-        Guid secureGuid = new(randomBytes);
+    /// <param name="userId">Идентификатор пользователя (claim <c>sub</c>).</param>
+    /// <param name="additionalClaims">Необязательные дополнительные claims.</param>
+    /// <returns>Строковое представление JWT.</returns>
+    public string GenerateToken(Guid userId, IEnumerable<Claim>? additionalClaims = null)
+    {
+        DateTime now = DateTime.UtcNow;
 
-        // Создание набора требований (claims)
-        Claim[] claims =
+        List<Claim> claims =
         [
-            new Claim(JwtRegisteredClaimNames.Sub, username),
-            new Claim(JwtRegisteredClaimNames.Jti, secureGuid.ToString())
+            new(JwtRegisteredClaimNames.Sub, userId.ToString()),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new(JwtRegisteredClaimNames.Iat, now.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
         ];
 
-        // Настройка параметров токена
-        JwtSecurityToken token = new(
-            issuer: Jwt.Issuer,
-            audience: Jwt.Audience,
-            claims: claims,
-            expires: DateTime.UtcNow.AddSeconds(Jwt.SecondsExp), // Время жизни токена
-            signingCredentials: Jwt.SigningCredentials
-        );
+        if (additionalClaims is not null)
+        {
+            claims.AddRange(additionalClaims);
+        }
 
-        // Генерация строки токена
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        JwtSecurityToken token = new(
+            issuer: _options.Issuer,
+            audience: _options.Audience,
+            notBefore: now,
+            expires: now.Add(_options.Lifetime),
+            claims: claims,
+            signingCredentials: _signingCredentials);
+
+        return _handler.WriteToken(token);
     }
 
+    /// <summary>
+    /// Валидирует JWT-токен и возвращает <see cref="ClaimsPrincipal"/> при успешной проверке.
+    /// </summary>
+    /// <param name="token">Строковое представление JWT.</param>
+    /// <returns><see cref="ClaimsPrincipal"/> с утверждениями пользователя.</returns>
+    /// <exception cref="ArgumentException">Если токен пустой.</exception>
+    /// <exception cref="SecurityTokenException">Если токен не прошёл проверку.</exception>
+    public ClaimsPrincipal ValidateToken(string token)
+    {
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            throw new ArgumentException("Token is empty.", nameof(token));
+        }
+
+        string secret = Environment.GetEnvironmentVariable(SecretEnvName)!; // проверено в ctor
+        TokenValidationParameters parameters = new()
+        {
+            ValidateIssuer = true,
+            ValidIssuer = _options.Issuer,
+            ValidateAudience = true,
+            ValidAudience = _options.Audience,
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.FromMinutes(2),
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret))
+        };
+
+        return _handler.ValidateToken(token, parameters, out _);
+    }
+}
+
+internal static class DateTimeExtensions
+{
+    /// <summary>Преобразует дату в Unix-время (секунды).</summary>
+    public static long ToUnixTimeSeconds(this DateTime dt)
+    {
+        return (long)(dt - DateTime.UnixEpoch).TotalSeconds;
+    }
 }
