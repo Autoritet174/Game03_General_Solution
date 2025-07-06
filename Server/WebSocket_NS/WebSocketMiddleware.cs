@@ -11,8 +11,8 @@ namespace Server.WebSocket_NS;
 /// <remarks>
 /// Конструктор.
 /// </remarks>
-public class WebSocketMiddleware(RequestDelegate next, ClientManager clientManager) {
-    private readonly JwtValidator _jwtValidator = new();
+public class WebSocketMiddleware(RequestDelegate next, ClientManager clientManager, JwtService jwtService) {
+   
 
     /// <summary>
     /// Вызывается при входящем HTTP/WebSocket запросе.
@@ -32,7 +32,7 @@ public class WebSocketMiddleware(RequestDelegate next, ClientManager clientManag
             }
 
             // Валидация токена через централизованный валидатор
-            ClaimsPrincipal? principal = _jwtValidator.ValidateToken(token);
+            ClaimsPrincipal? principal = jwtService.ValidateToken(token);
 
             if (principal == null) {
                 context.Response.StatusCode = 401;

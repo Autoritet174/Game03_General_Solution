@@ -10,7 +10,7 @@ using Server.DB.Users;
 
 namespace Server.DB.Users.Migrations
 {
-    [DbContext(typeof(DB_Users))]
+    [DbContext(typeof(DbContext_Game03Users))]
     partial class DB_UsersModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

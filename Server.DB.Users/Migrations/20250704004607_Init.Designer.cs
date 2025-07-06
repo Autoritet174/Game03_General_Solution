@@ -11,7 +11,7 @@ using Server.DB.Users;
 
 namespace Server.DB.Users.Migrations
 {
-    [DbContext(typeof(DB_Users))]
+    [DbContext(typeof(DbContext_Game03Users))]
     [Migration("20250704004607_Init")]
     partial class Init
     {

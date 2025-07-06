@@ -28,46 +28,7 @@ public class OpenWebSocketController() : ControllerBase
     [AllowAnonymous]
     public IActionResult Login([FromBody] Login request)
     {
-        // Проверяем корректность имени пользователя и пароля
-        if (/*request.Username != "testUser" || */request.Password != "testPassword")
-        {
-            // Неверные учетные данные
-            return Unauthorized();
-        }
-
-
-        // Создаем JWT токен
-        string token = GenerateJwtToken(request.Email);
-
-        // Возвращаем токен в формате JSON
-        return Ok(new { token });
-    }
-
-
-    /// <summary>
-    /// Генерирует JWT токен для указанного пользователя.
-    /// </summary>
-    /// <param name="username">Имя пользователя.</param>
-    /// <returns>Строка токена JWT.</returns>
-    private static string GenerateJwtToken(string username)
-    {
-        // Создание набора требований (claims)
-        Claim[] claims =
-        [
-            new Claim(JwtRegisteredClaimNames.Sub, username),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        ];
-
-        // Настройка параметров токена
-        JwtSecurityToken token = new(
-            issuer: Jwt.Issuer,
-            audience: Jwt.Audience,
-            claims: claims,
-            expires: DateTime.UtcNow.AddSeconds(Jwt.SecondsExp), // Время жизни токена
-            signingCredentials: Jwt.SigningCredentials
-        );
-
-        // Генерация строки токена
-        return new JwtSecurityTokenHandler().WriteToken(token);
+       
+        return Ok();
     }
 }

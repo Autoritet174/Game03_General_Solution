@@ -10,33 +10,27 @@ namespace Server.DB.Users.Repositories;
 /// Создаёт экземпляр <see cref="UserRepository"/>.
 /// </remarks>
 /// <param name="dbContext">Контекст базы данных.</param>
-public class UserRepository(DB_Users dbContext)
+public class UserRepository(DbContext_Game03Users dbContext)
 {
-    private readonly DB_Users _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+    private readonly DbContext_Game03Users _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 
 
     /// <summary>
     /// Добавляет нового пользователя.
     /// </summary>
-    /// <param name="user">Новая сущность пользователя.</param>
-    /// <exception cref="ArgumentNullException">Если пользователь не передан.</exception>
-    public async Task AddAsync(string email, string passwordHash)
+    /// <param name="emailValidated"></param>
+    /// <param name="passwordHashValidated"></param>
+    /// <returns></returns>
+    public async Task AddAsync(string emailValidated, string passwordHashValidated)
     {
-        //ArgumentNullException.ThrowIfNull(user);
         User user = new()
         {
-            Id = UUIDNext.Uuid.NewDatabaseFriendly(UUIDNext.Database.PostgreSql),
+            Id = DatabaseHelpers.CreateGuidPostgreSql(),
             CreatedAt = DateTimeOffset.UtcNow,
             UpdatedAt = DateTimeOffset.UtcNow,
-            Email = email,
-            PasswordHash = passwordHash
+            Email = emailValidated,
+            PasswordHash = passwordHashValidated
         };
-
-
-        //user.Id = UUIDNext.Uuid.NewDatabaseFriendly(UUIDNext.Database.PostgreSql);
-        //user.CreatedAt = DateTimeOffset.UtcNow;
-        //user.UpdatedAt = DateTimeOffset.UtcNow;
-
         try
         {
             _ = _dbContext.Users.Add(user);
@@ -65,8 +59,7 @@ public class UserRepository(DB_Users dbContext)
             throw new ArgumentException("Идентификатор пользователя не может быть пустым.", nameof(user));
         }
 
-        bool exists = await _dbContext.Users.AsNoTracking()
-            .AnyAsync(u => u.Id == user.Id && u.DeletedAt == null);
+        bool exists = await _dbContext.Users.AsNoTracking().AnyAsync(u => u.Id == user.Id && u.DeletedAt == null);
 
         if (!exists)
         {

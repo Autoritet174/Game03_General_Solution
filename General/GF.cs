@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Mail;
 using System.Text;
@@ -46,9 +45,6 @@ public static class GF
     }
 
 
-
-    
-
     public static async Task<HttpResponseMessage> GetHttpResponseAsync(Uri uri, object content)
     {
         using HttpClient client = new();
@@ -57,4 +53,6 @@ public static class GF
         StringContent stringContent = new(json, Encoding.UTF8, "application/json");
         return await client.PostAsync(uri, stringContent);
     }
+
+
 }

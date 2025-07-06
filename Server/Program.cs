@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Org.BouncyCastle.Utilities.Collections;
 using Server.DB.Users;
 using Server.DB.Users.Repositories;
 using Server.Http_NS.Middleware_NS;
@@ -11,127 +10,6 @@ using System.Text;
 namespace Server;
 internal class Program
 {
-    private static void Main(string[] args)
-    {
-        Utilities.ConsoleWindow.Restore();
-        if (!General.ServerErrors.CheckEnumServerResponse()) {
-            Console.WriteLine("Bad enum ServerResponse");
-            Console.ReadLine();
-            return;
-        }
-        
-        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-
-        // Инициализация параметров для AuthOptions при старте приложения
-        //Jwt.Initialize(builder.Configuration);
-
-        IServiceCollection services = builder.Services;
-
-        // Добавление контроллеров
-        _ = services.AddControllers();
-        _ = services.AddHttpLogging();
-
-        // Регистрация ClientManager как singleton
-        _ = services.AddSingleton<ClientManager>();
-
-
-
-
-
-        // Добавление аутентификации с использованием JWT
-        builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt")); // Jwt.Issuer, Jwt.Audience, Jwt.Lifetime из конфигурации
-
-        builder.Services.AddSingleton<JwtService>();
-
-        _ = services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-        .AddJwtBearer(options =>
-        {
-            IConfigurationSection jwtConfig = builder.Configuration.GetSection("Jwt");
-            string jwtConfig_key = jwtConfig["Key"] ?? throw new ArgumentNullException(jwtConfig["Key"]);
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-
-                ValidateIssuer = true,// Проверять издателя
-                ValidIssuer = jwtConfig["Issuer"],
-
-                ValidateAudience = true,// Проверять аудиторию
-                ValidAudience = jwtConfig["Audience"],
-
-                ValidateLifetime = true,// Проверять срок действия
-
-                ValidateIssuerSigningKey = true,// Проверять подпись
-
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig_key))
-            };
-
-
-
-
-
-            // Добавляем обработчик событий
-            //options.Events = new JwtBearerEvents {
-            //    OnAuthenticationFailed = ctx =>
-            //    {
-            //        var logger = ctx.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
-            //        logger.LogError(ctx.Exception, "JWT validation failed");
-            //        File.WriteAllText("__log.txt", ctx.Exception.ToString());
-            //        return Task.CompletedTask;
-            //    },
-            //    // Другие события можно добавить по необходимости
-            //    OnTokenValidated = ctx =>
-            //    {
-            //        Console.WriteLine("Токен успешно валидирован!");
-            //        return Task.CompletedTask;
-            //    }
-            //};
-        });
-
-        _ = services.AddCors(options =>
-        {
-            options.AddPolicy("AllowAll", policy =>
-            {
-                _ = policy.AllowAnyHeader()
-                      .AllowAnyMethod()
-                      .AllowAnyOrigin();
-            });
-        });
-
-        string connectionString_DbUsers = builder.Configuration.GetConnectionString("DB.Users") ?? throw new Exception("connectionString_DbUsers is empty");
-        _ = services.AddDbContext<DB_Users>(options => options.UseNpgsql(connectionString_DbUsers));
-
-        _ = services.AddScoped<UserRepository>();
-
-
-        // Добавляем контекст БД (SQL Server)
-        //services.AddDbContext<DbContextEf>(options =>
-        //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-        // Добавляем контекст БД (MySql)
-        //string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-        //if (connectionString == null) {
-        //    Console.WriteLine("connectionString = null");
-        //    return;
-        //}
-        //Microsoft.EntityFrameworkCore.ServerVersion serverVersion = ServerVersion.AutoDetect(connectionString);
-        //services.AddDbContext<DbContextEf>(options =>
-        //    options.UseMySql(connectionString, serverVersion));
-
-        //services.AddIdentity<IdentityUser, IdentityRole>();
-
-
-        WebApplication app = builder.Build();
-
-        Configure(app);
-
-
-
-        //HeroesController.Init();
-        _ = Test(app);
-
-        app.Run();
-
-    }
-
 
     public static void Configure(WebApplication app)
     {
@@ -189,17 +67,146 @@ internal class Program
 
     }
 
+    private static void Main(string[] args)
+    {
+        Utilities.ConsoleWindow.Restore();
+        if (!General.ServerErrors.CheckEnumServerResponse())
+        {
+            Console.WriteLine("Bad enum ServerResponse");
+            _ = Console.ReadLine();
+            return;
+        }
+
+        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+        // Инициализация параметров для AuthOptions при старте приложения
+        //Jwt.Initialize(builder.Configuration);
+
+        IServiceCollection services = builder.Services;
+
+        // Добавление контроллеров
+        _ = services.AddControllers();
+        _ = services.AddHttpLogging();
+
+        // Регистрация ClientManager как singleton
+        _ = services.AddSingleton<ClientManager>();
+
+
+
+
+
+        // Добавление аутентификации с использованием JWT
+        _ = builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt")); // Jwt.Issuer, Jwt.Audience, Jwt.Lifetime из конфигурации
+
+        _ = builder.Services.AddSingleton<JwtService>();
+
+        _ = services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
+        {
+            IConfigurationSection jwtConfig = builder.Configuration.GetSection("Jwt");
+            string jwtConfig_key = jwtConfig["Key"] ?? throw new ArgumentNullException(jwtConfig["Key"]);
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+
+                ValidateIssuer = true,// Проверять издателя
+                ValidIssuer = jwtConfig["Issuer"],
+
+                ValidateAudience = true,// Проверять аудиторию
+                ValidAudience = jwtConfig["Audience"],
+
+                ValidateLifetime = true,// Проверять срок действия
+
+                ValidateIssuerSigningKey = true,// Проверять подпись
+
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig_key))
+            };
+
+
+
+
+
+            // Добавляем обработчик событий
+            //options.Events = new JwtBearerEvents {
+            //    OnAuthenticationFailed = ctx =>
+            //    {
+            //        var logger = ctx.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            //        logger.LogError(ctx.Exception, "JWT validation failed");
+            //        File.WriteAllText("__log.txt", ctx.Exception.ToString());
+            //        return Task.CompletedTask;
+            //    },
+            //    // Другие события можно добавить по необходимости
+            //    OnTokenValidated = ctx =>
+            //    {
+            //        Console.WriteLine("Токен успешно валидирован!");
+            //        return Task.CompletedTask;
+            //    }
+            //};
+        });
+
+        _ = services.AddCors(options =>
+        {
+            options.AddPolicy("AllowAll", policy =>
+            {
+                _ = policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+            });
+        });
+
+        string connectionString_DbUsers = builder.Configuration.GetConnectionString("DB.Users") ?? throw new Exception("connectionString_DataBase_Game03Users is empty");
+        _ = services.AddDbContext<DbContext_Game03Users>(options => options.UseNpgsql(connectionString_DbUsers));
+
+        _ = services.AddScoped<UserRepository>();
+
+
+        // Добавляем контекст БД (SQL Server)
+        //services.AddDbContext<DbContextEf>(options =>
+        //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+        // Добавляем контекст БД (MySql)
+        //string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+        //if (connectionString == null) {
+        //    Console.WriteLine("connectionString = null");
+        //    return;
+        //}
+        //Microsoft.EntityFrameworkCore.ServerVersion serverVersion = ServerVersion.AutoDetect(connectionString);
+        //services.AddDbContext<DbContextEf>(options =>
+        //    options.UseMySql(connectionString, serverVersion));
+
+        //services.AddIdentity<IdentityUser, IdentityRole>();
+
+
+        WebApplication app = builder.Build();
+
+        Configure(app);
+
+
+
+        //HeroesController.Init();
+        _ = Test(app);
+
+        app.Run();
+
+    }
+
+
     private static async Task Test(WebApplication app)
     {
-        using IServiceScope scope = app.Services.CreateScope();
-        //TestUsers userService = scope.ServiceProvider.GetRequiredService<TestUsers>();
+        await Task.Delay(1);
+        //using IServiceScope scope = app.Services.CreateScope();
+        ////TestUsers userService = scope.ServiceProvider.GetRequiredService<TestUsers>();
 
-        //for (int i = 0; i < 1; i++)
-        //{
-        //    await userService.CreateUserAsync();
-        //}
-        var userService = scope.ServiceProvider.GetRequiredService<UserRepository>();
-        var all = userService.GetUserByEmailAsync("sUpEraDmiN@maIl.RU").Result;
-        
+        ////for (int i = 0; i < 1; i++)
+        ////{
+        ////    await userService.CreateUserAsync();
+        ////}
+        //UserRepository userService = scope.ServiceProvider.GetRequiredService<UserRepository>();
+        //DB.Users.Entities.User? all = userService.GetUserByEmailAsync("sUpEraDmiN@maIl.RU").Result;
+
+        DbContextOptionsBuilder<DbContext_Game03Users> options = new();
+
+        _ = options.UseNpgsql("Host=127.127.126.5;Port=5432;Database=Game03_Users;Username=postgres;Password=");
+
+        using DbContext_Game03Users db = new(options.Options);
+        DbSet<DB.Users.Entities.User> allq = db.Users;
+        //Console.WriteLine(db.Users.First().Email);
     }
 }

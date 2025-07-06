@@ -9,7 +9,7 @@ namespace Server.DB.Users;
 /// <remarks>
 /// Создаёт экземпляр контекста с указанными параметрами.
 /// </remarks>
-public class DB_Users(DbContextOptions<DB_Users> options) : DbContext(options)
+public class DbContext_Game03Users(DbContextOptions<DbContext_Game03Users> options) : DbContext(options)
 {
 
     /// <summary>
