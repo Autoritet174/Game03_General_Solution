@@ -12,8 +12,6 @@ namespace Server.Http_NS.Controllers_NS.Users;
 /// <summary>
 /// Контроллер для аутентификации пользователей.
 /// </summary>
-[AllowAnonymous]
-[Route("api/[controller]/[action]")]
 public class AuthenticationController(UserRepository userRepository, JwtService jwtService) : ControllerBaseApi
 {
     private readonly UserRepository _userRepository = userRepository;
@@ -24,7 +22,7 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
     /// </summary>
     /// <param name="request">Данные для входа.</param>
     /// <returns>JWT-токен при успешной аутентификации или код ошибки.</returns>
-    [HttpPost]
+    [AllowAnonymous]
     public async Task<IActionResult> Authentication([FromBody] Login request)
     {
         await Task.Delay(2000); // Защита от брутфорса
