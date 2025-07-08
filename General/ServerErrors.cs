@@ -32,7 +32,7 @@ public static class ServerErrors
     /// <summary>
     /// Ошибки сервера в ответах клиенту
     /// </summary>
-    public enum Response : long
+    public enum Error : long
     {
         Unknown                             = a_Unknown           + t_Unknown           + e_Unknown,
 
@@ -47,13 +47,16 @@ public static class ServerErrors
         Auth_EmailOrPassword_Empty          = a_Auth              + t_EmailOrPassword   + e_Empty,
         Auth_EmailAndPassword_NotFound      = a_Auth              + t_EmailAndPassword  + e_NotFound,
     }
-    #pragma warning restore IDE0055
-    #pragma warning restore
+#pragma warning restore IDE0055
+#pragma warning restore
 
+    public static Error GetResponse(long code) { 
+        return (Error)code;
+    }
 
     public static bool CheckEnumServerResponse()
     {
-        Array values1 = Enum.GetValues(typeof(Response));
+        Array values1 = Enum.GetValues(typeof(Error));
 
         int i;
         int iEnd = values1.Length;
@@ -61,7 +64,7 @@ public static class ServerErrors
         List<long> values = [];
         for (i = 0; i < iEnd; i++)
         {
-            values.Add((long)(Response)values1.GetValue(i));
+            values.Add((long)(Error)values1.GetValue(i));
         }
 
         int j;

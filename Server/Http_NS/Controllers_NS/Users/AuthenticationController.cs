@@ -1,11 +1,12 @@
-﻿using General.Requests;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Server.DB.Users.Entities;
 using Server.DB.Users.Repositories;
 using Server.Jwt_NS;
 using Server.Utilities;
-using SR = General.ServerErrors.Response;
+using System.Text;
+using System.Text.Json.Nodes;
+using SR = General.ServerErrors.Error;
 
 namespace Server.Http_NS.Controllers_NS.Users;
 
@@ -23,12 +24,25 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
     /// <param name="request">Данные для входа.</param>
     /// <returns>JWT-токен при успешной аутентификации или код ошибки.</returns>
     [AllowAnonymous]
-    public async Task<IActionResult> Authentication([FromBody] Login request)
+    public async Task<IActionResult> Authentication()
     {
-        await Task.Delay(2000); // Защита от брутфорса
+        await GF.DelayWithOutDebug();
 
-        string email = request.Email?.Trim() ?? string.Empty;
-        string password = request.Password?.Trim() ?? string.Empty;
+        Request.EnableBuffering();
+
+        using StreamReader reader = new(Request.Body, Encoding.UTF8, leaveOpen: true);
+        string body = await reader.ReadToEndAsync();
+        Request.Body.Position = 0;
+        JsonNode? data = JsonNode.Parse(body);
+
+
+        if (data is not JsonObject obj)
+        {
+            return CBA_BadRequest(SR.Auth_EmailOrPassword_Empty);
+        }
+
+        string email = JsonObjectHelper.FindValueIgnoreCase(obj, "email");
+        string password = JsonObjectHelper.FindValueIgnoreCase(obj, "password");
 
         if (email == string.Empty || password == string.Empty)
         {
@@ -42,6 +56,10 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
         }
 
         string token = _jwtService.GenerateToken(user.Id);
+
+        string? ip = Request.Headers["X-Forwarded-For"].FirstOrDefault();
+
+
         return Ok(new { token });
     }
 }

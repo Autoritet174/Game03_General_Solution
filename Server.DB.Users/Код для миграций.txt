@@ -1,4 +1,4 @@
-dotnet ef migrations add Init --project "C:\UnityProjects\Game03_General_Solution\Server.DB.Users" --startup-project "C:\UnityProjects\Game03_General_Solution\Server"
+dotnet ef migrations add AddLoggingAuthorization --project "C:\UnityProjects\Game03_General_Solution\Server.DB.Users" --startup-project "C:\UnityProjects\Game03_General_Solution\Server"
 
 
 

@@ -1,77 +1,74 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Server.DB.Users.Migrations
+namespace Server.DB.Users.Migrations;
+
+/// <inheritdoc />
+public partial class Init : Migration
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.CreateTable(
-                name: "users",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uuid", nullable: false),
-                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
-                    updated_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
-                    deleted_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    email = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    email_verified_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    password_hash = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    time_zone = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_users_id", x => x.id);
-                });
+        _ = migrationBuilder.CreateTable(
+            name: "users",
+            columns: table => new
+            {
+                id = table.Column<Guid>(type: "uuid", nullable: false),
+                created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                updated_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                deleted_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                email = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                email_verified_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                password_hash = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                time_zone = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
+            },
+            constraints: table =>
+            {
+                _ = table.PrimaryKey("pk_users_id", x => x.id);
+            });
 
-            migrationBuilder.CreateIndex(
-                name: "email",
-                table: "users",
-                column: "email",
-                unique: true);
+        _ = migrationBuilder.CreateIndex(
+            name: "email",
+            table: "users",
+            column: "email",
+            unique: true);
 
-            _ = migrationBuilder.Sql(@"
-                CREATE OR REPLACE FUNCTION set_timestamp()
-                RETURNS TRIGGER AS $$
-                BEGIN
-                    IF TG_OP = 'INSERT' THEN
-                        NEW.created_at := NOW();
-                        NEW.updated_at := NOW();
-                    ELSIF TG_OP = 'UPDATE' THEN
-                        NEW.created_at := OLD.created_at;
-                        NEW.updated_at := NOW();
-                    END IF;
-                    RETURN NEW;
-                END;
-                $$ LANGUAGE plpgsql;
-            ");
+        _ = migrationBuilder.Sql("""
+            CREATE OR REPLACE FUNCTION set_timestamp()
+            RETURNS TRIGGER AS $$
+            BEGIN
+                IF TG_OP = 'INSERT' THEN
+                    NEW.created_at := NOW();
+                    NEW.updated_at := NOW();
+                ELSIF TG_OP = 'UPDATE' THEN
+                    NEW.created_at := OLD.created_at;
+                    NEW.updated_at := NOW();
+                END IF;
+                RETURN NEW;
+            END;
+            $$ LANGUAGE plpgsql;
+            """);
 
-                        _ = migrationBuilder.Sql(@"
-                CREATE TRIGGER set_timestamp_users
-                BEFORE INSERT OR UPDATE ON users
-                FOR EACH ROW
-                EXECUTE FUNCTION set_timestamp();
-            ");
-        }
+        _ = migrationBuilder.Sql("""
+            CREATE TRIGGER set_timestamp_users
+            BEFORE INSERT OR UPDATE ON users
+            FOR EACH ROW
+            EXECUTE FUNCTION set_timestamp();
+            """);
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            _ = migrationBuilder.Sql(@"
-               DROP TRIGGER IF EXISTS set_timestamp_users ON users;
-            ");
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        _ = migrationBuilder.Sql("""
+            DROP TRIGGER IF EXISTS set_timestamp_users ON users;
+            """);
 
-            _ = migrationBuilder.Sql(@"
-                DROP FUNCTION IF EXISTS set_timestamp();
-            ");
+        _ = migrationBuilder.Sql("""
+            DROP FUNCTION IF EXISTS set_timestamp();
+            """);
 
-            migrationBuilder.DropTable(
-                name: "users");
-        }
+        _ = migrationBuilder.DropTable(name: "users");
     }
 }

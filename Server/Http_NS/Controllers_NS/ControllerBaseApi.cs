@@ -23,7 +23,7 @@ public abstract class ControllerBaseApi : ControllerBase
     /// </summary>
     /// <param name="serverResponse"></param>
     /// <returns></returns>
-    protected IActionResult CBA_BadRequest(General.ServerErrors.Response serverResponse)
+    protected IActionResult CBA_BadRequest(General.ServerErrors.Error serverResponse)
     {
         return BadRequest(new { code = (long)serverResponse });
     }

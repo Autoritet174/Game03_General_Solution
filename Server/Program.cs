@@ -104,7 +104,7 @@ internal class Program
         .AddJwtBearer(options =>
         {
             IConfigurationSection jwtConfig = builder.Configuration.GetSection("Jwt");
-            string jwtConfig_key = jwtConfig["Key"] ?? throw new ArgumentNullException(jwtConfig["Key"]);
+            string jwtConfig_key = JwtService.GetJwtSecret();
             options.TokenValidationParameters = new TokenValidationParameters
             {
 

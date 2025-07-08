@@ -18,29 +18,27 @@ public static class GF
     /// </summary>
     /// <param name="email">Строка с предполагаемым адресом электронной почты.</param>
     /// <returns>email, если создание прошло успешно; иначе null.</returns>
-    public static string? GetEmailOrNull(string email)
+    public static bool IsEmail(string email)
     {
         // Проверка на null или пустую строку
         if (string.IsNullOrWhiteSpace(email))
         {
-            return null;
+            return false;
         }
 
         try
         {
             // Попытка создания MailAddress
             _ = new MailAddress(email);
-            return email;
+            return true;
         }
         catch (FormatException)
         {
-            // Невалидный формат email
-            return null;
+            return false;
         }
         catch (Exception)
         {
-            // другое исключение
-            return null;
+            return false;
         }
     }
 
