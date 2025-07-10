@@ -3,3 +3,7 @@ dotnet ef migrations add AddLoggingAuthorization --project "C:\UnityProjects\Gam
 
 
 dotnet ef database update --project "C:\UnityProjects\Game03_General_Solution\Server.DB.Users" --startup-project "C:\UnityProjects\Game03_General_Solution\Server"
+
+
+ÎÁÍÎÂËÅÍÈÅ ÄÎ ÓÊÀÇÀÍÍÎÉ ÌÈÃĞÀÖÈÈ ÂÊËŞ×ÈÒÅËÜÍÎ, ÂÑ¨ ×ÒÎ ÏÎÇÆÅ ÂÛÏÎËÍÈÒ ÎÒÊÀÒ Â ÎÁĞÀÒÅÌ ÏÎĞßÄÊÅ
+dotnet ef database update Init --project "C:\UnityProjects\Game03_General_Solution\Server.DB.Users" --startup-project "C:\UnityProjects\Game03_General_Solution\Server"

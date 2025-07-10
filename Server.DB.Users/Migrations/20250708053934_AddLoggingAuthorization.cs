@@ -12,26 +12,25 @@ public partial class AddLoggingAuthorization : Migration
     {
 
         _ = migrationBuilder.Sql("""
-            CREATE TABLE users_authorization_log (
-                id UUID NOT NULL PRIMARY KEY,
-                user_id UUID NOT NULL,
-                created_at TIMESTAMPTZ DEFAULT NOW(),
-                ip_address TEXT,
-                user_agent TEXT
-            );
+            CREATE TABLE users_authorization_logs (
+            	id UUID NOT NULL PRIMARY KEY,
+            	user_id UUID NOT NULL, -- Идентификатор пользователя
+            	success BOOLEAN NOT NULL, -- Успешна ли авторизация
+            	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), -- Временная метка
+            	email CHARACTER VARYING(255) NOT NULL, -- Электронная почта пользователя
+            	password_hash CHARACTER VARYING(255) NOT NULL, -- Пароль пользователя
 
-            CREATE OR REPLACE FUNCTION log_user_auth(
-                p_user_id UUID,
-                p_ip TEXT,
-                p_ua TEXT
-            )
-            RETURNS void AS $$
-            BEGIN
-                INSERT INTO user_auth_logs(user_id, ip_address, user_agent)
-                VALUES (p_user_id, p_ip, p_ua);
-            END;
-            $$ LANGUAGE plpgsql;
-            
+            	ip_address INET, -- IP адрес
+
+            	device_model CHARACTER VARYING(255), -- Модель устройства
+            	device_type CHARACTER VARYING(255), -- Тип устройства (например, Desktop, Handheld)
+            	operating_system CHARACTER VARYING(255), -- Операционная система
+            	processor_type CHARACTER VARYING(255), -- Тип процессора
+            	processor_count INTEGER, -- Кол-во ядер процессора
+            	system_memory_size INTEGER, -- ОЗУ в МБ
+            	graphics_device_name CHARACTER VARYING(255), -- Название видеокарты
+            	graphics_memory_size INTEGER -- Видеопамять в МБ
+            );
             """);
     }
 
@@ -40,8 +39,7 @@ public partial class AddLoggingAuthorization : Migration
     {
 
         _ = migrationBuilder.Sql("""
-            DROP TRIGGER IF EXISTS set_timestamp_users ON users;
+            DROP TABLE IF EXISTS users_authorization_logs;
             """);
-        _ = migrationBuilder.DropTable(name: "users_authorization_log");
     }
 }

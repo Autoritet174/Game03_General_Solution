@@ -6,7 +6,6 @@ using Server.DB.Users.Repositories;
 using Server.Http_NS.Middleware_NS;
 using Server.Jwt_NS;
 using System.Text;
-
 namespace Server;
 internal class Program
 {
@@ -179,6 +178,8 @@ internal class Program
         Configure(app);
 
 
+        DB.Users.Db.Init();
+
 
         //HeroesController.Init();
         _ = Test(app);
@@ -203,7 +204,7 @@ internal class Program
 
         DbContextOptionsBuilder<DbContext_Game03Users> options = new();
 
-        _ = options.UseNpgsql("Host=127.127.126.5;Port=5432;Database=Game03_Users;Username=postgres;Password=");
+        _ = options.UseNpgsql(UtilitiesFunctions.GetConnectionString());
 
         using DbContext_Game03Users db = new(options.Options);
         DbSet<DB.Users.Entities.User> allq = db.Users;

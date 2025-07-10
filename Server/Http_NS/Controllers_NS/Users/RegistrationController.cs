@@ -11,7 +11,7 @@ public class RegistrationController
 {
     [AllowAnonymous]
     [HttpPost]
-    public async Task<IActionResult> Register([FromBody] General.Requests.Login model)
+    public async Task<IActionResult> Register()
     {
         //await Task.Delay(2000);
 

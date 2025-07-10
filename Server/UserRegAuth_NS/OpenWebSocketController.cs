@@ -1,5 +1,4 @@
-﻿using General.Requests;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Server.Jwt_NS;
 using System.IdentityModel.Tokens.Jwt;
@@ -26,7 +25,7 @@ public class OpenWebSocketController() : ControllerBase
     /// <returns>JWT токен при успешной аутентификации или ошибка 401.</returns>
     [HttpPost("OpenWebSocket")]
     [AllowAnonymous]
-    public IActionResult Login([FromBody] Login request)
+    public IActionResult Login()
     {
        
         return Ok();

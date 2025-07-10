@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NpgsqlTypes;
+using Server.DB;
 using Server.DB.Users.Entities;
 using Server.DB.Users.Repositories;
 using Server.Jwt_NS;
@@ -35,14 +37,13 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
         Request.Body.Position = 0;
         JsonNode? data = JsonNode.Parse(body);
 
-
         if (data is not JsonObject obj)
         {
             return CBA_BadRequest(SR.Auth_EmailOrPassword_Empty);
         }
 
-        string email = JsonObjectHelper.FindValueIgnoreCase(obj, "email");
-        string password = JsonObjectHelper.FindValueIgnoreCase(obj, "password");
+        string email = JsonObjectHelper.GetString(obj, "email");
+        string password = JsonObjectHelper.GetString(obj, "password");
 
         if (email == string.Empty || password == string.Empty)
         {
@@ -57,7 +58,17 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
 
         string token = _jwtService.GenerateToken(user.Id);
 
-        string? ip = Request.Headers["X-Forwarded-For"].FirstOrDefault();
+        try
+        {
+            NpgsqlInet inet = new("0.0.0.0");
+            string? ip = Request.Headers["X-Forwarded-For"].FirstOrDefault();
+            if (ip != null)
+            {
+                inet = new(ip);
+            }
+            await DB.Users.Sql.UsersLogger.WriteLog(obj, user.Id, email, PassHasher.Create(email, password), inet);
+        }
+        catch { }
 
 
         return Ok(new { token });
