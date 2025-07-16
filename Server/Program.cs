@@ -180,14 +180,17 @@ internal class Program
 
         DB.Users.Db.Init();
 
+        Console.WriteLine("TestConnectionWithDataBase - " + DB.Users.UtilitiesFunctions.TestConnectionWithDataBase().ToString());
+
 
         //HeroesController.Init();
         _ = Test(app);
 
+
+
         app.Run();
 
     }
-
 
     private static async Task Test(WebApplication app)
     {
