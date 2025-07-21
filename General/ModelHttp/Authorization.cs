@@ -13,8 +13,7 @@
 /// <param name="systemMemorySize">Объем оперативной памяти устройства в мегабайтах. Должен быть больше 0.</param>
 /// <param name="graphicsDeviceName">Название графического процессора (например, "NVIDIA GeForce RTX 3060").</param>
 /// <param name="graphicsMemorySize">Объем видеопамяти в мегабайтах. Должен быть больше или равен 0.</param>
-public class Authorization(string email, string password, string deviceModel, string deviceType, string operatingSystem,
-    string processorType, int processorCount, int systemMemorySize, string graphicsDeviceName, int graphicsMemorySize)
+public class Authorization(string email, string password, string deviceModel, string deviceType, string operatingSystem, string processorType, int processorCount, int systemMemorySize, string graphicsDeviceName, int graphicsMemorySize, string deviceUniqueIdentifier)
 {
     public string Email { get; set; } = email;
     public string Password { get; set; } = password;
@@ -26,4 +25,6 @@ public class Authorization(string email, string password, string deviceModel, st
     public int SystemMemorySize { get; set; } = systemMemorySize;
     public string GraphicsDeviceName { get; set; } = graphicsDeviceName;
     public int GraphicsMemorySize { get; set; } = graphicsMemorySize;
+    public string DeviceUniqueIdentifier { get; set; } = deviceUniqueIdentifier;
+
 }

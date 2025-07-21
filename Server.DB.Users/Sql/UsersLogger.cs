@@ -16,6 +16,7 @@ public static class UsersLogger
         int? systemMemorySize = JsonObjectHelper.GetIntegerN(obj, "systemMemorySize");
         string? graphicsDeviceName = JsonObjectHelper.GetStringN(obj, "graphicsDeviceName", 255);
         int? graphicsMemorySize = JsonObjectHelper.GetIntegerN(obj, "graphicsMemorySize");
+        string? deviceUniqueIdentifier = JsonObjectHelper.GetStringN(obj, "deviceUniqueIdentifier", 255);
 
         Db db = new();
         string sql = $"""
@@ -34,7 +35,8 @@ public static class UsersLogger
                 processor_count,
                 system_memory_size,
                 graphics_device_name,
-                graphics_memory_size
+                graphics_memory_size,
+                device_unique_identifier
             ) VALUES (
                 @id,
                 @user_id,
@@ -50,7 +52,8 @@ public static class UsersLogger
                 @processorCount,
                 @systemMemorySize,
                 @graphicsDeviceName,
-                @graphicsMemorySize
+                @graphicsMemorySize,
+                @deviceUniqueIdentifier
             );
             """;
 
@@ -68,7 +71,8 @@ public static class UsersLogger
             new NpgsqlParameter("processorCount", processorCount),
             new NpgsqlParameter("systemMemorySize", systemMemorySize),
             new NpgsqlParameter("graphicsDeviceName", graphicsDeviceName),
-            new NpgsqlParameter("graphicsMemorySize", graphicsMemorySize)
+            new NpgsqlParameter("graphicsMemorySize", graphicsMemorySize),
+            new NpgsqlParameter("deviceUniqueIdentifier", deviceUniqueIdentifier)
         );
 
     }
