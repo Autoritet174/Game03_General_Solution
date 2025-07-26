@@ -39,11 +39,13 @@ public partial class Init : Migration
             RETURNS TRIGGER AS $$
             BEGIN
                 IF TG_OP = 'INSERT' THEN
-                    NEW.created_at := NOW();
-                    NEW.updated_at := NOW();
+                    NEW.created_at := COALESCE(NEW.created_at, NOW());
+                    NEW.updated_at := COALESCE(NEW.updated_at, NOW());
                 ELSIF TG_OP = 'UPDATE' THEN
                     NEW.created_at := OLD.created_at;
-                    NEW.updated_at := NOW();
+                    IF NEW.updated_at IS NULL OR NEW.updated_at = OLD.updated_at THEN
+                        NEW.updated_at := NOW();
+                    END IF;
                 END IF;
                 RETURN NEW;
             END;

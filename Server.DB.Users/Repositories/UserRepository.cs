@@ -25,7 +25,7 @@ public class UserRepository(DbContext_Game03Users dbContext)
     {
         User user = new()
         {
-            Id = DatabaseHelpers.CreateGuidPostgreSql(),
+            Id = UUIDv7.Generate(),
             CreatedAt = DateTimeOffset.UtcNow,
             UpdatedAt = DateTimeOffset.UtcNow,
             Email = emailValidated,
@@ -47,58 +47,44 @@ public class UserRepository(DbContext_Game03Users dbContext)
     /// Обновляет переданную сущность пользователя в базе данных.
     /// </summary>
     /// <param name="user">Сущность пользователя с обновлёнными данными.</param>
-    /// <exception cref="ArgumentNullException">Если пользователь равен null.</exception>
+    /// <exception cref="ArgumentNullException">Если равен null.</exception>
     /// <exception cref="ArgumentException">Если идентификатор пустой.</exception>
-    /// <exception cref="InvalidOperationException">Если пользователь с таким идентификатором не найден.</exception>
+    /// <exception cref="InvalidOperationException">Если сущность с таким идентификатором не найдена.</exception>
     public async Task UpdateAsync(User user)
     {
         ArgumentNullException.ThrowIfNull(user);
-
-        if (user.Id == Guid.Empty)
-        {
-            throw new ArgumentException("Идентификатор пользователя не может быть пустым.", nameof(user));
-        }
-
-        bool exists = await _dbContext.Users.AsNoTracking().AnyAsync(u => u.Id == user.Id && u.DeletedAt == null);
-
-        if (!exists)
-        {
-            throw new InvalidOperationException("Пользователь не найден или удалён.");
-        }
+        ThrowHelper.ThrowIfGuidEmpty(user.Id);
+        ThrowHelper.ThrowIfRecordNotExists(await _dbContext.Users.AnyAsync(u => u.Id == user.Id));
 
         user.UpdatedAt = DateTimeOffset.UtcNow;
-
         _ = _dbContext.Users.Update(user);
         _ = await _dbContext.SaveChangesAsync();
     }
 
 
     /// <summary>
-    /// Выполняет мягкое удаление пользователя по идентификатору без загрузки сущности.
+    /// Выполняет мягкое удаление записи по идентификатору без загрузки сущности.
     /// </summary>
-    /// <param name="id">Идентификатор пользователя.</param>
+    /// <param name="id">Идентификатор.</param>
     /// <exception cref="ArgumentException">Если идентификатор некорректен.</exception>
-    /// <exception cref="InvalidOperationException">Если пользователь не найден.</exception>
+    /// <exception cref="InvalidOperationException">Если запись не найдена.</exception>
     public async Task SoftDeleteUserAsync(Guid id)
     {
         int affected = await _dbContext.Users
-            .Where(u => u.Id == id && u.DeletedAt == null)
-            .ExecuteUpdateAsync(setters => setters
-                .SetProperty(u => u.DeletedAt, _ => DateTimeOffset.UtcNow));
+            .Where(u => u.Id == id)
+            .ExecuteUpdateAsync(setters => setters.SetProperty(u => u.DeletedAt, _ => DateTimeOffset.UtcNow));
 
-        if (affected == 0)
-        {
-            throw new InvalidOperationException("Пользователь не найден или уже удалён.");
-        }
+        // affected количество удаленных записей
+        ThrowHelper.ThrowIfRecordNotExists(affected > 0);
     }
 
 
-    public async Task<List<User>> GetAllUsersAsync()
+    public async Task<List<User>> GetAllAsync()
     {
         return await _dbContext.Users.ToListAsync();
     }
 
-    public async Task<User?> GetUserByIdAsync(Guid id)
+    public async Task<User?> GetByIdAsync(Guid id)
     {
         return id == Guid.Empty ? null : await _dbContext.Users.FirstOrDefaultAsync(a => a.Id == id);
     }
@@ -106,9 +92,9 @@ public class UserRepository(DbContext_Game03Users dbContext)
     /// <summary>
     /// Возвращает пользователя по e-mail (без учёта регистра).
     /// </summary>
-    /// <param name="email">E-mail для поиска.</param>
-    /// <returns>Найденный пользователь или null.</returns>
-    public async Task<User?> GetUserByEmailAsync(string email)
+    /// <param name="name"></param>
+    /// <returns>Найденная запись или null.</returns>
+    public async Task<User?> GetByEmailAsync(string email)
     {
         return string.IsNullOrWhiteSpace(email) ? null : await _dbContext.Users.FirstOrDefaultAsync(u => EF.Functions.ILike(u.Email, email));
     }

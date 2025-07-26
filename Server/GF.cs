@@ -5,6 +5,12 @@ namespace Server;
 
 public static class GF
 {
+    private static readonly bool Debugger_IsNotAttached;
+    static GF()
+    {
+        Debugger_IsNotAttached = !Debugger.IsAttached;
+    }
+
     public static bool IsValidEmail(string email)
     {
         return MailAddress.TryCreate(email, out _);
@@ -25,8 +31,9 @@ public static class GF
     /// Добавляет задержку если работает без отладчика
     /// </summary>
     /// <returns></returns>
-    public static async Task DelayWithOutDebug() {
-        if (!Debugger.IsAttached)
+    public static async Task DelayWithOutDebug()
+    {
+        if (Debugger_IsNotAttached)
         {
             await Task.Delay(2000);
         }

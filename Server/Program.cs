@@ -14,10 +14,11 @@ internal class Program
     {
 
         //Миддлвар 1 - Обработка ошибок
-        _ = app.UseExceptionHandler("/Home/Error");
+        _ = app.UseMiddleware<ExceptionLoggingMiddleware>();
+        //_ = app.UseExceptionHandler("/Home/Error");// этот мидлвар не нужен так как сервер обслуживает только API, без сайта и вебстраниц
 
         //Миддлвар 2 - Логирование
-        _ = app.UseHttpLogging();
+        //_ = app.UseHttpLogging();
 
         //Миддлвар 3 - Статические файлы
         //_ = app.UseStaticFiles();

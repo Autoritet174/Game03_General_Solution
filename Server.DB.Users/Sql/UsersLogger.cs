@@ -90,7 +90,7 @@ public static class UsersLogger
             """;
 
         _ = await db.Database.ExecuteSqlRawAsync(sql,
-            new NpgsqlParameter("id", DatabaseHelpers.CreateGuidPostgreSql()),
+            new NpgsqlParameter("id", UUIDv7.Generate()),
             new NpgsqlParameter("user_id", user_id),
             new NpgsqlParameter("success", true),
             new NpgsqlParameter("email", email),
