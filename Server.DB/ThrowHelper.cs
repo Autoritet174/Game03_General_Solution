@@ -1,5 +1,8 @@
 ﻿namespace Server.DB;
 
+/// <summary>
+/// Оборотка исключений для ошибок в процессе взаимодействия с базой данных.
+/// </summary>
 public static class ThrowHelper
 {
     /// <summary>

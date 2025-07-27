@@ -9,10 +9,21 @@ namespace Server.DB.Users.Repositories;
 /// <remarks>
 /// Создаёт экземпляр <see cref="UserRepository"/>.
 /// </remarks>
-/// <param name="dbContext">Контекст базы данных.</param>
-public class UserRepository(DbContext_Game03Users dbContext)
+public class UserRepository
 {
-    private readonly DbContext_Game03Users _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+    private readonly DbContext_Game03Users _dbContext;
+    private readonly DbSet<User> _users;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="dbContext">Контекст базы данных.</param>
+    /// <exception cref="ArgumentNullException"></exception>
+    public UserRepository(DbContext_Game03Users dbContext)
+    {
+        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+        _users = _dbContext.Users;
+    }
 
 
     /// <summary>
@@ -25,21 +36,15 @@ public class UserRepository(DbContext_Game03Users dbContext)
     {
         User user = new()
         {
-            Id = UUIDv7.Generate(),
+            Id = Guid.NewGuid(),
             CreatedAt = DateTimeOffset.UtcNow,
             UpdatedAt = DateTimeOffset.UtcNow,
             Email = emailValidated,
             PasswordHash = passwordHashValidated
         };
-        try
-        {
-            _ = _dbContext.Users.Add(user);
-            _ = await _dbContext.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            _ = ex.ToString();
-        }
+
+        _ = _users.Add(user);
+        _ = await _dbContext.SaveChangesAsync();
     }
 
 
@@ -54,10 +59,10 @@ public class UserRepository(DbContext_Game03Users dbContext)
     {
         ArgumentNullException.ThrowIfNull(user);
         ThrowHelper.ThrowIfGuidEmpty(user.Id);
-        ThrowHelper.ThrowIfRecordNotExists(await _dbContext.Users.AnyAsync(u => u.Id == user.Id));
+        ThrowHelper.ThrowIfRecordNotExists(await _users.AnyAsync(a => a.Id == user.Id));
 
         user.UpdatedAt = DateTimeOffset.UtcNow;
-        _ = _dbContext.Users.Update(user);
+        _ = _users.Update(user);
         _ = await _dbContext.SaveChangesAsync();
     }
 
@@ -70,9 +75,9 @@ public class UserRepository(DbContext_Game03Users dbContext)
     /// <exception cref="InvalidOperationException">Если запись не найдена.</exception>
     public async Task SoftDeleteUserAsync(Guid id)
     {
-        int affected = await _dbContext.Users
-            .Where(u => u.Id == id)
-            .ExecuteUpdateAsync(setters => setters.SetProperty(u => u.DeletedAt, _ => DateTimeOffset.UtcNow));
+        int affected = await _users
+            .Where(a => a.Id == id)
+            .ExecuteUpdateAsync(setters => setters.SetProperty(a => a.DeletedAt, _ => DateTimeOffset.UtcNow));
 
         // affected количество удаленных записей
         ThrowHelper.ThrowIfRecordNotExists(affected > 0);
@@ -81,12 +86,12 @@ public class UserRepository(DbContext_Game03Users dbContext)
 
     public async Task<List<User>> GetAllAsync()
     {
-        return await _dbContext.Users.ToListAsync();
+        return await _users.AsNoTracking().ToListAsync();
     }
 
     public async Task<User?> GetByIdAsync(Guid id)
     {
-        return id == Guid.Empty ? null : await _dbContext.Users.FirstOrDefaultAsync(a => a.Id == id);
+        return await _users.FirstOrDefaultAsync(a => a.Id == id);
     }
 
     /// <summary>
@@ -96,6 +101,6 @@ public class UserRepository(DbContext_Game03Users dbContext)
     /// <returns>Найденная запись или null.</returns>
     public async Task<User?> GetByEmailAsync(string email)
     {
-        return string.IsNullOrWhiteSpace(email) ? null : await _dbContext.Users.FirstOrDefaultAsync(u => EF.Functions.ILike(u.Email, email));
+        return string.IsNullOrWhiteSpace(email) ? null : await _users.FirstOrDefaultAsync(u => EF.Functions.ILike(u.Email, email));
     }
 }

@@ -7,12 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations1\**" />
-    <EmbeddedResource Remove="Migrations1\**" />
-    <None Remove="Migrations1\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.7">
       <PrivateAssets>all</PrivateAssets>
@@ -22,11 +16,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations\" />
+    <ProjectReference Include="..\Server.Common\Server.Common.csproj" />
+    <ProjectReference Include="..\Server.DB\Server.DB.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Server.DB\Server.DB.csproj" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>

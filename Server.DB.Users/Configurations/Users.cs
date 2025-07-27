@@ -12,7 +12,8 @@ internal class Users : IEntityTypeConfiguration<User>
 
         //Уникальный идентификатор и индекс первичного ключа
         _ = builder.Property(e => e.Id)
-            .HasColumnName("id");
+            .HasColumnName("id")
+            .HasDefaultValueSql("uuid_generate_v4()");
 
         _ = builder.HasKey(e => e.Id)
             .HasName("pk_users_id");

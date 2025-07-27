@@ -13,7 +13,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server.DB.Users", "Server.D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server.DB", "Server.DB\Server.DB.csproj", "{9544C458-A0EF-4DF0-AAFE-B278CEEA72D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server.DB.Game", "Server.DB.Game\Server.DB.Game.csproj", "{21F5EDFD-1A98-4C25-B747-DBC9D0D8302B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server.DB.Data", "Server.DB.Data\Server.DB.Data.csproj", "{21F5EDFD-1A98-4C25-B747-DBC9D0D8302B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server.Common", "Server.Common\Server.Common.csproj", "{B6B0AC50-9E70-47F9-B791-73BFAD54C2BD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{21F5EDFD-1A98-4C25-B747-DBC9D0D8302B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{21F5EDFD-1A98-4C25-B747-DBC9D0D8302B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{21F5EDFD-1A98-4C25-B747-DBC9D0D8302B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6B0AC50-9E70-47F9-B791-73BFAD54C2BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6B0AC50-9E70-47F9-B791-73BFAD54C2BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6B0AC50-9E70-47F9-B791-73BFAD54C2BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6B0AC50-9E70-47F9-B791-73BFAD54C2BD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

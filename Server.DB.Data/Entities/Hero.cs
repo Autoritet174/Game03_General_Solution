@@ -1,6 +1,6 @@
 ﻿using System.Data.SqlTypes;
 
-namespace Server.DB.Game.Entities;
+namespace Server.DB.Data.Entities;
 
 /// <summary>
 /// Представляет пользователя системы.

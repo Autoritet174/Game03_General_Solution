@@ -14,7 +14,7 @@ public partial class Init : Migration
             name: "users",
             columns: table => new
             {
-                id = table.Column<Guid>(type: "uuid", nullable: false),
+                id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "uuid_generate_v4()"),
                 created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
                 updated_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
                 deleted_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),

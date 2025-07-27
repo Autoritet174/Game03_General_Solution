@@ -48,7 +48,7 @@ public static class UsersLogger
         byte[] hashBytes = SHA256.HashData(bytes);
 
 
-        Db db = new();
+        DbUsers db = new();
         string sql = $"""
             INSERT INTO users_authorization_logs (
                 id,
@@ -90,7 +90,7 @@ public static class UsersLogger
             """;
 
         _ = await db.Database.ExecuteSqlRawAsync(sql,
-            new NpgsqlParameter("id", UUIDv7.Generate()),
+            new NpgsqlParameter("id", Guid.NewGuid()),
             new NpgsqlParameter("user_id", user_id),
             new NpgsqlParameter("success", true),
             new NpgsqlParameter("email", email),

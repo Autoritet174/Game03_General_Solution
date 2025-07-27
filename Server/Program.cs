@@ -1,12 +1,16 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Server.DB.Data;
+using Server.DB.Data.Repositories;
 using Server.DB.Users;
 using Server.DB.Users.Repositories;
 using Server.Http_NS.Middleware_NS;
 using Server.Jwt_NS;
 using System.Text;
+
 namespace Server;
+
 internal class Program
 {
 
@@ -151,10 +155,15 @@ internal class Program
             });
         });
 
-        string connectionString_DbUsers = builder.Configuration.GetConnectionString("DB.Users") ?? throw new Exception("connectionString_DataBase_Game03Users is empty");
-        _ = services.AddDbContext<DbContext_Game03Users>(options => options.UseNpgsql(connectionString_DbUsers));
 
+        // База данных пользователей
+        _ = services.AddDbContext<DbContext_Game03Users>(options => options.UseNpgsql(DbUsers.GetConnectionString()));
         _ = services.AddScoped<UserRepository>();
+
+
+        // База данных с игровыми данными
+        _ = services.AddDbContext<DbContext_Game03Data>(options => options.UseNpgsql(DbData.GetConnectionString()));
+        _ = services.AddScoped<HeroRepository>();
 
 
         // Добавляем контекст БД (SQL Server)
@@ -179,9 +188,11 @@ internal class Program
         Configure(app);
 
 
-        DB.Users.Db.Init();
+        DbUsers.Init();
+        DbData.Init();
 
-        Console.WriteLine("TestConnectionWithDataBase - " + DB.Users.UtilitiesFunctions.TestConnectionWithDataBase().ToString());
+        Console.WriteLine("TestConnectionWithDataBase Users - " + DbUsers.GetStateConnection());
+        Console.WriteLine("TestConnectionWithDataBase Data  - " + DbData.GetStateConnection());
 
 
         //HeroesController.Init();
@@ -196,22 +207,22 @@ internal class Program
     private static async Task Test(WebApplication app)
     {
         await Task.Delay(1);
-        //using IServiceScope scope = app.Services.CreateScope();
-        ////TestUsers userService = scope.ServiceProvider.GetRequiredService<TestUsers>();
+        ////using IServiceScope scope = app.Services.CreateScope();
+        //////TestUsers userService = scope.ServiceProvider.GetRequiredService<TestUsers>();
 
-        ////for (int i = 0; i < 1; i++)
-        ////{
-        ////    await userService.CreateUserAsync();
-        ////}
-        //UserRepository userService = scope.ServiceProvider.GetRequiredService<UserRepository>();
-        //DB.Users.Entities.User? all = userService.GetUserByEmailAsync("sUpEraDmiN@maIl.RU").Result;
+        //////for (int i = 0; i < 1; i++)
+        //////{
+        //////    await userService.CreateUserAsync();
+        //////}
+        ////UserRepository userService = scope.ServiceProvider.GetRequiredService<UserRepository>();
+        ////DB.Users.Entities.User? all = userService.GetUserByEmailAsync("sUpEraDmiN@maIl.RU").Result;
 
-        DbContextOptionsBuilder<DbContext_Game03Users> options = new();
+        //DbContextOptionsBuilder<DbContext_Game03Users> options = new();
 
-        _ = options.UseNpgsql(UtilitiesFunctions.GetConnectionString());
+        //_ = options.UseNpgsql(DB.Users.UtilitiesFunctions.GetConnectionString());
 
-        using DbContext_Game03Users db = new(options.Options);
-        DbSet<DB.Users.Entities.User> allq = db.Users;
-        //Console.WriteLine(db.Users.First().Email);
+        //using DbContext_Game03Users db = new(options.Options);
+        //DbSet<DB.Users.Entities.User> allq = db.Users;
+        ////Console.WriteLine(db.Users.First().Email);
     }
 }

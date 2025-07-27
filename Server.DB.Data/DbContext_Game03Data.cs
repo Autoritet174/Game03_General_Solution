@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Server.DB.Game.Entities;
+using Server.DB.Data.Entities;
 
-namespace Server.DB.Game;
+namespace Server.DB.Data;
 
 /// <summary>
 /// Контекст базы данных, соответствующий первой PostgreSQL базе.
@@ -9,7 +9,7 @@ namespace Server.DB.Game;
 /// <remarks>
 /// Создаёт экземпляр контекста с указанными параметрами.
 /// </remarks>
-public class DbContext_Game03Game(DbContextOptions<DbContext_Game03Game> options) : DbContext(options)
+public class DbContext_Game03Data(DbContextOptions<DbContext_Game03Data> options) : DbContext(options)
 {
 
     /// <summary>
