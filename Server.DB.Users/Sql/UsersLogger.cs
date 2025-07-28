@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using NpgsqlTypes;
-using Server.DB.Users.Migrations;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json.Nodes;
@@ -33,15 +32,15 @@ public static class UsersLogger
 
         string split = "___";
         StringBuilder stringBuilder = new();
-        stringBuilder.Append(deviceModel ?? string.Empty); stringBuilder.Append(split);
-        stringBuilder.Append(deviceType ?? string.Empty); stringBuilder.Append(split);
-        stringBuilder.Append(operatingSystem ?? string.Empty); stringBuilder.Append(split);
-        stringBuilder.Append(processorType ?? string.Empty); stringBuilder.Append(split);
-        stringBuilder.Append(processorCount ?? 0); stringBuilder.Append(split);
-        stringBuilder.Append(systemMemorySize ?? 0); stringBuilder.Append(split);
-        stringBuilder.Append(graphicsDeviceName ?? string.Empty); stringBuilder.Append(split);
-        stringBuilder.Append(graphicsMemorySize ?? 0); stringBuilder.Append(split);
-        stringBuilder.Append(deviceUniqueIdentifier ?? string.Empty);
+        _ = stringBuilder.Append(deviceModel ?? string.Empty); _ = stringBuilder.Append(split);
+        _ = stringBuilder.Append(deviceType ?? string.Empty); _ = stringBuilder.Append(split);
+        _ = stringBuilder.Append(operatingSystem ?? string.Empty); _ = stringBuilder.Append(split);
+        _ = stringBuilder.Append(processorType ?? string.Empty); _ = stringBuilder.Append(split);
+        _ = stringBuilder.Append(processorCount ?? 0); _ = stringBuilder.Append(split);
+        _ = stringBuilder.Append(systemMemorySize ?? 0); _ = stringBuilder.Append(split);
+        _ = stringBuilder.Append(graphicsDeviceName ?? string.Empty); _ = stringBuilder.Append(split);
+        _ = stringBuilder.Append(graphicsMemorySize ?? 0); _ = stringBuilder.Append(split);
+        _ = stringBuilder.Append(deviceUniqueIdentifier ?? string.Empty);
 
 
         byte[] bytes = Encoding.UTF8.GetBytes(stringBuilder.ToString());
