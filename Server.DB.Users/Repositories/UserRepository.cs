@@ -89,10 +89,12 @@ public class UserRepository
         return await _users.AsNoTracking().ToListAsync();
     }
 
+
     public async Task<User?> GetByIdAsync(Guid id)
     {
         return await _users.FirstOrDefaultAsync(a => a.Id == id);
     }
+
 
     /// <summary>
     /// Возвращает пользователя по e-mail (без учёта регистра).
@@ -103,4 +105,5 @@ public class UserRepository
     {
         return string.IsNullOrWhiteSpace(email) ? null : await _users.FirstOrDefaultAsync(u => EF.Functions.ILike(u.Email, email));
     }
+
 }
