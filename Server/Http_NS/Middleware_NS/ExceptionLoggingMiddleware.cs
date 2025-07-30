@@ -1,4 +1,6 @@
-﻿namespace Server.Http_NS.Middleware_NS;
+﻿using System.Text;
+
+namespace Server.Http_NS.Middleware_NS;
 
 /// <summary>
 /// Middleware для глобального перехвата исключений и логирования в файл.
@@ -41,11 +43,19 @@ public class ExceptionLoggingMiddleware(RequestDelegate next, ILogger<ExceptionL
     /// <summary>
     /// Логирует исключение в файл.
     /// </summary>
-    private static async Task LogToFileAsync(Exception exception)
+    private static async Task LogToFileAsync(Exception ex)
     {
-        DateTime now = DateTime.UtcNow;
-        string logPath = Path.Combine(logDir, $"exceptions_[{now:yyyy-MM-dd}].log");
-        string logEntry = $"[{now:yyyy.MM.dd HH:mm:ss.fff}] {exception}\n\n";
-        await File.AppendAllTextAsync(logPath, logEntry);
+        DateTime nowUtc = DateTime.UtcNow;
+        string logPath = Path.Combine(logDir, $"ServerExceptions_[{nowUtc:yyyy-MM-dd}].log");
+
+        StringBuilder sb = new();
+        _ = sb.AppendLine($"[{nowUtc:yyyy-MM-dd HH:mm:ss.fff} (UTC)] Exception logged:");
+
+        _ = sb.AppendLine();
+        _ = sb.AppendLine(ex.ToString());
+        _ = sb.AppendLine(new string('*', 100));
+        _ = sb.AppendLine();
+
+        await File.AppendAllTextAsync(logPath, sb.ToString());
     }
 }

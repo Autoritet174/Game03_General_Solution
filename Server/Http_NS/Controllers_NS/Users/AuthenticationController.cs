@@ -28,14 +28,26 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
     [AllowAnonymous]
     public async Task<IActionResult> Authentication()
     {
-        await GF.DelayWithOutDebug();
+        await GF.DelayWithOutDebug2000();
 
         Request.EnableBuffering();
 
         using StreamReader reader = new(Request.Body, Encoding.UTF8, leaveOpen: true);
         string body = await reader.ReadToEndAsync();
+        if (body == null || body.Trim() == string.Empty)
+        {
+            return CBA_BadRequest(SR.Auth_EmailOrPassword_Empty);
+        }
+
         Request.Body.Position = 0;
-        JsonNode? data = JsonNode.Parse(body);
+        JsonNode? data = null;
+        try
+        {
+            data = JsonNode.Parse(body);
+        }
+        catch {
+            return CBA_BadRequest(SR.Auth_EmailOrPassword_Empty);
+        }
 
         if (data is not JsonObject obj)
         {
@@ -61,11 +73,15 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
         try
         {
             NpgsqlInet inet = new("0.0.0.0");
-            string? ip = Request.Headers["X-Forwarded-For"].FirstOrDefault();
-            if (ip != null)
+            try
             {
-                inet = new(ip);
+                string? ip = Request.Headers["X-Forwarded-For"].FirstOrDefault();
+                if (ip != null)
+                {
+                    inet = new(ip);
+                }
             }
+            catch { }
             await DB.Users.Sql.UsersLogger.WriteLog(obj, user.Id, email, PassHasher.Create(email, password), inet);
         }
         catch { }

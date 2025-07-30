@@ -14,4 +14,5 @@ public static class URLs
     public static Uri Uri_reg { get; private set; } = new(URL_HEADER + "Registration");
 
     public static Uri Uri_test { get; private set; } = new(URL_HEADER + "Test");
+    public static Uri Uri_GetListAllHeroes { get; private set; } = new(URL_HEADER + "GetListAllHeroes");
 }

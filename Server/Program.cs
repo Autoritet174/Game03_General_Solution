@@ -5,6 +5,7 @@ using Server.DB.Data;
 using Server.DB.Data.Repositories;
 using Server.DB.Users;
 using Server.DB.Users.Repositories;
+using Server.GameDataCache;
 using Server.Http_NS.Middleware_NS;
 using Server.Jwt_NS;
 using System.Text;
@@ -194,6 +195,7 @@ internal class Program
         Console.WriteLine("TestConnectionWithDataBase Users - " + DbUsers.GetStateConnection());
         Console.WriteLine("TestConnectionWithDataBase Data  - " + DbData.GetStateConnection());
 
+        ListAllHeroes.Init();
 
         //HeroesController.Init();
         _ = Test(app);

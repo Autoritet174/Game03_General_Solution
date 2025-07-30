@@ -28,14 +28,27 @@ public static class GF
 
 
     /// <summary>
-    /// Добавляет задержку если работает без отладчика
+    /// Добавляет задержку 2000 миллисекунд если работает без отладчика.
     /// </summary>
     /// <returns></returns>
-    public static async Task DelayWithOutDebug()
+    public static async Task DelayWithOutDebug2000()
     {
         if (Debugger_IsNotAttached)
         {
             await Task.Delay(2000);
+        }
+    }
+
+
+    /// <summary>
+    /// Добавляет задержку 2000 миллисекунд если работает без отладчика.
+    /// </summary>
+    /// <returns></returns>
+    public static async Task DelayWithOutDebug500()
+    {
+        if (Debugger_IsNotAttached)
+        {
+            await Task.Delay(500);
         }
     }
 }
