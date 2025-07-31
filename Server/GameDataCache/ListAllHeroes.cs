@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Server.DB.Data;
-using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -10,11 +9,13 @@ public static class ListAllHeroes
 {
     public static string Json { get; private set; } = "";
 
-    public static async void Init() {
+    public static async void Init()
+    {
         using DbData db = new();
         var data = await db.Heroes
           .AsNoTracking()
-          .Select(h => new { 
+          .Select(h => new
+          {
               //h.Id, 
               h.Name,
           })

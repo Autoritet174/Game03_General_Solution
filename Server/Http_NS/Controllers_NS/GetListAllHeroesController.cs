@@ -1,12 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using NpgsqlTypes;
-using Server.DB;
 using Server.DB.Data.Repositories;
-using Server.DB.Users.Entities;
 using Server.GameDataCache;
-using Server.Utilities;
-using System.Text;
-using System.Text.Json.Nodes;
 
 namespace Server.Http_NS.Controllers_NS;
 

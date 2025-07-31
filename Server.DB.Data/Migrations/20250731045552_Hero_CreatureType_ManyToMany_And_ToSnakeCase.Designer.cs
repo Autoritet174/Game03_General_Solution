@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server.DB.Data;
@@ -11,9 +12,11 @@ using Server.DB.Data;
 namespace Server.DB.Data.Migrations
 {
     [DbContext(typeof(DbContext_Game03Data))]
-    partial class DbContext_Game03DataModelSnapshot : ModelSnapshot
+    [Migration("20250731045552_Hero_CreatureType_ManyToMany_And_ToSnakeCase")]
+    partial class Hero_CreatureType_ManyToMany_And_ToSnakeCase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,12 +36,12 @@ namespace Server.DB.Data.Migrations
                         .HasColumnName("heroes_id");
 
                     b.HasKey("CreatureTypesId", "HeroesId")
-                        .HasName("pk_hero_x_creature_type");
+                        .HasName("pk_hero_creature_type");
 
                     b.HasIndex("HeroesId")
-                        .HasDatabaseName("idx_hero_x_creature_type_heroes_id");
+                        .HasDatabaseName("idx_hero_creature_type_heroes_id");
 
-                    b.ToTable("hero_x_creature_type", "relations");
+                    b.ToTable("hero_creature_type", (string)null);
                 });
 
             modelBuilder.Entity("Server.DB.Data.Entities.CreatureType", b =>
@@ -72,13 +75,13 @@ namespace Server.DB.Data.Migrations
                         .HasDefaultValueSql("NOW()");
 
                     b.HasKey("Id")
-                        .HasName("pk_creature_type");
+                        .HasName("pk_creature_types");
 
                     b.HasIndex("Name")
                         .IsUnique()
-                        .HasDatabaseName("idx_creature_type_name");
+                        .HasDatabaseName("idx_creature_types_name");
 
-                    b.ToTable("creature_type", "main");
+                    b.ToTable("creature_types", (string)null);
                 });
 
             modelBuilder.Entity("Server.DB.Data.Entities.Hero", b =>
@@ -118,7 +121,7 @@ namespace Server.DB.Data.Migrations
                         .IsUnique()
                         .HasDatabaseName("idx_heroes_name");
 
-                    b.ToTable("heroes", "main");
+                    b.ToTable("heroes", (string)null);
                 });
 
             modelBuilder.Entity("CreatureTypeHero", b =>
@@ -128,14 +131,14 @@ namespace Server.DB.Data.Migrations
                         .HasForeignKey("CreatureTypesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_hero_x_creature_type_creature_types_id_creature_type");
+                        .HasConstraintName("fk_hero_creature_type_creature_types_id_creature_types");
 
                     b.HasOne("Server.DB.Data.Entities.Hero", null)
                         .WithMany()
                         .HasForeignKey("HeroesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_hero_x_creature_type_heroes_id_heroes");
+                        .HasConstraintName("fk_hero_creature_type_heroes_id_heroes");
                 });
 #pragma warning restore 612, 618
         }

@@ -82,7 +82,7 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
                 }
             }
             catch { }
-            await DB.Users.Sql.UsersLogger.WriteLog(obj, user.Id, email, PassHasher.Create(email, password), inet);
+            await DB.Users.Sql.UsersLogger.WriteLog(obj, user.Id, email, PassHasher.Create(email, password), inet, true);
         }
         catch { }
 

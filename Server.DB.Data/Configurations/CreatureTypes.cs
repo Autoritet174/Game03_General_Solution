@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Server.DB.Data.Entities;
 
 namespace Server.DB.Data.Configurations;
-internal class Heroes : IEntityTypeConfiguration<Hero>
+internal class CreatureTypes : IEntityTypeConfiguration<CreatureType>
 {
-    public void Configure(EntityTypeBuilder<Hero> builder)
+    public void Configure(EntityTypeBuilder<CreatureType> builder)
     {
-        _ = builder.ToTable("heroes");
+        _ = builder.ToTable("creature_types");
 
 
         //Уникальный идентификатор и индекс первичного ключа
@@ -16,7 +16,7 @@ internal class Heroes : IEntityTypeConfiguration<Hero>
             .HasDefaultValueSql("uuid_generate_v4()");
 
         _ = builder.HasKey(e => e.Id)
-            .HasName("pk_users_id");
+            .HasName("pk_creature_types_id");
 
 
         //-------------------------------------
@@ -46,13 +46,7 @@ internal class Heroes : IEntityTypeConfiguration<Hero>
 
         _ = builder.HasIndex(e => e.Name)
             .IsUnique()
-            .HasDatabaseName("ix_heroes_name");
-
-
-        //-------------------------------------
-        // Настройка связи с CreatureType
-        _ = builder.HasMany(hero => hero.CreatureTypes)
-            .WithMany(creatureType => creatureType.Heroes)
-            .UsingEntity(j => j.ToTable("hero_x_creature_type", "relations")); // Явное задание имени;
+            .HasDatabaseName("ix_creature_types_name");
     }
+
 }

@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace Server.Http_NS.Middleware_NS;
+﻿namespace Server.Http_NS.Middleware_NS;
 
 /// <summary>
 /// Middleware для глобального перехвата исключений и логирования в файл.
@@ -10,14 +8,6 @@ namespace Server.Http_NS.Middleware_NS;
 /// </remarks>
 public class ExceptionLoggingMiddleware(RequestDelegate next, ILogger<ExceptionLoggingMiddleware> logger)
 {
-
-    private static readonly string logDir;
-
-    static ExceptionLoggingMiddleware()
-    {
-        logDir = Path.Combine(AppContext.BaseDirectory, "logs");
-        _ = Directory.CreateDirectory(logDir);
-    }
 
     /// <summary>
     /// Основной метод middleware.
@@ -31,7 +21,7 @@ public class ExceptionLoggingMiddleware(RequestDelegate next, ILogger<ExceptionL
         catch (Exception ex)
         {
             logger.LogError(ex, "Произошло необработанное исключение.");
-            await LogToFileAsync(ex);
+            await Common.WriterExceptionInLogFile.LogToFileAsync(ex);
 
             // Минимальный JSON-ответ
             context.Response.StatusCode = 500;
@@ -40,22 +30,4 @@ public class ExceptionLoggingMiddleware(RequestDelegate next, ILogger<ExceptionL
         }
     }
 
-    /// <summary>
-    /// Логирует исключение в файл.
-    /// </summary>
-    private static async Task LogToFileAsync(Exception ex)
-    {
-        DateTime nowUtc = DateTime.UtcNow;
-        string logPath = Path.Combine(logDir, $"ServerExceptions_[{nowUtc:yyyy-MM-dd}].log");
-
-        StringBuilder sb = new();
-        _ = sb.AppendLine($"[{nowUtc:yyyy-MM-dd HH:mm:ss.fff} (UTC)] Exception logged:");
-
-        _ = sb.AppendLine();
-        _ = sb.AppendLine(ex.ToString());
-        _ = sb.AppendLine(new string('*', 100));
-        _ = sb.AppendLine();
-
-        await File.AppendAllTextAsync(logPath, sb.ToString());
-    }
 }

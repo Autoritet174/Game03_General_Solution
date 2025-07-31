@@ -1,4 +1,4 @@
-dotnet ef migrations add HeroesNameOnlyUpperCase --project "C:\UnityProjects\Game03_General_Solution\Server.DB.Data" --startup-project "C:\UnityProjects\Game03_General_Solution\Server" --context DbContext_Game03Data
+dotnet ef migrations add ğåñòğóêòóğèçàöèÿ --project "C:\UnityProjects\Game03_General_Solution\Server.DB.Data" --startup-project "C:\UnityProjects\Game03_General_Solution\Server" --context DbContext_Game03Data
 
 
 
@@ -6,4 +6,4 @@ dotnet ef database update --project "C:\UnityProjects\Game03_General_Solution\Se
 
 
 ÎÁÍÎÂËÅÍÈÅ ÄÎ ÓÊÀÇÀÍÍÎÉ ÌÈÃĞÀÖÈÈ ÂÊËŞ×ÈÒÅËÜÍÎ, ÂÑ¨ ×ÒÎ ÏÎÇÆÅ ÂÛÏÎËÍÈÒ ÎÒÊÀÒ Â ÎÁĞÀÒÅÌ ÏÎĞßÄÊÅ
-dotnet ef database update Init --project "C:\UnityProjects\Game03_General_Solution\Server.DB.Data" --startup-project "C:\UnityProjects\Game03_General_Solution\Server"
+dotnet ef database update HeroesNameOnlyUpperCase --project "C:\UnityProjects\Game03_General_Solution\Server.DB.Data" --startup-project "C:\UnityProjects\Game03_General_Solution\Server" --context DbContext_Game03Data

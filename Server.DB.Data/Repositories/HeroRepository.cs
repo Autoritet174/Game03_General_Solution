@@ -21,19 +21,21 @@ public class HeroRepository
         _heroes = _dbContext.Heroes;
     }
 
-    public async Task AddAsync(string name)
-    {
-        Hero hero = new()
-        {
-            Id = Guid.NewGuid(),
-            CreatedAt = DateTimeOffset.UtcNow,
-            UpdatedAt = DateTimeOffset.UtcNow,
-            Name = name.ToUpper()
-        };
+    //public async Task AddAsync(string name)
+    //{
+        //Hero hero = new()
+        //{
+        //    Id = Guid.NewGuid(),
+        //    CreatedAt = DateTimeOffset.UtcNow,
+        //    UpdatedAt = DateTimeOffset.UtcNow,
+        //    Name = name.ToUpper(),
+        //    Rarity = 0,
+        //    CreatureType = 
+        //};
 
-        _ = _heroes.Add(hero);
-        _ = await _dbContext.SaveChangesAsync();
-    }
+        //_ = _heroes.Add(hero);
+        //_ = await _dbContext.SaveChangesAsync();
+    //}
 
 
     /// <summary>
