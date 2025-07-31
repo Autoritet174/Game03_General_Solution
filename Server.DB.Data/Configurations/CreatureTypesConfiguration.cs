@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Server.DB.Data.Entities;
 
 namespace Server.DB.Data.Configurations;
-internal class CreatureTypes : IEntityTypeConfiguration<CreatureType>
+internal class CreatureTypesConfiguration : IEntityTypeConfiguration<CreatureType>
 {
     public void Configure(EntityTypeBuilder<CreatureType> builder)
     {
-        _ = builder.ToTable("creature_types");
+        _ = builder.ToTable("creature_types", "main");
 
 
         //Уникальный идентификатор и индекс первичного ключа
@@ -34,8 +34,8 @@ internal class CreatureTypes : IEntityTypeConfiguration<CreatureType>
 
 
         //-------------------------------------
-        _ = builder.Property(e => e.DeletedAt)
-            .HasColumnName("deleted_at");
+        //_ = builder.Property(e => e.DeletedAt)
+        //    .HasColumnName("deleted_at");
 
 
         //-------------------------------------

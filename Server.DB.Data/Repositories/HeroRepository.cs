@@ -64,15 +64,15 @@ public class HeroRepository
     /// <param name="id">Идентификатор.</param>
     /// <exception cref="ArgumentException">Если идентификатор некорректен.</exception>
     /// <exception cref="InvalidOperationException">Если запись не найдена.</exception>
-    public async Task SoftDeleteAsync(Guid id)
-    {
-        int affected = await _heroes
-            .Where(a => a.Id == id && a.DeletedAt == null)
-            .ExecuteUpdateAsync(setters => setters
-            .SetProperty(a => a.DeletedAt, _ => DateTimeOffset.UtcNow));
+    //public async Task SoftDeleteAsync(Guid id)
+    //{
+    //    int affected = await _heroes
+    //        .Where(a => a.Id == id && a.DeletedAt == null)
+    //        .ExecuteUpdateAsync(setters => setters
+    //        .SetProperty(a => a.DeletedAt, _ => DateTimeOffset.UtcNow));
 
-        ThrowHelper.ThrowIfRecordNotExists(affected > 0);
-    }
+    //    ThrowHelper.ThrowIfRecordNotExists(affected > 0);
+    //}
 
 
     public async Task<List<Hero>> GetAllAsync()

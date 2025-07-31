@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Server.DB.Data.Entities;
 
 namespace Server.DB.Data.Configurations;
-internal class Heroes : IEntityTypeConfiguration<Hero>
+internal class HeroesConfiguration : IEntityTypeConfiguration<Hero>
 {
     public void Configure(EntityTypeBuilder<Hero> builder)
     {
-        _ = builder.ToTable("heroes");
+        _ = builder.ToTable("heroes", "main");
 
 
         //Уникальный идентификатор и индекс первичного ключа
@@ -34,8 +34,8 @@ internal class Heroes : IEntityTypeConfiguration<Hero>
 
 
         //-------------------------------------
-        _ = builder.Property(e => e.DeletedAt)
-            .HasColumnName("deleted_at");
+        //_ = builder.Property(e => e.DeletedAt)
+        //    .HasColumnName("deleted_at");
 
 
         //-------------------------------------
@@ -47,12 +47,5 @@ internal class Heroes : IEntityTypeConfiguration<Hero>
         _ = builder.HasIndex(e => e.Name)
             .IsUnique()
             .HasDatabaseName("ix_heroes_name");
-
-
-        //-------------------------------------
-        // Настройка связи с CreatureType
-        _ = builder.HasMany(hero => hero.CreatureTypes)
-            .WithMany(creatureType => creatureType.Heroes)
-            .UsingEntity(j => j.ToTable("hero_x_creature_type", "relations")); // Явное задание имени;
     }
 }

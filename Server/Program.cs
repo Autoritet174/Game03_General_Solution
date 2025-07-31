@@ -208,23 +208,10 @@ internal class Program
 
     private static async Task Test(WebApplication app)
     {
-        await Task.Delay(1);
-        ////using IServiceScope scope = app.Services.CreateScope();
-        //////TestUsers userService = scope.ServiceProvider.GetRequiredService<TestUsers>();
-
-        //////for (int i = 0; i < 1; i++)
-        //////{
-        //////    await userService.CreateUserAsync();
-        //////}
-        ////UserRepository userService = scope.ServiceProvider.GetRequiredService<UserRepository>();
-        ////DB.Users.Entities.User? all = userService.GetUserByEmailAsync("sUpEraDmiN@maIl.RU").Result;
-
-        //DbContextOptionsBuilder<DbContext_Game03Users> options = new();
-
-        //_ = options.UseNpgsql(DB.Users.UtilitiesFunctions.GetConnectionString());
-
-        //using DbContext_Game03Users db = new(options.Options);
-        //DbSet<DB.Users.Entities.User> allq = db.Users;
-        ////Console.WriteLine(db.Users.First().Email);
+        //using DbData db = new();
+        //var hero = db.Heroes.First(a=>a.Name == "Warrior");
+        //var ct = db.CreatureTypes.First(a => a.Name == "Humanoid");
+        //hero.CreatureTypes.Add(ct);
+        //db.SaveChanges();
     }
 }

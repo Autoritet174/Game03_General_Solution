@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server.DB.Data;
@@ -11,9 +12,11 @@ using Server.DB.Data;
 namespace Server.DB.Data.Migrations
 {
     [DbContext(typeof(DbContext_Game03Data))]
-    partial class DbContext_Game03DataModelSnapshot : ModelSnapshot
+    [Migration("20250731072919_Column_Rarity_Range_1_5")]
+    partial class Column_Rarity_Range_1_5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +24,25 @@ namespace Server.DB.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("CreatureTypeHero", b =>
+                {
+                    b.Property<Guid>("CreatureTypesId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("creature_types_id");
+
+                    b.Property<Guid>("HeroesId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("heroes_id");
+
+                    b.HasKey("CreatureTypesId", "HeroesId")
+                        .HasName("pk_hero_x_creature_type");
+
+                    b.HasIndex("HeroesId")
+                        .HasDatabaseName("idx_hero_x_creature_type_heroes_id");
+
+                    b.ToTable("hero_x_creature_type", "relations");
+                });
 
             modelBuilder.Entity("Server.DB.Data.Entities.CreatureType", b =>
                 {
@@ -36,6 +58,10 @@ namespace Server.DB.Data.Migrations
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("NOW()");
 
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -49,13 +75,13 @@ namespace Server.DB.Data.Migrations
                         .HasDefaultValueSql("NOW()");
 
                     b.HasKey("Id")
-                        .HasName("pk_creature_types");
+                        .HasName("pk_creature_type");
 
                     b.HasIndex("Name")
                         .IsUnique()
-                        .HasDatabaseName("idx_creature_types_name");
+                        .HasDatabaseName("idx_creature_type_name");
 
-                    b.ToTable("creature_types", "main");
+                    b.ToTable("creature_type", "main");
                 });
 
             modelBuilder.Entity("Server.DB.Data.Entities.Hero", b =>
@@ -71,6 +97,10 @@ namespace Server.DB.Data.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("NOW()");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -98,63 +128,21 @@ namespace Server.DB.Data.Migrations
                     b.ToTable("heroes", "main");
                 });
 
-            modelBuilder.Entity("Server.DB.Data.Entities.HeroCreatureType", b =>
+            modelBuilder.Entity("CreatureTypeHero", b =>
                 {
-                    b.Property<Guid>("HeroId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("hero_id");
-
-                    b.Property<Guid>("CreatureTypeId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("creature_type_id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("NOW()");
-
-                    b.HasKey("HeroId", "CreatureTypeId")
-                        .HasName("pk_hero_x_creature_type");
-
-                    b.HasIndex("CreatureTypeId")
-                        .HasDatabaseName("idx_hero_x_creature_type_creature_type_id");
-
-                    b.HasIndex("HeroId")
-                        .HasDatabaseName("idx_hero_x_creature_type_hero_id");
-
-                    b.ToTable("hero_x_creature_type", "relations");
-                });
-
-            modelBuilder.Entity("Server.DB.Data.Entities.HeroCreatureType", b =>
-                {
-                    b.HasOne("Server.DB.Data.Entities.CreatureType", "CreatureType")
-                        .WithMany("Heroes")
-                        .HasForeignKey("CreatureTypeId")
+                    b.HasOne("Server.DB.Data.Entities.CreatureType", null)
+                        .WithMany()
+                        .HasForeignKey("CreatureTypesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_hero_x_creature_type_creature_type_id_creature_types");
+                        .HasConstraintName("fk_hero_x_creature_type_creature_types_id_creature_type");
 
-                    b.HasOne("Server.DB.Data.Entities.Hero", "Hero")
-                        .WithMany("CreatureTypes")
-                        .HasForeignKey("HeroId")
+                    b.HasOne("Server.DB.Data.Entities.Hero", null)
+                        .WithMany()
+                        .HasForeignKey("HeroesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_hero_x_creature_type_hero_id_heroes");
-
-                    b.Navigation("CreatureType");
-
-                    b.Navigation("Hero");
-                });
-
-            modelBuilder.Entity("Server.DB.Data.Entities.CreatureType", b =>
-                {
-                    b.Navigation("Heroes");
-                });
-
-            modelBuilder.Entity("Server.DB.Data.Entities.Hero", b =>
-                {
-                    b.Navigation("CreatureTypes");
+                        .HasConstraintName("fk_hero_x_creature_type_heroes_id_heroes");
                 });
 #pragma warning restore 612, 618
         }
