@@ -15,12 +15,11 @@ public class Hero
     public required Guid Id { get; set; }
     public required DateTimeOffset CreatedAt { get; set; }
     public required DateTimeOffset UpdatedAt { get; set; }
-    //public DateTimeOffset? DeletedAt { get; set; }
     public required string Name { get; set; }
 
     [Range(1, 5)]
     public required RarityLevel Rarity { get; set; }
 
-    public ICollection<HeroCreatureType> CreatureTypes { get; set; } = [];
+    //public ICollection<HeroCreatureType> CreatureTypes { get; set; } = [];
 
 }

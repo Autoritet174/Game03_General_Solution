@@ -1,52 +1,52 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Server.DB.Data.Entities;
+﻿//using Microsoft.EntityFrameworkCore;
+//using Microsoft.EntityFrameworkCore.Metadata.Builders;
+//using Server.DB.Data.Entities;
 
-namespace Server.DB.Data.Configurations;
-internal class HeroCreatureTypeConfiguration : IEntityTypeConfiguration<Entities.HeroCreatureType>
-{
-    public void Configure(EntityTypeBuilder<Entities.HeroCreatureType> builder)
-    {
-        _ = builder.ToTable("hero_x_creature_type", "relations");
+//namespace Server.DB.Data.Configurations;
+//internal class HeroCreatureTypeConfiguration : IEntityTypeConfiguration<Entities.HeroCreatureType>
+//{
+//    public void Configure(EntityTypeBuilder<Entities.HeroCreatureType> builder)
+//    {
+//        _ = builder.ToTable("hero_x_creature_type", "relations");
 
-        // 2. Составной первичный ключ
-        builder.HasKey(hct => new { hct.HeroId, hct.CreatureTypeId })
-              .HasName("pk_hero_x_creature_type");
+//        // 2. Составной первичный ключ
+//        builder.HasKey(hct => new { hct.HeroId, hct.CreatureTypeId })
+//              .HasName("pk_hero_x_creature_type");
 
-        // 3. Настройка связи с Hero
-        builder.HasOne(hct => hct.Hero)
-              .WithMany(h => h.CreatureTypes)
-              .HasForeignKey(hct => hct.HeroId)
-              .HasConstraintName("fk_hero_x_creature_type_hero")
-              .OnDelete(DeleteBehavior.Cascade);
+//        // 3. Настройка связи с Hero
+//        builder.HasOne(hct => hct.Hero)
+//              .WithMany(h => h.CreatureTypes)
+//              .HasForeignKey(hct => hct.HeroId)
+//              .HasConstraintName("fk_hero_x_creature_type_hero")
+//              .OnDelete(DeleteBehavior.Cascade);
 
-        // 4. Настройка связи с CreatureType
-        builder.HasOne(hct => hct.CreatureType)
-              .WithMany(ct => ct.Heroes)
-              .HasForeignKey(hct => hct.CreatureTypeId)
-              .HasConstraintName("fk_hero_x_creature_type_creature_type")
-              .OnDelete(DeleteBehavior.Cascade);
+//        // 4. Настройка связи с CreatureType
+//        builder.HasOne(hct => hct.CreatureType)
+//              .WithMany(ct => ct.Heroes)
+//              .HasForeignKey(hct => hct.CreatureTypeId)
+//              .HasConstraintName("fk_hero_x_creature_type_creature_type")
+//              .OnDelete(DeleteBehavior.Cascade);
 
-        // 5. Настройка колонок
-        builder.Property(hct => hct.HeroId)
-              .HasColumnName("hero_id")
-              .IsRequired();
+//        // 5. Настройка колонок
+//        builder.Property(hct => hct.HeroId)
+//              .HasColumnName("hero_id")
+//              .IsRequired();
 
-        builder.Property(hct => hct.CreatureTypeId)
-              .HasColumnName("creature_type_id")
-              .IsRequired();
+//        builder.Property(hct => hct.CreatureTypeId)
+//              .HasColumnName("creature_type_id")
+//              .IsRequired();
 
-        builder.Property(hct => hct.CreatedAt)
-              .HasColumnName("created_at")
-              .HasDefaultValueSql("NOW()")
-              .ValueGeneratedOnAdd();
+//        builder.Property(hct => hct.CreatedAt)
+//              .HasColumnName("created_at")
+//              .HasDefaultValueSql("NOW()")
+//              .ValueGeneratedOnAdd();
 
-        // 6. Настройка индексов
-        builder.HasIndex(hct => hct.HeroId)
-              .HasDatabaseName("ix_hero_x_creature_type_hero_id");
+//        // 6. Настройка индексов
+//        builder.HasIndex(hct => hct.HeroId)
+//              .HasDatabaseName("ix_hero_x_creature_type_hero_id");
 
-        builder.HasIndex(hct => hct.CreatureTypeId)
-              .HasDatabaseName("ix_hero_x_creature_type_creature_type_id");
-    }
+//        builder.HasIndex(hct => hct.CreatureTypeId)
+//              .HasDatabaseName("ix_hero_x_creature_type_creature_type_id");
+//    }
 
-}
+//}

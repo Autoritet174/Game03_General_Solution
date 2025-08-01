@@ -33,20 +33,15 @@ internal class CreatureTypesConfiguration : IEntityTypeConfiguration<CreatureTyp
             .IsRequired();
 
 
-        //-------------------------------------
-        //_ = builder.Property(e => e.DeletedAt)
-        //    .HasColumnName("deleted_at");
+        ////-------------------------------------
+        //_ = builder.Property(e => e.Name)
+        //    .HasColumnName("name")
+        //    .HasMaxLength(255)
+        //    .IsRequired();
 
-
-        //-------------------------------------
-        _ = builder.Property(e => e.Name)
-            .HasColumnName("name")
-            .HasMaxLength(255)
-            .IsRequired();
-
-        _ = builder.HasIndex(e => e.Name)
-            .IsUnique()
-            .HasDatabaseName("ix_creature_types_name");
+        //_ = builder.HasIndex(e => e.Name)
+        //    .IsUnique()
+        //    .HasDatabaseName("ix_creature_types_name");
     }
 
 }

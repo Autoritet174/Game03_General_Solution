@@ -24,7 +24,7 @@ public class DbContext_Game03Data(DbContextOptions<DbContext_Game03Data> options
     {
         _ = modelBuilder.ApplyConfiguration(new HeroesConfiguration());
         _ = modelBuilder.ApplyConfiguration(new CreatureTypesConfiguration());
-        _ = modelBuilder.ApplyConfiguration(new HeroCreatureTypeConfiguration());
+        //_ = modelBuilder.ApplyConfiguration(new HeroCreatureTypeConfiguration());
 
 
         // Глобальный фильтр по удалённым записям
