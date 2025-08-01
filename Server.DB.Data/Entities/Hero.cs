@@ -20,6 +20,6 @@ public class Hero
     [Range(1, 5)]
     public required RarityLevel Rarity { get; set; }
 
-    //public ICollection<HeroCreatureType> CreatureTypes { get; set; } = [];
+    public ICollection<HeroCreatureType> CreatureTypes { get; set; } = [];
 
 }

@@ -1,4 +1,4 @@
-dotnet ef migrations add UpdateTable_HeroCreatureType --project "C:\UnityProjects\Game03_General_Solution\Server.DB.Data" --startup-project "C:\UnityProjects\Game03_General_Solution\Server" --context DbContext_Game03Data
+dotnet ef migrations add CREATE_VIEW_v_heroes --project "C:\UnityProjects\Game03_General_Solution\Server.DB.Data" --startup-project "C:\UnityProjects\Game03_General_Solution\Server" --context DbContext_Game03Data
 
 
 

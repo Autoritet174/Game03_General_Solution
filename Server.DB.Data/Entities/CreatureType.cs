@@ -6,5 +6,5 @@ public class CreatureType
     public required DateTimeOffset CreatedAt { get; set; }
     public required DateTimeOffset UpdatedAt { get; set; }
     public required string Name { get; set; }
-    //public ICollection<HeroCreatureType> Heroes { get; set; } = []; // Обратная навигация
+    public ICollection<HeroCreatureType> Heroes { get; set; } = []; // Обратная навигация
 }

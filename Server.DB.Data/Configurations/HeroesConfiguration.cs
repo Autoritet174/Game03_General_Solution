@@ -33,14 +33,14 @@ internal class HeroesConfiguration : IEntityTypeConfiguration<Hero>
             .IsRequired();
 
 
-        ////-------------------------------------
-        //_ = builder.Property(e => e.Name)
-        //    .HasColumnName("name")
-        //    .HasMaxLength(255)
-        //    .IsRequired();
+        //-------------------------------------
+        _ = builder.Property(e => e.Name)
+            .HasColumnName("name")
+            .HasMaxLength(255)
+            .IsRequired();
 
-        //_ = builder.HasIndex(e => e.Name)
-        //    .IsUnique()
-        //    .HasDatabaseName("ix_heroes_name");
+        _ = builder.HasIndex(e => e.Name)
+            .IsUnique()
+            .HasDatabaseName("ix_heroes_name");
     }
 }

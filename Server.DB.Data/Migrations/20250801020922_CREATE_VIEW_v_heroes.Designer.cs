@@ -12,8 +12,8 @@ using Server.DB.Data;
 namespace Server.DB.Data.Migrations
 {
     [DbContext(typeof(DbContext_Game03Data))]
-    [Migration("20250801010836_fix_1")]
-    partial class fix_1
+    [Migration("20250801020922_CREATE_VIEW_v_heroes")]
+    partial class CREATE_VIEW_v_heroes
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -41,7 +41,8 @@ namespace Server.DB.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("name");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
@@ -52,6 +53,10 @@ namespace Server.DB.Data.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_creature_types");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("idx_creature_types_name");
 
                     b.ToTable("creature_types", "main");
                 });
@@ -72,7 +77,8 @@ namespace Server.DB.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("name");
 
                     b.Property<int>("Rarity")
@@ -88,7 +94,70 @@ namespace Server.DB.Data.Migrations
                     b.HasKey("Id")
                         .HasName("pk_heroes");
 
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("idx_heroes_name");
+
                     b.ToTable("heroes", "main");
+                });
+
+            modelBuilder.Entity("Server.DB.Data.Entities.HeroCreatureType", b =>
+                {
+                    b.Property<Guid>("HeroId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("hero_id");
+
+                    b.Property<Guid>("CreatureTypeId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("creature_type_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.HasKey("HeroId", "CreatureTypeId")
+                        .HasName("pk_hero_x_creature_type");
+
+                    b.HasIndex("CreatureTypeId")
+                        .HasDatabaseName("idx_hero_x_creature_type_creature_type_id");
+
+                    b.HasIndex("HeroId")
+                        .HasDatabaseName("idx_hero_x_creature_type_hero_id");
+
+                    b.ToTable("hero_x_creature_type", "relations");
+                });
+
+            modelBuilder.Entity("Server.DB.Data.Entities.HeroCreatureType", b =>
+                {
+                    b.HasOne("Server.DB.Data.Entities.CreatureType", "CreatureType")
+                        .WithMany("Heroes")
+                        .HasForeignKey("CreatureTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_hero_x_creature_type_creature_type_id_creature_types");
+
+                    b.HasOne("Server.DB.Data.Entities.Hero", "Hero")
+                        .WithMany("CreatureTypes")
+                        .HasForeignKey("HeroId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_hero_x_creature_type_hero_id_heroes");
+
+                    b.Navigation("CreatureType");
+
+                    b.Navigation("Hero");
+                });
+
+            modelBuilder.Entity("Server.DB.Data.Entities.CreatureType", b =>
+                {
+                    b.Navigation("Heroes");
+                });
+
+            modelBuilder.Entity("Server.DB.Data.Entities.Hero", b =>
+                {
+                    b.Navigation("CreatureTypes");
                 });
 #pragma warning restore 612, 618
         }
