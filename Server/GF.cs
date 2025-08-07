@@ -8,7 +8,7 @@ public static class GF
     private static readonly bool Debugger_IsNotAttached;
     static GF()
     {
-        Debugger_IsNotAttached = !Debugger.IsAttached;
+        Debugger_IsNotAttached = !Debugger.IsAttached && false;
     }
 
     public static bool IsValidEmail(string email)
