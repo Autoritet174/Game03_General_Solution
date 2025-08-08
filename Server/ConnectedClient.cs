@@ -93,6 +93,10 @@ public class ConnectedClient(string userId) {
     /// Возвращает все активные WebSocket'ы клиента.
     /// </summary>
     public WebSocket GetSockets() {
-        return _socket;
+        if (_socket != null)
+        {
+            return _socket;
+        }
+        throw new NotImplementedException();
     }
 }
