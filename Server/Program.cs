@@ -195,10 +195,7 @@ internal class Program
         Console.WriteLine("TestConnectionWithDataBase Users - " + DbUsers.GetStateConnection());
         Console.WriteLine("TestConnectionWithDataBase Data  - " + DbData.GetStateConnection());
         // Зеленый текст (как "info" в ASP.NET Core)
-        Console.WriteLine("\x1b[32mЭто зеленый текст\x1b[0m");
 
-        // Желтый текст на красном фоне
-        Console.WriteLine("\x1b[33;41mЖелтый на красном\x1b[0m");
         ListAllHeroes.Init();
 
         //HeroesController.Init();
