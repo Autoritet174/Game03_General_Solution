@@ -1,12 +1,12 @@
-﻿using System.Collections.Concurrent;
-using System.Net.WebSockets;
+﻿using System.Net.WebSockets;
 
 namespace Server;
 
 /// <summary>
 /// Хранит список WebSocket-соединений одного клиента.
 /// </summary>
-public class ConnectedClient(string userId) {
+public class ConnectedClient(string userId)
+{
     public string UserId { get; } = userId;
 
     /// <summary>
@@ -19,8 +19,10 @@ public class ConnectedClient(string userId) {
     /// <summary>
     /// Добавляет WebSocket.
     /// </summary>
-    public void AddSocket(WebSocket socket) {
-        lock (_sockets_lock) {
+    public void AddSocket(WebSocket socket)
+    {
+        lock (_sockets_lock)
+        {
             _socket = socket;
         }
     }
@@ -28,7 +30,8 @@ public class ConnectedClient(string userId) {
     /// <summary>
     /// Удаляет WebSocket.
     /// </summary>
-    public void RemoveSocket(WebSocket socket) {
+    public void RemoveSocket(WebSocket socket)
+    {
         // Синхронизация доступа, если нужно обеспечить потокобезопасность
         //lock (_sockets_lock) {
         //    //KeyValuePair<string, WebSocket>[] socketsArray = [.. _sockets];
@@ -65,23 +68,30 @@ public class ConnectedClient(string userId) {
         //    //}
         //}
 
-        lock (_sockets_lock) {
-            try {
-                if (socket.State is WebSocketState.Open or WebSocketState.CloseReceived) {
+        lock (_sockets_lock)
+        {
+            try
+            {
+                if (socket.State is WebSocketState.Open or WebSocketState.CloseReceived)
+                {
                     // Закрытие соединения
                     Task closeTask = socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
                     closeTask.Wait(); // Ждём завершения внутри lock
                 }
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 // Логируем или игнорируем ошибку закрытия
                 Console.WriteLine($"Ошибка при закрытии сокета: {ex.Message}");
             }
-            finally {
-                try {
+            finally
+            {
+                try
+                {
                     socket.Dispose();
                 }
-                catch (Exception ex) {
+                catch (Exception ex)
+                {
                     // Логируем или игнорируем ошибку освобождения ресурсов
                     Console.WriteLine($"Ошибка при освобождении сокета: {ex.Message}");
                 }
@@ -92,11 +102,8 @@ public class ConnectedClient(string userId) {
     /// <summary>
     /// Возвращает все активные WebSocket'ы клиента.
     /// </summary>
-    public WebSocket GetSockets() {
-        if (_socket != null)
-        {
-            return _socket;
-        }
-        throw new NotImplementedException();
+    public WebSocket GetSockets()
+    {
+        return _socket ?? throw new NotImplementedException();
     }
 }

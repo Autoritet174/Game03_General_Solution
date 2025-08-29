@@ -45,7 +45,8 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
         {
             data = JsonNode.Parse(body);
         }
-        catch {
+        catch
+        {
             return CBA_BadRequest(SR.Auth_EmailOrPassword_Empty);
         }
 

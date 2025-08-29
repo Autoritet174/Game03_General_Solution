@@ -18,6 +18,7 @@ public static class ListAllHeroes
           {
               //h.Id, 
               h.Name,
+              h.Rarity
           })
           .ToListAsync();
 
@@ -30,6 +31,7 @@ public static class ListAllHeroes
             {
                 //["id"] = item.Id,
                 ["name"] = item.Name,
+                ["rarity"] = (int)item.Rarity,
             };
 
             jsonArray.Add(obj);
