@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="ClientManager.cs" />
+    <None Include="ClientManager2.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +33,7 @@
   <ItemGroup>
     <ProjectReference Include="..\General\General.csproj" />
     <ProjectReference Include="..\Server.DB.Data\Server.DB.Data.csproj" />
+    <ProjectReference Include="..\Server.DB.UserData\Server.DB.UserData.csproj" />
     <ProjectReference Include="..\Server.DB.Users\Server.DB.Users.csproj" />
   </ItemGroup>
 

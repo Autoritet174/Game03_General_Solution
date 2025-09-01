@@ -11,7 +11,7 @@ namespace Server.WebSocket_NS;
 /// <remarks>
 /// Конструктор.
 /// </remarks>
-public class WebSocketMiddleware(RequestDelegate next, ClientManager clientManager, JwtService jwtService) {
+public class WebSocketMiddleware(RequestDelegate next, ClientManager2 clientManager, JwtService jwtService) {
    
 
     /// <summary>

@@ -20,13 +20,20 @@ public class ExceptionLoggingMiddleware(RequestDelegate next, ILogger<ExceptionL
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Произошло необработанное исключение.");
-            await Common.WriterExceptionInLogFile.LogToFileAsync(ex);
+            if (!context.Response.HasStarted)
+            {
+                logger.LogError(ex, "Произошло необработанное исключение.");
+                await Common.WriterExceptionInLogFile.LogToFileAsync(ex);
 
-            // Минимальный JSON-ответ
-            context.Response.StatusCode = 500;
-            context.Response.ContentType = "application/json";
-            await context.Response.WriteAsync("""{"error":"Internal Server Error"}""");
+                // Минимальный JSON-ответ
+                context.Response.StatusCode = 500;
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsync("""{"error":"Internal Server Error"}""");
+            }
+            else
+            {
+                logger.LogError(ex, "Ошибка после начала Response");
+            }
         }
     }
 

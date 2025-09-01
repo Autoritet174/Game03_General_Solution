@@ -1,47 +1,58 @@
-﻿using System.Globalization;
-using System.Security.Cryptography;
-using System.Text;
-using UUIDNext;//7,7021584 //100_000_000
-
-internal class Program
+﻿internal class Program
 {
-    private static void Main(string[] args)
+    private static async Task Main()
     {
-        DateTime dateTime = DateTime.Now;
-        for (int i = 0; i < 100_000_000; i++)
+        int _connectedClients = 0;
+        int _totalMessagesSent = 0;
+        DateTime _startTime = default;
+
+        Console.WriteLine("WebSocket Test Client");
+
+        var serverUrl = "ws://localhost:5001/ws/";
+        int clientCount = 100000;
+
+        var tasks = new List<Task>();
+
+        for (int i = 0; i < clientCount; i++)
         {
-            Guid uuidV7 = Uuid.NewDatabaseFriendly(Database.PostgreSql);
+            var clientId = i + 1;
+            tasks.Add(Task.Run(async () =>
+            {
+                var client = new WebSocketClient(serverUrl);
+
+                try
+                {
+                    await client.ConnectAsync();
+                    Console.WriteLine($"Клиент {clientId} подключен");
+
+                    await client.StartSendingMessages();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Клиент {clientId} ошибка: {ex.Message}");
+                }
+                finally
+                {
+                    await client.DisconnectAsync();
+                }
+            }));
+
+            await Task.Delay(1); // Задержка между подключениями
         }
-        Console.WriteLine((DateTime.Now - dateTime).TotalSeconds.ToString());
-        //Console.WriteLine(ExtractTimestamp(Guid.Parse(
-        //    Uuid.NewDatabaseFriendly(Database.PostgreSql).ToString()
-        //    //"0197d0e6-c5d4-7955-8241-771e21747ffc"
-        //    )));
+
+        try
+        {
+            await Task.WhenAll(tasks);
+        }
+        catch (AggregateException ae)
+        {
+            foreach (var ex in ae.InnerExceptions)
+            {
+                Console.WriteLine($"Общая ошибка: {ex.Message}");
+            }
+        }
+
+        Console.WriteLine("Нажмите любую клавишу для выхода...");
+        Console.ReadKey();
     }
-    //static string CalculateSha256(string input)
-    //{
-    //    using (SHA256 sha256 = SHA256.Create())
-    //    {
-    //        byte[] bytes = Encoding.UTF8.GetBytes(input);
-    //        byte[] hashBytes = sha256.ComputeHash(bytes);
-    //        return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
-    //    }
-    //}
-    public static DateTime ExtractTimestamp(Guid uuid)
-    {
-        // Строка из 32 шестнадцатеричных символов без дефисов.
-        string hex = uuid.ToString("N", CultureInfo.InvariantCulture);
-
-        // Проверка версии: 13-й символ (index 12) должен быть '7'.
-        if (hex[12] != '7')
-            throw new ArgumentException("UUID is not version 7.", nameof(uuid));
-
-        // Первые 12 символов (48 бит) — метка времени в миллисекундах.
-        ulong msSinceUnixEpoch = ulong.Parse(hex.AsSpan(0, 12), NumberStyles.AllowHexSpecifier);
-
-        // Преобразование в DateTime (UTC).
-        return DateTime.UnixEpoch.AddMilliseconds(msSinceUnixEpoch);
-    }
-
-
 }

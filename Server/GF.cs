@@ -31,7 +31,7 @@ public static class GF
     /// Добавляет задержку 2000 миллисекунд если работает без отладчика.
     /// </summary>
     /// <returns></returns>
-    public static async Task DelayWithOutDebug2000()
+    public static async Task DelayWithOutDebug2000ms()
     {
         if (Debugger_IsNotAttached)
         {

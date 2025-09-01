@@ -6,7 +6,7 @@ namespace Server;
 /// <summary>
 /// Управляет всеми подключёнными клиентами.
 /// </summary>
-public class ClientManager
+public class ClientManager2
 {
 
     /// <summary>
@@ -19,7 +19,7 @@ public class ClientManager
     /// <summary>
     /// Конструктор и запуск фоновой задачи.
     /// </summary>
-    public ClientManager()
+    public ClientManager2()
     {
         // Таймер каждые 5 секунд вызывает BroadcastRandomMessage
         //_broadcastTimer = new Timer(_ => BroadcastRandomMessage(), null, TimeSpan.Zero, TimeSpan.FromSeconds(5));

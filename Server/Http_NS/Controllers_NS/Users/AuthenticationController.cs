@@ -28,7 +28,7 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
     [AllowAnonymous]
     public async Task<IActionResult> Authentication()
     {
-        await GF.DelayWithOutDebug2000();
+        await GF.DelayWithOutDebug2000ms();//Добавляет задержку 2000 миллисекунд если работает без отладчика.
 
         Request.EnableBuffering();
 

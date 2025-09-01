@@ -3,11 +3,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Server.DB.Data;
 using Server.DB.Data.Repositories;
+using Server.DB.UserData;
 using Server.DB.Users;
 using Server.DB.Users.Repositories;
 using Server.GameDataCache;
 using Server.Http_NS.Middleware_NS;
 using Server.Jwt_NS;
+using Server.WebSocket_NS;
+using System.Net;
 using System.Text;
 
 namespace Server;
@@ -82,6 +85,14 @@ internal class Program
             return;
         }
 
+        ServicePointManager.DefaultConnectionLimit = 10000;
+        ServicePointManager.MaxServicePoints = 10000;
+        ServicePointManager.UseNagleAlgorithm = false;
+        ServicePointManager.Expect100Continue = false;
+        ServicePointManager.CheckCertificateRevocationList = false;
+
+
+
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
         // Инициализация параметров для AuthOptions при старте приложения
@@ -94,7 +105,7 @@ internal class Program
         _ = services.AddHttpLogging();
 
         // Регистрация ClientManager как singleton
-        _ = services.AddSingleton<ClientManager>();
+        _ = services.AddSingleton<ClientManager2>();
 
 
 
@@ -166,6 +177,16 @@ internal class Program
         _ = services.AddDbContext<DbContext_Game03Data>(options => options.UseNpgsql(DbData.GetConnectionString()));
         _ = services.AddScoped<HeroRepository>();
 
+        // Конфигурация MongoDB
+        services.Configure<MongoSettings>(options =>
+        {
+            options.ConnectionString = "mongodb://127.127.126.1:27017";
+            options.DatabaseName = "u";
+            options.CollectionName = "i";
+        });
+        // Регистрация репозитория
+        builder.Services.AddSingleton<MongoRepository>();
+
 
         // Добавляем контекст БД (SQL Server)
         //services.AddDbContext<DbContextEf>(options =>
@@ -183,6 +204,12 @@ internal class Program
 
         //services.AddIdentity<IdentityUser, IdentityRole>();
 
+        // Регистрация ClientManager
+        //builder.Services.AddSingleton<ClientQueue>();
+        //builder.Services.AddHostedService<ClientManager>();
+
+        builder.Services.AddSingleton<WebSocketServer>();
+        builder.Services.AddHostedService(provider => provider.GetRequiredService<WebSocketServer>());
 
         WebApplication app = builder.Build();
 
@@ -202,6 +229,32 @@ internal class Program
         _ = Test(app);
 
 
+        //app.MapGet("/items", async (MongoRepository repo) =>
+        //{
+        //    var items = await repo.GetAllAsync();
+        //    return Results.Ok(items);
+        //});
+
+        //app.MapPost("/items", async (MongoRepository repo, dynamic item) =>
+        //{
+        //    await repo.InsertAsync(item);
+        //    return Results.Created("/items", item);
+        //});
+        //app.Map("/ws", async context =>
+        //{
+        //    if (context.WebSockets.IsWebSocketRequest)
+        //    {
+        //        using var socket = await context.WebSockets.AcceptWebSocketAsync();
+        //        var manager = context.RequestServices.GetRequiredService<ClientManager>();
+        //        await manager.AcceptClientAsync(socket);
+        //    }
+        //    else
+        //    {
+        //        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+        //    }
+        //});
+
+    
 
         app.Run();
 
