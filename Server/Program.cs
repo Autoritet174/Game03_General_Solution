@@ -208,8 +208,8 @@ internal class Program
         //builder.Services.AddSingleton<ClientQueue>();
         //builder.Services.AddHostedService<ClientManager>();
 
-        builder.Services.AddSingleton<WebSocketServer>();
-        builder.Services.AddHostedService(provider => provider.GetRequiredService<WebSocketServer>());
+        builder.Services.AddSingleton<WebSocketConnectionHandler>();
+        builder.Services.AddHostedService(provider => provider.GetRequiredService<WebSocketConnectionHandler>());
 
         WebApplication app = builder.Build();
 

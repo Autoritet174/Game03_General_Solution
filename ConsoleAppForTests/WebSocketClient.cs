@@ -107,28 +107,48 @@ public class WebSocketClient
         }
     }
 
-    public async Task StartSendingMessages()
+    public async Task StartSendingMessages(Action<int> onMessagesSent = null)
     {
-        //Console.WriteLine("Начинаем отправку сообщений. Нажмите 'q' для выхода");
-
         int messageCount = 0;
+
         while (!_cts.Token.IsCancellationRequested && _webSocket.State == WebSocketState.Open)
         {
-            for (int i = 0; i < 1; i++)
+            //for (int i = 0; i < 1; i++)
+            //{
+            //    var message = $"Сообщение #{++messageCount} - {DateTime.Now:HH:mm:ss}";
+            //    await SendMessageAsync(message);
+            //}
+            string com = Console.ReadLine();
+            if (com == "1")
             {
-                var message = $"Сообщение #{++messageCount} - {DateTime.Now:HH:mm:ss}";
+                var message = $"{DateTime.Now:HH:mm:ss.ffffff}";
+                await SendMessageAsync(message);
+            }
+            if (com == "2")
+            {
+                var message = """
+                    {
+                        "bla": "qwe",
+                        "bla": "qwe",
+                        "bla": "qwe"
+                    }
+                    """;
                 await SendMessageAsync(message);
             }
 
-            await Task.Delay(10000, _cts.Token);
+            // Сообщаем о количестве отправленных сообщений
+            onMessagesSent?.Invoke(100);
+
+            await Task.Delay(10, _cts.Token);
 
             if (Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Q)
             {
                 break;
             }
         }
-    }
 
+        onMessagesSent?.Invoke(0); // Завершение
+    }
     public async Task DisconnectAsync()
     {
         try
