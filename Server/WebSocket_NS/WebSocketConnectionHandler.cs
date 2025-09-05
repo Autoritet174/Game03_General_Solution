@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using Server.DB.UserData;
+using System.Collections.Concurrent;
 using System.Net;
 using System.Net.WebSockets;
 using System.Runtime.InteropServices;
@@ -16,8 +17,9 @@ public class WebSocketConnectionHandler : BackgroundService
     private readonly ConcurrentDictionary<Guid, DateTime> _activeConnections = new();
     private int _activeConnections_Count_Last = 0;
     private readonly Timer _monitoringTimer;
+    MongoRepository _mongoRepository;
 
-    public WebSocketConnectionHandler(ILogger<WebSocketConnectionHandler> logger, IServiceProvider serviceProvider, IConfiguration configuration)
+    public WebSocketConnectionHandler(ILogger<WebSocketConnectionHandler> logger, IServiceProvider serviceProvider, IConfiguration configuration, MongoRepository mongoRepository)
     {
         ArgumentNullException.ThrowIfNull(configuration);
         _configuration = configuration;
@@ -32,6 +34,7 @@ public class WebSocketConnectionHandler : BackgroundService
 
         _maxConnections = configuration.GetValue<int>("WebSocketSettings:MaxConnections");
         _monitoringTimer = new Timer(LogConnectionStats, null, TimeSpan.Zero, TimeSpan.FromSeconds(0.33));
+        _mongoRepository = mongoRepository;
     }
     private void LogConnectionStats(object? state)
     {
@@ -166,7 +169,7 @@ public class WebSocketConnectionHandler : BackgroundService
             using IServiceScope scope = _serviceProvider.CreateScope();
             ILogger<WebSocketConnection> clientLogger = scope.ServiceProvider.GetRequiredService<ILogger<WebSocketConnection>>();
 
-            WebSocketConnection client = new(webSocket, clientLogger, _configuration, this);
+            WebSocketConnection client = new(webSocket, clientLogger, _configuration, this, _mongoRepository);
             await client.HandleAsync(stoppingToken);
         }
         catch (Exception ex) when (WebSocketConnection.IsExpectedDisconnectException(ex))

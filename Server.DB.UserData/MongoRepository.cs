@@ -36,17 +36,8 @@ public class MongoRepository
     /// <summary>
     /// Асинхронно добавляет новый документ в коллекцию.
     /// </summary>
-    public async Task InsertAsync(dynamic data)
+    public async Task InsertAsync(BsonDocument bd)
     {
-        if (data == null)
-        {
-            throw new ArgumentNullException(nameof(data));
-        }
-
-        dynamic bsonDoc = data is BsonDocument bd
-            ? bd
-            : data.ToBsonDocument();
-
-        await _collection.InsertOneAsync(bsonDoc);
+        await _collection.InsertOneAsync(bd);
     }
 }

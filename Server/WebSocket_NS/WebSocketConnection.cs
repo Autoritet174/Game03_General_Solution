@@ -1,21 +1,22 @@
-﻿using System.Buffers;
+﻿using Server.DB.UserData;
+using Server.Game03;
+using System.Buffers;
 using System.Net.WebSockets;
 using System.Text;
 
 namespace Server.WebSocket_NS;
 
-public class WebSocketConnection(WebSocket webSocket, ILogger<WebSocketConnection> logger, IConfiguration configuration, WebSocketConnectionHandler webSocketServer)
+public class WebSocketConnection(WebSocket webSocket, ILogger<WebSocketConnection> logger, IConfiguration configuration, WebSocketConnectionHandler webSocketServer, MongoRepository mongoRepository)
 {
     private Guid Id { get; } = Guid.NewGuid();
     private readonly WebSocket _webSocket = webSocket;
     private readonly ILogger<WebSocketConnection> _logger = logger;
     private readonly int _receiveBufferSize = configuration.GetValue<int>("WebSocketSettings:ReceiveBufferSize");
     private readonly WebSocketConnectionHandler _webSocketServer = webSocketServer;
+    private readonly PlayerManager _playerManager = new(mongoRepository);
 
     public async Task HandleAsync(CancellationToken cancellationToken)
     {
-
-
         //string m = $"Клиент {_id} подключён";www
         //_logger.LogInformation("Клиент {_id} подключён", _id);
         _webSocketServer.ActiveConnectionsAdd(Id);
@@ -42,19 +43,20 @@ public class WebSocketConnection(WebSocket webSocket, ILogger<WebSocketConnectio
 
                 string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
                 //_logger.LogDebug("Принято сообщение от клиента {ClientId}: {Message}", _id, message);
-                DateTime dt = DateTime.Now;
-                string[] sA = message.Split(new string[] { ".", ":" }, StringSplitOptions.None);
-                int i1 = int.Parse(sA[0]);
-                int i2 = int.Parse(sA[1]);
-                int i3 = int.Parse(sA[2]);
-                int i4 = int.Parse(sA[3]);
+                await _playerManager.Command(message);
+                //DateTime dt = DateTime.Now;
+                //string[] sA = message.Split(new string[] { ".", ":" }, StringSplitOptions.None);
+                //int i1 = int.Parse(sA[0]);
+                //int i2 = int.Parse(sA[1]);
+                //int i3 = int.Parse(sA[2]);
+                //int i4 = int.Parse(sA[3]);
 
-                int m1 = i4 / 1000;
-                int m2 = i4 - (m1 * 1000);
+                //int m1 = i4 / 1000;
+                //int m2 = i4 - (m1 * 1000);
 
-                DateTime dtClient = new(2025, 09, 02, i1, i2, i3, m1, m2);
-                TimeSpan t = dt - dtClient;
-                Console.WriteLine($"Принято сообщение от клиента {Id}: {message} timeServer: {DateTime.Now:HH:mm:ss.ffffff} {t.TotalMicroseconds}");
+                //DateTime dtClient = new(2025, 09, 02, i1, i2, i3, m1, m2);
+                //TimeSpan t = dt - dtClient;
+                //Console.WriteLine($"Принято сообщение от клиента {Id}: {message} timeServer: {DateTime.Now:HH:mm:ss.ffffff} {t.TotalMicroseconds}");
 
 
                 // Эхо-ответ (если нужно)

@@ -1,5 +1,8 @@
 ﻿using System.Net.WebSockets;
 using System.Text;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using Newtonsoft.Json;
 
 public class WebSocketClient
 {
@@ -107,7 +110,16 @@ public class WebSocketClient
         }
     }
 
-    public async Task StartSendingMessages(Action<int> onMessagesSent = null)
+    public JsonSerializerOptions GetOptions()
+    {
+        return new JsonSerializerOptions
+        {
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            WriteIndented = true
+        };
+    }
+
+    public async Task StartSendingMessages(JsonSerializerOptions options, Action<int> onMessagesSent = null)
     {
         int messageCount = 0;
 
@@ -119,22 +131,27 @@ public class WebSocketClient
             //    await SendMessageAsync(message);
             //}
             string com = Console.ReadLine();
+            Random r = new Random();
             if (com == "1")
             {
-                var message = $"{DateTime.Now:HH:mm:ss.ffffff}";
-                await SendMessageAsync(message);
-            }
-            if (com == "2")
-            {
-                var message = """
-                    {
-                        "bla": "qwe",
-                        "bla": "qwe",
-                        "bla": "qwe"
+
+                var data = new
+                {
+                    command = "AddItem",
+                    item = new {
+                        damage = r.Next(1, 10),
+                        health = r.Next(10, 20),
+                        location = Guid.NewGuid()
                     }
-                    """;
-                await SendMessageAsync(message);
+                };
+
+                // Просто сериализуйте - Newtonsoft.Json по умолчанию не экранирует Unicode
+                string json = JsonConvert.SerializeObject(data, Formatting.Indented);
+                Console.WriteLine(json);
+                await SendMessageAsync(json);
+
             }
+            
 
             // Сообщаем о количестве отправленных сообщений
             onMessagesSent?.Invoke(100);

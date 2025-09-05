@@ -181,8 +181,8 @@ internal class Program
         services.Configure<MongoSettings>(options =>
         {
             options.ConnectionString = "mongodb://127.127.126.1:27017";
-            options.DatabaseName = "u";
-            options.CollectionName = "i";
+            options.DatabaseName = "userData";
+            options.CollectionName = "items";
         });
         // Регистрация репозитория
         builder.Services.AddSingleton<MongoRepository>();

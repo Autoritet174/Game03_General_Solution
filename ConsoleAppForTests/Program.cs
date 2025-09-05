@@ -47,7 +47,7 @@
                     {
                         try
                         {
-                            await client.StartSendingMessages((msgCount) =>
+                            await client.StartSendingMessages(client.GetOptions(), (msgCount) =>
                             {
                                 _ = Interlocked.Add(ref totalMessagesSent, msgCount);
                             });

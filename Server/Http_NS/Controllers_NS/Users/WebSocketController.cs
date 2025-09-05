@@ -9,20 +9,14 @@ namespace Server.Http_NS.Controllers_NS.Users;
 /// </summary>
 [ApiController]
 [Route("ws")]
-public class WebSocketController: ControllerBaseApi
+public class WebSocketController() : ControllerBaseApi
 {
-    private readonly ClientQueue _queue;
-    private readonly ILogger<WebSocketController> _logger;
-    public WebSocketController(ClientQueue queue, ILogger<WebSocketController> logger)
-    {
-        _queue = queue ?? throw new ArgumentNullException(nameof(queue));
-        _logger = logger;
-    }
+
     /// <summary>
     /// Принимает WebSocket-соединение и обрабатывает клиента в фоне.
     /// </summary>
     [HttpGet("connect")]
-    [AllowAnonymous]
+    [Authorize]
     public async Task Connect()
     {
         if (!HttpContext.WebSockets.IsWebSocketRequest)
