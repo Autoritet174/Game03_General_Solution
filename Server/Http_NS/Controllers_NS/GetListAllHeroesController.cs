@@ -1,17 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Server.DB.Data.Repositories;
 using Server.GameDataCache;
 
 namespace Server.Http_NS.Controllers_NS;
 
-
 /// <summary>
 /// Контроллер для аутентификации пользователей.
 /// </summary>
-public class GetListAllHeroesController(HeroRepository heroRepository) : ControllerBaseApi
+public class GetListAllHeroesController() : ControllerBaseApi
 {
-    private readonly HeroRepository _heroRepository = heroRepository;
-
     /// <summary>
     /// Возвращает в ответе список всех героев.
     /// </summary>
@@ -20,11 +16,6 @@ public class GetListAllHeroesController(HeroRepository heroRepository) : Control
     public async Task<IActionResult> GetListAllHeroes()
     {
         await GF.DelayWithOutDebug500();
-
-        //return Ok(new { ListAllHeroes.Json });
         return Content(ListAllHeroes.Json, "application/json");
     }
-
-
-
 }

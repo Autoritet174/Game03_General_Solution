@@ -85,11 +85,11 @@ internal class Program
             return;
         }
 
-        ServicePointManager.DefaultConnectionLimit = 10000;
-        ServicePointManager.MaxServicePoints = 10000;
-        ServicePointManager.UseNagleAlgorithm = false;
-        ServicePointManager.Expect100Continue = false;
-        ServicePointManager.CheckCertificateRevocationList = false;
+        //ServicePointManager.DefaultConnectionLimit = 10000;
+        //ServicePointManager.MaxServicePoints = 10000;
+        //ServicePointManager.UseNagleAlgorithm = false;
+        //ServicePointManager.Expect100Continue = false;
+        //ServicePointManager.CheckCertificateRevocationList = false;
 
 
 
@@ -262,7 +262,7 @@ internal class Program
 
     private static async Task Test(WebApplication app)
     {
-        await Task.Delay(1);
+        await Task.Delay(0);
         //using DbData db = new();
         //var hero = db.Heroes.First(a=>a.Name == "Warrior");
         //var ct = db.CreatureTypes.First(a => a.Name == "Humanoid");

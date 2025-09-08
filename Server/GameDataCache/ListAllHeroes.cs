@@ -16,7 +16,7 @@ public static class ListAllHeroes
           .AsNoTracking()
           .Select(h => new
           {
-              //h.Id, 
+              h.Id, 
               h.Name,
               h.Rarity
           })
@@ -29,7 +29,7 @@ public static class ListAllHeroes
         {
             JsonObject obj = new()
             {
-                //["id"] = item.Id,
+                ["id"] = item.Id,
                 ["name"] = item.Name,
                 ["rarity"] = (int)item.Rarity,
             };

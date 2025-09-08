@@ -1,18 +1,11 @@
-﻿using static General.GameEntities.HeroBaseEntity;
+﻿using System;
+using static General.Enums;
 
 namespace General.GameEntities;
 
-public class HeroBaseEntity(string name, RarityLevel rarity)
+public class HeroBaseEntity(Guid id, string name, RarityLevel rarity)
 {
-    public enum RarityLevel : int
-    {
-        Common = 1,
-        Uncommon = 2,
-        Rare = 3,
-        Epic = 4,
-        Legendary = 5,
-        Mythic = 6,
-    }
+    public Guid Id { get; } = id;
     public string Name { get; } = name;
-    public RarityLevel Rarity { get; set; } = rarity;
+    public RarityLevel Rarity { get; } = rarity;
 }
