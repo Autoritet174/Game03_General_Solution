@@ -7,7 +7,7 @@ namespace Server.GameDataCache;
 
 public static class ListAllHeroes
 {
-    public static string Json { get; private set; } = "";
+    public static string Json { get; private set; } = string.Empty;
 
     public static async void Init()
     {
