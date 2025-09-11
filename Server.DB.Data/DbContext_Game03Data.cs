@@ -2,39 +2,56 @@
 using Server.Common;
 using Server.DB.Data.Configurations;
 using Server.DB.Data.Entities;
+using System.Drawing;
 
 namespace Server.DB.Data;
 
-/// <summary>
-/// Контекст базы данных, соответствующий первой PostgreSQL базе.
-/// </summary>
-/// <remarks>
-/// Создаёт экземпляр контекста с указанными параметрами.
-/// </remarks>
-public class DbContext_Game03Data(DbContextOptions<DbContext_Game03Data> options) : DbContext(options)
+public class DbContext_Game03Data : DbContext
 {
+    public static string GetConnectionString()
+    {
+        return "Host=127.127.126.5;Port=5432;Database=Game03_Data;Username=postgres;Password=";
+    }
+
+    public static string GetStateConnection()
+    {
+        try
+        {
+            using DbContext_Game03Data db = new();
+            _ = db.Heroes.FirstOrDefault();
+            return Common.Console.ColorizeText("SUCCESS", Color.Black, Color.LightGreen);
+        }
+        catch (Exception ex)
+        {
+            return Common.Console.ColorizeText($"FAILURE [{ex.Message}]", Color.Black, Color.OrangeRed);
+        }
+    }
+
+    public DbContext_Game03Data() : base(CreateOptions()) { }
+
+    public DbContext_Game03Data(DbContextOptions<DbContext_Game03Data> options) : base(options) { }
+
+    private static DbContextOptions<DbContext_Game03Data> CreateOptions()
+    {
+        DbContextOptionsBuilder<DbContext_Game03Data> optionsBuilder = new();
+        return optionsBuilder.UseNpgsql(GetConnectionString()).Options;
+    }
 
     public DbSet<Hero> Heroes { get; set; }
     public DbSet<CreatureType> CreatureTypes { get; set; }
     public DbSet<HeroCreatureType> HeroCreatureType { get; set; }
 
-    /// <summary>
-    /// Конфигурирует модель базы данных.
-    /// </summary>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         _ = modelBuilder.ApplyConfiguration(new HeroesConfiguration());
         _ = modelBuilder.ApplyConfiguration(new CreatureTypesConfiguration());
         _ = modelBuilder.ApplyConfiguration(new HeroCreatureTypeConfiguration());
 
+        ModelToSnakeCase(modelBuilder);
+    }
 
-        // Глобальный фильтр по удалённым записям
-        //_ = modelBuilder.Entity<Hero>().ToTable("heroes", "main");//.HasQueryFilter(a => a.DeletedAt == null);
-
-        //_ = modelBuilder.Entity<CreatureType>().ToTable("creature_types", "main");//.HasQueryFilter(a => a.DeletedAt == null);
-
+    public static void ModelToSnakeCase(ModelBuilder modelBuilder) {
         // ПРИВЕДЕНИЕ ВСЕХ ИМЕН К СТАНДАРТУ snake_case
-        // Для таблиц
         foreach (Microsoft.EntityFrameworkCore.Metadata.IMutableEntityType entity in modelBuilder.Model.GetEntityTypes())
         {
             // Таблицы в snake_case

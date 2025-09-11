@@ -11,8 +11,8 @@ public class User
     public required DateTimeOffset CreatedAt { get; set; }
     public required DateTimeOffset UpdatedAt { get; set; }
     public DateTimeOffset? DeletedAt { get; set; }
-    public required string Email { get; set; }
+    public string? Email { get; set; }
     public DateTimeOffset? EmailVerifiedAt { get; set; }
-    public required string PasswordHash { get; set; }
+    public string? PasswordHash { get; set; }
     public string? TimeZone { get; set; }
 }

@@ -11,7 +11,7 @@ public static class ListAllHeroes
 
     public static async void Init()
     {
-        using DbData db = new();
+        using DbContext_Game03Data db = new();
         var data = await db.Heroes
           .AsNoTracking()
           .Select(h => new

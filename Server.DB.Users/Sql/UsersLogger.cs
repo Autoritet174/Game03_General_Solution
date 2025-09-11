@@ -48,7 +48,7 @@ public static class UsersLogger
             byte[] hashBytes = SHA256.HashData(bytes);
 
 
-            DbUsers db = new();
+            DbContext_Game03Users db = new();
             string sql = $"""
             INSERT INTO users_authorization_logs (
                 id,

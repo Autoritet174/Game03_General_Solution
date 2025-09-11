@@ -41,8 +41,7 @@ internal class Users : IEntityTypeConfiguration<User>
         //-------------------------------------
         _ = builder.Property(e => e.Email)
             .HasColumnName("email")
-            .HasMaxLength(255)
-            .IsRequired();
+            .HasMaxLength(255);
 
         _ = builder.HasIndex(e => e.Email)
             .IsUnique()
@@ -57,8 +56,7 @@ internal class Users : IEntityTypeConfiguration<User>
         //-------------------------------------
         _ = builder.Property(e => e.PasswordHash)
             .HasColumnName("password_hash")
-            .HasMaxLength(255)
-            .IsRequired();
+            .HasMaxLength(255);
 
 
         //-------------------------------------

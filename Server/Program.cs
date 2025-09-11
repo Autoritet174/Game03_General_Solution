@@ -169,12 +169,12 @@ internal class Program
 
 
         // База данных пользователей
-        _ = services.AddDbContext<DbContext_Game03Users>(options => options.UseNpgsql(DbUsers.GetConnectionString()));
+        _ = services.AddDbContext<DbContext_Game03Users>(options => options.UseNpgsql(DbContext_Game03Users.GetConnectionString()));
         _ = services.AddScoped<UserRepository>();
 
 
         // База данных с игровыми данными
-        _ = services.AddDbContext<DbContext_Game03Data>(options => options.UseNpgsql(DbData.GetConnectionString()));
+        _ = services.AddDbContext<DbContext_Game03Data>(options => options.UseNpgsql(DbContext_Game03Data.GetConnectionString()));
         _ = services.AddScoped<HeroRepository>();
 
         // Конфигурация MongoDB
@@ -216,11 +216,11 @@ internal class Program
         Configure(app);
 
 
-        DbUsers.Init();
-        DbData.Init();
+        //DbContext_Game03Users.Init();
+        //DbData.Init();
 
-        Console.WriteLine("TestConnectionWithDataBase Users - " + DbUsers.GetStateConnection());
-        Console.WriteLine("TestConnectionWithDataBase Data  - " + DbData.GetStateConnection());
+        Console.WriteLine("TestConnectionWithDataBase Users - " + DbContext_Game03Users.GetStateConnection());
+        Console.WriteLine("TestConnectionWithDataBase Data  - " + DbContext_Game03Data.GetStateConnection());
         // Зеленый текст (как "info" в ASP.NET Core)
 
         ListAllHeroes.Init();

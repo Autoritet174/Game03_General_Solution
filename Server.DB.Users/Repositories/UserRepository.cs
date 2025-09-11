@@ -103,7 +103,7 @@ public class UserRepository
     /// <returns>Найденная запись или null.</returns>
     public async Task<User?> GetByEmailAsync(string email)
     {
-        return string.IsNullOrWhiteSpace(email) ? null : await _users.FirstOrDefaultAsync(u => EF.Functions.ILike(u.Email, email));
+        return string.IsNullOrWhiteSpace(email) ? null : await _users.FirstOrDefaultAsync(u => u.Email!=null && EF.Functions.ILike(u.Email, email));
     }
 
 }

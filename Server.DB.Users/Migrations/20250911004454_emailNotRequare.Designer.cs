@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server.DB.Users;
@@ -11,9 +12,11 @@ using Server.DB.Users;
 namespace Server.DB.Users.Migrations
 {
     [DbContext(typeof(DbContext_Game03Users))]
-    partial class DB_UsersModelSnapshot : ModelSnapshot
+    [Migration("20250911004454_emailNotRequare")]
+    partial class emailNotRequare
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,6 +44,7 @@ namespace Server.DB.Users.Migrations
                         .HasColumnName("deleted_at");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
                         .HasColumnName("email");
@@ -50,6 +54,7 @@ namespace Server.DB.Users.Migrations
                         .HasColumnName("email_verified_at");
 
                     b.Property<string>("PasswordHash")
+                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
                         .HasColumnName("password_hash");

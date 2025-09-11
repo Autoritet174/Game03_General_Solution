@@ -64,7 +64,8 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
         }
 
         User? user = await _userRepository.GetByEmailAsync(email);
-        if (user == null || !PassHasher.Verify(email, user.PasswordHash, password))
+
+        if (user == null || user.PasswordHash == null || !PassHasher.Verify(email, user.PasswordHash, password))
         {
             return CBA_BadRequest(SR.Auth_EmailAndPassword_NotFound);
         }
