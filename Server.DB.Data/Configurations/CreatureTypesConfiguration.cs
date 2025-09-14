@@ -42,6 +42,7 @@ internal class CreatureTypesConfiguration : IEntityTypeConfiguration<CreatureTyp
         _ = builder.HasIndex(e => e.Name)
             .IsUnique()
             .HasDatabaseName("ix_creature_types_name");
+
     }
 
 }

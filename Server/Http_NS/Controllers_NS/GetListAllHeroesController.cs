@@ -8,6 +8,7 @@ namespace Server.Http_NS.Controllers_NS;
 /// </summary>
 public class GetListAllHeroesController() : ControllerBaseApi
 {
+    private static ContentResult? result = null;
     /// <summary>
     /// Возвращает в ответе список всех героев.
     /// </summary>
@@ -16,6 +17,7 @@ public class GetListAllHeroesController() : ControllerBaseApi
     public async Task<IActionResult> GetListAllHeroes()
     {
         await GF.DelayWithOutDebug500();
-        return Content(ListAllHeroes.Json, "application/json");
+        result ??= Content(ListAllHeroes.Json, "application/json");
+        return result;
     }
 }

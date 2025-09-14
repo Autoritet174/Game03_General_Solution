@@ -18,7 +18,9 @@ public static class ListAllHeroes
           {
               h.Id, 
               h.Name,
-              h.Rarity
+              h.Rarity,
+              h.BaseHealth,
+              h.BaseAttack,
           })
           .ToListAsync();
 
@@ -32,12 +34,14 @@ public static class ListAllHeroes
                 ["id"] = item.Id,
                 ["name"] = item.Name,
                 ["rarity"] = (int)item.Rarity,
+                ["baseHealth"] = (int)item.BaseHealth,
+                ["baseAttack"] = (int)item.BaseAttack,
             };
 
             jsonArray.Add(obj);
         }
 
-        // Обёртка массива в объект с ключом, например "heroes"
+        // Обёртка массива в объект с ключом "heroes"
         JsonObject root = new()
         {
             ["heroes"] = jsonArray

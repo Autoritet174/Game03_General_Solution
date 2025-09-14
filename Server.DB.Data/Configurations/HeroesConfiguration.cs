@@ -42,5 +42,16 @@ internal class HeroesConfiguration : IEntityTypeConfiguration<Hero>
         _ = builder.HasIndex(e => e.Name)
             .IsUnique()
             .HasDatabaseName("ix_heroes_name");
+
+        //-------------------------------------
+        _ = builder.Property(e => e.BaseHealth)
+            .HasColumnName("base_health")
+            .IsRequired();
+
+        //-------------------------------------
+        _ = builder.Property(e => e.BaseAttack)
+            .HasColumnName("base_attack")
+            .IsRequired();
+
     }
 }
