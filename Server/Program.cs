@@ -180,7 +180,7 @@ internal class Program
         // Конфигурация MongoDB
         services.Configure<MongoSettings>(options =>
         {
-            options.ConnectionString = "mongodb://127.127.126.1:27017";
+            options.ConnectionString = "mongodb://localhost:27017";
             options.DatabaseName = "userData";
             options.CollectionName = "items";
         });
@@ -216,17 +216,10 @@ internal class Program
         Configure(app);
 
 
-        //DbContext_Game03Users.Init();
-        //DbData.Init();
-
-        Console.WriteLine("TestConnectionWithDataBase Users - " + DbContext_Game03Users.GetStateConnection());
-        Console.WriteLine("TestConnectionWithDataBase Data  - " + DbContext_Game03Data.GetStateConnection());
-        // Зеленый текст (как "info" в ASP.NET Core)
-
-        ListAllHeroes.Init();
-
-        //HeroesController.Init();
-        _ = Test(app);
+        //Console.WriteLine("TestConnectionWithDataBase Users - " + DbContext_Game03Users.GetStateConnection());
+        //Console.WriteLine("TestConnectionWithDataBase Data  - " + DbContext_Game03Data.GetStateConnection());
+        //ListAllHeroes.Init();
+        //_ = Test(app);
 
 
         //app.MapGet("/items", async (MongoRepository repo) =>
