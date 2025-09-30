@@ -79,9 +79,9 @@ partial class FormMain
         label2.Location = new Point(8, 59);
         label2.Margin = new Padding(4, 0, 4, 0);
         label2.Name = "label2";
-        label2.Size = new Size(164, 21);
+        label2.Size = new Size(123, 21);
         label2.TabIndex = 0;
-        label2.Text = "PostgreSql_GameData";
+        label2.Text = "PostgreSql_Data";
         // 
         // button_Backup_PostgreSql_GameData
         // 
