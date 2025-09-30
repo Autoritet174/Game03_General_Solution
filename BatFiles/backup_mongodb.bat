@@ -1,9 +1,8 @@
 @echo off
 echo ============
-echo MONGODB TOOL
+echo POSTGRES BACKUP
 echo ============
-echo BACKUP
-echo.
+echo
 set /p confirm="Write 'yes' to continue?: "
 if /i not "%confirm%"=="yes" (
     if /i not "%confirm%"=="yes" (
@@ -17,10 +16,11 @@ if /i not "%confirm%"=="yes" (
 if not "%1"=="" set archive_folder=%1
 
 :: Если параметр не передан, используем значение по умолчанию
+set archive_name_only=UserData.mongoDb.7z
 if "%archive_folder%"=="" (
-	set archive_name=e:\_ExchangeFolder\Game03_DataBasesBackups\mongoDb.7z
+	set archive_name="c:\UnityProjects\Game03_General_Solution\DataBaseBackupArchives\%archive_name_only%"
 ) else (
-	set archive_name="%archive_folder%"\mongoDb.7z
+	set archive_name="%archive_folder%\%archive_name_only%"
 )
 
 set backup_folder=C:\Game03_DataBasesRestore

@@ -1,9 +1,8 @@
 @echo off
 echo ============
-echo MONGODB TOOL
+echo POSTGRES BACKUP
 echo ============
-echo RESTORE
-echo.
+echo
 set /p confirm="Write 'yes' to continue?: "
 if /i not "%confirm%"=="yes" (
     if /i not "%confirm%"=="yes" (
