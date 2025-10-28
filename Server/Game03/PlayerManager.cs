@@ -1,11 +1,9 @@
-﻿using MongoDB.Bson;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using Newtonsoft.Json.Linq;
 using Server.DB.UserData;
 using Server.Utilities;
-using System.Reflection.Metadata;
-using System.Text.Json;
 
 namespace Server.Game03;
 
@@ -13,13 +11,13 @@ public class PlayerManager(MongoRepository mongoRepository)
 {
     public async Task Command(string jsonString)
     {
-        JObject jsonData = JObject.Parse(jsonString);
+        var jsonData = JObject.Parse(jsonString);
         if (jsonData == null)
         {
             return;
         }
 
-        string? value = jsonData.GetValueSafe("command");
+        var value = jsonData.GetValueSafe("command");
         if (string.IsNullOrEmpty(value))
         {
             return;
@@ -45,7 +43,8 @@ public class PlayerManager(MongoRepository mongoRepository)
     }
     private async Task AddItem_Admin(JObject jObject)
     {
-        if (jObject != null && jObject["item"] is JObject itemJObject) {
+        if (jObject != null && jObject["item"] is JObject itemJObject)
+        {
             BsonDocument itemBson = BsonSerializer.Deserialize<BsonDocument>(itemJObject.ToString());
             itemBson.ConvertStringToUuid("location");
             try
@@ -57,7 +56,7 @@ public class PlayerManager(MongoRepository mongoRepository)
                 // Код 2 - документ слишком большой
                 Console.WriteLine("Документ превышает 16MB");
             }
-           
+
         }
 
         //if (jObject != null && jObject["item"] != null)

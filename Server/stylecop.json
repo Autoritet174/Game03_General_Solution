@@ -1,0 +1,16 @@
+﻿{
+  "settings": {
+    "documentationRules": {
+      "companyName": "Autoritet174", // Название компании для заголовка файла
+      "copyrightText": "© Autoritet174 2025", // Текст авторских прав
+      "xmlHeader": true, // Требовать заголовок XML в файле
+      "documentInterfaces": true, // Документировать интерфейсы
+      "documentInternalElements": true, // Документировать internal элементы
+      "documentExposedElements": true // Документировать публичные и protected элементы
+    },
+    "orderingRules": {
+      "systemUsingDirectivesFirst": true, // using System.* должны идти первыми
+      "usingDirectivesPlacement": "insideNamespace" // using внутри namespace
+    }
+  }
+}

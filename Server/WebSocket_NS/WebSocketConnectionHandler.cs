@@ -1,4 +1,4 @@
-﻿using Server.DB.UserData;
+using Server.DB.UserData;
 using System.Collections.Concurrent;
 using System.Net;
 using System.Net.WebSockets;
@@ -17,8 +17,16 @@ public class WebSocketConnectionHandler : BackgroundService
     private readonly ConcurrentDictionary<Guid, DateTime> _activeConnections = new();
     private int _activeConnections_Count_Last = 0;
     private readonly Timer _monitoringTimer;
-    MongoRepository _mongoRepository;
+    private readonly MongoRepository _mongoRepository;
 
+    /// <summary>
+    /// Инициализирует новый экземпляр <see cref="WebSocketConnectionHandler"/>.
+    /// </summary>
+    /// <param name="logger">Сервис логирования для записи информации и ошибок.</param>
+    /// <param name="serviceProvider">Поставщик зависимостей для разрешения сервисов.</param>
+    /// <param name="configuration">Конфигурация приложения. Используется для получения настроек WebSocket, включая URL сервера и максимальное количество подключений.</param>
+    /// <param name="mongoRepository">Репозиторий для работы с MongoDB.</param>
+    /// <exception cref="ArgumentNullException">Выбрасывается, если <paramref name="configuration"/> или URL сервера равны null.</exception>
     public WebSocketConnectionHandler(ILogger<WebSocketConnectionHandler> logger, IServiceProvider serviceProvider, IConfiguration configuration, MongoRepository mongoRepository)
     {
         ArgumentNullException.ThrowIfNull(configuration);
@@ -28,7 +36,7 @@ public class WebSocketConnectionHandler : BackgroundService
         _serviceProvider = serviceProvider;
 
         // Получаем URL из конфигурации
-        string? serverUrl = configuration["WebSocketSettings:ServerUrl"];
+        var serverUrl = configuration["WebSocketSettings:ServerUrl"];
         ArgumentNullException.ThrowIfNull(serverUrl);
         _url = serverUrl;
 
@@ -36,6 +44,8 @@ public class WebSocketConnectionHandler : BackgroundService
         _monitoringTimer = new Timer(LogConnectionStats, null, TimeSpan.Zero, TimeSpan.FromSeconds(0.33));
         _mongoRepository = mongoRepository;
     }
+
+
     private void LogConnectionStats(object? state)
     {
         //_logger.LogInformation("Активных подключений: {Count}", _activeConnections.Count);
@@ -112,7 +122,7 @@ public class WebSocketConnectionHandler : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         ConfigureTimeouts(_httpListener);
-        
+
         _httpListener.Prefixes.Add(_url);
 
         //ConfigureModernHttpLimits(_maxConnections);

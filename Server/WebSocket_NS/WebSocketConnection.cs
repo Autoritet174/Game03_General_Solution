@@ -1,4 +1,4 @@
-﻿using Server.DB.UserData;
+using Server.DB.UserData;
 using Server.Game03;
 using System.Buffers;
 using System.Net.WebSockets;
@@ -24,7 +24,7 @@ public class WebSocketConnection(WebSocket webSocket, ILogger<WebSocketConnectio
         //Console.WriteLine(m);
 
         // Используем ArrayPool для уменьшения нагрузки на GC
-        byte[] buffer = ArrayPool<byte>.Shared.Rent(_receiveBufferSize);
+        var buffer = ArrayPool<byte>.Shared.Rent(_receiveBufferSize);
 
         try
         {
@@ -41,7 +41,7 @@ public class WebSocketConnection(WebSocket webSocket, ILogger<WebSocketConnectio
                     break;
                 }
 
-                string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
                 //_logger.LogDebug("Принято сообщение от клиента {ClientId}: {Message}", _id, message);
                 await _playerManager.Command(message);
                 //DateTime dt = DateTime.Now;
@@ -129,7 +129,7 @@ public class WebSocketConnection(WebSocket webSocket, ILogger<WebSocketConnectio
 
         try
         {
-            byte[] buffer = Encoding.UTF8.GetBytes(message);
+            var buffer = Encoding.UTF8.GetBytes(message);
             await _webSocket.SendAsync(
                 new ArraySegment<byte>(buffer),
                 WebSocketMessageType.Text,
