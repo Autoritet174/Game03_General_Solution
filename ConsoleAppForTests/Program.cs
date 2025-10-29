@@ -1,19 +1,19 @@
-﻿internal class Program
+internal class Program
 {
     private static async Task Main()
     {
         Console.WriteLine("WebSocket Test Client");
 
-        string serverUrl = "ws://localhost:5001/ws/";
-        int clientCount = 1;
+        var serverUrl = "ws://localhost:5001/ws/";
+        var clientCount = 1;
 
         // Переменные для статистики
-        int connectedClients = 0;
-        int totalMessagesSent = 0;
+        var connectedClients = 0;
+        var totalMessagesSent = 0;
         DateTime startTime = DateTime.Now;
 
         // Запускаем отображение статистики
-        Task statsTask = Task.Run(async () =>
+        var statsTask = Task.Run(async () =>
         {
             while (true)
             {
@@ -28,9 +28,9 @@
 
         try
         {
-            for (int i = 0; i < clientCount; i++)
+            for (var i = 0; i < clientCount; i++)
             {
-                int clientId = i + 1;
+                var clientId = i + 1;
                 WebSocketClient client = new(serverUrl);
                 clients.Add(client);
 
@@ -43,7 +43,7 @@
                     Console.WriteLine($"Клиент {clientId} подключен ({connectedClients}/{clientCount})");
 
                     // Запускаем отправку сообщений в отдельной задаче
-                    Task task = Task.Run(async () =>
+                    var task = Task.Run(async () =>
                     {
                         try
                         {
@@ -72,7 +72,7 @@
             Console.WriteLine($"Все клиенты подключены. Ожидание завершения...");
 
             // Ждем завершения всех задач или нажатия клавиши
-            Task completionTask = Task.WhenAll(clientTasks);
+            var completionTask = Task.WhenAll(clientTasks);
             Task keyPressTask = WaitForKeyPress();
 
             _ = await Task.WhenAny(completionTask, keyPressTask);
@@ -116,9 +116,9 @@
     private static async Task DisconnectAllClients(List<WebSocketClient> clients)
     {
         const int batchSize = 100;
-        int disconnectedCount = 0;
+        var disconnectedCount = 0;
 
-        for (int i = 0; i < clients.Count; i += batchSize)
+        for (var i = 0; i < clients.Count; i += batchSize)
         {
             WebSocketClient[] batch = clients.Skip(i).Take(batchSize).ToArray();
             IEnumerable<Task> disconnectTasks = batch.Select(client =>

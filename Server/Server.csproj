@@ -11,9 +11,17 @@
 
   <ItemGroup>
     <Compile Remove="DataBaseModels\**" />
+    <Compile Remove="publish\**" />
     <Content Remove="DataBaseModels\**" />
+    <Content Remove="publish\**" />
     <EmbeddedResource Remove="DataBaseModels\**" />
+    <EmbeddedResource Remove="publish\**" />
     <None Remove="DataBaseModels\**" />
+    <None Remove="publish\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Server.csproj.Backup.tmp" />
   </ItemGroup>
 
   <ItemGroup>

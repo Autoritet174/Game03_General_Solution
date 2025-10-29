@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Server.Common;
 using Server.DB.Data.Configurations;
 using Server.DB.Data.Entities;
@@ -10,7 +10,7 @@ public class DbContext_Game03Data : DbContext
 {
     public static string GetConnectionString()
     {
-        return "Host=127.127.126.5;Port=5432;Database=Game03_Data;Username=postgres;Password=";
+        return "Host=localhost;Port=5432;Database=Game03_Data;Username=postgres;Password=";
     }
 
     public static string GetStateConnection()

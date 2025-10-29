@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Server.DB.Data;
@@ -10,7 +10,6 @@ using Server.GameDataCache;
 using Server.Http_NS.Middleware_NS;
 using Server.Jwt_NS;
 using Server.WebSocket_NS;
-using System.Net;
 using System.Text;
 
 namespace Server;
@@ -120,7 +119,7 @@ internal class Program
         .AddJwtBearer(options =>
         {
             IConfigurationSection jwtConfig = builder.Configuration.GetSection("Jwt");
-            string jwtConfig_key = JwtService.GetJwtSecret();
+            var jwtConfig_key = JwtService.GetJwtSecret();
             options.TokenValidationParameters = new TokenValidationParameters
             {
 
@@ -178,14 +177,14 @@ internal class Program
         _ = services.AddScoped<HeroRepository>();
 
         // Конфигурация MongoDB
-        services.Configure<MongoSettings>(options =>
+        _ = services.Configure<MongoSettings>(options =>
         {
             options.ConnectionString = "mongodb://localhost:27017";
             options.DatabaseName = "userData";
             options.CollectionName = "items";
         });
         // Регистрация репозитория
-        builder.Services.AddSingleton<MongoRepository>();
+        _ = builder.Services.AddSingleton<MongoRepository>();
 
 
         // Добавляем контекст БД (SQL Server)
@@ -208,8 +207,8 @@ internal class Program
         //builder.Services.AddSingleton<ClientQueue>();
         //builder.Services.AddHostedService<ClientManager>();
 
-        builder.Services.AddSingleton<WebSocketConnectionHandler>();
-        builder.Services.AddHostedService(provider => provider.GetRequiredService<WebSocketConnectionHandler>());
+        _ = builder.Services.AddSingleton<WebSocketConnectionHandler>();
+        _ = builder.Services.AddHostedService(provider => provider.GetRequiredService<WebSocketConnectionHandler>());
 
         WebApplication app = builder.Build();
 
@@ -218,7 +217,7 @@ internal class Program
 
         //Console.WriteLine("TestConnectionWithDataBase Users - " + DbContext_Game03Users.GetStateConnection());
         //Console.WriteLine("TestConnectionWithDataBase Data  - " + DbContext_Game03Data.GetStateConnection());
-        //ListAllHeroes.Init();
+        ListAllHeroes.Init();
         //_ = Test(app);
 
 
@@ -247,7 +246,7 @@ internal class Program
         //    }
         //});
 
-    
+
 
         app.Run();
 
