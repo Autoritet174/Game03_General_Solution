@@ -1,9 +1,9 @@
-﻿using MongoDB.Bson;
+using MongoDB.Bson;
 using System.Reflection.Metadata;
 
-namespace Server.Utilities;
+namespace Server.Extensions;
 
-public static class BsonDocumentExtensions
+public static class BsonDocumentExtension
 {
     public static void ConvertStringToUuid(this BsonDocument document, string fieldName)
     {

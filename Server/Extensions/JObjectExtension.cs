@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Linq;
 
-namespace Server.Utilities;
+namespace Server.Extensions;
 
-public static class JObjectExtensions
+public static class JObjectExtension
 {
     public static string? GetValueSafe(this JObject obj, string path)
     {
