@@ -14,9 +14,18 @@ using System.Text;
 
 namespace Server;
 
+/// <summary>
+/// Класс содержит точку входа приложения и настройки сервисов, аутентификации,
+/// middleware, маршрутов и баз данных.
+/// </summary>
 internal class Program
 {
 
+    /// <summary>
+    /// Настраивает middleware и маршруты для приложения.
+    /// Включает обработку ошибок, HTTPS, CORS, аутентификацию и маршрутизацию.
+    /// </summary>
+    /// <param name="app">Экземпляр <see cref="WebApplication"/>.</param>
     public static void Configure(WebApplication app)
     {
 
@@ -74,9 +83,14 @@ internal class Program
 
     }
 
+    /// <summary>
+    /// Точка входа в приложение. Выполняет настройку DI, БД, аутентификации,
+    /// регистрацию сервисов и запускает сервер.
+    /// </summary>
+    /// <param name="args">Аргументы командной строки.</param>
     private static void Main(string[] args)
     {
-        Utilities.ConsoleWindow.Restore();
+        //Utilities.ConsoleWindow.Restore();
         if (!General.ServerErrors.CheckEnumServerResponse())
         {
             Console.WriteLine("Bad enum ServerResponse");
@@ -252,6 +266,12 @@ internal class Program
 
     }
 
+    /// <summary>
+    /// Тестовая функция для проверки взаимодействия с базой данных.
+    /// Может быть временной или отладочной.
+    /// </summary>
+    /// <param name="app">Экземпляр <see cref="WebApplication"/>.</param>
+    /// <returns>Асинхронная задача без значения.</returns>
     private static async Task Test(WebApplication app)
     {
         await Task.Delay(0);
