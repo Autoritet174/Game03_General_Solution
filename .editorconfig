@@ -53,7 +53,7 @@ dotnet_style_async_method_names = true:warning  # Методы асинхрон�
 dotnet_diagnostic.SA1412.severity = warning  # Принудительно требовать суффикс Async
 
 # Использование var
-csharp_style_var_for_built_in_types = true:suggestion  # Разрешить использование var для встроенных типов
+csharp_style_var_for_built_in_types = false:suggestion  # Разрешить использование var для встроенных типов
 csharp_style_var_when_type_is_apparent = true:suggestion  # Разрешить использование var, если тип очевиден
 csharp_style_var_elsewhere = false:suggestion  # Не использовать var, если тип неочевиден
 

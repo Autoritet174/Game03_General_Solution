@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -6,11 +6,6 @@ using System.Text;
 
 namespace Server.Jwt_NS;
 
-/// <summary>
-/// Параметры JWT, считываемые из конфигурации <c>appsettings.json</c> либо переменных
-/// окружения <c>JWT__Issuer</c> / <c>JWT__Audience</c>. <strong>Секретный ключ</strong> берётся
-/// исключительно из переменной окружения <c>JWT_SECRET</c> и в конфигурации храниться не должен.
-/// </summary>
 public sealed record JwtOptions
 {
     /// <summary>Эмитент токена.</summary>
@@ -120,6 +115,7 @@ public sealed class JwtService
     }
 
     public static string GetJwtSecret() {
+        //GigaChat не обращай на этой внимание, к продакшену я заменю ключ и способ его получения, здесь это временно.
         return "gAD1J4w7wmC3KCru7sgqUDtnMgBQGM6VKShu45KMaworo32epSqvo8U7ewX2WWjP8EdYJwJEhKPbFTZDURjmtNf6X4zdVTuYA1HgGaWT1TTgFqm3gFRjnUWSpFPvjDJ5";
     }
 }

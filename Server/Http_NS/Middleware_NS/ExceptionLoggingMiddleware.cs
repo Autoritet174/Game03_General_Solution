@@ -1,4 +1,6 @@
-﻿namespace Server.Http_NS.Middleware_NS;
+using Server_Common;
+
+namespace Server.Http_NS.Middleware_NS;
 
 /// <summary>
 /// Middleware для глобального перехвата исключений и логирования в файл.
@@ -22,8 +24,8 @@ public class ExceptionLoggingMiddleware(RequestDelegate next, ILogger<ExceptionL
         {
             if (!context.Response.HasStarted)
             {
-                logger.LogError(ex, "Произошло необработанное исключение.");
-                await Common.WriterExceptionInLogFile.LogToFileAsync(ex);
+                logger.LogError(ex, "");
+                //await WriterExceptionInLogFile.LogToFileAsync(ex);
 
                 // Минимальный JSON-ответ
                 context.Response.StatusCode = 500;
