@@ -30,7 +30,7 @@ public static class UsersLogger
     /// Хеш используется для предотвращения дублирования записей при повторных попытках с одинаковыми параметрами.
     /// Все операции обёрнуты в блок try-catch для предотвращения падения приложения при ошибках БД.
     /// </remarks>
-    public static async Task WriteLog(JsonObject obj, Guid user_id, string email, NpgsqlInet ip_address, bool authorizationSuccess,ILogger logger)
+    public static async Task WriteLog(JsonObject obj, Guid? user_id, string? email, NpgsqlInet ip_address, bool authorizationSuccess,ILogger logger)
     {
         try
         {

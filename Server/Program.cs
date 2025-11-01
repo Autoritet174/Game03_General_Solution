@@ -22,7 +22,7 @@ namespace Server;
 /// Класс содержит точку входа приложения и настройки сервисов, аутентификации,
 /// middleware, маршрутов и баз данных.
 /// </summary>
-internal class Program
+internal partial class Program
 {
 
     /// <summary>
@@ -187,12 +187,14 @@ internal class Program
                         QueueLimit = 0
                     });
             });
-
-            // Опционально: глобальный лимит, если хочешь
-            // options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(...);
         });
 
         _ = services.AddHostedService<BackgroundLoggerAuthentificationService>();
+
+        // Добавляем HeroCacheService
+        builder.Services.AddScoped<IHeroCacheService, HeroesCacheService>();
+
+
 
         WebApplication app = builder.Build();
 
@@ -250,19 +252,20 @@ internal class Program
 
 
         _ = app.UseForwardedHeaders();
-        ListAllHeroes.Init();
-        try
-        {
-            Log.Information("✅ Приложение стартует. Serilog работает.");
-            Log.Error("🧪 Это тестовая ошибка — должна попасть в файл.");
-        }
-        catch
-        {
-            // На всякий случай — если Log нерабочий
-            Console.WriteLine("❌ Log.Error не сработал");
-        }
-        app.Run();
 
+        //ListAllHeroes.Init();
+
+
+        // Инициализация кэша до старта
+        using (var scope = app.Services.CreateScope())
+        {
+            var heroCache = scope.ServiceProvider.GetRequiredService<IHeroCacheService>();
+            heroCache.InitializeAsync().GetAwaiter().GetResult();
+        }
+
+
+        // СТАРТ
+        app.Run();
     }
 
     /// <summary>

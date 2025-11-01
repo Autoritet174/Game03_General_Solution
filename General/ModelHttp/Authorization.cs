@@ -1,30 +1,136 @@
-﻿namespace General.ModelHttp;
+// General/ModelHttp/Authorization.cs
+namespace General.ModelHttp;
 
 /// <summary>
-/// Данные авторизации и характеристики аппаратного устройства.
+/// Класс, содержащий данные для авторизации пользователя и системную информацию об устройстве.
 /// </summary>
-/// <param name="email">Электронная почта пользователя для авторизации. Не может быть null или пустой.</param>
-/// <param name="password">Пароль пользователя для авторизации. Не может быть null или пустой.</param>
-/// <param name="deviceModel">Модель устройства, на котором выполняется приложение (например, "MacBookPro18,3").</param>
-/// <param name="deviceType">Тип устройства (например, "Desktop", "Handheld").</param>
-/// <param name="operatingSystem">Операционная система устройства (например, "Windows 10", "Android 13").</param>
-/// <param name="processorType">Тип процессора (например, "Apple M2", "Intel Core i7").</param>
-/// <param name="processorCount">Количество логических ядер процессора. Должно быть больше 0.</param>
-/// <param name="systemMemorySize">Объем оперативной памяти устройства в мегабайтах. Должен быть больше 0.</param>
-/// <param name="graphicsDeviceName">Название графического процессора (например, "NVIDIA GeForce RTX 3060").</param>
-/// <param name="graphicsMemorySize">Объем видеопамяти в мегабайтах. Должен быть больше или равен 0.</param>
-public class Authorization(string email, string password, string deviceModel, string deviceType, string operatingSystem, string processorType, int processorCount, int systemMemorySize, string graphicsDeviceName, int graphicsMemorySize, string deviceUniqueIdentifier)
+/// <remarks>
+/// Этот класс использует конструктор с параметрами для инициализации всех свойств.
+/// Все поля обязательны для заполнения при создании экземпляра.
+/// </remarks>
+/// <remarks>
+/// Инициализирует новый экземпляр класса <see cref="Authorization"/>.
+/// </remarks>
+/// <param name="email">Адрес электронной почты пользователя, используемый для входа в систему.</param>
+/// <param name="password">Пароль пользователя в открытом виде (должен передаваться по защищённому каналу).</param>
+/// <param name="timeZoneInfo_Local_BaseUtcOffset_Minutes">Смещение локального часового пояса пользователя от UTC в минутах.</param>
+/// <param name="system_Environment_UserName">Имя пользователя операционной системы, под которым запущено приложение.</param>
+/// <param name="deviceModel">Модель устройства (например, 'iPhone 14', 'Samsung Galaxy S23').</param>
+/// <param name="deviceType">Тип устройства (например, 'Mobile', 'Desktop', 'Console').</param>
+/// <param name="operatingSystem">Операционная система устройства (например, 'Windows 11', 'macOS 14', 'Android 14').</param>
+/// <param name="processorType">Архитектура и модель процессора (например, 'x64', 'ARM64').</param>
+/// <param name="processorCount">Количество логических процессоров на устройстве.</param>
+/// <param name="systemMemorySize">Объём оперативной памяти устройства в мегабайтах (МБ).</param>
+/// <param name="graphicsDeviceName">Название графического адаптера (например, 'NVIDIA GeForce RTX 4070').</param>
+/// <param name="graphicsMemorySize">Объём видеопамяти в мегабайтах (МБ).</param>
+/// <param name="deviceUniqueIdentifier">Уникальный идентификатор устройства, используемый для привязки сессии.</param>
+/// <param name="systemInfo_supportsInstancing">Указывает, поддерживает ли графическая система инстансинг (отрисовку множественных копий объектов за один вызов).</param>
+/// <param name="systemInfo_npotSupport">Указывает, поддерживает ли графическая карта текстуры с размерами, не являющимися степенью двойки (NPOT).</param>
+public class Authorization(
+    string email,
+    string password,
+    int timeZoneInfo_Local_BaseUtcOffset_Minutes,
+    string system_Environment_UserName,
+    string deviceUniqueIdentifier,
+    string deviceModel,
+    string deviceType,
+    string operatingSystem,
+    string processorType,
+    int processorCount,
+    int systemMemorySize,
+    string graphicsDeviceName,
+    int graphicsMemorySize,
+    bool systemInfo_supportsInstancing,
+    string systemInfo_npotSupport)
 {
+
+    /// <summary>
+    /// Получает или задаёт адрес электронной почты пользователя.
+    /// </summary>
+    /// <value>Строка, содержащая email пользователя.</value>
     public string Email { get; set; } = email;
+
+    /// <summary>
+    /// Получает или задаёт пароль пользователя.
+    /// </summary>
+    /// <value>Строка с паролем. Передача должна осуществляться по защищённому соединению.</value>
     public string Password { get; set; } = password;
+
+    /// <summary>
+    /// Получает или задаёт смещение локального часового пояса от UTC в минутах.
+    /// </summary>
+    /// <value>Целое число, представляющее разницу во времени (например, +180 для UTC+3).</value>
+    public int TimeZoneInfo_Local_BaseUtcOffset_Minutes { get; set; } = timeZoneInfo_Local_BaseUtcOffset_Minutes;
+
+    /// <summary>
+    /// Получает или задаёт имя пользователя операционной системы.
+    /// </summary>
+    /// <value>Имя пользователя, под которым запущено приложение (например, 'JohnDoe').</value>
+    public string System_Environment_UserName { get; set; } = system_Environment_UserName;
+
+    /// <summary>
+    /// Получает или задаёт модель устройства.
+    /// </summary>
+    /// <value>Описание аппаратной модели устройства.</value>
     public string DeviceModel { get; set; } = deviceModel;
+
+    /// <summary>
+    /// Получает или задаёт тип устройства.
+    /// </summary>
+    /// <value>Категория устройства: мобильное, настольное, игровая консоль и т.д.</value>
     public string DeviceType { get; set; } = deviceType;
+
+    /// <summary>
+    /// Получает или задаёт операционную систему устройства.
+    /// </summary>
+    /// <value>Название и версия ОС (например, 'Windows 10', 'iOS 17').</value>
     public string OperatingSystem { get; set; } = operatingSystem;
+
+    /// <summary>
+    /// Получает или задаёт тип процессора устройства.
+    /// </summary>
+    /// <value>Архитектура и модель процессора (например, 'Intel Core i7', 'Apple M1').</value>
     public string ProcessorType { get; set; } = processorType;
+
+    /// <summary>
+    /// Получает или задаёт количество логических ядер процессора.
+    /// </summary>
+    /// <value>Число, равное количеству потоков процессора.</value>
     public int ProcessorCount { get; set; } = processorCount;
+
+    /// <summary>
+    /// Получает или задаёт объём оперативной памяти устройства в мегабайтах.
+    /// </summary>
+    /// <value>Размер ОЗУ в мегабайтах (например, 16384 для 16 ГБ).</value>
     public int SystemMemorySize { get; set; } = systemMemorySize;
+
+    /// <summary>
+    /// Получает или задаёт название графического устройства.
+    /// </summary>
+    /// <value>Модель видеокарты или встроенного GPU.</value>
     public string GraphicsDeviceName { get; set; } = graphicsDeviceName;
+
+    /// <summary>
+    /// Получает или задаёт объём видеопамяти в мегабайтах.
+    /// </summary>
+    /// <value>Размер видеопамяти (VRAM) в МБ.</value>
     public int GraphicsMemorySize { get; set; } = graphicsMemorySize;
+
+    /// <summary>
+    /// Получает или задаёт уникальный идентификатор устройства.
+    /// </summary>
+    /// <value>Уникальная строка, идентифицирующая устройство (например, IMEI, UUID).</value>
     public string DeviceUniqueIdentifier { get; set; } = deviceUniqueIdentifier;
 
+    /// <summary>
+    /// Получает или задаёт признак поддержки графической системой инстансинга.
+    /// </summary>
+    /// <value><c>true</c>, если поддерживается; иначе <c>false</c>.</value>
+    public bool SystemInfo_supportsInstancing { get; set; } = systemInfo_supportsInstancing;
+
+    /// <summary>
+    /// Получает или задаёт информацию о поддержке текстур с размерами, не являющимися степенью двойки (NPOT).
+    /// </summary>
+    /// <value>Строка, описывающая уровень поддержки NPOT (например, 'Full', 'Restricted', 'None').</value>
+    public string SystemInfo_npotSupport { get; set; } = systemInfo_npotSupport;
 }
