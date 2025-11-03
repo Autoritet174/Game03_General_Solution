@@ -1,21 +1,23 @@
-dotnet ef migrations add test20250911 `
---project ".\Server.DB.Users\Server.DB.Users.csproj" `
+dotnet ef migrations add start `
+--project ".\Server_DB_Users\Server_DB_Users.csproj" `
 --startup-project ".\Server\Server.csproj" `
 --context DbContext_Game03Users
 
 dotnet ef database update `
---project ".\Server.DB.Users\Server.DB.Users.csproj" `
+--project ".\Server_DB_Users\Server_DB_Users.csproj" `
 --startup-project ".\Server\Server.csproj" `
 --context DbContext_Game03Users
 
 ÎÁÍÎÂËÅÍÈÅ ÄÎ ÓÊÀÇÀÍÍÎÉ ÌÈÃĞÀÖÈÈ ÂÊËŞ×ÈÒÅËÜÍÎ, ÂÑ¨ ×ÒÎ ÏÎÇÆÅ ÂÛÏÎËÍÈÒ ÎÒÊÀÒ Â ÎÁĞÀÒÅÌ ÏÎĞßÄÊÅ
 dotnet ef database update AddLoggingAuthorization `
---project ".\Server.DB.Users\Server.DB.Users.csproj" `
+--project ".\Server_DB_Users\Server_DB_Users.csproj" `
 --startup-project ".\Server\Server.csproj" `
 --context DbContext_Game03Users
 
 ÓÄÀËÅÍÈÅ ÏÎÑËÅÄÍÅÃÎ ÔÀÉËÀ ÌÈÃĞÀÖÈÈ
 dotnet ef migrations remove `
---project ".\Server.DB.Users\Server.DB.Users.csproj" `
+--project ".\Server_DB_Users\Server_DB_Users.csproj" `
 --startup-project ".\Server\Server.csproj" `
 --context DbContext_Game03Users
+
+dotnet build .\Server\Server.csproj

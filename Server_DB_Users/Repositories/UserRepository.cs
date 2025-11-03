@@ -15,6 +15,7 @@ public class UserRepository
     private readonly DbContext_Game03Users _dbContext;
     private readonly DbSet<User> _users;
 
+
     /// <summary>
     /// 
     /// </summary>
@@ -68,23 +69,6 @@ public class UserRepository
     }
 
 
-    /// <summary>
-    /// Выполняет мягкое удаление записи по идентификатору без загрузки сущности.
-    /// </summary>
-    /// <param name="id">Идентификатор.</param>
-    /// <exception cref="ArgumentException">Если идентификатор некорректен.</exception>
-    /// <exception cref="InvalidOperationException">Если запись не найдена.</exception>
-    public async Task SoftDeleteUserAsync(Guid id)
-    {
-        int affected = await _users
-            .Where(a => a.Id == id)
-            .ExecuteUpdateAsync(setters => setters.SetProperty(a => a.DeletedAt, _ => DateTimeOffset.UtcNow));
-
-        // affected количество удаленных записей
-        ThrowHelper.ThrowIfRecordNotExists(affected > 0);
-    }
-
-
     public async Task<List<User>> GetAllAsync()
     {
         return await _users.AsNoTracking().ToListAsync();
@@ -104,7 +88,21 @@ public class UserRepository
     /// <returns>Найденная запись или null.</returns>
     public async Task<User?> GetByEmailAsync(string email)
     {
-        return string.IsNullOrWhiteSpace(email) ? null : await _users.FirstOrDefaultAsync(u => u.Email!=null && EF.Functions.ILike(u.Email, email));
+        throw new NotImplementedException();
+        //return string.IsNullOrWhiteSpace(email) ? null : await _users.FirstOrDefaultAsync(u => u.Email != null && EF.Functions.ILike(u.Email, email));
+    }
+
+
+    /// <summary>
+    /// Возвращает пользователя по e-mail (без учёта регистра) с банами.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns>Найденная запись или null.</returns>
+    public async Task<User?> GetByEmailWithBansAsync(string email)
+    {
+        return string.IsNullOrWhiteSpace(email) ? null :
+            await _users.Include(u => u.Bans.Where(b => b.CreatedAt <= DateTimeOffset.UtcNow && (b.ExpiresAt == null || b.ExpiresAt >= DateTimeOffset.UtcNow)))
+                .AsNoTracking().FirstOrDefaultAsync(u => u.Email != null && EF.Functions.ILike(u.Email, email));
     }
 
 }

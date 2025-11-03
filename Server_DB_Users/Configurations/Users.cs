@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Server_DB_Users.Entities;
 
@@ -7,16 +7,15 @@ internal class Users : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        _ = builder.ToTable("users");
+        _ = builder.ToTable("users", "_main");
 
 
         //Уникальный идентификатор и индекс первичного ключа
         _ = builder.Property(e => e.Id)
             .HasColumnName("id")
-            .HasDefaultValueSql("uuid_generate_v4()");
+            .HasDefaultValueSql("gen_random_uuid()");
 
-        _ = builder.HasKey(e => e.Id)
-            .HasName("pk_users_id");
+        _ = builder.HasKey(e => e.Id);
 
 
         //-------------------------------------
@@ -31,12 +30,6 @@ internal class Users : IEntityTypeConfiguration<User>
             .HasColumnName("updated_at")
             .HasDefaultValueSql("NOW()")
             .IsRequired();
-
-
-        //-------------------------------------
-        _ = builder.Property(e => e.DeletedAt)
-            .HasColumnName("deleted_at");
-
 
         //-------------------------------------
         _ = builder.Property(e => e.Email)
@@ -64,5 +57,11 @@ internal class Users : IEntityTypeConfiguration<User>
             .HasColumnName("time_zone")
             .HasMaxLength(64);
 
+        //-------------------------------------
+        builder.HasMany(u => u.Bans)
+               .WithOne(b => b.User)
+               .HasForeignKey(b => b.UserId)
+               .IsRequired()                      // FK NOT NULL
+               .OnDelete(DeleteBehavior.NoAction); // или Restrict/NoAction
     }
 }

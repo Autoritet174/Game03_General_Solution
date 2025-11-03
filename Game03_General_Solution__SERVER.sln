@@ -13,8 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackuperDatabases", "Backup
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server_Common", "Server_Common\Server_Common.csproj", "{37431F94-2300-D0A6-79AD-B25800546F74}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server_DB", "Server_DB\Server_DB.csproj", "{FFC28D10-FCBC-F8CE-1345-8BCBC173C24C}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server_DB_Data", "Server_DB_Data\Server_DB_Data.csproj", "{41C87EB7-3355-FD3D-8C2D-0ED5EC9D4C61}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server_DB_UserData", "Server_DB_UserData\Server_DB_UserData.csproj", "{CFCD5CF5-A002-FC4E-12C3-A70AA53A64DA}"
@@ -47,10 +45,6 @@ Global
 		{37431F94-2300-D0A6-79AD-B25800546F74}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{37431F94-2300-D0A6-79AD-B25800546F74}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{37431F94-2300-D0A6-79AD-B25800546F74}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FFC28D10-FCBC-F8CE-1345-8BCBC173C24C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FFC28D10-FCBC-F8CE-1345-8BCBC173C24C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FFC28D10-FCBC-F8CE-1345-8BCBC173C24C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FFC28D10-FCBC-F8CE-1345-8BCBC173C24C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{41C87EB7-3355-FD3D-8C2D-0ED5EC9D4C61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{41C87EB7-3355-FD3D-8C2D-0ED5EC9D4C61}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{41C87EB7-3355-FD3D-8C2D-0ED5EC9D4C61}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -84,4 +84,5 @@ public abstract class ControllerBaseApi : ControllerBase
         // Возвращаем 415 Unsupported Media Type, если Content-Type не является application/json
         return StatusCode(415, new { code = (long)General.ServerErrors.Error.UnsupportedMediaType });
     }
+
 }

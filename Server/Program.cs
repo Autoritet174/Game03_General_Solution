@@ -25,6 +25,8 @@ namespace Server;
 internal partial class Program
 {
 
+    public static bool DEV_MODE { get; } = true;
+
     /// <summary>
     /// Точка входа в приложение. Выполняет настройку DI, БД, аутентификации,
     /// регистрацию сервисов и запускает сервер.
@@ -41,7 +43,7 @@ internal partial class Program
         }
 
         string serilogDir = Path.Combine(AppContext.BaseDirectory, "logs-errors");
-        Directory.CreateDirectory(serilogDir);
+        _ = Directory.CreateDirectory(serilogDir);
 
         Log.Logger = new LoggerConfiguration()
             // Все ошибки и критические события — в файл ошибок
@@ -57,7 +59,7 @@ internal partial class Program
             .WriteTo.Console(restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Verbose)
 
             .CreateLogger();
-        
+
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
         _ = builder.Host.UseSerilog(); // Это заменит встроенный провайдер на Serilog
@@ -138,7 +140,6 @@ internal partial class Program
         _ = services.AddDbContext<DbContext_Game03Users>(options => options.UseNpgsql(DbContext_Game03Users.GetConnectionString()));
         _ = services.AddScoped<UserRepository>();
 
-
         // База данных с игровыми данными
         _ = services.AddDbContext<DbContext_Game03Data>(options => options.UseNpgsql(DbContext_Game03Data.GetConnectionString()));
         _ = services.AddScoped<HeroRepository>();
@@ -189,15 +190,23 @@ internal partial class Program
             });
         });
 
-        _ = services.AddHostedService<BackgroundLoggerAuthentificationService>();
+
+        // Регистрируем сервис как синглтон
+        _ = services.AddSingleton<BackgroundLoggerAuthentificationService>();
+
+        // Регистрируем его как IHostedService, используя тот же экземпляр
+        _ = services.AddHostedService(
+            provider => provider.GetRequiredService<BackgroundLoggerAuthentificationService>());
 
         // Добавляем HeroCacheService
-        builder.Services.AddScoped<IHeroCacheService, HeroesCacheService>();
+        _ = builder.Services.AddScoped<IHeroCacheService, HeroesCacheService>();
 
+        _ = builder.Services.AddMemoryCache();
 
 
         WebApplication app = builder.Build();
 
+        
         //Миддлвар 1 - Обработка ошибок
         _ = app.UseMiddleware<ExceptionLoggingMiddleware>();
         //_ = app.UseExceptionHandler("/Home/Error");// этот мидлвар не нужен так как сервер обслуживает только API, без сайта и вебстраниц
@@ -257,9 +266,9 @@ internal partial class Program
 
 
         // Инициализация кэша до старта
-        using (var scope = app.Services.CreateScope())
+        using (IServiceScope scope = app.Services.CreateScope())
         {
-            var heroCache = scope.ServiceProvider.GetRequiredService<IHeroCacheService>();
+            IHeroCacheService heroCache = scope.ServiceProvider.GetRequiredService<IHeroCacheService>();
             heroCache.InitializeAsync().GetAwaiter().GetResult();
         }
 

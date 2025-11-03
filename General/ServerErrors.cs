@@ -13,7 +13,10 @@ public static class ServerErrors
         AuthInvalidCredentials = 2,
         RestApiBodyEmpty = 3,
         UnsupportedMediaType = 4,
-        AuthAlreadyAuthenticated = 100,
+        AuthAlreadyAuthenticated = 7,
+        TooManyRequests = 6,
+        AccountBannedUntil = 101,
+        AccountBannedPermanently = 102,
     }
 
     public static Error GetResponse(long code) { 

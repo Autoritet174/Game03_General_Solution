@@ -1,21 +1,24 @@
-dotnet ef migrations add NewBaseStat002 `
---project ".\Server.DB.Data\Server.DB.Data.csproj" `
+dotnet ef migrations add Start2 `
+--project ".\Server_DB_Data\Server_DB_Data.csproj" `
 --startup-project ".\Server\Server.csproj" `
 --context DbContext_Game03Data
 
 dotnet ef database update `
---project ".\Server.DB.Data\Server.DB.Data.csproj" `
+--project ".\Server_DB_Data\Server_DB_Data.csproj" `
 --startup-project ".\Server\Server.csproj" `
 --context DbContext_Game03Data
 
 ÎÁÍÎÂËÅÍÈÅ ÄÎ ÓÊÀÇÀÍÍÎÉ ÌÈÃĞÀÖÈÈ ÂÊËŞ×ÈÒÅËÜÍÎ, ÂÑ¨ ×ÒÎ ÏÎÇÆÅ ÂÛÏÎËÍÈÒ ÎÒÊÀÒ Â ÎÁĞÀÒÅÌ ÏÎĞßÄÊÅ
 dotnet ef database update DeleteColumns_DeletedAt `
---project ".\Server.DB.Data\Server.DB.Data.csproj" `
+--project ".\Server_DB_Data\Server_DB_Data.csproj" `
 --startup-project ".\Server\Server.csproj" `
 --context DbContext_Game03Data
 
 ÓÄÀËÅÍÈÅ ÏÎÑËÅÄÍÅÃÎ ÔÀÉËÀ ÌÈÃĞÀÖÈÈ
 dotnet ef migrations remove `
---project ".\Server.DB.Data\Server.DB.Data.csproj" `
+--project ".\Server_DB_Data\Server_DB_Data.csproj" `
 --startup-project ".\Server\Server.csproj" `
 --context DbContext_Game03Data
+
+
+dotnet build .\Server\Server.csproj

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Server_DB_Data.Entities;
 
@@ -7,16 +7,16 @@ internal class CreatureTypesConfiguration : IEntityTypeConfiguration<CreatureTyp
 {
     public void Configure(EntityTypeBuilder<CreatureType> builder)
     {
-        _ = builder.ToTable("creature_types", "main");
+        _ = builder.ToTable("creature_types", "_main");
 
 
         //Уникальный идентификатор и индекс первичного ключа
         _ = builder.Property(e => e.Id)
             .HasColumnName("id")
-            .HasDefaultValueSql("uuid_generate_v4()");
+            .HasDefaultValueSql("gen_random_uuid()");
 
-        _ = builder.HasKey(e => e.Id)
-            .HasName("pk_creature_types_id");
+        _ = builder.HasKey(e => e.Id);
+            //.HasName("creature_types____pkey");
 
 
         //-------------------------------------
@@ -40,8 +40,7 @@ internal class CreatureTypesConfiguration : IEntityTypeConfiguration<CreatureTyp
             .IsRequired();
 
         _ = builder.HasIndex(e => e.Name)
-            .IsUnique()
-            .HasDatabaseName("ix_creature_types_name");
+            .IsUnique();
 
     }
 

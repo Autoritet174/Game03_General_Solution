@@ -1,5 +1,6 @@
 // DbContext_Game03Users.cs
 using Microsoft.EntityFrameworkCore;
+using Server_Common;
 using Server_DB_Users.Entities;
 using System.Drawing;
 
@@ -37,12 +38,13 @@ public class DbContext_Game03Users : DbContext
     }
 
     public DbSet<User> Users { get; set; }
+    public DbSet<User_Ban> Users_Bans { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         _ = modelBuilder.ApplyConfiguration(new Configurations.Users());
-        _ = modelBuilder.Entity<User>().HasQueryFilter(a => a.DeletedAt == null);
+        _ = modelBuilder.ApplyConfiguration(new Configurations.Users_Bans());
 
-        //DbContext_Game03Data.ModelToSnakeCase(modelBuilder);
+        modelBuilder.ModelToSnakeCase();
     }
 }

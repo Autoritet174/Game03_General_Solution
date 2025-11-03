@@ -33,23 +33,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.3.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.10" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.10">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Serilog" Version="4.3.0" />
-    <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
-    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\General\General.csproj" />
+    <ProjectReference Include="..\Server_Common\Server_Common.csproj" />
     <ProjectReference Include="..\Server_DB_Data\Server_DB_Data.csproj" />
     <ProjectReference Include="..\Server_DB_UserData\Server_DB_UserData.csproj" />
     <ProjectReference Include="..\Server_DB_Users\Server_DB_Users.csproj" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.10"/>
+
   </ItemGroup>
 
 </Project>

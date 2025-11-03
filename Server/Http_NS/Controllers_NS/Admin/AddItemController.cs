@@ -5,8 +5,15 @@ using SR = General.ServerErrors.Error;
 
 namespace Server.Http_NS.Controllers_NS.Admin;
 
+/// <summary>
+/// 
+/// </summary>
 public class AddItemController : ControllerBaseApi
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public async Task<IActionResult> Main()
     {
         JsonObject? obj = await JsonObjectExt.GetJsonObjectFromRequest(Request);
@@ -15,8 +22,8 @@ public class AddItemController : ControllerBaseApi
             return BadRequestWithServerError(SR.RestApiBodyEmpty);
         }
 
-        _ = JsonObjectHelper.GetString(obj, "email");
-        _ = JsonObjectHelper.GetString(obj, "password");
+        _ = JsonObjectExt.GetString(obj, "email");
+        _ = JsonObjectExt.GetString(obj, "password");
         return Ok();
     }
 

@@ -11,13 +11,13 @@ using Server_DB_Users;
 namespace Server_DB_Users.Migrations
 {
     [DbContext(typeof(DbContext_Game03Users))]
-    partial class DB_UsersModelSnapshot : ModelSnapshot
+    partial class DbContext_Game03UsersModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.7")
+                .HasAnnotation("ProductVersion", "9.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -28,17 +28,13 @@ namespace Server_DB_Users.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id")
-                        .HasDefaultValueSql("uuid_generate_v4()");
+                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("NOW()");
-
-                    b.Property<DateTimeOffset?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
 
                     b.Property<string>("Email")
                         .HasMaxLength(255)
@@ -66,13 +62,65 @@ namespace Server_DB_Users.Migrations
                         .HasDefaultValueSql("NOW()");
 
                     b.HasKey("Id")
-                        .HasName("pk_users_id");
+                        .HasName("users_pkey");
 
                     b.HasIndex("Email")
                         .IsUnique()
-                        .HasDatabaseName("email");
+                        .HasDatabaseName("users_email_idx");
 
-                    b.ToTable("users", (string)null);
+                    b.ToTable("users", "_main");
+                });
+
+            modelBuilder.Entity("Server_DB_Users.Entities.User_Ban", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<DateTimeOffset?>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expires_at");
+
+                    b.Property<Guid?>("UserBansReasonsId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_bans_reasons_id");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("users_bans_pkey");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("users_bans_user_id_idx");
+
+                    b.ToTable("users_bans", "_main");
+                });
+
+            modelBuilder.Entity("Server_DB_Users.Entities.User_Ban", b =>
+                {
+                    b.HasOne("Server_DB_Users.Entities.User", "User")
+                        .WithMany("Bans")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("users_bans_user_id_users_fkey");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Server_DB_Users.Entities.User", b =>
+                {
+                    b.Navigation("Bans");
                 });
 #pragma warning restore 612, 618
         }
