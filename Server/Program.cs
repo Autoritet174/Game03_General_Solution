@@ -24,8 +24,23 @@ namespace Server;
 /// </summary>
 internal partial class Program
 {
-
+    /// <summary>
+    /// РЕЖИМ РАЗРАБОТКИ
+    /// </summary>
     public static bool DEV_MODE { get; } = true;
+
+    private static void AlertIfDevMode()
+    {
+        if (DEV_MODE)
+        {
+            Console.WriteLine("""
+                DEV_MODE DEV_MODE DEV_MODE DEV_MODE DEV_MODE
+                DEV_MODE DEV_MODE DEV_MODE DEV_MODE DEV_MODE
+                DEV_MODE DEV_MODE DEV_MODE DEV_MODE DEV_MODE
+                DEV_MODE DEV_MODE DEV_MODE DEV_MODE DEV_MODE
+                """);
+        }
+    }
 
     /// <summary>
     /// Точка входа в приложение. Выполняет настройку DI, БД, аутентификации,
@@ -41,6 +56,8 @@ internal partial class Program
             _ = Console.ReadLine();
             return;
         }
+
+        AlertIfDevMode();
 
         string serilogDir = Path.Combine(AppContext.BaseDirectory, "logs-errors");
         _ = Directory.CreateDirectory(serilogDir);
@@ -74,7 +91,7 @@ internal partial class Program
         _ = services.AddHttpLogging();
 
         // Регистрация ClientManager как singleton
-        _ = services.AddSingleton<ClientManager2>();
+        //_ = services.AddSingleton<ClientManager2>();
 
 
 
@@ -199,14 +216,15 @@ internal partial class Program
             provider => provider.GetRequiredService<BackgroundLoggerAuthentificationService>());
 
         // Добавляем HeroCacheService
-        _ = builder.Services.AddScoped<IHeroCacheService, HeroesCacheService>();
+        //_ = builder.Services.AddScoped<IHeroCacheService, HeroesCacheService>();
+        _ = builder.Services.AddSingleton<IHeroCacheService, HeroesCacheService>();
 
         _ = builder.Services.AddMemoryCache();
 
 
         WebApplication app = builder.Build();
 
-        
+
         //Миддлвар 1 - Обработка ошибок
         _ = app.UseMiddleware<ExceptionLoggingMiddleware>();
         //_ = app.UseExceptionHandler("/Home/Error");// этот мидлвар не нужен так как сервер обслуживает только API, без сайта и вебстраниц
@@ -262,14 +280,12 @@ internal partial class Program
 
         _ = app.UseForwardedHeaders();
 
-        //ListAllHeroes.Init();
-
 
         // Инициализация кэша до старта
         using (IServiceScope scope = app.Services.CreateScope())
         {
             IHeroCacheService heroCache = scope.ServiceProvider.GetRequiredService<IHeroCacheService>();
-            heroCache.InitializeAsync().GetAwaiter().GetResult();
+            heroCache.InitializeAsync(scope.ServiceProvider).GetAwaiter().GetResult();
         }
 
 

@@ -57,6 +57,12 @@ internal class Users : IEntityTypeConfiguration<User>
             .HasColumnName("time_zone")
             .HasMaxLength(64);
 
+
+        //-------------------------------------
+        _ = builder.Property(e => e.IsAdmin)
+            .HasColumnName("is_admin")
+               .IsRequired();
+
         //-------------------------------------
         builder.HasMany(u => u.Bans)
                .WithOne(b => b.User)

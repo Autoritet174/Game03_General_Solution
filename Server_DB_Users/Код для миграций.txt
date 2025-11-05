@@ -1,4 +1,4 @@
-dotnet ef migrations add start `
+dotnet ef migrations add start002 `
 --project ".\Server_DB_Users\Server_DB_Users.csproj" `
 --startup-project ".\Server\Server.csproj" `
 --context DbContext_Game03Users
@@ -9,7 +9,7 @@ dotnet ef database update `
 --context DbContext_Game03Users
 
 ÎÁÍÎÂËÅÍÈÅ ÄÎ ÓÊÀÇÀÍÍÎÉ ÌÈÃĞÀÖÈÈ ÂÊËŞ×ÈÒÅËÜÍÎ, ÂÑ¨ ×ÒÎ ÏÎÇÆÅ ÂÛÏÎËÍÈÒ ÎÒÊÀÒ Â ÎÁĞÀÒÅÌ ÏÎĞßÄÊÅ
-dotnet ef database update AddLoggingAuthorization `
+dotnet ef database update `
 --project ".\Server_DB_Users\Server_DB_Users.csproj" `
 --startup-project ".\Server\Server.csproj" `
 --context DbContext_Game03Users

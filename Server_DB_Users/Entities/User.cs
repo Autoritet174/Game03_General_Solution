@@ -14,6 +14,8 @@ public class User
     public DateTimeOffset? EmailVerifiedAt { get; set; }
     public string? PasswordHash { get; set; }
     public string? TimeZone { get; set; }
+    public bool IsAdmin { get; set; } = false;
+
 
     // Коллекция банов (1 ко многим)
     public ICollection<User_Ban> Bans { get; set; } = [];
