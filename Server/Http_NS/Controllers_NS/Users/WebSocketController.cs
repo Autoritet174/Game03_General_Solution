@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Server.WebSocket_NS;
 using System.Net.WebSockets;
@@ -16,7 +16,6 @@ public class WebSocketController() : ControllerBaseApi
     /// Принимает WebSocket-соединение и обрабатывает клиента в фоне.
     /// </summary>
     [HttpGet("connect")]
-    [Authorize]
     public async Task Connect()
     {
         if (!HttpContext.WebSockets.IsWebSocketRequest)
