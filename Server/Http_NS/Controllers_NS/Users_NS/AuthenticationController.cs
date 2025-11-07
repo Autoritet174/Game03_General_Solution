@@ -11,7 +11,7 @@ using System.Net;
 using System.Text.Json.Nodes;
 using SR = General.ServerErrors.Error;
 
-namespace Server.Http_NS.Controllers_NS.Users;
+namespace Server.Http_NS.Controllers_NS.Users_NS;
 
 /// <summary>
 /// Контроллер аутентификации пользователей. Обрабатывает процесс входа (логин) по email и паролю.

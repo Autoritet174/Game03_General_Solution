@@ -1,4 +1,4 @@
-﻿using System.Net.WebSockets;
+using System.Net.WebSockets;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -21,6 +21,7 @@ public class WebSocketClient
     public async Task ConnectAsync()
     {
         bool connected = false;
+
         for (int i = 0; i < 3; i++)
         {
             try

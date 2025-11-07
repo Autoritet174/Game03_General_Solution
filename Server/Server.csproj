@@ -38,7 +38,7 @@
     <ProjectReference Include="..\Server_DB_Data\Server_DB_Data.csproj" />
     <ProjectReference Include="..\Server_DB_UserData\Server_DB_UserData.csproj" />
     <ProjectReference Include="..\Server_DB_Users\Server_DB_Users.csproj" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.10"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.10" />
 
   </ItemGroup>
 

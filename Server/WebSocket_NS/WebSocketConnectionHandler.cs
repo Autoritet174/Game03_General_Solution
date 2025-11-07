@@ -1,6 +1,10 @@
+using Server.Jwt_NS;
 using Server_DB_UserData;
+using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Net;
+using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Runtime.InteropServices;
 
@@ -18,6 +22,7 @@ public class WebSocketConnectionHandler : BackgroundService
     private int _activeConnections_Count_Last = 0;
     private readonly Timer _monitoringTimer;
     private readonly MongoRepository _mongoRepository;
+    private readonly JwtService _jwtService;
 
     /// <summary>
     /// Инициализирует новый экземпляр <see cref="WebSocketConnectionHandler"/>.
@@ -26,8 +31,9 @@ public class WebSocketConnectionHandler : BackgroundService
     /// <param name="serviceProvider">Поставщик зависимостей для разрешения сервисов.</param>
     /// <param name="configuration">Конфигурация приложения. Используется для получения настроек WebSocket, включая URL сервера и максимальное количество подключений.</param>
     /// <param name="mongoRepository">Репозиторий для работы с MongoDB.</param>
+    /// <param name="jwtService">JWT Сервис</param>
     /// <exception cref="ArgumentNullException">Выбрасывается, если <paramref name="configuration"/> или URL сервера равны null.</exception>
-    public WebSocketConnectionHandler(ILogger<WebSocketConnectionHandler> logger, IServiceProvider serviceProvider, IConfiguration configuration, MongoRepository mongoRepository)
+    public WebSocketConnectionHandler(ILogger<WebSocketConnectionHandler> logger, IServiceProvider serviceProvider, IConfiguration configuration, MongoRepository mongoRepository, JwtService jwtService)
     {
         ArgumentNullException.ThrowIfNull(configuration);
         _configuration = configuration;
@@ -43,9 +49,13 @@ public class WebSocketConnectionHandler : BackgroundService
         _maxConnections = configuration.GetValue<int>("WebSocketSettings:MaxConnections");
         _monitoringTimer = new Timer(LogConnectionStats, null, TimeSpan.Zero, TimeSpan.FromSeconds(0.33));
         _mongoRepository = mongoRepository;
+        _jwtService = jwtService;
     }
 
-
+    /// <summary>
+    /// Процедура вызываемая таймером
+    /// </summary>
+    /// <param name="state"></param>
     private void LogConnectionStats(object? state)
     {
         //_logger.LogInformation("Активных подключений: {Count}", _activeConnections.Count);
@@ -60,39 +70,9 @@ public class WebSocketConnectionHandler : BackgroundService
         return _activeConnections.Count;
     }
 
-    public void ActiveConnectionsAdd(Guid guid)
-    {
-        _ = _activeConnections.TryAdd(guid, DateTime.UtcNow);
-        Console.WriteLine($"Активных подключений: {_activeConnections.Count}");
-    }
     public void ActiveConnectionsRemove(Guid guid)
     {
         _ = _activeConnections.TryRemove(guid, out _);
-    }
-    private void ConfigureTimeouts(HttpListener httpListener)
-    {
-        try
-        {
-            HttpListenerTimeoutManager timeoutManager = httpListener.TimeoutManager;
-            timeoutManager.IdleConnection = TimeSpan.FromMinutes(30);
-            timeoutManager.DrainEntityBody = TimeSpan.FromMinutes(30);
-
-            // Свойства, доступные только в Windows
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                timeoutManager.EntityBody = TimeSpan.FromMinutes(30);
-                timeoutManager.RequestQueue = TimeSpan.FromMinutes(30);
-                timeoutManager.HeaderWait = TimeSpan.FromMinutes(30);
-            }
-        }
-        catch (PlatformNotSupportedException)
-        {
-            _logger.LogInformation("Некоторые настройки таймаутов не поддерживаются на этой платформе");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogWarning(ex, "Ошибка при настройке таймаутов");
-        }
     }
 
 
@@ -118,10 +98,39 @@ public class WebSocketConnectionHandler : BackgroundService
     //    }
     //}
 
-
+    /// <summary>
+    /// При старте сервера запускает веб сокет сервер.
+    /// </summary>
+    /// <param name="stoppingToken"></param>
+    /// <returns></returns>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        ConfigureTimeouts(_httpListener);
+        //ConfigureTimeouts
+        try
+        {
+            HttpListenerTimeoutManager timeoutManager = _httpListener.TimeoutManager;
+            timeoutManager.IdleConnection = TimeSpan.FromMinutes(30);
+            timeoutManager.DrainEntityBody = TimeSpan.FromMinutes(30);
+
+            // Свойства, доступные только в Windows
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                timeoutManager.EntityBody = TimeSpan.FromMinutes(30);
+                timeoutManager.RequestQueue = TimeSpan.FromMinutes(30);
+                timeoutManager.HeaderWait = TimeSpan.FromMinutes(30);
+            }
+        }
+        catch (PlatformNotSupportedException)
+        {
+            _logger.LogInformation("Некоторые настройки таймаутов не поддерживаются на этой платформе");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Ошибка при настройке таймаутов");
+        }
+
+
+
 
         _httpListener.Prefixes.Add(_url);
 
@@ -168,7 +177,13 @@ public class WebSocketConnectionHandler : BackgroundService
         }
     }
 
-
+    /// <summary>
+    /// Вызывается при запросе открытия веб сокета от клиента.
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="stoppingToken"></param>
+    /// <param name="semaphore"></param>
+    /// <returns></returns>
     private async Task ProcessWebSocketRequest(HttpListenerContext context, CancellationToken stoppingToken, SemaphoreSlim semaphore)
     {
         try
@@ -179,7 +194,11 @@ public class WebSocketConnectionHandler : BackgroundService
             using IServiceScope scope = _serviceProvider.CreateScope();
             ILogger<WebSocketConnection> clientLogger = scope.ServiceProvider.GetRequiredService<ILogger<WebSocketConnection>>();
 
-            WebSocketConnection client = new(webSocket, clientLogger, _configuration, this, _mongoRepository);
+            WebSocketConnection client = new(webSocket, clientLogger, _configuration, this, _mongoRepository, _jwtService);
+
+            _ = _activeConnections.TryAdd(client.Id, DateTime.UtcNow);
+            Console.WriteLine($"Активных подключений: {_activeConnections.Count}");
+
             await client.HandleAsync(stoppingToken);
         }
         catch (Exception ex) when (WebSocketConnection.IsExpectedDisconnectException(ex))

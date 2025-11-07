@@ -1,25 +1,30 @@
-using Server_DB_UserData;
 using Server.Game03;
+using Server.Jwt_NS;
+using Server_DB_UserData;
 using System.Buffers;
 using System.Net.WebSockets;
 using System.Text;
 
 namespace Server.WebSocket_NS;
 
-public class WebSocketConnection(WebSocket webSocket, ILogger<WebSocketConnection> logger, IConfiguration configuration, WebSocketConnectionHandler webSocketServer, MongoRepository mongoRepository)
+public class WebSocketConnection(WebSocket webSocket, ILogger<WebSocketConnection> logger, IConfiguration configuration, WebSocketConnectionHandler webSocketServer, MongoRepository mongoRepository, JwtService jwtService)
 {
-    private Guid Id { get; } = Guid.NewGuid();
+    public Guid Id { get; private set; } = Guid.NewGuid();
     private readonly WebSocket _webSocket = webSocket;
     private readonly ILogger<WebSocketConnection> _logger = logger;
     private readonly int _receiveBufferSize = configuration.GetValue<int>("WebSocketSettings:ReceiveBufferSize");
     private readonly WebSocketConnectionHandler _webSocketServer = webSocketServer;
     private readonly PlayerManager _playerManager = new(mongoRepository);
+    private readonly JwtService _jwtService = jwtService;
+    private bool _isAuthenticated = false;
 
+    /// <summary>
+    /// Вызывается при открытии веб сокета из WebSocketConnectionHandler.ProcessWebSocketRequest()
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     public async Task HandleAsync(CancellationToken cancellationToken)
     {
-        //string m = $"Клиент {_id} подключён";www
-        //_logger.LogInformation("Клиент {_id} подключён", _id);
-        _webSocketServer.ActiveConnectionsAdd(Id);
 
         //Console.WriteLine(m);
 
@@ -42,7 +47,7 @@ public class WebSocketConnection(WebSocket webSocket, ILogger<WebSocketConnectio
                 }
 
                 var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                //_logger.LogDebug("Принято сообщение от клиента {ClientId}: {Message}", _id, message);
+                _logger.LogInformation("Принято сообщение от клиента {ClientId}: {Message}", Id, message);
                 await _playerManager.Command(message);
                 //DateTime dt = DateTime.Now;
                 //string[] sA = message.Split(new string[] { ".", ":" }, StringSplitOptions.None);
@@ -120,6 +125,12 @@ public class WebSocketConnection(WebSocket webSocket, ILogger<WebSocketConnectio
         return ex.InnerException != null && IsExpectedDisconnectException(ex.InnerException);
     }
 
+    /// <summary>
+    /// Отправить сообщение клиенту
+    /// </summary>
+    /// <param name="message"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     private async Task SendMessageSafeAsync(string message, CancellationToken cancellationToken)
     {
         if (_webSocket.State != WebSocketState.Open)
@@ -136,6 +147,8 @@ public class WebSocketConnection(WebSocket webSocket, ILogger<WebSocketConnectio
                 true,
                 cancellationToken
             );
+            _logger.LogDebug("сообщение клиенту {ClientId}: {Message}", Id, message);
+            _logger.Log((LogLevel)0, "сообщение клиенту {ClientId}: {Message}", Id, message);
         }
         catch (Exception ex) when (IsExpectedDisconnectException(ex))
         {

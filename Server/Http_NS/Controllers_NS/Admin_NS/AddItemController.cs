@@ -3,7 +3,7 @@ using Server_DB;
 using System.Text.Json.Nodes;
 using SR = General.ServerErrors.Error;
 
-namespace Server.Http_NS.Controllers_NS.Admin;
+namespace Server.Http_NS.Controllers_NS.Admin_NS;
 
 /// <summary>
 /// 

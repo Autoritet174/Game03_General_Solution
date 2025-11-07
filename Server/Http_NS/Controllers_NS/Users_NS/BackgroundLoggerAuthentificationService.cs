@@ -6,7 +6,7 @@ using System.Collections.Concurrent;
 using System.Text;
 using System.Text.Json.Nodes;
 
-namespace Server.Http_NS.Controllers_NS.Users;
+namespace Server.Http_NS.Controllers_NS.Users_NS;
 
 /// <summary>
 /// Фоновый сервис для асинхронной записи логов аутентификации и информации об устройствах пользователей.

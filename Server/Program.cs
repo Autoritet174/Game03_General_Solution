@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using Serilog.Events;
 using Server.GameDataCache;
-using Server.Http_NS.Controllers_NS.Users;
+using Server.Http_NS.Controllers_NS.Users_NS;
 using Server.Http_NS.Middleware_NS;
 using Server.Jwt_NS;
 using Server.WebSocket_NS;
@@ -72,14 +73,25 @@ internal partial class Program
                 retainedFileCountLimit: 365,
                 restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Error) // Только Error
 
-            // В консоль — всё, что угодно (можно ограничить)
+            // В консоль — всё
             .WriteTo.Console(restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Verbose)
 
             .CreateLogger();
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-        _ = builder.Host.UseSerilog(); // Это заменит встроенный провайдер на Serilog
+        //_ = builder.Host.UseSerilog(); // Это заменит встроенный провайдер на Serilog
+        _ = builder.Host.UseSerilog((context, services, configuration) => configuration
+            .WriteTo.File(
+                Path.Combine(serilogDir, "errors-.txt"),
+                rollingInterval: RollingInterval.Day,
+                restrictedToMinimumLevel: LogEventLevel.Error)
+            .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Verbose)
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+            .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+            .ReadFrom.Configuration(context.Configuration));
+
+
 
         // Инициализация параметров для AuthOptions при старте приложения
         //Jwt.Initialize(builder.Configuration);
@@ -220,6 +232,8 @@ internal partial class Program
         _ = builder.Services.AddSingleton<IHeroCacheService, HeroesCacheService>();
 
         _ = builder.Services.AddMemoryCache();
+
+     
 
 
         WebApplication app = builder.Build();

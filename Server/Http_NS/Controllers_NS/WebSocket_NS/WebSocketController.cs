@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Server.WebSocket_NS;
 using System.Net.WebSockets;
-namespace Server.Http_NS.Controllers_NS.Users;
+namespace Server.Http_NS.Controllers_NS.WebSocket_NS;
 
 /// <summary>
 /// Контроллер для обработки подключений WebSocket.
@@ -21,7 +21,7 @@ public class WebSocketController() : ControllerBaseApi
         if (!HttpContext.WebSockets.IsWebSocketRequest)
         {
             HttpContext.Response.StatusCode = 400;
-            await HttpContext.Response.WriteAsync("Требуется WebSocket соединение");
+            await HttpContext.Response.WriteAsync("Require WebSocket connection");
             return;
         }
 

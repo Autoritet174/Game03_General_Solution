@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Server.Utilities;
-namespace Server.Http_NS.Controllers_NS.Users;
+namespace Server.Http_NS.Controllers_NS.Users_NS;
 
 /// <summary>
 /// 
