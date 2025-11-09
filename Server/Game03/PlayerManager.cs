@@ -7,7 +7,7 @@ using Server.Extensions;
 
 namespace Server.Game03;
 
-public class PlayerManager(MongoRepository mongoRepository)
+public class PlayerManager(MongoHeroesRepository mongoRepository)
 {
     public async Task Command(string jsonString)
     {

@@ -4,6 +4,8 @@
 root = true  # Указывает, что это корневой файл конфигурации
 
 [*.cs]  # Применяет настройки ко всем C# файлам
+csharp_style_namespace_declarations = file_scoped:suggestion
+dotnet_diagnostic.CS1591.severity = warning
 
 # Общие настройки
 charset = utf-8  # Использовать кодировку UTF-8
@@ -22,12 +24,12 @@ csharp_indent_block_contents = true  # Отступ содержимого бл�
 csharp_space_after_keywords_in_control_flow_statements = true  # Пробел после ключевых слов в управляющих конструкциях
 csharp_space_after_cast = false  # Без пробела после приведения типа
 csharp_space_before_colon_in_inheritance_clause = true  # Пробел перед двоеточием в наследовании
-csharp_space_around_binary_operators = before_and_after  # Пробелы вокруг бинарных операторов
+csharp_space_around_binary_operators = before_and_after# Пробелы вокруг бинарных операторов
 
 # Именование
-dotnet_naming_rule.constants_should_be_uppercase_with_underscores.severity = warning  # Константы должны быть в верхнем регистре с подчеркиваниями
+dotnet_naming_rule.constants_should_be_uppercase_with_underscores.severity = warning
 dotnet_naming_rule.constants_should_be_uppercase_with_underscores.symbols = constants  # Применяется к константам
-dotnet_naming_rule.constants_should_be_uppercase_with_underscores.style = uppercase_with_underscores  # Стиль: верхний регистр с подчеркиваниями
+dotnet_naming_rule.constants_should_be_uppercase_with_underscores.style = uppercase_with_underscores
 
 dotnet_naming_symbols.constants.applicable_kinds = field  # Применяется к полям
 dotnet_naming_symbols.constants.required_modifiers = const  # Только для полей с модификатором const
@@ -54,7 +56,7 @@ dotnet_diagnostic.SA1412.severity = warning  # Принудительно тре
 
 # Использование var
 csharp_style_var_for_built_in_types = false:suggestion  # Разрешить использование var для встроенных типов
-csharp_style_var_when_type_is_apparent = true:suggestion  # Разрешить использование var, если тип очевиден
+csharp_style_var_when_type_is_apparent = false:suggestion  # Разрешить использование var, если тип очевиден
 csharp_style_var_elsewhere = false:suggestion  # Не использовать var, если тип неочевиден
 
 # Интерполяция строк
@@ -90,3 +92,41 @@ dotnet_style_prefer_ref_struct_implement_interfaces = true:suggestion  # Пре�
 dotnet_style_prefer_ref_struct_as_type_parameters = true:suggestion  # Предпочтение использованию структур с ref в качестве параметров типа
 dotnet_style_prefer_partial_properties = true:suggestion  # Предпочтение использованию частичных свойств
 dotnet_style_prefer_partial_indexers = true:suggestion  # Предпочтение использованию частичных индексаторов
+csharp_indent_labels = one_less_than_current
+csharp_style_throw_expression = true:suggestion
+csharp_style_prefer_null_check_over_type_check = true:suggestion
+csharp_prefer_simple_default_expression = true:suggestion
+csharp_style_prefer_local_over_anonymous_function = true:suggestion
+csharp_style_prefer_index_operator = true:suggestion
+csharp_style_prefer_range_operator = true:suggestion
+csharp_style_implicit_object_creation_when_type_is_apparent = true:suggestion
+csharp_style_prefer_implicitly_typed_lambda_expression = true:suggestion
+csharp_style_prefer_tuple_swap = true:suggestion
+csharp_style_prefer_unbound_generic_type_in_nameof = true:suggestion
+csharp_style_prefer_utf8_string_literals = true:suggestion
+csharp_style_inlined_variable_declaration = true:suggestion
+csharp_style_deconstructed_variable_declaration = true:suggestion
+csharp_style_unused_value_assignment_preference = discard_variable:suggestion
+csharp_style_unused_value_expression_statement_preference = discard_variable:silent
+
+[*.{cs,vb}]
+dotnet_style_operator_placement_when_wrapping = beginning_of_line
+tab_width = 4
+indent_size = 4
+dotnet_style_coalesce_expression = true:suggestion
+dotnet_style_null_propagation = true:suggestion
+dotnet_style_prefer_is_null_check_over_reference_equality_method = true:suggestion
+dotnet_style_prefer_auto_properties = true:suggestion
+dotnet_style_object_initializer = true:suggestion
+dotnet_style_collection_initializer = true:suggestion
+dotnet_style_prefer_simplified_boolean_expressions = true:suggestion
+dotnet_style_prefer_conditional_expression_over_assignment = false:suggestion
+dotnet_style_prefer_conditional_expression_over_return = true:silent
+dotnet_style_explicit_tuple_names = true:suggestion
+dotnet_style_prefer_inferred_tuple_names = true:suggestion
+dotnet_style_prefer_inferred_anonymous_type_member_names = true:suggestion
+dotnet_style_prefer_compound_assignment = true:suggestion
+dotnet_style_prefer_simplified_interpolation = true:suggestion
+dotnet_style_prefer_collection_expression = when_types_exactly_match:suggestion
+dotnet_style_namespace_match_folder = true:suggestion
+end_of_line = crlf

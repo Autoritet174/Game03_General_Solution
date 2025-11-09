@@ -76,9 +76,6 @@ public class HeroesCacheService(ILogger<HeroesCacheService> logger) : IHeroCache
 
         // Логируем успешную загрузку данных в кэш
         _logger.LogInformation($"[{nameof(HeroesCacheService)}] Герои успешно загружены из базы в кеш.");
-
-        _logger.Log(LogLevel.Trace, "qqqqqqqqqqqqqqqqqq");
-
     }
 
 

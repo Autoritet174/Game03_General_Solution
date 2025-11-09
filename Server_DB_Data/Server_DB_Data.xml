@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Server_DB_Data</name>
+    </assembly>
+    <members>
+        <member name="T:Server_DB_Data.Migrations.Start">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Start.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Start.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Start.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.Start2">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Start2.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Start2.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Start2.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Repositories.HeroRepository">
+            <summary>
+            Репозиторий для управления пользователями.
+            </summary>
+            <remarks>
+            Создаёт экземпляр <see cref="T:Server_DB_Data.Repositories.HeroRepository"/>.
+            </remarks>
+        </member>
+        <member name="M:Server_DB_Data.Repositories.HeroRepository.#ctor(Server_DB_Data.DbContext_Game03Data)">
+            <param name="dbContext">Контекст базы данных.</param>
+        </member>
+        <member name="M:Server_DB_Data.Repositories.HeroRepository.UpdateAsync(Server_DB_Data.Entities.Hero)">
+            <summary>
+            Обновляет переданную сущность пользователя в базе данных.
+            </summary>
+            <param name="hero">Сущность с обновлёнными данными.</param>
+            <exception cref="T:System.ArgumentNullException">Если равен null.</exception>
+            <exception cref="T:System.ArgumentException">Если идентификатор пустой.</exception>
+            <exception cref="T:System.InvalidOperationException">Если сущность с таким идентификатором не найдена.</exception>
+        </member>
+        <member name="M:Server_DB_Data.Repositories.HeroRepository.GetAllAsync">
+            <summary>
+            Выполняет мягкое удаление записи по идентификатору без загрузки сущности.
+            </summary>
+            <param name="id">Идентификатор.</param>
+            <exception cref="T:System.ArgumentException">Если идентификатор некорректен.</exception>
+            <exception cref="T:System.InvalidOperationException">Если запись не найдена.</exception>
+        </member>
+        <member name="M:Server_DB_Data.Repositories.HeroRepository.GetByNameAsync(System.String)">
+            <summary>
+            Возвращает пользователя по e-mail (без учёта регистра).
+            </summary>
+            <param name="name"></param>
+            <returns>Найденная запись или null.</returns>
+        </member>
+    </members>
+</doc>

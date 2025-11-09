@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -12,6 +12,8 @@ public static class URLs
 
     public static Uri Uri_login { get; private set; } = new(URL_HEADER + "Authentication");
     public static Uri Uri_reg { get; private set; } = new(URL_HEADER + "Registration");
+
+    public static Uri Uri_InventoryHeroes { get; private set; } = new(URL_HEADER + "InventoryHeroes");
 
     public static Uri Uri_test { get; private set; } = new(URL_HEADER + "Test");
     public static Uri Uri_GetListAllHeroes { get; private set; } = new(URL_HEADER + "GetListAllHeroes");

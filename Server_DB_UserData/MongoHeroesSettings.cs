@@ -1,6 +1,6 @@
-﻿namespace Server_DB_UserData;
+namespace Server_DB_UserData;
 
-public class MongoSettings
+public class MongoHeroesSettings
 {
     /// <summary>
     /// Строка подключения к MongoDB.

@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Server_Common</name>
+    </assembly>
+    <members>
+        <member name="M:Server_Common.Console.ColorizeText(System.String,System.Nullable{System.Drawing.Color},System.Nullable{System.Drawing.Color})">
+            <summary>
+            Окрашивает текст в указанный цвет и фон с помощью ANSI-кодов.
+            </summary>
+            <param name="text">Текст для вывода.</param>
+            <param name="foregroundColor">Цвет текста (если null — цвет по умолчанию).</param>
+            <param name="backgroundColor">Цвет фона (если null — фон по умолчанию).</param>
+            <returns>Строка с ANSI-кодами для консоли.</returns>
+        </member>
+        <member name="T:Server_DB.ThrowHelper">
+            <summary>
+            Оборотка исключений для ошибок в процессе взаимодействия с базой данных.
+            </summary>
+        </member>
+        <member name="M:Server_DB.ThrowHelper.ThrowIfRecordNotExists(System.Boolean)">
+            <summary>
+            Выбрасывает InvalidOperationException если exists равен false.
+            </summary>
+        </member>
+        <member name="M:Server_DB.ThrowHelper.ThrowIfGuidEmpty(System.Guid)">
+            <summary>
+            Выбрасывает ArgumentException если guid равен Guid.Empty.
+            </summary>
+        </member>
+    </members>
+</doc>

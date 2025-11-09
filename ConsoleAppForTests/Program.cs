@@ -1,19 +1,26 @@
+namespace ConsoleAppForTests;
+
 internal class Program
 {
     private static async Task Main()
     {
+        Client.GameClient gameClient = Client.GameClient.Create();
+        string qwe = gameClient.JwtTokenGetAsync().Result;
+
+        return;
+
         Console.WriteLine("WebSocket Test Client");
 
-        var serverUrl = "ws://localhost:5001/ws/";
-        var clientCount = 1;
+        string serverUrl = "ws://localhost:5001/ws/";
+        int clientCount = 1;
 
         // Переменные для статистики
-        var connectedClients = 0;
-        var totalMessagesSent = 0;
+        int connectedClients = 0;
+        int totalMessagesSent = 0;
         DateTime startTime = DateTime.Now;
 
         // Запускаем отображение статистики
-        var statsTask = Task.Run(async () =>
+        Task statsTask = Task.Run(async () =>
         {
             while (true)
             {
@@ -28,9 +35,9 @@ internal class Program
 
         try
         {
-            for (var i = 0; i < clientCount; i++)
+            for (int i = 0; i < clientCount; i++)
             {
-                var clientId = i + 1;
+                int clientId = i + 1;
                 WebSocketClient client = new(serverUrl);
                 clients.Add(client);
 
@@ -43,7 +50,7 @@ internal class Program
                     Console.WriteLine($"Клиент {clientId} подключен ({connectedClients}/{clientCount})");
 
                     // Запускаем отправку сообщений в отдельной задаче
-                    var task = Task.Run(async () =>
+                    Task task = Task.Run(async () =>
                     {
                         try
                         {
@@ -72,7 +79,7 @@ internal class Program
             Console.WriteLine($"Все клиенты подключены. Ожидание завершения...");
 
             // Ждем завершения всех задач или нажатия клавиши
-            var completionTask = Task.WhenAll(clientTasks);
+            Task completionTask = Task.WhenAll(clientTasks);
             Task keyPressTask = WaitForKeyPress();
 
             _ = await Task.WhenAny(completionTask, keyPressTask);
@@ -116,9 +123,9 @@ internal class Program
     private static async Task DisconnectAllClients(List<WebSocketClient> clients)
     {
         const int batchSize = 100;
-        var disconnectedCount = 0;
+        int disconnectedCount = 0;
 
-        for (var i = 0; i < clients.Count; i += batchSize)
+        for (int i = 0; i < clients.Count; i += batchSize)
         {
             WebSocketClient[] batch = clients.Skip(i).Take(batchSize).ToArray();
             IEnumerable<Task> disconnectTasks = batch.Select(client =>

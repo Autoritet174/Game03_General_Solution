@@ -1,0 +1,666 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Server</name>
+    </assembly>
+    <members>
+        <member name="T:Server.ClientManager2">
+            <summary>
+            Управляет всеми подключёнными клиентами.
+            </summary>
+        </member>
+        <member name="F:Server.ClientManager2._clients">
+            <summary>
+            Все клиенты у которых есть хотя бы один открытый веб сокет
+            </summary>
+        </member>
+        <member name="M:Server.ClientManager2.#ctor">
+            <summary>
+            Конструктор и запуск фоновой задачи.
+            </summary>
+        </member>
+        <member name="M:Server.ClientManager2.AddSocket(System.String,System.Net.WebSockets.WebSocket)">
+            <summary>
+            Добавляет WebSocket клиенту.
+            </summary>
+        </member>
+        <member name="M:Server.ClientManager2.RemoveSocket(System.String,System.Net.WebSockets.WebSocket)">
+            <summary>
+            Удаляет WebSocket клиента.
+            </summary>
+        </member>
+        <member name="M:Server.ClientManager2.HandleClientMessage(System.String,System.String)">
+            <summary>
+            Обрабатывает сообщение от клиента.
+            </summary>
+        </member>
+        <member name="M:Server.ClientManager2.GetAllClients">
+            <summary>
+            Возвращает всех клиентов.
+            </summary>
+        </member>
+        <member name="T:Server.ConnectedClient">
+            <summary>
+            Хранит список WebSocket-соединений одного клиента.
+            </summary>
+        </member>
+        <member name="M:Server.ConnectedClient.#ctor(System.String)">
+            <summary>
+            Хранит список WebSocket-соединений одного клиента.
+            </summary>
+        </member>
+        <member name="F:Server.ConnectedClient._socket">
+            <summary>
+            Потокобезопасный список WebSocket-соединений.
+            </summary>
+        </member>
+        <member name="M:Server.ConnectedClient.AddSocket(System.Net.WebSockets.WebSocket)">
+            <summary>
+            Добавляет WebSocket.
+            </summary>
+        </member>
+        <member name="M:Server.ConnectedClient.RemoveSocket(System.Net.WebSockets.WebSocket)">
+            <summary>
+            Удаляет WebSocket.
+            </summary>
+        </member>
+        <member name="M:Server.ConnectedClient.GetSockets">
+            <summary>
+            Возвращает все активные WebSocket'ы клиента.
+            </summary>
+        </member>
+        <member name="T:Server.Extensions.BsonDocumentExtension">
+            <summary>
+            Содержит расширения для работы с объектами <see cref="T:MongoDB.Bson.BsonDocument"/>.
+            </summary>
+        </member>
+        <member name="M:Server.Extensions.BsonDocumentExtension.ConvertStringToUuid(MongoDB.Bson.BsonDocument,System.String)">
+            <summary>
+            Преобразует строковое значение в поле документа в UUID-тип <see cref="T:MongoDB.Bson.BsonBinaryData"/>
+            с подтипом <see cref="F:MongoDB.Bson.BsonBinarySubType.UuidStandard"/>, если это возможно.
+            </summary>
+            <param name="document">Документ <see cref="T:MongoDB.Bson.BsonDocument"/>.</param>
+            <param name="fieldName">Имя поля, содержащего строковое значение.</param>
+        </member>
+        <member name="M:Server.Extensions.BsonDocumentExtension.ConvertUuidFields(MongoDB.Bson.BsonDocument,System.String[])">
+            <summary>
+            Применяет преобразование строковых значений в UUID-тип <see cref="T:MongoDB.Bson.BsonBinaryData"/>
+            ко всем указанным полям документа, если это возможно.
+            </summary>
+            <param name="document">Документ <see cref="T:MongoDB.Bson.BsonDocument"/>.</param>
+            <param name="fieldNames">Массив имен полей для обработки.</param>
+        </member>
+        <member name="T:Server.Extensions.JObjectExtension">
+            <summary>
+            Содержит расширения для работы с объектами <see cref="T:Newtonsoft.Json.Linq.JObject"/>.
+            </summary>
+        </member>
+        <member name="M:Server.Extensions.JObjectExtension.GetValueSafe(Newtonsoft.Json.Linq.JObject,System.String)">
+            <summary>
+            Безопасно извлекает значение по указанному пути в структуре JSON.
+            Если путь не существует или значение имеет другой тип, возвращает <c>null</c>.
+            </summary>
+            <param name="obj">Объект <see cref="T:Newtonsoft.Json.Linq.JObject"/>, из которого извлекается значение.</param>
+            <param name="path">Путь к значению в формате JSONPath (например: "$.user.name")</param>
+            <returns>Значение как строка, если оно существует и может быть преобразовано в строку; иначе <c>null</c>.</returns>
+        </member>
+        <member name="M:Server.Game03.PlayerManager.PushAllItems">
+            <summary>
+            Отправить пользователю все его предметы
+            </summary>
+        </member>
+        <member name="M:Server.GF.IsHashFromEmpty(System.String)">
+            <summary>
+            Проверка получился ли hash из пустой строки
+            </summary>
+            <param name="hash256"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Server.GF.DelayWithOutDebug2000ms">
+            <summary>
+            Добавляет задержку 2000 миллисекунд если работает без отладчика.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Server.GF.DelayWithOutDebug500">
+            <summary>
+            Добавляет задержку 2000 миллисекунд если работает без отладчика.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Server.Http_NS.Controllers_NS.Admin_NS.AddItemController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.Admin_NS.AddItemController.Main">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Server.Http_NS.Controllers_NS.ControllerBaseApi">
+            <summary>
+            Абстрактный базовый контроллер для всех API-контроллеров.
+            Предоставляет унифицированные методы ответов (успех, ошибка) и применяет авторизацию по умолчанию ко всем действиям.
+            </summary>
+            <remarks>
+            Все контроллеры, наследующие от этого класса, автоматически требуют аутентификацию (через атрибут [Authorize]).
+            Также автоматически устанавливается префикс маршрута "api/[controller]" и тип контроллера как API-контроллер.
+            </remarks>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.ControllerBaseApi.BadRequestWithServerError(General.ServerErrors.Error)">
+            <summary>
+            Возвращает ответ с ошибкой на основе перечисления <see cref="T:General.ServerErrors.Error"/>.
+            Используется для стандартизированного возврата кодов ошибок.
+            </summary>
+            <param name="serverResponse">Значение перечисления, представляющее тип ошибки сервера.</param>
+            <returns>HTTP-ответ с кодом 400 и объектом { code = (long)serverResponse }.</returns>
+            <remarks>
+            Метод преобразует значение перечисления в число (long) и возвращает его как поле "code".
+            Это позволяет клиенту интерпретировать тип ошибки по числовому коду.
+            </remarks>
+            <example>
+            Если serverResponse = Error.InvalidInput, и значение = 1001, то ответ:
+            {
+              "code": 1001
+            }
+            </example>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.ControllerBaseApi.BadRequestAuthInvalidCredentials">
+            <summary>
+            Возвращает ответ с общей ошибкой аутентификации (код 400 Bad Request).
+            Используется при неверных учётных данных или других ошибках входа.
+            </summary>
+            <remarks>
+            Метод возвращает HTTP-статус 400 и унифицированный объект ошибки с числовым кодом.
+            В целях безопасности **не уточняет**, что именно пошло не так — 
+            существует ли email, или неверен пароль, или учётная запись заблокирована.
+            Это предотвращает атаки по перебору пользователей (user enumeration).
+            
+            Пример ответа:
+            {
+              "code": 2
+            }
+            где 2 — это значение перечисления <see cref="F:General.ServerErrors.Error.AuthInvalidCredentials"/>.
+            </remarks>
+            <returns>HTTP-ответ с кодом состояния 400 и кодом ошибки аутентификации.</returns>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.ControllerBaseApi.BadRequestUnsupportedMediaType">
+            <summary>
+            Возвращает ответ с кодом 415 (Unsupported Media Type).
+            Используется, когда клиент отправляет данные в неподдерживаемом формате (например, не application/json).
+            </summary>
+            <remarks>
+            Этот метод возвращает HTTP-статус 415 с телом, содержащим числовой код ошибки.
+            Подходит для защиты API от запросов с неверным заголовком Content-Type.
+            Пример ответа:
+            {
+              "code": 4
+            }
+            где 4 — это значение перечисления <see cref="F:General.ServerErrors.Error.UnsupportedMediaType"/>.
+            </remarks>
+            <returns>HTTP-ответ с кодом состояния 415 и объектом ошибки.</returns>
+        </member>
+        <member name="T:Server.Http_NS.Controllers_NS.GetListAllHeroesController">
+            <summary>
+            Контроллер для аутентификации пользователей.
+            </summary>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.GetListAllHeroesController.#ctor(Server.GameDataCache.IHeroCacheService)">
+            <summary>
+            Контроллер для аутентификации пользователей.
+            </summary>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.GetListAllHeroesController.GetListAllHeroes">
+            <summary>
+            Возвращает в ответе список всех героев.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Server.Http_NS.Controllers_NS.Http_Tests.TestController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.Http_Tests.TestController.Main">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Server.Http_NS.Controllers_NS.JsonObjectExt">
+            <summary>
+            Расширение для работы с HTTP-запросами, предоставляющее методы для извлечения объекта JSON из тела запроса.
+            </summary>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.JsonObjectExt.GetJsonObjectFromRequest(Microsoft.AspNetCore.Http.HttpRequest)">
+            <summary>
+            Асинхронно извлекает и парсит тело HTTP-запроса как JSON-объект.
+            </summary>
+            <param name="httpRequest">HTTP-запрос, из которого читается тело.</param>
+            <returns>
+            Экземпляр <see cref="T:System.Text.Json.Nodes.JsonObject"/>, если тело запроса содержит валидный JSON-объект; иначе — <c>null</c>.
+            Возвращает <c>null</c>, если тело пустое, некорректно или не является объектом.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">Возникает, если <paramref name="httpRequest"/> равен <c>null</c>.</exception>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.JsonObjectExt.GetString(System.Text.Json.Nodes.JsonObject,System.String,System.Boolean)">
+            <summary>
+            Извлекает строковое значение из <see cref="T:System.Text.Json.Nodes.JsonObject"/> по ключу без учёта регистра.
+            При необходимости удаляет поле из объекта.
+            </summary>
+            <param name="obj">Объект JSON, из которого извлекается значение.</param>
+            <param name="key">Ключ для поиска (без учёта регистра).</param>
+            <param name="removeAfterSuccessGetting">Если <c>true</c>, поле будет удалено из объекта после извлечения.</param>
+            <returns>Строковое значение или пустая строка, если ключ не найден или значение null.</returns>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.JsonObjectExt.GetStringN(System.Text.Json.Nodes.JsonObject,System.String,System.Int32)">
+            <summary>
+            Извлекает строковое значение из <see cref="T:System.Text.Json.Nodes.JsonObject"/> по указанному ключу без учета регистра.
+            Если ключ не найден, возвращает <c>null</c>.
+            Также поддерживает ограничение длины возвращаемой строки.
+            </summary>
+            <param name="obj">Объект JSON, из которого извлекается значение.</param>
+            <param name="key">Ключ, по которому выполняется поиск (без учета регистра).</param>
+            <param name="maxLength">Максимальная длина возвращаемой строки. Если значение больше, оно обрезается.
+            Значение 0 или меньше означает отсутствие ограничения.</param>
+            <returns>
+            Строковое представление значения, обрезанное до <paramref name="maxLength"/>,
+            или <c>null</c>, если ключ не найден или значение равно null.
+            </returns>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.JsonObjectExt.GetIntegerN(System.Text.Json.Nodes.JsonObject,System.String)">
+            <summary>
+            Извлекает целочисленное значение из <see cref="T:System.Text.Json.Nodes.JsonObject"/> по указанному ключу без учета регистра.
+            Если ключ не найден, значение равно null или не может быть преобразовано в int, возвращает <c>null</c>.
+            </summary>
+            <param name="obj">Объект JSON, из которого извлекается значение.</param>
+            <param name="key">Ключ, по которому выполняется поиск (без учета регистра).</param>
+            <returns>
+            если преобразование успешно; иначе — <c>null</c>.
+            </returns>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.JsonObjectExt.GetBoolN(System.Text.Json.Nodes.JsonObject,System.String)">
+            <summary>
+            Извлекает булево значение из <see cref="T:System.Text.Json.Nodes.JsonObject"/> по ключу без учёта регистра.
+            Поддерживает значения: <c>true</c>, <c>false</c>, <c>1</c>, <c>0</c>, <c>"true"</c>, <c>"false"</c> (без учёта регистра).
+            </summary>
+            <param name="obj">JSON-объект, в котором выполняется поиск. Не должен быть <c>null</c>.</param>
+            <param name="key">Ключ для поиска (без учёта регистра).</param>
+            <returns>
+            Булево значение или <c>null</c>, если ключ не найден, значение <c>null</c> или не удаётся интерпретировать.
+            </returns>
+        </member>
+        <member name="T:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController">
+            <summary>
+            Контроллер аутентификации пользователей. Обрабатывает процесс входа (логин) по email и паролю.
+            При успешной проверке возвращает JWT-токен доступа.
+            </summary>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController.#ctor(Server_DB_Users.Repositories.UserRepository,Server.Jwt_NS.JwtService,Microsoft.Extensions.Logging.ILogger{Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController},Microsoft.Extensions.Caching.Memory.IMemoryCache,Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService)">
+            <summary>
+            Контроллер аутентификации пользователей. Обрабатывает процесс входа (логин) по email и паролю.
+            При успешной проверке возвращает JWT-токен доступа.
+            </summary>
+        </member>
+        <member name="F:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController.LockoutPeriod">
+            <summary>
+            Время блокировки учётной записи при превышении допустимого количества неудачных попыток входа.
+            </summary>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController.Main">
+            <summary>
+            Основной метод аутентификации: принимает email и пароль, проверяет учётные данные,
+            при успехе возвращает JWT-токен. Доступ разрешён без авторизации.
+            </summary>
+            <returns>JWT-токен при успешной аутентификации или соответствующий код ошибки.</returns>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController.BadRequestEmailRateLimited(System.String)">
+            <summary>
+            Возвращает ответ с кодом 429 (Too Many Requests), если пользователь временно заблокирован из-за множества попыток входа.
+            </summary>
+            <param name="email">Email пользователя, для которого проверяется блокировка.</param>
+            <returns>Результат с кодом состояния 429 и данными о времени окончания блокировки.</returns>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController.LoggingAuthentification(System.Boolean,System.Text.Json.Nodes.JsonObject,System.String,System.Nullable{System.Guid})">
+            <summary>
+            Асинхронно добавляет запись о попытке аутентификации в очередь фонового логгера.
+            В случае ошибки записывает предупреждение в лог.
+            </summary>
+            <param name="authorizationSuccess">Флаг успешности авторизации.</param>
+            <param name="obj">JSON-объект запроса (для аудита).</param>
+            <param name="email">Email пользователя (если известен).</param>
+            <param name="userId">Идентификатор пользователя (если известен).</param>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController.GetClientIpAddress">
+            <summary>
+            Определяет IP-адрес клиента из HTTP-запроса.
+            </summary>
+            <returns>IP-адрес в формате <see cref="T:NpgsqlTypes.NpgsqlInet"/> или null, если не удалось определить.</returns>
+        </member>
+        <member name="T:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController.LoginAttempt">
+            <summary>
+            Запись, представляющая данные о попытке входа: количество попыток и время окончания блокировки.
+            </summary>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController.LoginAttempt.#ctor(System.Int32,System.DateTimeOffset)">
+            <summary>
+            Запись, представляющая данные о попытке входа: количество попыток и время окончания блокировки.
+            </summary>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController.IncrementFailedLoginAttempt(System.String)">
+            <summary>
+            Увеличивает счётчик неудачных попыток входа для указанного email.
+            Если счётчик достиг предела, пользователь будет временно заблокирован.
+            </summary>
+            <param name="email">Email пользователя.</param>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController.ResetLoginAttempts(System.String)">
+            <summary>
+            Сбрасывает счётчик попыток входа после успешного входа.
+            </summary>
+            <param name="email">Email пользователя.</param>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController.IsRateLimited(System.String)">
+            <summary>
+            Проверяет, превышено ли допустимое количество попыток входа для указанного email.
+            </summary>
+            <param name="email">Email пользователя.</param>
+            <returns>True, если пользователь временно заблокирован, иначе — false.</returns>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController.GetRemainingLockoutTime(System.String)">
+            <summary>
+            Определяет, сколько секунд осталось до окончания блокировки учётной записи.
+            </summary>
+            <param name="email">Email пользователя.</param>
+            <returns>Количество секунд до разблокировки или 0, если блокировка завершена.</returns>
+        </member>
+        <member name="T:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService">
+            <summary>
+            Фоновый сервис для асинхронной записи логов аутентификации и информации об устройствах пользователей.
+            Обрабатывает очередь логов с периодичностью и сохраняет данные в базу PostgreSQL.
+            </summary>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService.#ctor(Microsoft.Extensions.Logging.ILogger{Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService},System.IServiceProvider)">
+            <summary>
+            Фоновый сервис для асинхронной записи логов аутентификации и информации об устройствах пользователей.
+            Обрабатывает очередь логов с периодичностью и сохраняет данные в базу PostgreSQL.
+            </summary>
+        </member>
+        <member name="F:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService._logger">
+            <summary>
+            Логгер для записи диагностических сообщений.
+            </summary>
+        </member>
+        <member name="F:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService._serviceProvider">
+            <summary>
+            Провайдер сервисов для создания scope-контекстов при работе с EF Core.
+            </summary>
+        </member>
+        <member name="F:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService._timer">
+            <summary>
+            Таймер для периодической обработки очереди логов.
+            </summary>
+        </member>
+        <member name="F:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService._queue">
+            <summary>
+            Потокобезопасная очередь логов, ожидающих сохранения в БД.
+            </summary>
+        </member>
+        <member name="F:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService._stoppingCts">
+            <summary>
+            Токен для отмены фоновых операций при остановке сервиса.
+            </summary>
+        </member>
+        <member name="F:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService.SPLIT">
+            <summary>
+            Разделитель полей при формировании строки для хеширования характеристик устройства.
+            Используется для создания уникального идентификатора устройства.
+            </summary>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService.EnqueueLog(System.Boolean,System.Text.Json.Nodes.JsonObject,System.String,System.Nullable{System.Guid},System.Nullable{NpgsqlTypes.NpgsqlInet})">
+            <summary>
+            Добавляет запись о попытке аутентификации в очередь на фоновую обработку.
+            Вызывается из контроллеров при входе/регистрации.
+            </summary>
+            <param name="authorizationSuccess">Успешна ли была попытка аутентификации.</param>
+            <param name="obj">JSON-объект с информацией об устройстве (например, ОС, модель, GPU и т.д.).</param>
+            <param name="email">Email пользователя, если известен.</param>
+            <param name="userId">Идентификатор пользователя в системе, если авторизован.</param>
+            <param name="ip">IP-адрес клиента.</param>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService.DoWork(System.Object)">
+            <summary>
+            Вызывается таймером каждые 5 секунд — запускает обработку накопленной партии логов.
+            </summary>
+            <param name="state">Не используется.</param>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService.ProcessBatch">
+            <summary>
+            Извлекает пачку логов из очереди (до 100 записей) и асинхронно сохраняет в БД.
+            Если очередь пуста — немедленно завершается.
+            </summary>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService.WriteBatchToDatabase(System.Collections.Generic.List{Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService.LogEntry})">
+            <summary>
+            Сохраняет пачку логов в базу данных с использованием транзакции.
+            Для каждого лога:
+            - Извлекает параметры устройства из JSON.
+            - Формирует уникальный идентификатор устройства через SHA256-хеш.
+            - Вставляет запись в таблицу устройств (если ещё не существует).
+            - Добавляет запись в лог аутентификаций, ссылаясь на устройство.
+            </summary>
+            <param name="batch">Пачка логов для сохранения.</param>
+            <exception cref="T:System.Exception">Любое исключение приведёт к записи в лог, но не остановит сервис.</exception>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService.Dispose">
+            <summary>
+            Освобождает управляемые ресурсы (таймер, токен отмены).
+            </summary>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService.StartAsync(System.Threading.CancellationToken)">
+            <summary>
+            Запускает фоновый сервис при старте приложения.
+            Настраивает таймер на немедленный старт и последующий запуск каждые 5 секунд.
+            </summary>
+            <param name="cancellationToken">Токен для отмены запуска.</param>
+            <returns>Задача, завершаемая немедленно.</returns>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService.StopAsync(System.Threading.CancellationToken)">
+            <summary>
+            Останавливает фоновый сервис при завершении приложения.
+            Пытается обработать оставшиеся логи в течение 5 секунд.
+            При превышении времени — принудительно завершает с предупреждением.
+            </summary>
+            <param name="cancellationToken">Токен, сигнализирующий внешнее завершение приложения.</param>
+            <returns>Задача, завершающаяся после попытки обработки остатка.</returns>
+        </member>
+        <member name="T:Server.Http_NS.Controllers_NS.WebSocket_NS.WebSocketController">
+            <summary>
+            Контроллер для обработки подключений WebSocket.
+            </summary>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.WebSocket_NS.WebSocketController.#ctor">
+            <summary>
+            Контроллер для обработки подключений WebSocket.
+            </summary>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.WebSocket_NS.WebSocketController.Connect">
+            <summary>
+            Принимает WebSocket-соединение и обрабатывает клиента в фоне.
+            </summary>
+        </member>
+        <member name="T:Server.Http_NS.Middleware_NS.ExceptionLoggingMiddleware">
+            <summary>
+            Middleware для глобального перехвата исключений и логирования в файл.
+            </summary>
+            <remarks>
+            Конструктор.
+            </remarks>
+        </member>
+        <member name="M:Server.Http_NS.Middleware_NS.ExceptionLoggingMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Microsoft.Extensions.Logging.ILogger{Server.Http_NS.Middleware_NS.ExceptionLoggingMiddleware})">
+            <summary>
+            Middleware для глобального перехвата исключений и логирования в файл.
+            </summary>
+            <remarks>
+            Конструктор.
+            </remarks>
+        </member>
+        <member name="M:Server.Http_NS.Middleware_NS.ExceptionLoggingMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            Основной метод middleware.
+            </summary>
+        </member>
+        <member name="T:Server.Jwt_NS.JwtOptions">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Server.Jwt_NS.JwtOptions.Issuer">
+            <summary>Эмитент токена.</summary>
+        </member>
+        <member name="P:Server.Jwt_NS.JwtOptions.Audience">
+            <summary>Аудитория токена.</summary>
+        </member>
+        <member name="P:Server.Jwt_NS.JwtOptions.Lifetime">
+            <summary>Время жизни токена.</summary>
+        </member>
+        <member name="T:Server.Jwt_NS.JwtService">
+            <summary>
+            Сервис генерации и валидации JWT-токенов. Секретный ключ извлекается только из
+            переменной окружения <c>JWT_SECRET</c>, что исключает хранение секретов в файлах.
+            </summary>
+        </member>
+        <member name="M:Server.Jwt_NS.JwtService.#ctor(Microsoft.Extensions.Options.IOptions{Server.Jwt_NS.JwtOptions})">
+            <summary>
+            Создаёт экземпляр <see cref="T:Server.Jwt_NS.JwtService"/>, валидируя наличие и размер секретного ключа.
+            </summary>
+            <param name="options">Параметры JWT (Issuer, Audience, Lifetime), внедрённые через DI.</param>
+            <exception cref="T:System.InvalidOperationException">Если переменная окружения <c>JWT_SECRET</c> отсутствует.</exception>
+            <exception cref="T:System.ArgumentException">Если длина секрета меньше 32nbsp;байт.</exception>
+        </member>
+        <member name="M:Server.Jwt_NS.JwtService.GenerateToken(System.Guid,System.Collections.Generic.IEnumerable{System.Security.Claims.Claim})">
+            <summary>
+            Генерирует JWT-токен для указанного пользователя.
+            </summary>
+            <param name="userId">Идентификатор пользователя (claim <c>sub</c>).</param>
+            <param name="additionalClaims">Необязательные дополнительные claims.</param>
+            <returns>Строковое представление JWT.</returns>
+        </member>
+        <member name="M:Server.Jwt_NS.JwtService.ValidateToken(System.String)">
+            <summary>
+            Валидирует JWT-токен и возвращает <see cref="T:System.Security.Claims.ClaimsPrincipal"/> при успешной проверке.
+            </summary>
+            <param name="token">Строковое представление JWT.</param>
+            <returns><see cref="T:System.Security.Claims.ClaimsPrincipal"/> с утверждениями пользователя.</returns>
+            <exception cref="T:System.ArgumentException">Если токен пустой.</exception>
+            <exception cref="T:Microsoft.IdentityModel.Tokens.SecurityTokenException">Если токен не прошёл проверку.</exception>
+        </member>
+        <member name="M:Server.Jwt_NS.JwtService.GetJwtSecret">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Server.Program">
+            <summary>
+            Класс содержит точку входа приложения и настройки сервисов, аутентификации,
+            middleware, маршрутов и баз данных.
+            </summary>
+        </member>
+        <member name="P:Server.Program.DEV_MODE">
+            <summary>
+            РЕЖИМ РАЗРАБОТКИ
+            </summary>
+        </member>
+        <member name="M:Server.Program.Main(System.String[])">
+            <summary>
+            Точка входа в приложение. Выполняет настройку DI, БД, аутентификации,
+            регистрацию сервисов и запускает сервер.
+            </summary>
+            <param name="args">Аргументы командной строки.</param>
+        </member>
+        <member name="M:Server.Program.Test(Microsoft.AspNetCore.Builder.WebApplication)">
+            <summary>
+            Тестовая функция для проверки взаимодействия с базой данных.
+            Может быть временной или отладочной.
+            </summary>
+            <param name="app">Экземпляр <see cref="T:Microsoft.AspNetCore.Builder.WebApplication"/>.</param>
+            <returns>Асинхронная задача без значения.</returns>
+        </member>
+        <member name="T:Server.UserAuth_NS.OpenWebSocketController">
+            <summary>
+            Контроллер для аутентификации пользователей.
+            </summary>
+            <remarks>
+            Конструктор контроллера.
+            </remarks>
+            <param name="configuration">Конфигурация приложения для получения секретного ключа и параметров JWT.</param>
+        </member>
+        <member name="M:Server.UserAuth_NS.OpenWebSocketController.#ctor">
+            <summary>
+            Контроллер для аутентификации пользователей.
+            </summary>
+            <remarks>
+            Конструктор контроллера.
+            </remarks>
+            <param name="configuration">Конфигурация приложения для получения секретного ключа и параметров JWT.</param>
+        </member>
+        <member name="M:Server.UserAuth_NS.OpenWebSocketController.Login">
+            <summary>
+            Выполняет аутентификацию и возвращает JWT токен.
+            </summary>
+            <param name="request">Модель с именем пользователя и паролем.</param>
+            <returns>JWT токен при успешной аутентификации или ошибка 401.</returns>
+        </member>
+        <member name="M:Server.WebSocket_NS.WebSocketConnection.HandleAsync(System.Threading.CancellationToken)">
+            <summary>
+            Вызывается при открытии веб сокета из WebSocketConnectionHandler.ProcessWebSocketRequest()
+            </summary>
+            <param name="cancellationToken"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Server.WebSocket_NS.WebSocketConnection.SendMessageSafeAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Отправить сообщение клиенту
+            </summary>
+            <param name="message"></param>
+            <param name="cancellationToken"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Server.WebSocket_NS.WebSocketConnectionHandler.#ctor(Microsoft.Extensions.Logging.ILogger{Server.WebSocket_NS.WebSocketConnectionHandler},System.IServiceProvider,Microsoft.Extensions.Configuration.IConfiguration,Server_DB_UserData.MongoHeroesRepository,Server.Jwt_NS.JwtService)">
+            <summary>
+            Инициализирует новый экземпляр <see cref="T:Server.WebSocket_NS.WebSocketConnectionHandler"/>.
+            </summary>
+            <param name="logger">Сервис логирования для записи информации и ошибок.</param>
+            <param name="serviceProvider">Поставщик зависимостей для разрешения сервисов.</param>
+            <param name="configuration">Конфигурация приложения. Используется для получения настроек WebSocket, включая URL сервера и максимальное количество подключений.</param>
+            <param name="mongoRepository">Репозиторий для работы с MongoDB.</param>
+            <param name="jwtService">JWT Сервис</param>
+            <exception cref="T:System.ArgumentNullException">Выбрасывается, если <paramref name="configuration"/> или URL сервера равны null.</exception>
+        </member>
+        <member name="M:Server.WebSocket_NS.WebSocketConnectionHandler.LogConnectionStats(System.Object)">
+            <summary>
+            Процедура вызываемая таймером
+            </summary>
+            <param name="state"></param>
+        </member>
+        <member name="M:Server.WebSocket_NS.WebSocketConnectionHandler.ExecuteAsync(System.Threading.CancellationToken)">
+            <summary>
+            При старте сервера запускает веб сокет сервер.
+            </summary>
+            <param name="stoppingToken"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Server.WebSocket_NS.WebSocketConnectionHandler.ProcessWebSocketRequest(System.Net.HttpListenerContext,System.Threading.CancellationToken,System.Threading.SemaphoreSlim)">
+            <summary>
+            Вызывается при запросе открытия веб сокета от клиента.
+            </summary>
+            <param name="context"></param>
+            <param name="stoppingToken"></param>
+            <param name="semaphore"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

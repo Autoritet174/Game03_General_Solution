@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 using Serilog;
 using Serilog.Events;
 using Server.GameDataCache;
@@ -60,6 +63,12 @@ internal partial class Program
 
         AlertIfDevMode();
 
+        BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
+        BsonSerializer.RegisterSerializer(new NullableSerializer<Guid>(new GuidSerializer(GuidRepresentation.Standard)));
+
+
+
+
         string serilogDir = Path.Combine(AppContext.BaseDirectory, "logs-errors");
         _ = Directory.CreateDirectory(serilogDir);
 
@@ -109,52 +118,30 @@ internal partial class Program
 
 
         // Добавление аутентификации с использованием JWT
-        _ = builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt")); // Jwt.Issuer, Jwt.Audience, Jwt.Lifetime из конфигурации
+        _ = services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt")); // Jwt.Issuer, Jwt.Audience, Jwt.Lifetime из конфигурации
 
-        _ = builder.Services.AddSingleton<JwtService>();
+        _ = services.AddSingleton<JwtService>();
+        _ = services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
 
-        _ = services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-        .AddJwtBearer(options =>
-        {
-            IConfigurationSection jwtConfig = builder.Configuration.GetSection("Jwt");
-            string jwtConfig_key = JwtService.GetJwtSecret();
-            options.TokenValidationParameters = new TokenValidationParameters
+        _ = services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
+            .Configure<IConfiguration, JwtService>((opts, cfg, jwtSvc) =>
             {
+                IConfigurationSection jwtSection = cfg.GetSection("Jwt");
+                string? issuer = jwtSection["Issuer"];
+                string? audience = jwtSection["Audience"];
+                string secret = jwtSvc.GetJwtSecret(); // <-- экземплярный метод
 
-                ValidateIssuer = true,// Проверять издателя
-                ValidIssuer = jwtConfig["Issuer"],
-
-                ValidateAudience = true,// Проверять аудиторию
-                ValidAudience = jwtConfig["Audience"],
-
-                ValidateLifetime = true,// Проверять срок действия
-
-                ValidateIssuerSigningKey = true,// Проверять подпись
-
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig_key))
-            };
-
-
-
-
-
-            // Добавляем обработчик событий
-            //options.Events = new JwtBearerEvents {
-            //    OnAuthenticationFailed = ctx =>
-            //    {
-            //        var logger = ctx.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
-            //        logger.LogError(ctx.Exception, "JWT validation failed");
-            //        File.WriteAllText("__log.txt", ctx.Exception.ToString());
-            //        return Task.CompletedTask;
-            //    },
-            //    // Другие события можно добавить по необходимости
-            //    OnTokenValidated = ctx =>
-            //    {
-            //        Console.WriteLine("Токен успешно валидирован!");
-            //        return Task.CompletedTask;
-            //    }
-            //};
-        });
+                opts.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = issuer,
+                    ValidateAudience = true,
+                    ValidAudience = audience,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret))
+                };
+            });
 
         _ = services.AddCors(options =>
         {
@@ -174,22 +161,23 @@ internal partial class Program
         _ = services.AddScoped<HeroRepository>();
 
         // Конфигурация MongoDB
-        _ = services.Configure<MongoSettings>(options =>
+        _ = services.Configure<MongoHeroesSettings>(options =>
         {
             options.ConnectionString = "mongodb://localhost:27017";
             options.DatabaseName = "userData";
-            options.CollectionName = "items";
+            options.CollectionName = "heroes";
         });
 
-        // Регистрация репозитория
-        _ = builder.Services.AddSingleton<MongoRepository>();
 
-        _ = builder.Services.AddSingleton<WebSocketConnectionHandler>();
-        _ = builder.Services.AddHostedService(provider => provider.GetRequiredService<WebSocketConnectionHandler>());
+        // Регистрация репозитория
+        _ = services.AddSingleton<MongoHeroesRepository>();
+
+        _ = services.AddSingleton<WebSocketConnectionHandler>();
+        _ = services.AddHostedService(provider => provider.GetRequiredService<WebSocketConnectionHandler>());
 
 
         // Ограничение размера тела
-        _ = builder.Services.Configure<FormOptions>(options =>
+        _ = services.Configure<FormOptions>(options =>
         {
             options.ValueLengthLimit = 1_048_576;
             options.MultipartBodyLengthLimit = 1_048_576;
@@ -228,12 +216,12 @@ internal partial class Program
             provider => provider.GetRequiredService<BackgroundLoggerAuthentificationService>());
 
         // Добавляем HeroCacheService
-        //_ = builder.Services.AddScoped<IHeroCacheService, HeroesCacheService>();
-        _ = builder.Services.AddSingleton<IHeroCacheService, HeroesCacheService>();
+        //_ = services.AddScoped<IHeroCacheService, HeroesCacheService>();
+        _ = services.AddSingleton<IHeroCacheService, HeroesCacheService>();
 
-        _ = builder.Services.AddMemoryCache();
+        _ = services.AddMemoryCache();
 
-     
+
 
 
         WebApplication app = builder.Build();

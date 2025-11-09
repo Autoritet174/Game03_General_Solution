@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Server_DB_UserData</name>
+    </assembly>
+    <members>
+        <member name="M:Server_DB_UserData.MongoHeroesRepository.#ctor(Microsoft.Extensions.Options.IOptions{Server_DB_UserData.MongoHeroesSettings})">
+            <summary>
+            Конструктор репозитория, инициализирующий подключение к коллекции.
+            </summary>
+        </member>
+        <member name="M:Server_DB_UserData.MongoHeroesRepository.GetAllHeroesByUserIdAsync(System.Guid)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Server_DB_UserData.MongoHeroesRepository.InsertAsync(MongoDB.Bson.BsonDocument)">
+            <summary>
+            Асинхронно добавляет новый документ в коллекцию.
+            </summary>
+        </member>
+        <member name="P:Server_DB_UserData.MongoHeroesSettings.ConnectionString">
+            <summary>
+            Строка подключения к MongoDB.
+            </summary>
+        </member>
+        <member name="P:Server_DB_UserData.MongoHeroesSettings.DatabaseName">
+            <summary>
+            Имя базы данных.
+            </summary>
+        </member>
+        <member name="P:Server_DB_UserData.MongoHeroesSettings.CollectionName">
+            <summary>
+            Имя коллекции.
+            </summary>
+        </member>
+    </members>
+</doc>

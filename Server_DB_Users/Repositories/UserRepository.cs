@@ -86,11 +86,11 @@ public class UserRepository
     /// </summary>
     /// <param name="name"></param>
     /// <returns>Найденная запись или null.</returns>
-    public async Task<User?> GetByEmailAsync(string email)
-    {
-        throw new NotImplementedException();
-        //return string.IsNullOrWhiteSpace(email) ? null : await _users.FirstOrDefaultAsync(u => u.Email != null && EF.Functions.ILike(u.Email, email));
-    }
+    //public async Task<User?> GetByEmailAsync(string email)
+    //{
+    //    throw new NotImplementedException();
+    //    //return string.IsNullOrWhiteSpace(email) ? null : await _users.FirstOrDefaultAsync(u => u.Email != null && EF.Functions.ILike(u.Email, email));
+    //}
 
 
     /// <summary>

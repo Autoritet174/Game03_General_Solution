@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Server_DB_Users</name>
+    </assembly>
+    <members>
+        <member name="T:Server_DB_Users.Entities.User">
+            <summary>
+            Представляет пользователя системы.
+            </summary>
+        </member>
+        <member name="T:Server_DB_Users.Entities.User_Ban">
+            <summary>
+            Представляет пользователя системы.
+            </summary>
+        </member>
+        <member name="T:Server_DB_Users.Migrations.start">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Users.Migrations.start.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Users.Migrations.start.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Users.Migrations.start.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Users.Migrations.start001">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Users.Migrations.start001.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Users.Migrations.start001.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Users.Migrations.start001.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Users.Migrations.start002">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Users.Migrations.start002.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Users.Migrations.start002.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Users.Migrations.start002.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Users.Repositories.UserRepository">
+            <summary>
+            Репозиторий для управления пользователями.
+            </summary>
+            <remarks>
+            Создаёт экземпляр <see cref="T:Server_DB_Users.Repositories.UserRepository"/>.
+            </remarks>
+        </member>
+        <member name="M:Server_DB_Users.Repositories.UserRepository.#ctor(Server_DB_Users.DbContext_Game03Users)">
+            <summary>
+            
+            </summary>
+            <param name="dbContext">Контекст базы данных.</param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="M:Server_DB_Users.Repositories.UserRepository.AddAsync(System.String,System.String)">
+            <summary>
+            Добавляет нового пользователя.
+            </summary>
+            <param name="emailValidated"></param>
+            <param name="passwordHashValidated"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Server_DB_Users.Repositories.UserRepository.UpdateAsync(Server_DB_Users.Entities.User)">
+            <summary>
+            Обновляет переданную сущность пользователя в базе данных.
+            </summary>
+            <param name="user">Сущность пользователя с обновлёнными данными.</param>
+            <exception cref="T:System.ArgumentNullException">Если равен null.</exception>
+            <exception cref="T:System.ArgumentException">Если идентификатор пустой.</exception>
+            <exception cref="T:System.InvalidOperationException">Если сущность с таким идентификатором не найдена.</exception>
+        </member>
+        <member name="M:Server_DB_Users.Repositories.UserRepository.GetByEmailWithBansAsync(System.String)">
+            <summary>
+            Возвращает пользователя по e-mail (без учёта регистра) с банами.
+            </summary>
+            <param name="name"></param>
+            <returns>Найденная запись или null.</returns>
+        </member>
+    </members>
+</doc>

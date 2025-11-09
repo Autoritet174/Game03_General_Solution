@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Server.WebSocket_NS;
 
-public class WebSocketConnection(WebSocket webSocket, ILogger<WebSocketConnection> logger, IConfiguration configuration, WebSocketConnectionHandler webSocketServer, MongoRepository mongoRepository, JwtService jwtService)
+public class WebSocketConnection(WebSocket webSocket, ILogger<WebSocketConnection> logger, IConfiguration configuration, WebSocketConnectionHandler webSocketServer, MongoHeroesRepository mongoRepository, JwtService jwtService)
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
     private readonly WebSocket _webSocket = webSocket;

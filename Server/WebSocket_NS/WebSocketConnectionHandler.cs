@@ -21,7 +21,7 @@ public class WebSocketConnectionHandler : BackgroundService
     private readonly ConcurrentDictionary<Guid, DateTime> _activeConnections = new();
     private int _activeConnections_Count_Last = 0;
     private readonly Timer _monitoringTimer;
-    private readonly MongoRepository _mongoRepository;
+    private readonly MongoHeroesRepository _mongoRepository;
     private readonly JwtService _jwtService;
 
     /// <summary>
@@ -33,7 +33,7 @@ public class WebSocketConnectionHandler : BackgroundService
     /// <param name="mongoRepository">Репозиторий для работы с MongoDB.</param>
     /// <param name="jwtService">JWT Сервис</param>
     /// <exception cref="ArgumentNullException">Выбрасывается, если <paramref name="configuration"/> или URL сервера равны null.</exception>
-    public WebSocketConnectionHandler(ILogger<WebSocketConnectionHandler> logger, IServiceProvider serviceProvider, IConfiguration configuration, MongoRepository mongoRepository, JwtService jwtService)
+    public WebSocketConnectionHandler(ILogger<WebSocketConnectionHandler> logger, IServiceProvider serviceProvider, IConfiguration configuration, MongoHeroesRepository mongoRepository, JwtService jwtService)
     {
         ArgumentNullException.ThrowIfNull(configuration);
         _configuration = configuration;

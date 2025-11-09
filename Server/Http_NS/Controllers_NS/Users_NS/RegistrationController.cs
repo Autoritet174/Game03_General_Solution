@@ -1,19 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Server.Utilities;
 namespace Server.Http_NS.Controllers_NS.Users_NS;
 
-/// <summary>
-/// 
-/// </summary>
-public class RegistrationController
-   
-    : ControllerBaseApi
+
+public class RegistrationController : ControllerBaseApi
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
+
     [AllowAnonymous]
     [HttpPost]
     public async Task<IActionResult> Register()

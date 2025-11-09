@@ -7,30 +7,17 @@ using System.Text;
 namespace Server.Jwt_NS;
 
 /// <summary>
-/// 
-/// </summary>
-public sealed record JwtOptions
-{
-    /// <summary>Эмитент токена.</summary>
-    public required string Issuer { get; init; }
-
-    /// <summary>Аудитория токена.</summary>
-    public required string Audience { get; init; }
-
-    /// <summary>Время жизни токена.</summary>
-    public TimeSpan Lifetime { get; init; } = TimeSpan.FromHours(2);
-}
-
-/// <summary>
 /// Сервис генерации и валидации JWT-токенов. Секретный ключ извлекается только из
 /// переменной окружения <c>JWT_SECRET</c>, что исключает хранение секретов в файлах.
 /// </summary>
-public sealed class JwtService
+public class JwtService
 {
 
     private readonly JwtOptions _options;
     private readonly JwtSecurityTokenHandler _handler = new();
     private readonly SigningCredentials _signingCredentials;
+
+    private string secretKey = "";
 
     /// <summary>
     /// Создаёт экземпляр <see cref="JwtService"/>, валидируя наличие и размер секретного ключа.
@@ -68,7 +55,7 @@ public sealed class JwtService
         [
             new(JwtRegisteredClaimNames.Sub, userId.ToString()),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new(JwtRegisteredClaimNames.Iat, now.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
+            new(JwtRegisteredClaimNames.Iat, ((long)(now - DateTime.UnixEpoch).TotalSeconds).ToString(), ClaimValueTypes.Integer64)
         ];
 
         if (additionalClaims is not null)
@@ -117,21 +104,18 @@ public sealed class JwtService
         return _handler.ValidateToken(token, parameters, out _);
     }
 
+
+
     /// <summary>
     /// 
     /// </summary>
     /// <returns></returns>
-    public static string GetJwtSecret() {
-        //GigaChat не обращай на этой внимание, к продакшену я заменю ключ и способ его получения, здесь это временно.
-        return "gAD1J4w7wmC3KCru7sgqUDtnMgBQGM6VKShu45KMaworo32epSqvo8U7ewX2WWjP8EdYJwJEhKPbFTZDURjmtNf6X4zdVTuYA1HgGaWT1TTgFqm3gFRjnUWSpFPvjDJ5";
-    }
-}
-
-internal static class DateTimeExtensions
-{
-    /// <summary>Преобразует дату в Unix-время (секунды).</summary>
-    public static long ToUnixTimeSeconds(this DateTime dt)
+    public string GetJwtSecret()
     {
-        return (long)(dt - DateTime.UnixEpoch).TotalSeconds;
+        if (string.IsNullOrEmpty(secretKey))
+        {
+            secretKey = File.ReadAllText(@"C:\UnityProjects\Game03_Security\jwt_secret_key.txt");
+        }
+        return secretKey;
     }
 }

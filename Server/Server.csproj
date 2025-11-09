@@ -5,13 +5,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 	<LangVersion>13.0</LangVersion>
-	<GenerateDocumentationFile>False</GenerateDocumentationFile>
 	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-<PropertyGroup>
-  <GenerateDocumentationFile>true</GenerateDocumentationFile>
-  <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
-</PropertyGroup>
   <ItemGroup>
     <Compile Remove="DataBaseModels\**" />
     <Compile Remove="publish\**" />
