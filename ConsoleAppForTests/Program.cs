@@ -4,7 +4,7 @@ internal class Program
 {
     private static async Task Main()
     {
-        Client.GameClient gameClient = Client.GameClient.Create();
+        Game03Client.Game03 gameClient = Game03Client.Game03.Create();
         string qwe = gameClient.JwtTokenGetAsync().Result;
 
         return;

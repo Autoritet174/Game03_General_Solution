@@ -6,7 +6,7 @@ using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Client
+namespace Game03Client
 {
     public class WebSocketClient
     {

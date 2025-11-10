@@ -1,4 +1,4 @@
-﻿namespace Client.IniFile;
+namespace Game03Client.IniFile;
 
 internal sealed class IniFileOptions(string fileName)
 {

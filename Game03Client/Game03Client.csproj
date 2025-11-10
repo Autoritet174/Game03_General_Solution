@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>13.0</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Game03Client.xml" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="ini-parser-netstandard" Version="2.5.3" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.10" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="System.Text.Encodings.Web" Version="9.0.10" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\General\General.csproj" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="@echo off&#xD;&#xA;setlocal&#xD;&#xA;&#xD;&#xA;set &quot;srcDir=C:\UnityProjects\Game03_General_Solution\Game03Client\bin\Debug\netstandard2.1&quot;&#xD;&#xA;set &quot;dstDir=C:\UnityProjects\Game03_Git\Client_Game03\Assets\Plugins&quot;&#xD;&#xA;&#xD;&#xA;if exist &quot;%25srcDir%25\Game03Client.deps.json&quot; (&#xD;&#xA;    copy &quot;%25srcDir%25\Game03Client.deps.json&quot; &quot;%25dstDir%25\Game03Client.deps.json&quot;&#xD;&#xA;) else (&#xD;&#xA;    echo File not found: Game03Client.deps.json&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;if exist &quot;%25srcDir%25\Game03Client.dll&quot; (&#xD;&#xA;    copy &quot;%25srcDir%25\Game03Client.dll&quot; &quot;%25dstDir%25\Game03Client.dll&quot;&#xD;&#xA;) else (&#xD;&#xA;    echo File not found: Game03Client.dll&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;if exist &quot;%25srcDir%25\Game03Client.pdb&quot; (&#xD;&#xA;    copy &quot;%25srcDir%25\Game03Client.pdb&quot; &quot;%25dstDir%25\Game03Client.pdb&quot;&#xD;&#xA;) else (&#xD;&#xA;    echo File not found: Game03Client.pdb&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;if exist &quot;%25srcDir%25\Game03Client.xml&quot; (&#xD;&#xA;    copy &quot;%25srcDir%25\Game03Client.xml&quot; &quot;%25dstDir%25\Game03Client.xml&quot;&#xD;&#xA;) else (&#xD;&#xA;    echo File not found: Game03Client.xml&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;endlocal&#xD;&#xA;" />
+  </Target>
+
+</Project>

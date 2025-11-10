@@ -19,7 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server_DB_UserData", "Serve
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server_DB_Users", "Server_DB_Users\Server_DB_Users.csproj", "{1302F570-402D-B3EC-12D5-3170F63120E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{40FEC055-4229-4DA3-97BA-21F748F58AEC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Game03Client", "Game03Client\Game03Client.csproj", "{B42209D4-00DF-A86F-E711-D9E4DAA3E783}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,10 +59,10 @@ Global
 		{1302F570-402D-B3EC-12D5-3170F63120E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1302F570-402D-B3EC-12D5-3170F63120E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1302F570-402D-B3EC-12D5-3170F63120E8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{40FEC055-4229-4DA3-97BA-21F748F58AEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{40FEC055-4229-4DA3-97BA-21F748F58AEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{40FEC055-4229-4DA3-97BA-21F748F58AEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{40FEC055-4229-4DA3-97BA-21F748F58AEC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B42209D4-00DF-A86F-E711-D9E4DAA3E783}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B42209D4-00DF-A86F-E711-D9E4DAA3E783}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B42209D4-00DF-A86F-E711-D9E4DAA3E783}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B42209D4-00DF-A86F-E711-D9E4DAA3E783}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
