@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Server_DB;
 using System.Text.Json.Nodes;
-using SR = General.ServerErrors.Error;
 
 namespace Server.Http_NS.Controllers_NS.Admin_NS;
 
@@ -19,7 +17,7 @@ public class AddItemController : ControllerBaseApi
         JsonObject? obj = await JsonObjectExt.GetJsonObjectFromRequest(Request);
         if (obj == null)
         {
-            return BadRequestWithServerError(SR.RestApiBodyEmpty);
+            return BadRequestInvalidResponse();
         }
 
         _ = JsonObjectExt.GetString(obj, "email");

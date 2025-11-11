@@ -4,8 +4,10 @@ internal class Program
 {
     private static async Task Main()
     {
-        Game03Client.Game03 gameClient = Game03Client.Game03.Create();
-        string qwe = gameClient.JwtTokenGetAsync().Result;
+        Game03Client.Game03 gameClient = Game03Client.Game03.Create(
+            Path.Combine(@"c:\UnityProjects\Game03_Git\Client_Game03\Assets", @"GameData\Config\Main.ini"),
+            new General.StringCapsule());
+        //string qwe = gameClient.JwtToken.GetTokenAsync();
 
         return;
 

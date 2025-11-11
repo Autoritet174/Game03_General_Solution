@@ -19,23 +19,23 @@ internal class JwtTokenProvider(JwtTokenCache jwtTokenCache, IHttpRequesterProvi
             return new JwtTokenResult(jwtTokenCache.Token);
         }
 
-        HttpRequesterResult? httpRequesterProviderResult = await httpRequesterProvider.GetResponceAsync(General.URLs.Uri_login, jsonBody);
+        HttpRequesterResult? httpRequesterProviderResult = await httpRequesterProvider.GetResponceAsync(General.Url.Authentication, jsonBody, false);
         if (httpRequesterProviderResult == null)
         {
             Error("httpRequesterProviderResult is null");
-            return new JwtTokenResult(null, L.Error.Server.InvalidResponse);
+            return new JwtTokenResult(null);
         }
 
         if (!httpRequesterProviderResult.Success)
         {
             Error("httpRequesterProviderResult.Success is false");
-            return new JwtTokenResult(null, httpRequesterProviderResult.KeyError ?? L.Error.Server.InvalidResponse);
+            return new JwtTokenResult(null, httpRequesterProviderResult.JObject);
         }
 
         if (httpRequesterProviderResult.JObject == null)
         {
             Error("httpRequesterProviderResult.JObject is null");
-            return new JwtTokenResult(null, httpRequesterProviderResult.KeyError ?? L.Error.Server.InvalidResponse);
+            return new JwtTokenResult(null);
         }
 
         JObject jObject = httpRequesterProviderResult.JObject;
@@ -43,9 +43,10 @@ internal class JwtTokenProvider(JwtTokenCache jwtTokenCache, IHttpRequesterProvi
         if (string.IsNullOrWhiteSpace(token))
         {
             Error("httpRequesterProviderResult.JObject.token is null");
-            return new JwtTokenResult(null, httpRequesterProviderResult.KeyError ?? L.Error.Server.InvalidResponse);
+            return new JwtTokenResult(null, httpRequesterProviderResult.JObject);
         }
 
+        jwtTokenCache.Token = token;
         return new JwtTokenResult(token);
     }
 

@@ -1,5 +1,6 @@
 using Game03Client.IniFile;
 using Game03Client.InternetChecker;
+using Game03Client.JwtToken;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Net;
@@ -7,6 +8,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using L = General.LocalizationKeys;
 
 namespace Game03Client.HttpRequester;
 
@@ -15,22 +17,39 @@ internal class HttpRequesterProvider : IHttpRequesterProvider
     private readonly HttpClient _httpClient;
     private readonly IIniFileProvider _iniFileProvider;
     private readonly IInternetCheckerProvider _internetCheckerProvider;
+    private readonly JwtTokenCache _tokenCache; // Зависимость от кэша, а не провайдера
 
     private static void Error(string error) {
         Console.WriteLine($"[{nameof(HttpRequesterProvider)}] {error}");
     }
 
-    internal HttpRequesterProvider(IIniFileProvider iniFileProvider, IInternetCheckerProvider internetCheckerProvider)
+    public HttpRequesterProvider(IIniFileProvider iniFileProvider, IInternetCheckerProvider internetCheckerProvider, JwtTokenCache tokenCache)
     {
         _iniFileProvider = iniFileProvider;
         _internetCheckerProvider = internetCheckerProvider;
+        _tokenCache = tokenCache;
         _httpClient = new();
         double timeout = _iniFileProvider.ReadDouble("Http", "timeout", 10d);
         _httpClient.Timeout = TimeSpan.FromSeconds(timeout);
     }
 
-    public async Task<HttpRequesterResult?> GetResponceAsync(Uri uri, string? jsonBody = null, string? jwtToken = null)
+    /// <summary>
+    /// Возвращает <see cref="HttpRequesterResult"/> ответ. Если HttpRequesterResult <see cref="HttpRequesterResult.Success"/> true, то  <see cref="HttpRequesterResult.JObject"/> был корректно извлечен из ответа от сервера.
+    /// </summary>
+    /// <param name="url"></param>
+    /// <param name="jsonBody"></param>
+    /// <param name="useJwtToken"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    public async Task<HttpRequesterResult?> GetResponceAsync(string url, string? jsonBody = null, bool useJwtToken = true)
     {
+        if (string.IsNullOrWhiteSpace(url))
+        {
+            Error("url IsNullOrWhiteSpace");
+            throw new ArgumentNullException(nameof(url));
+        }
+
+        Uri uri = new(url);
         if (uri == null)
         {
             Error("uri is null");
@@ -44,10 +63,15 @@ internal class HttpRequesterProvider : IHttpRequesterProvider
                 Content = new StringContent(jsonBody ?? "{}", Encoding.UTF8, "application/json")
             };
 
-            if (!string.IsNullOrWhiteSpace(jwtToken))
+
+            if (useJwtToken)
             {
-                // Если был передан токен то подставляем его в заголовок как авторизацию
-                request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwtToken);
+                string? jwtToken = _tokenCache.Token;
+                if (!string.IsNullOrWhiteSpace(jwtToken))
+                {
+                    // Если был передан токен то подставляем его в заголовок как авторизацию
+                    request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwtToken);
+                }
             }
 
             using HttpResponseMessage response = await _httpClient.SendAsync(request);

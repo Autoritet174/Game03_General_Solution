@@ -7,5 +7,5 @@ namespace Game03Client.HttpRequester;
 
 public interface IHttpRequesterProvider
 {
-    Task<HttpRequesterResult?> GetResponceAsync(Uri uri, string? jsonBody = null, string? jwtToken = null);
+    Task<HttpRequesterResult?> GetResponceAsync(string url, string? jsonBody = null, bool useJwtToken = true);
 }

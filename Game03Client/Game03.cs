@@ -1,8 +1,12 @@
+using Game03Client.HttpRequester;
 using Game03Client.IniFile;
 using Game03Client.InternetChecker;
 using Game03Client.JwtToken;
+using Game03Client.LocalizationManager;
+using General;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 
 namespace Game03Client;
@@ -17,18 +21,30 @@ public sealed class Game03 : IAsyncDisposable
     /// <summary>
     /// Провайдер JwtToken.
     /// </summary>
-    public IJwtTokenProvider JwtToken { get; private set; }
+    public IJwtTokenProvider JwtTokenProvider { get; private set; }
 
     /// <summary>
     /// Провайдер IniFile.
     /// </summary>
-    public IIniFileProvider IniFile { get; private set; }
+    public IIniFileProvider IniFileProvider { get; private set; }
+
+    /// <summary>
+    /// Провайдер HttpRequester.
+    /// </summary>
+    public IHttpRequesterProvider HttpRequesterProvider { get; private set; }
+
+    /// <summary>
+    /// Провайдер LocalizationManager.
+    /// </summary>
+    public ILocalizationManagerProvider LocalizationManagerProvider { get; private set; }
 
     private Game03(ServiceProvider provider)
     {
         _provider = provider;
-        JwtToken = provider.GetRequiredService<JwtTokenProvider>();
-        IniFile = provider.GetRequiredService<IniFileProvider>();
+        JwtTokenProvider = provider.GetRequiredService<IJwtTokenProvider>();
+        IniFileProvider = provider.GetRequiredService<IIniFileProvider>();
+        HttpRequesterProvider = provider.GetRequiredService<IHttpRequesterProvider>();
+        LocalizationManagerProvider = provider.GetRequiredService<ILocalizationManagerProvider>();
     }
 
     /// <summary>
@@ -41,7 +57,15 @@ public sealed class Game03 : IAsyncDisposable
         return default;
     }
 
-    public static Game03 Create(string iniFileFullPath, Action<IServiceCollection>? configure = null)
+    /// <summary>
+    /// Фабрика.
+    /// </summary>
+    /// <param name="iniFileFullPath"></param>
+    /// <param name="stringCapsuleJsonFileData"></param>
+    /// <param name="languageGame"></param>
+    /// <param name="configure"></param>
+    /// <returns></returns>
+    public static Game03 Create(string iniFileFullPath, StringCapsule stringCapsuleJsonFileData, GameLanguage languageGame, Action<IServiceCollection>? configure = null)
     {
         ServiceCollection services = new();
 
@@ -55,6 +79,13 @@ public sealed class Game03 : IAsyncDisposable
 
         // InternetCheckerProvider
         _ = services.AddSingleton<IInternetCheckerProvider, InternetCheckerProvider>();
+
+        // HttpRequesterProvider
+        _ = services.AddSingleton<IHttpRequesterProvider, HttpRequesterProvider>();
+
+        // LocalizationManagerProvider
+        _ = services.AddSingleton(new LocalizationManagerOptions(stringCapsuleJsonFileData, languageGame));
+        _ = services.AddSingleton<ILocalizationManagerProvider, LocalizationManagerProvider>();
 
         configure?.Invoke(services); // опциональные переопределения
 

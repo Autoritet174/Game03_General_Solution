@@ -54,12 +54,12 @@ internal partial class Program
     private static void Main(string[] args)
     {
         //Utilities.ConsoleWindow.Restore();
-        if (!General.ServerErrors.CheckEnumServerResponse())
-        {
-            Console.WriteLine("Bad enum ServerResponse");
-            _ = Console.ReadLine();
-            return;
-        }
+        //if (!General.ServerErrors.CheckEnumServerResponse())
+        //{
+        //    Console.WriteLine("Bad enum ServerResponse");
+        //    _ = Console.ReadLine();
+        //    return;
+        //}
 
         AlertIfDevMode();
 

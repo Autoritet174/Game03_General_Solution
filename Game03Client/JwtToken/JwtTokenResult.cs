@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Linq;
 using System;
 
 namespace Game03Client.JwtToken;
@@ -15,17 +16,17 @@ public class JwtTokenResult
     /// <summary>
     /// Ключ ошибки если не удалось извлечь токен.
     /// </summary>
-    public string? KeyError { get; }
+    public JObject? JObject { get; }
 
     /// <param name="result"></param>
-    /// <param name="keyError"></param>
-    public JwtTokenResult(string? result, string? keyError = null)
+    /// <param name="jObject"></param>
+    public JwtTokenResult(string? result, JObject? jObject = null)
     {
         Result = result;
-        KeyError = keyError;
-        if (!(result == null ^ keyError == null))
+        JObject = jObject;
+        if (!(result == null ^ jObject == null))
         {
-            throw new Exception("допустимо чтобы ровно одна из двух переменных result и keyError была true");
+            throw new Exception($"допустимо чтобы ровно одна из двух переменных {nameof(result)} и {nameof(jObject)} была null");
         }
     }
 }

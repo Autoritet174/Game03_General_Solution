@@ -9,7 +9,7 @@ using Server_DB_Users.Entities;
 using Server_DB_Users.Repositories;
 using System.Net;
 using System.Text.Json.Nodes;
-using SR = General.ServerErrors.Error;
+using L = General.LocalizationKeys;
 
 namespace Server.Http_NS.Controllers_NS.Users_NS;
 
@@ -45,7 +45,7 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
         // Ожидается application/json, иначе — ошибка формата.
         if (Request.ContentType?.StartsWith("application/json") != true)
         {
-            return BadRequestUnsupportedMediaType();
+            return BadRequestInvalidResponse();
         }
 
         // Извлечение JSON из тела запроса.
@@ -157,17 +157,13 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
 
         if (dtUnban == DateTimeOffset.MaxValue)
         {
-            return StatusCode(403, new { code = (long)SR.AccountBannedPermanently });
+            return BadRequestWithServerError(L.Error.Server.AccountBannedPermanently);
         }
         else
         {
             if (dtUnban > DateTimeOffset.MinValue)
             {
-                return StatusCode(403, new
-                {
-                    code = (long)SR.AccountBannedUntil,
-                    dateTimeExpiresAt = $"{dtUnban:yyyy.MM.dd HH:mm:ss} UTC"
-                });
+                BadRequest(new { keyError = L.Error.Server.AccountBannedUntil, dateTimeExpiresAt = $"{dtUnban:yyyy.MM.dd HH:mm:ss} UTC" });
             }
         }
 
@@ -189,7 +185,7 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
     /// <returns>Результат с кодом состояния 429 и данными о времени окончания блокировки.</returns>
     protected IActionResult BadRequestEmailRateLimited(string email)
     {
-        return StatusCode(429, new { code = (long)SR.TooManyRequests, secondsRemaining = GetRemainingLockoutTime(email) });
+        return BadRequest(new { keyError = L.Error.Server.TooManyRequests, secondsRemaining = GetRemainingLockoutTime(email) });
     }
 
     /// <summary>

@@ -1,9 +1,9 @@
-namespace Game03Client;
+namespace General;
 
 /// <summary>
-/// Поля для получения ошибок по коду локализации.
+/// Коды для получения текстовых ошибок из json файлов локализации.
 /// </summary>
-public static class L
+public static class LocalizationKeys
 {
 #pragma warning disable
 
@@ -13,7 +13,7 @@ public static class L
 
         public static class Button
         {
-            private const string _Button = $"{_UI}.{nameof(Button)}.";
+            private const string _Button = $"{_UI}{nameof(Button)}.";
 
             public const string Login = $"{_Button}{nameof(Login)}";
             public const string Reg = $"{_Button}{nameof(Reg)}";
@@ -21,7 +21,7 @@ public static class L
         }
         public static class Label
         {
-            private const string _Label = $"{_UI}.{nameof(Label)}.";
+            private const string _Label = $"{_UI}{nameof(Label)}.";
 
             public const string Email = $"{_Label}{nameof(Email)}";
             public const string Password = $"{_Label}{nameof(Password)}";
@@ -29,10 +29,11 @@ public static class L
     }
     public static class Error {
         private const string _Error = $"{nameof(Error)}.";
-        public static class Server {
-            private const string _Server = $"{_Error}.{nameof(Server)}.";
 
-            public const string UnknownError = $"{_Server}{nameof(UnknownError)}";
+        public const string UnknownError = $"{_Error}{nameof(UnknownError)}";
+        public static class Server {
+            private const string _Server = $"{_Error}{nameof(Server)}.";
+
             public const string Timeout = $"{_Server}{nameof(Timeout)}";
             public const string InvalidResponse = $"{_Server}{nameof(InvalidResponse)}";
             public const string InvalidCredentials = $"{_Server}{nameof(InvalidCredentials)}";
@@ -41,11 +42,14 @@ public static class L
             public const string AccountBannedPermanently = $"{_Server}{nameof(AccountBannedPermanently)}";
             public const string Unavailable = $"{_Server}{nameof(Unavailable)}";
             public const string NoInternetConnection = $"{_Server}{nameof(NoInternetConnection)}";
+            public const string OpeningWebSocketFailed = $"{_Server}{nameof(OpeningWebSocketFailed)}";
         }
         public static class User {
-            private const string _User = $"{_Error}.{nameof(User)}.";
+            private const string _User = $"{_Error}{nameof(User)}.";
 
             public const string NotEmail = $"{_User}{nameof(NotEmail)}";
+            public const string EmailEmpty = $"{_User}{nameof(EmailEmpty)}";
+            public const string PasswordEmpty = $"{_User}{nameof(PasswordEmpty)}";
         }
     }
     public static class Info
