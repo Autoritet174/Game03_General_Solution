@@ -415,21 +415,6 @@
             <param name="cancellationToken">Токен, сигнализирующий внешнее завершение приложения.</param>
             <returns>Задача, завершающаяся после попытки обработки остатка.</returns>
         </member>
-        <member name="T:Server.Http_NS.Controllers_NS.WebSocket_NS.WebSocketController">
-            <summary>
-            Контроллер для обработки подключений WebSocket.
-            </summary>
-        </member>
-        <member name="M:Server.Http_NS.Controllers_NS.WebSocket_NS.WebSocketController.#ctor">
-            <summary>
-            Контроллер для обработки подключений WebSocket.
-            </summary>
-        </member>
-        <member name="M:Server.Http_NS.Controllers_NS.WebSocket_NS.WebSocketController.Connect">
-            <summary>
-            Принимает WebSocket-соединение и обрабатывает клиента в фоне.
-            </summary>
-        </member>
         <member name="T:Server.Http_NS.Middleware_NS.ExceptionLoggingMiddleware">
             <summary>
             Middleware для глобального перехвата исключений и логирования в файл.
@@ -568,38 +553,30 @@
             <param name="cancellationToken"></param>
             <returns></returns>
         </member>
+        <member name="T:Server.WebSocket_NS.WebSocketConnectionHandler">
+            <summary>
+            Обработчик подключений WebSocket. Работает как Singleton-сервис и интегрирован 
+            в пайплайн ASP.NET Core Middleware через app.Map().
+            </summary>
+        </member>
         <member name="M:Server.WebSocket_NS.WebSocketConnectionHandler.#ctor(Microsoft.Extensions.Logging.ILogger{Server.WebSocket_NS.WebSocketConnectionHandler},System.IServiceProvider,Microsoft.Extensions.Configuration.IConfiguration,Server_DB_UserData.MongoHeroesRepository,Server.Jwt_NS.JwtService)">
             <summary>
             Инициализирует новый экземпляр <see cref="T:Server.WebSocket_NS.WebSocketConnectionHandler"/>.
             </summary>
             <param name="logger">Сервис логирования для записи информации и ошибок.</param>
             <param name="serviceProvider">Поставщик зависимостей для разрешения сервисов.</param>
-            <param name="configuration">Конфигурация приложения. Используется для получения настроек WebSocket, включая URL сервера и максимальное количество подключений.</param>
+            <param name="configuration">Конфигурация приложения.</param>
             <param name="mongoRepository">Репозиторий для работы с MongoDB.</param>
             <param name="jwtService">JWT Сервис</param>
-            <exception cref="T:System.ArgumentNullException">Выбрасывается, если <paramref name="configuration"/> или URL сервера равны null.</exception>
         </member>
-        <member name="M:Server.WebSocket_NS.WebSocketConnectionHandler.LogConnectionStats(System.Object)">
+        <member name="M:Server.WebSocket_NS.WebSocketConnectionHandler.ProcessKestrelWebSocketRequest(Microsoft.AspNetCore.Http.HttpContext,System.Threading.CancellationToken)">
             <summary>
-            Процедура вызываемая таймером
+            Вызывается при запросе открытия веб сокета от клиента через пайплайн ASP.NET Core.
             </summary>
-            <param name="state"></param>
-        </member>
-        <member name="M:Server.WebSocket_NS.WebSocketConnectionHandler.ExecuteAsync(System.Threading.CancellationToken)">
-            <summary>
-            При старте сервера запускает веб сокет сервер.
-            </summary>
-            <param name="stoppingToken"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Server.WebSocket_NS.WebSocketConnectionHandler.ProcessWebSocketRequest(System.Net.HttpListenerContext,System.Threading.CancellationToken,System.Threading.SemaphoreSlim)">
-            <summary>
-            Вызывается при запросе открытия веб сокета от клиента.
-            </summary>
-            <param name="context"></param>
-            <param name="stoppingToken"></param>
-            <param name="semaphore"></param>
-            <returns></returns>
+            <param name="context">Контекст HTTP-запроса от Kestrel.</param>
+            <param name="stoppingToken">Токен отмены.</param>
+            <returns>Асинхронная задача обработки соединения.</returns>
+            <exception cref="T:System.ArgumentNullException">Если контекст равен null.</exception>
         </member>
     </members>
 </doc>

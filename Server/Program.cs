@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Bson;
@@ -19,6 +20,8 @@ using Server_DB_Users;
 using Server_DB_Users.Repositories;
 using System.Text;
 using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.Http; // Добавлено для HttpContext
+using System.Net; // Добавлено для HttpStatusCode
 
 namespace Server;
 
@@ -172,8 +175,9 @@ internal partial class Program
         // Регистрация репозитория
         _ = services.AddSingleton<MongoHeroesRepository>();
 
+        // WebSocketConnectionHandler теперь регистрируется только как Singleton
         _ = services.AddSingleton<WebSocketConnectionHandler>();
-        _ = services.AddHostedService(provider => provider.GetRequiredService<WebSocketConnectionHandler>());
+        // УДАЛЕНО: Убрана регистрация как IHostedService, так как HttpListener удален.
 
 
         // Ограничение размера тела
@@ -222,6 +226,7 @@ internal partial class Program
         _ = services.AddMemoryCache();
 
 
+        // УДАЛЕНО: //listenOptions.UseHttps(@"C:\UnityProjects\Game03_Security\webSocketCert.pfx", "mypassword");
 
 
         WebApplication app = builder.Build();
@@ -239,15 +244,38 @@ internal partial class Program
 
         _ = app.UseRateLimiter();
 
-        _ = app.UseHttpsRedirection();
+        //_ = app.UseHttpsRedirection();
         _ = app.UseHsts();
 
         // Добавляем заголовки безопасности
         _ = app.UseMiddleware<SecurityHeadersMiddleware>();
 
-
         // Разрешение WebSocket соединений
         _ = app.UseWebSockets();
+
+        // НОВОЕ: Подключение WebSocket-обработчика через маршрутизацию ASP.NET Core.
+        // Запросы по адресу /ws будут направляться в ProcessKestrelWebSocketRequest
+        _ = app.Map("/ws", appBuilder =>
+        {
+            appBuilder.Run(async context =>
+            {
+                if (context.WebSockets.IsWebSocketRequest)
+                {
+                    // Получаем Singleton-экземпляр обработчика из DI
+                    WebSocketConnectionHandler handler = context.RequestServices.GetRequiredService<WebSocketConnectionHandler>();
+
+                    // Запускаем обработку WebSocket
+                    // Используем CancellationToken из контекста приложения
+                    await handler.ProcessKestrelWebSocketRequest(context, context.RequestAborted);
+                }
+                else
+                {
+                    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    await context.Response.WriteAsync("Запрос должен быть WebSocket-запросом.");
+                }
+            });
+        });
+
 
         // Подключение кастомного WebSocket middleware
         //_ = app.UseMiddleware<WebSocketMiddleware>();
