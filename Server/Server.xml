@@ -139,17 +139,19 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="T:Server.Http_NS.Controllers_NS.GetListAllHeroesController">
+        <member name="T:Server.Http_NS.Controllers_NS.GeneralController">
             <summary>
-            Контроллер для аутентификации пользователей.
+            Контроллер с общими методами.
             </summary>
+            <param name="heroCache"></param>
         </member>
-        <member name="M:Server.Http_NS.Controllers_NS.GetListAllHeroesController.#ctor(Server.GameDataCache.IHeroCacheService)">
+        <member name="M:Server.Http_NS.Controllers_NS.GeneralController.#ctor(Server.GameDataCache.IHeroCacheService)">
             <summary>
-            Контроллер для аутентификации пользователей.
+            Контроллер с общими методами.
             </summary>
+            <param name="heroCache"></param>
         </member>
-        <member name="M:Server.Http_NS.Controllers_NS.GetListAllHeroesController.GetListAllHeroes">
+        <member name="M:Server.Http_NS.Controllers_NS.GeneralController.ListAllHeroes">
             <summary>
             Возвращает в ответе список всех героев.
             </summary>
