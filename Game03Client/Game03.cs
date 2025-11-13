@@ -3,6 +3,7 @@ using Game03Client.IniFile;
 using Game03Client.InternetChecker;
 using Game03Client.JwtToken;
 using Game03Client.LocalizationManager;
+using Game03Client.WebSocketClient;
 using General;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -38,6 +39,11 @@ public sealed class Game03 : IAsyncDisposable
     /// </summary>
     public ILocalizationManagerProvider LocalizationManagerProvider { get; private set; }
 
+    /// <summary>
+    /// Провайдер LocalizationManager.
+    /// </summary>
+    public IWebSocketClientProvider WebSocketClientProvider { get; private set; }
+
     private Game03(ServiceProvider provider)
     {
         _provider = provider;
@@ -45,6 +51,7 @@ public sealed class Game03 : IAsyncDisposable
         IniFileProvider = provider.GetRequiredService<IIniFileProvider>();
         HttpRequesterProvider = provider.GetRequiredService<IHttpRequesterProvider>();
         LocalizationManagerProvider = provider.GetRequiredService<ILocalizationManagerProvider>();
+        WebSocketClientProvider = provider.GetRequiredService<IWebSocketClientProvider>();
     }
 
     /// <summary>
@@ -86,6 +93,9 @@ public sealed class Game03 : IAsyncDisposable
         // LocalizationManagerProvider
         _ = services.AddSingleton(new LocalizationManagerOptions(stringCapsuleJsonFileData, languageGame));
         _ = services.AddSingleton<ILocalizationManagerProvider, LocalizationManagerProvider>();
+
+        // WebSocketClientProvider
+        _ = services.AddSingleton<IWebSocketClientProvider, WebSocketClientProvider>();
 
         configure?.Invoke(services); // опциональные переопределения
 
