@@ -4,5 +4,37 @@
         <name>ConsoleAppForTests</name>
     </assembly>
     <members>
+        <member name="M:ConsoleAppForTests.UltraFastDiceRandom.#ctor(System.UInt32)">
+            <summary>
+            Инициализация генератора.
+            </summary>
+            <param name="seed">Начальный сид (должен быть ненулевым).</param>
+        </member>
+        <member name="M:ConsoleAppForTests.UltraFastDiceRandom.GetRandomSum(System.Int32,System.Int32)">
+            <summary>
+            Возвращает сумму count случайных целых в диапазоне [1, size].
+            Максимально оптимизировано для скорости.
+            </summary>
+            <param name="count">Количество бросков.</param>
+            <param name="size">Верхняя граница.</param>
+            <returns>Сумма.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException"></exception>
+        </member>
+        <member name="M:ConsoleAppForTests.UltraFastDiceRandom2.#ctor(System.Int32)">
+            <summary>
+            Инициализация генератора.
+            </summary>
+            <param name="seed">Начальный сид (должен быть ненулевым).</param>
+        </member>
+        <member name="M:ConsoleAppForTests.UltraFastDiceRandom2.GetRandomSum(System.Int32,System.Int32)">
+            <summary>
+            Возвращает сумму count случайных целых в диапазоне [1, size].
+            Максимально оптимизировано для скорости.
+            </summary>
+            <param name="count">Количество бросков.</param>
+            <param name="size">Верхняя граница.</param>
+            <returns>Сумма.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException"></exception>
+        </member>
     </members>
 </doc>

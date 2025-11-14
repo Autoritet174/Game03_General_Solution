@@ -68,7 +68,7 @@ internal class WebSocketClientProvider : IWebSocketClientProvider
         }
         if (!Connected && ex1 != null)
         {
-            GameMessage.Show($"Ошибка подключения: {ex1.Message}", true);
+            //GameMessage.Show($"Ошибка подключения: {ex1.Message}", true);
             //OnAuthenticationResult?.Invoke(false, $"Ошибка подключения: {ex1.Message}");
         }
     }
