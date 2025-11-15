@@ -15,14 +15,18 @@ public static class LocalizationKeys
         {
             private const string _Button = $"{_UI}{nameof(Button)}.";
 
+            public const string Ok = $"{_Button}{nameof(Ok)}";
+            public const string Yes = $"{_Button}{nameof(Yes)}";
+            public const string No = $"{_Button}{nameof(No)}";
             public const string Login = $"{_Button}{nameof(Login)}";
             public const string Reg = $"{_Button}{nameof(Reg)}";
-            public const string Close = $"{_Button}{nameof(Close)}";
+            public const string ExitTheGame = $"{_Button}{nameof(ExitTheGame)}";
         }
         public static class Label
         {
             private const string _Label = $"{_UI}{nameof(Label)}.";
 
+            public const string ExitTheGame = $"{_Label}{nameof(ExitTheGame)}";
             public const string Email = $"{_Label}{nameof(Email)}";
             public const string Password = $"{_Label}{nameof(Password)}";
         }
