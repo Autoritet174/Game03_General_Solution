@@ -19,7 +19,8 @@ internal class HttpRequesterProvider : IHttpRequesterProvider
     private readonly IInternetCheckerProvider _internetCheckerProvider;
     private readonly JwtTokenCache _tokenCache; // Зависимость от кэша, а не провайдера
 
-    private static void Error(string error) {
+    private static void Error(string error)
+    {
         Console.WriteLine($"[{nameof(HttpRequesterProvider)}] {error}");
     }
 
@@ -84,8 +85,16 @@ internal class HttpRequesterProvider : IHttpRequesterProvider
 
             try
             {
-                JObject jObject = JObject.Parse(responseContent);
-                return new HttpRequesterResult(response.IsSuccessStatusCode, jObject);
+                var jObject = JObject.Parse(responseContent);
+                if (jObject != null)
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return new HttpRequesterResult(true, jObject);
+                    }
+                }
+
+                return new HttpRequesterResult(false, null, keyError: L.Error.Server.InvalidResponse);
             }
             catch
             {
@@ -141,5 +150,5 @@ internal class HttpRequesterProvider : IHttpRequesterProvider
         return headersString.ToString();
     }
 
-   
+
 }

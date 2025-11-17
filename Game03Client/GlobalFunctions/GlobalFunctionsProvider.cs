@@ -69,6 +69,9 @@ internal class GlobalFunctionsProvider(IHttpRequesterProvider httpRequesterProvi
         //});
     }
 
+    public HeroBaseEntity GetHeroById(Guid guid) {
+        return globalFunctionsProviderCache._allHeroes.First(a=>a.Id == guid);
+    }
     //public IEnumerable<HeroBaseEntity> GetData() {
     //    return globalFunctionsProviderCache.AllHeroes.AsEnumerable();
     //}

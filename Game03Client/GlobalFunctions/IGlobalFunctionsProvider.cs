@@ -1,4 +1,5 @@
 using General.GameEntities;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -16,4 +17,11 @@ public interface IGlobalFunctionsProvider
     /// </summary>
     /// <returns></returns>
     IEnumerable<HeroBaseEntity> AllHeroes { get; }
+
+    /// <summary>
+    /// Получить героя по id.
+    /// </summary>
+    /// <param name="guid"></param>
+    /// <returns></returns>
+    HeroBaseEntity GetHeroById(Guid guid);
 }
