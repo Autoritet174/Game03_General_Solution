@@ -63,5 +63,6 @@ public static class LocalizationKeys
         public const string Authentication = $"{_Info}{nameof(Authentication)}";
         public const string AuthenticationSuccess = $"{_Info}{nameof(AuthenticationSuccess)}";
         public const string OpeningWebSocket = $"{_Info}{nameof(OpeningWebSocket)}";
+        public const string LoadingData = $"{_Info}{nameof(LoadingData)}";
     }
 }

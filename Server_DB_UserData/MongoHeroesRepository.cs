@@ -33,18 +33,24 @@ public class MongoHeroesRepository
     //    List<dynamic> result = [.. documents.Select(doc => MongoDB.Bson.Serialization.BsonSerializer.Deserialize<dynamic>(doc))];
     //    return result;
     //}
-    public async Task<List<object>> GetAllHeroesByUserIdAsync(Guid owner)
+    public async Task<List<object>> GetAllHeroesByUserIdAsync(Guid owner_id)
     {
         // Фильтр по полю "o" (owner). Поле в базе хранится как UUID, поэтому сравниваем с Guid напрямую
-        var filter = Builders<BsonDocument>.Filter.Eq("o", owner);
+        FilterDefinition<BsonDocument> filter = Builders<BsonDocument>.Filter.Eq("owner_id", owner_id);
 
         List<BsonDocument> documents = await _collection.Find(filter).ToListAsync();
 
-        var result = documents.Select(d => new
+        var result = documents.Select(static d => new
         {
             _id = d["_id"].AsObjectId.ToString(),
-            o = d["o"].AsGuid,   // владелец
-            h = d["h"].AsGuid    // id героя
+            owner_id = d["owner_id"].AsGuid,
+            hero_id = d["hero_id"].AsGuid,
+            health = d["health"].AsInt32,
+            attack = d["attack"].AsInt32,
+            speed = d["speed"].AsInt32,
+            strength = d["strength"].AsInt32,
+            agility = d["agility"].AsInt32,
+            intelligence = d["intelligence"].AsInt32,
         }).Cast<object>().ToList();
 
         return result;

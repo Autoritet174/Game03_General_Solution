@@ -2,6 +2,12 @@ using System.Collections.Generic;
 
 namespace Game03Client;
 
+/// <summary>
+/// Язык игры.
+/// </summary>
+/// <param name="nameEnglish">Наименование языка на английском.</param>
+/// <param name="nameLocale">Наименование языка на это же языке.</param>
+/// <param name="nameShort">Наименование языка на английском в две буквы.</param>
 public class GameLanguage(string nameEnglish, string nameLocale, string nameShort)
 {
 

@@ -1,3 +1,4 @@
+using Game03Client.GlobalFunctions;
 using Game03Client.HttpRequester;
 using Game03Client.IniFile;
 using Game03Client.InternetChecker;
@@ -44,6 +45,11 @@ public sealed class Game03 : IAsyncDisposable
     /// </summary>
     public IWebSocketClientProvider WebSocketClientProvider { get; private set; }
 
+    /// <summary>
+    /// Провайдер GlobalFunctions.
+    /// </summary>
+    public IGlobalFunctionsProvider GlobalFunctionsProvider { get; private set; }
+
     private Game03(ServiceProvider provider)
     {
         _provider = provider;
@@ -52,6 +58,7 @@ public sealed class Game03 : IAsyncDisposable
         HttpRequesterProvider = provider.GetRequiredService<IHttpRequesterProvider>();
         LocalizationManagerProvider = provider.GetRequiredService<ILocalizationManagerProvider>();
         WebSocketClientProvider = provider.GetRequiredService<IWebSocketClientProvider>();
+        GlobalFunctionsProvider = provider.GetRequiredService<IGlobalFunctionsProvider>();
     }
 
     /// <summary>
@@ -96,6 +103,10 @@ public sealed class Game03 : IAsyncDisposable
 
         // WebSocketClientProvider
         _ = services.AddSingleton<IWebSocketClientProvider, WebSocketClientProvider>();
+
+        // GlobalFunctions
+        _ = services.AddSingleton<GlobalFunctionsProviderCache>();
+        _ = services.AddSingleton<IGlobalFunctionsProvider, GlobalFunctionsProvider>();
 
         configure?.Invoke(services); // опциональные переопределения
 
