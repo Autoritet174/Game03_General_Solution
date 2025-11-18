@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 using static General.Enums;
 
 namespace Game03Client.GlobalFunctions;
+
 internal class GlobalFunctionsProvider(IHttpRequesterProvider httpRequesterProvider, GlobalFunctionsProviderCache globalFunctionsProviderCache) : IGlobalFunctionsProvider
 {
+
     public IEnumerable<HeroBaseEntity> AllHeroes => globalFunctionsProviderCache._allHeroes;
 
     private static void Error(string error)
@@ -69,8 +71,9 @@ internal class GlobalFunctionsProvider(IHttpRequesterProvider httpRequesterProvi
         //});
     }
 
-    public HeroBaseEntity GetHeroById(Guid guid) {
-        return globalFunctionsProviderCache._allHeroes.First(a=>a.Id == guid);
+    public HeroBaseEntity GetHeroById(Guid guid)
+    {
+        return globalFunctionsProviderCache._allHeroes.First(a => a.Id == guid);
     }
     //public IEnumerable<HeroBaseEntity> GetData() {
     //    return globalFunctionsProviderCache.AllHeroes.AsEnumerable();

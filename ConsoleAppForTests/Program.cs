@@ -115,6 +115,7 @@ internal class Program
         //}
         //return;
 
+        return;
         for (int sim = 0; sim < 1000; sim++)
         {
             _ = GetRandomInt(10, 10);
@@ -143,7 +144,7 @@ internal class Program
         }
         Console.WriteLine(rand1Min.ToString() + " " + rand1Max.ToString());
         Console.WriteLine(iter.ToString());
-        return;
+        
         for (int sim = 0; sim < 1000; sim++)
         {
             //Console.Write(rand2.GetRandomSum(1, 5).ToString() + "; ");
