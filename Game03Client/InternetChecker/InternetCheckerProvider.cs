@@ -1,9 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 
 namespace Game03Client.InternetChecker;
+
 internal class InternetCheckerProvider : IInternetCheckerProvider
 {
     /// <summary>

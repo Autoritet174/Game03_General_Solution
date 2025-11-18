@@ -30,13 +30,9 @@ internal class LocalizationManagerProvider : ILocalizationManagerProvider
         // Разбор JSON-строки, содержащей данные локализации.
         var obj = JObject.Parse(_localizationManagerOptions.jsonFileData.Value);
 
-        /// <summary>
-        /// Рекурсивный обход токенов JToken для построения плоского словаря локализации.
-        /// </summary>
-        /// <param name="token">Текущий токен JSON.</param>
-        /// <param name="currentPath">Текущий путь (ключ) до токена, формируемый через точку.</param>
         void ProcessToken(JToken token, string currentPath)
         {
+            //Рекурсивный обход токенов JToken для построения плоского словаря локализации.
             switch (token.Type)
             {
                 case JTokenType.Object:
@@ -104,7 +100,7 @@ internal class LocalizationManagerProvider : ILocalizationManagerProvider
         }
 
         // Извлечение ключа ошибки. Если ключ отсутствует, используется ключ для "Неизвестная ошибка".
-        string keyError = jObject["keyError"]?.ToString() ?? L.Error.UnknownError;
+        string keyError = jObject[L.KEY_LOCALIZATION]?.ToString() ?? L.Error.UnknownError;
         // Получение локализованного текста по ключу ошибки.
         string textError = GetValue(keyError) ?? string.Empty;
 
@@ -113,12 +109,12 @@ internal class LocalizationManagerProvider : ILocalizationManagerProvider
         if (keyError == L.Error.Server.AccountBannedUntil)
         {
             // Извлечение строки с датой и временем окончания бана.
-            string dateTimeExpiresAtString = (jObject["dateTimeExpiresAt"]?.ToString() ?? string.Empty).Trim();
+            string dateTimeExpiresAtString = (jObject[L.DATE_TIME_EXPIRES_AT]?.ToString() ?? string.Empty).Trim();
 
             if (dateTimeExpiresAtString != string.Empty)
             {
                 // Замена плейсхолдера {datetimeExpiration} на дату/время окончания бана.
-                textError = textError.Replace("{datetimeExpiration}", dateTimeExpiresAtString);
+                textError = textError.Replace(L.DATETIME_EXPIRATION, dateTimeExpiresAtString);
 
                 // Попытка вычислить оставшееся время до разблокировки.
                 string[] dtA = dateTimeExpiresAtString.Split([" ", ".", ":"], StringSplitOptions.None);
@@ -129,7 +125,7 @@ internal class LocalizationManagerProvider : ILocalizationManagerProvider
                     // Вычисление оставшихся секунд.
                     long secondsRemaining = (long)(dtUnbanUtc - DateTime.UtcNow).TotalSeconds;
                     // Замена плейсхолдера {timeRemaining} на строку оставшегося времени или "0".
-                    textError = textError.Replace("{timeRemaining}", secondsRemaining > 0 ? General.StringExtensions.SecondsToTimeStr(secondsRemaining) : "0");
+                    textError = textError.Replace(L.TIME_REMAINING, secondsRemaining > 0 ? General.G.SecondsToTimeStr(secondsRemaining) : "0");
                 }
                 catch
                 {
@@ -143,13 +139,13 @@ internal class LocalizationManagerProvider : ILocalizationManagerProvider
         if (keyError == L.Error.Server.TooManyRequests)
         {
             // Извлечение строки с количеством оставшихся секунд до сброса лимита.
-            string secondsRemainingString = (jObject["secondsRemaining"]?.ToString() ?? string.Empty).Trim();
+            string secondsRemainingString = (jObject[L.SECONDS_REMAINING]?.ToString() ?? string.Empty).Trim();
 
             // Если строка не пуста, является числом, и число больше 0.
             if (secondsRemainingString != string.Empty && long.TryParse(secondsRemainingString, out long secondsRemaining) && secondsRemaining > 0)
             {
                 // Замена плейсхолдера {timeRemaining} на строку оставшегося времени.
-                textError = textError.Replace("{timeRemaining}", General.StringExtensions.SecondsToTimeStr(secondsRemaining));
+                textError = textError.Replace(L.TIME_REMAINING, General.G.SecondsToTimeStr(secondsRemaining));
             }
         }
 

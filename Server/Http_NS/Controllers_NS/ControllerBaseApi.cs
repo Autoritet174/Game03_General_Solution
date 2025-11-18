@@ -11,9 +11,9 @@ namespace Server.Http_NS.Controllers_NS;
 public abstract class ControllerBaseApi : ControllerBase
 {
    
-    protected IActionResult BadRequestWithServerError(string keyError)
+    protected IActionResult BadRequestWithServerError(string KEY_LOCALIZATION)
     {
-        return BadRequest(new { keyError });
+        return BadRequest(new { KEY_LOCALIZATION });
     }
 
     protected IActionResult BadRequestAuthInvalidCredentials()

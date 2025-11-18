@@ -5,7 +5,6 @@ namespace General;
 /// </summary>
 public static class LocalizationKeys
 {
-#pragma warning disable
 
     public static class UI
     {
@@ -65,4 +64,14 @@ public static class LocalizationKeys
         public const string OpeningWebSocket = $"{_Info}{nameof(OpeningWebSocket)}";
         public const string LoadingData = $"{_Info}{nameof(LoadingData)}";
     }
+
+
+    /// <summary>
+    /// Константа для отметки строк как те что можно считать из локализции.
+    /// </summary>
+    public const string KEY_LOCALIZATION = nameof(KEY_LOCALIZATION);
+    public const string DATE_TIME_EXPIRES_AT = nameof(DATE_TIME_EXPIRES_AT);
+    public const string DATETIME_EXPIRATION = nameof(DATETIME_EXPIRATION);
+    public const string TIME_REMAINING = nameof(TIME_REMAINING);
+    public const string SECONDS_REMAINING = nameof(SECONDS_REMAINING);
 }

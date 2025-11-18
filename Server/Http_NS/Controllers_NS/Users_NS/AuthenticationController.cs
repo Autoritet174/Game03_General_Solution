@@ -1,3 +1,4 @@
+using General;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -43,14 +44,14 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
     {
         // Проверка, что запрос содержит JSON.
         // Ожидается application/json, иначе — ошибка формата.
-        if (Request.ContentType?.StartsWith("application/json") != true)
+        if (Request.ContentType?.StartsWith(General.G.APPLICATION_JSON) != true)
         {
             return BadRequestInvalidResponse();
         }
 
         // Извлечение JSON из тела запроса.
         // Если тело пустое или не JSON — возвращаем ошибку.
-        JsonObject? jsonObject = await JsonObjectExt.GetJsonObjectFromRequest(Request);
+        JsonObject? jsonObject = await JsonObjectExtension.GetJsonObjectFromRequest(Request);
         if (jsonObject == null)
         {
             return BadRequestAuthInvalidCredentials();
@@ -58,8 +59,8 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
 
 
         // Извлечение и валидация email.
-        string email = JsonObjectExt.GetString(jsonObject, "email");
-        if (string.IsNullOrEmpty(email) || email.Length > Server_Common.Consts.EMAIL_MAX_LENGTH)
+        string email = jsonObject.GetString("email");
+        if (email.IsEmpty || email.Length > Server_Common.Consts.EMAIL_MAX_LENGTH)
         {
             // Если пользователь временно заблокирован — возвращаем 429
             if (IsRateLimited(email))
@@ -75,7 +76,7 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
         }
 
         // Проверка формата email
-        if (!General.Functions.IsEmail(email))
+        if (!email.IsEmail)
         {
             LoggingAuthentification(false, jsonObject, email, null);
             IncrementFailedLoginAttempt(email);
@@ -83,8 +84,8 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
         }
 
         // Извлечение и валидация пароля
-        string password = JsonObjectExt.GetString(jsonObject, "password", removeAfterSuccessGetting: true);
-        if (string.IsNullOrEmpty(password) || password.Length > Server_Common.Consts.PASSWORD_MAX_LENGTH)
+        string password = jsonObject.GetString("password", removeAfterSuccessGetting: true);
+        if (password.IsEmpty || password.Length > Server_Common.Consts.PASSWORD_MAX_LENGTH)
         {
             LoggingAuthentification(false, jsonObject, email, null);
             IncrementFailedLoginAttempt(email);
@@ -108,7 +109,7 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
         }
 
         // если хеш пароля отсутствует
-        if (string.IsNullOrWhiteSpace(user.PasswordHash))
+        if (user.PasswordHash.IsEmpty)
         {
             //_ = PassHasher.Verify(email, "dummy", "dummy"); // Подмена для симуляции задержки. выполняем фиктивную проверку
             IncrementFailedLoginAttempt(email);
@@ -155,6 +156,7 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
             }
         }
 
+
         if (dtUnban == DateTimeOffset.MaxValue)
         {
             return BadRequestWithServerError(L.Error.Server.AccountBannedPermanently);
@@ -163,7 +165,7 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
         {
             if (dtUnban > DateTimeOffset.MinValue)
             {
-                BadRequest(new { keyError = L.Error.Server.AccountBannedUntil, dateTimeExpiresAt = $"{dtUnban:yyyy.MM.dd HH:mm:ss} UTC" });
+                BadRequest(new { KEY_LOCALIZATION = L.Error.Server.AccountBannedUntil, DATE_TIME_EXPIRES_AT = $"{dtUnban:yyyy.MM.dd HH:mm:ss} UTC" });
             }
         }
 
@@ -185,7 +187,7 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
     /// <returns>Результат с кодом состояния 429 и данными о времени окончания блокировки.</returns>
     protected IActionResult BadRequestEmailRateLimited(string email)
     {
-        return BadRequest(new { keyError = L.Error.Server.TooManyRequests, secondsRemaining = GetRemainingLockoutTime(email) });
+        return BadRequest(new { KEY_LOCALIZATION = L.Error.Server.TooManyRequests, SECONDS_REMAINING = GetRemainingLockoutTime(email) });
     }
 
     /// <summary>
@@ -217,7 +219,7 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
     {
         // Пытаемся получить IP из подключения.
         string? ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? null;
-        return string.IsNullOrEmpty(ip)
+        return ip.IsEmpty
             ? null
             : IPAddress.TryParse(ip, out IPAddress? ipAddress) ? new NpgsqlInet(ipAddress) : (NpgsqlInet?)null;
     }
@@ -234,7 +236,7 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
     /// <param name="email">Email пользователя.</param>
     private void IncrementFailedLoginAttempt(string email)
     {
-        if (string.IsNullOrEmpty(email))
+        if (email.IsEmpty)
         {
             return;
         }

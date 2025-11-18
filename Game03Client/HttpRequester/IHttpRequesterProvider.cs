@@ -1,11 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Newtonsoft.Json.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Game03Client.HttpRequester;
 
 public interface IHttpRequesterProvider
 {
-    Task<HttpRequesterResult?> GetResponceAsync(string url, string? jsonBody = null, bool useJwtToken = true);
+    Task<JObject?> GetJObjectAsync(string url, CancellationToken cancellationToken, string? jsonBody = null, bool useJwtToken = true);
 }

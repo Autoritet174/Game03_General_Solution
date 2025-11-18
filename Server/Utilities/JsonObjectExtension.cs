@@ -1,13 +1,13 @@
 using System.Text;
 using System.Text.Json.Nodes;
 
-namespace Server.Http_NS.Controllers_NS;
+namespace Server.Utilities;
 
 
 /// <summary>
 /// Расширение для работы с HTTP-запросами, предоставляющее методы для извлечения объекта JSON из тела запроса.
 /// </summary>
-public static class JsonObjectExt
+public static class JsonObjectExtension
 {
 
     /// <summary>
@@ -61,7 +61,7 @@ public static class JsonObjectExt
     /// <param name="key">Ключ для поиска (без учёта регистра).</param>
     /// <param name="removeAfterSuccessGetting">Если <c>true</c>, поле будет удалено из объекта после извлечения.</param>
     /// <returns>Строковое значение или пустая строка, если ключ не найден или значение null.</returns>
-    public static string GetString(JsonObject obj, string key, bool removeAfterSuccessGetting = false)
+    public static string GetString(this JsonObject obj, string key, bool removeAfterSuccessGetting = false)
     {
         foreach (KeyValuePair<string, JsonNode?> kv in obj)
         {
@@ -91,7 +91,7 @@ public static class JsonObjectExt
     /// Строковое представление значения, обрезанное до <paramref name="maxLength"/>,
     /// или <c>null</c>, если ключ не найден или значение равно null.
     /// </returns>
-    public static string? GetStringN(JsonObject obj, string key, int maxLength = 0)
+    public static string? GetStringN(this JsonObject obj, string key, int maxLength = 0)
     {
         foreach (KeyValuePair<string, JsonNode?> kv in obj)
         {
@@ -124,7 +124,7 @@ public static class JsonObjectExt
     /// <returns>
     /// если преобразование успешно; иначе — <c>null</c>.
     /// </returns>
-    public static int? GetIntegerN(JsonObject obj, string key)
+    public static int? GetIntegerN(this JsonObject obj, string key)
     {
         foreach (KeyValuePair<string, JsonNode?> kv in obj)
         {
@@ -150,7 +150,7 @@ public static class JsonObjectExt
     /// <returns>
     /// Булево значение или <c>null</c>, если ключ не найден, значение <c>null</c> или не удаётся интерпретировать.
     /// </returns>
-    public static bool? GetBoolN(JsonObject obj, string key)
+    public static bool? GetBoolN(this JsonObject obj, string key)
     {
         foreach (KeyValuePair<string, JsonNode?> kv in obj)
         {

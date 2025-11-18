@@ -1,6 +1,7 @@
 using General.GameEntities;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Game03Client.GlobalFunctions;
@@ -10,7 +11,7 @@ public interface IGlobalFunctionsProvider
     /// Загрузить список всех героев.
     /// </summary>
     /// <returns></returns>
-    Task LoadListAllHeroes();
+    Task LoadListAllHeroesAsync(CancellationToken cancellationToken);
 
     /// <summary>
     /// Получить список героев.

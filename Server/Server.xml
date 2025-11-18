@@ -168,69 +168,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="T:Server.Http_NS.Controllers_NS.JsonObjectExt">
-            <summary>
-            Расширение для работы с HTTP-запросами, предоставляющее методы для извлечения объекта JSON из тела запроса.
-            </summary>
-        </member>
-        <member name="M:Server.Http_NS.Controllers_NS.JsonObjectExt.GetJsonObjectFromRequest(Microsoft.AspNetCore.Http.HttpRequest)">
-            <summary>
-            Асинхронно извлекает и парсит тело HTTP-запроса как JSON-объект.
-            </summary>
-            <param name="httpRequest">HTTP-запрос, из которого читается тело.</param>
-            <returns>
-            Экземпляр <see cref="T:System.Text.Json.Nodes.JsonObject"/>, если тело запроса содержит валидный JSON-объект; иначе — <c>null</c>.
-            Возвращает <c>null</c>, если тело пустое, некорректно или не является объектом.
-            </returns>
-            <exception cref="T:System.ArgumentNullException">Возникает, если <paramref name="httpRequest"/> равен <c>null</c>.</exception>
-        </member>
-        <member name="M:Server.Http_NS.Controllers_NS.JsonObjectExt.GetString(System.Text.Json.Nodes.JsonObject,System.String,System.Boolean)">
-            <summary>
-            Извлекает строковое значение из <see cref="T:System.Text.Json.Nodes.JsonObject"/> по ключу без учёта регистра.
-            При необходимости удаляет поле из объекта.
-            </summary>
-            <param name="obj">Объект JSON, из которого извлекается значение.</param>
-            <param name="key">Ключ для поиска (без учёта регистра).</param>
-            <param name="removeAfterSuccessGetting">Если <c>true</c>, поле будет удалено из объекта после извлечения.</param>
-            <returns>Строковое значение или пустая строка, если ключ не найден или значение null.</returns>
-        </member>
-        <member name="M:Server.Http_NS.Controllers_NS.JsonObjectExt.GetStringN(System.Text.Json.Nodes.JsonObject,System.String,System.Int32)">
-            <summary>
-            Извлекает строковое значение из <see cref="T:System.Text.Json.Nodes.JsonObject"/> по указанному ключу без учета регистра.
-            Если ключ не найден, возвращает <c>null</c>.
-            Также поддерживает ограничение длины возвращаемой строки.
-            </summary>
-            <param name="obj">Объект JSON, из которого извлекается значение.</param>
-            <param name="key">Ключ, по которому выполняется поиск (без учета регистра).</param>
-            <param name="maxLength">Максимальная длина возвращаемой строки. Если значение больше, оно обрезается.
-            Значение 0 или меньше означает отсутствие ограничения.</param>
-            <returns>
-            Строковое представление значения, обрезанное до <paramref name="maxLength"/>,
-            или <c>null</c>, если ключ не найден или значение равно null.
-            </returns>
-        </member>
-        <member name="M:Server.Http_NS.Controllers_NS.JsonObjectExt.GetIntegerN(System.Text.Json.Nodes.JsonObject,System.String)">
-            <summary>
-            Извлекает целочисленное значение из <see cref="T:System.Text.Json.Nodes.JsonObject"/> по указанному ключу без учета регистра.
-            Если ключ не найден, значение равно null или не может быть преобразовано в int, возвращает <c>null</c>.
-            </summary>
-            <param name="obj">Объект JSON, из которого извлекается значение.</param>
-            <param name="key">Ключ, по которому выполняется поиск (без учета регистра).</param>
-            <returns>
-            если преобразование успешно; иначе — <c>null</c>.
-            </returns>
-        </member>
-        <member name="M:Server.Http_NS.Controllers_NS.JsonObjectExt.GetBoolN(System.Text.Json.Nodes.JsonObject,System.String)">
-            <summary>
-            Извлекает булево значение из <see cref="T:System.Text.Json.Nodes.JsonObject"/> по ключу без учёта регистра.
-            Поддерживает значения: <c>true</c>, <c>false</c>, <c>1</c>, <c>0</c>, <c>"true"</c>, <c>"false"</c> (без учёта регистра).
-            </summary>
-            <param name="obj">JSON-объект, в котором выполняется поиск. Не должен быть <c>null</c>.</param>
-            <param name="key">Ключ для поиска (без учёта регистра).</param>
-            <returns>
-            Булево значение или <c>null</c>, если ключ не найден, значение <c>null</c> или не удаётся интерпретировать.
-            </returns>
-        </member>
         <member name="T:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController">
             <summary>
             Контроллер аутентификации пользователей. Обрабатывает процесс входа (логин) по email и паролю.
@@ -537,6 +474,69 @@
             </summary>
             <param name="request">Модель с именем пользователя и паролем.</param>
             <returns>JWT токен при успешной аутентификации или ошибка 401.</returns>
+        </member>
+        <member name="T:Server.Utilities.JsonObjectExtension">
+            <summary>
+            Расширение для работы с HTTP-запросами, предоставляющее методы для извлечения объекта JSON из тела запроса.
+            </summary>
+        </member>
+        <member name="M:Server.Utilities.JsonObjectExtension.GetJsonObjectFromRequest(Microsoft.AspNetCore.Http.HttpRequest)">
+            <summary>
+            Асинхронно извлекает и парсит тело HTTP-запроса как JSON-объект.
+            </summary>
+            <param name="httpRequest">HTTP-запрос, из которого читается тело.</param>
+            <returns>
+            Экземпляр <see cref="T:System.Text.Json.Nodes.JsonObject"/>, если тело запроса содержит валидный JSON-объект; иначе — <c>null</c>.
+            Возвращает <c>null</c>, если тело пустое, некорректно или не является объектом.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">Возникает, если <paramref name="httpRequest"/> равен <c>null</c>.</exception>
+        </member>
+        <member name="M:Server.Utilities.JsonObjectExtension.GetString(System.Text.Json.Nodes.JsonObject,System.String,System.Boolean)">
+            <summary>
+            Извлекает строковое значение из <see cref="T:System.Text.Json.Nodes.JsonObject"/> по ключу без учёта регистра.
+            При необходимости удаляет поле из объекта.
+            </summary>
+            <param name="obj">Объект JSON, из которого извлекается значение.</param>
+            <param name="key">Ключ для поиска (без учёта регистра).</param>
+            <param name="removeAfterSuccessGetting">Если <c>true</c>, поле будет удалено из объекта после извлечения.</param>
+            <returns>Строковое значение или пустая строка, если ключ не найден или значение null.</returns>
+        </member>
+        <member name="M:Server.Utilities.JsonObjectExtension.GetStringN(System.Text.Json.Nodes.JsonObject,System.String,System.Int32)">
+            <summary>
+            Извлекает строковое значение из <see cref="T:System.Text.Json.Nodes.JsonObject"/> по указанному ключу без учета регистра.
+            Если ключ не найден, возвращает <c>null</c>.
+            Также поддерживает ограничение длины возвращаемой строки.
+            </summary>
+            <param name="obj">Объект JSON, из которого извлекается значение.</param>
+            <param name="key">Ключ, по которому выполняется поиск (без учета регистра).</param>
+            <param name="maxLength">Максимальная длина возвращаемой строки. Если значение больше, оно обрезается.
+            Значение 0 или меньше означает отсутствие ограничения.</param>
+            <returns>
+            Строковое представление значения, обрезанное до <paramref name="maxLength"/>,
+            или <c>null</c>, если ключ не найден или значение равно null.
+            </returns>
+        </member>
+        <member name="M:Server.Utilities.JsonObjectExtension.GetIntegerN(System.Text.Json.Nodes.JsonObject,System.String)">
+            <summary>
+            Извлекает целочисленное значение из <see cref="T:System.Text.Json.Nodes.JsonObject"/> по указанному ключу без учета регистра.
+            Если ключ не найден, значение равно null или не может быть преобразовано в int, возвращает <c>null</c>.
+            </summary>
+            <param name="obj">Объект JSON, из которого извлекается значение.</param>
+            <param name="key">Ключ, по которому выполняется поиск (без учета регистра).</param>
+            <returns>
+            если преобразование успешно; иначе — <c>null</c>.
+            </returns>
+        </member>
+        <member name="M:Server.Utilities.JsonObjectExtension.GetBoolN(System.Text.Json.Nodes.JsonObject,System.String)">
+            <summary>
+            Извлекает булево значение из <see cref="T:System.Text.Json.Nodes.JsonObject"/> по ключу без учёта регистра.
+            Поддерживает значения: <c>true</c>, <c>false</c>, <c>1</c>, <c>0</c>, <c>"true"</c>, <c>"false"</c> (без учёта регистра).
+            </summary>
+            <param name="obj">JSON-объект, в котором выполняется поиск. Не должен быть <c>null</c>.</param>
+            <param name="key">Ключ для поиска (без учёта регистра).</param>
+            <returns>
+            Булево значение или <c>null</c>, если ключ не найден, значение <c>null</c> или не удаётся интерпретировать.
+            </returns>
         </member>
         <member name="M:Server.WebSocket_NS.WebSocketConnection.HandleAsync(System.Threading.CancellationToken)">
             <summary>

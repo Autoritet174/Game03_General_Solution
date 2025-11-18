@@ -1,13 +1,27 @@
+using Game03Client.Logger;
+using General;
 using IniParser;
 using IniParser.Model;
-using System;
 using System.Globalization;
 using System.IO;
 
 namespace Game03Client.IniFile;
 
-internal class IniFileProvider(IniFileOptions options) : IIniFileProvider
+internal class IniFileProvider(IniFileOptions options, ILoggerProvider logger) : IIniFileProvider
 {
+    #region Logger
+    private readonly ILoggerProvider _logger = logger;
+    private const string NAME_THIS_CLASS = nameof(IniFileProvider);
+    private void Log(string message, string? keyLocal = null)
+    {
+        if (!keyLocal.IsEmpty)
+        {
+            message = $"{message}; {G.KEY_LOCALIZATION}:<{keyLocal}>";
+        }
+
+        _logger.LogEx(NAME_THIS_CLASS, message);
+    }
+    #endregion Logger
     private readonly FileIniDataParser _fileIniDataParser = new();
 
     public string? Read(string section, string key)
@@ -21,12 +35,14 @@ internal class IniFileProvider(IniFileOptions options) : IIniFileProvider
                 {
                     return data[section][key];
                 }
-                catch {
-                    Console.WriteLine($"[NS={nameof(IniFile)}] class=[{nameof(IniFileProvider)}] error read section=[{section}] key=[{key}] in file <{options.FileName}>");
+                catch
+                {
+                    Log($"error read section=[{section}] key=[{key}] in file <{options.FileName}>");
                 }
             }
-            catch {
-                Console.WriteLine($"[NS={nameof(IniFile)}] class=[{nameof(IniFileProvider)}] error read ini file <{options.FileName}>");
+            catch
+            {
+                Log($"error read ini file <{options.FileName}>");
             }
         }
         return null;
@@ -43,7 +59,7 @@ internal class IniFileProvider(IniFileOptions options) : IIniFileProvider
             }
         }
 
-        Console.WriteLine($"[NS={nameof(IniFile)}] class=[{nameof(IniFileProvider)}] not found value in [{section}][{key}]");
+        Log($"not found value in [{section}][{key}]");
         return defaultValue;
     }
 

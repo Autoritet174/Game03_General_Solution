@@ -1,12 +1,15 @@
 using Game03Client.IniFile;
 using Game03Client.InternetChecker;
 using Game03Client.JwtToken;
+using Game03Client.Logger;
+using General;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using L = General.LocalizationKeys;
 
@@ -14,107 +17,115 @@ namespace Game03Client.HttpRequester;
 
 internal class HttpRequesterProvider : IHttpRequesterProvider
 {
+    #region Logger
+    private readonly ILoggerProvider _logger;
+    private const string NAME_THIS_CLASS = nameof(HttpRequesterProvider);
+
+    private void Log(string message, string? keyLocal = null)
+    {
+        if (!keyLocal.IsEmpty)
+        {
+            message = $"{message}; {L.KEY_LOCALIZATION}:<{keyLocal}>";
+        }
+
+        _logger.LogEx(NAME_THIS_CLASS, message);
+    }
+    #endregion Logger
+
     private readonly HttpClient _httpClient;
     private readonly IIniFileProvider _iniFileProvider;
     private readonly IInternetCheckerProvider _internetCheckerProvider;
-    private readonly JwtTokenCache _tokenCache; // Зависимость от кэша, а не провайдера
+    private readonly JwtTokenCache _tokenCache;
 
-    private static void Error(string error)
-    {
-        Console.WriteLine($"[{nameof(HttpRequesterProvider)}] {error}");
-    }
 
-    public HttpRequesterProvider(IIniFileProvider iniFileProvider, IInternetCheckerProvider internetCheckerProvider, JwtTokenCache tokenCache)
+    public HttpRequesterProvider(IIniFileProvider iniFileProvider, IInternetCheckerProvider internetCheckerProvider, JwtTokenCache tokenCache, ILoggerProvider logger)
     {
         _iniFileProvider = iniFileProvider;
         _internetCheckerProvider = internetCheckerProvider;
         _tokenCache = tokenCache;
+        _logger = logger;
         _httpClient = new();
-        double timeout = _iniFileProvider.ReadDouble("Http", "timeout", 10d);
+        double timeout = _iniFileProvider.ReadDouble("Http", "timeout", 30d);
         _httpClient.Timeout = TimeSpan.FromSeconds(timeout);
     }
 
-    /// <summary>
-    /// Возвращает <see cref="HttpRequesterResult"/> ответ. Если HttpRequesterResult <see cref="HttpRequesterResult.Success"/> true, то  <see cref="HttpRequesterResult.JObject"/> был корректно извлечен из ответа от сервера.
-    /// </summary>
-    /// <param name="url"></param>
-    /// <param name="jsonBody"></param>
-    /// <param name="useJwtToken"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentNullException"></exception>
-    public async Task<HttpRequesterResult?> GetResponceAsync(string url, string? jsonBody = null, bool useJwtToken = true)
+    
+    public async Task<JObject?> GetJObjectAsync(string url, CancellationToken cancellationToken, string? jsonBody = null, bool useJwtToken = true)
     {
-        if (string.IsNullOrWhiteSpace(url))
+        if (url.IsEmpty)
         {
-            Error("url IsNullOrWhiteSpace");
-            throw new ArgumentNullException(nameof(url));
+            string e = "url IsEmpty";
+            Log(e);
+            throw new Exception(e);
         }
 
         Uri uri = new(url);
         if (uri == null)
         {
-            Error("uri is null");
-            throw new ArgumentNullException(nameof(uri));
+            string e = "uri is null";
+            Log(e);
+            throw new Exception(e);
         }
 
         try
         {
             using HttpRequestMessage request = new(HttpMethod.Post, uri)
             {
-                Content = new StringContent(jsonBody ?? "{}", Encoding.UTF8, "application/json")
+                Content = new StringContent(jsonBody ?? "{}", Encoding.UTF8, G.APPLICATION_JSON)
             };
 
 
             if (useJwtToken)
             {
                 string? jwtToken = _tokenCache.Token;
-                if (!string.IsNullOrWhiteSpace(jwtToken))
+                if (!jwtToken.IsEmpty)
                 {
                     // Если был передан токен то подставляем его в заголовок как авторизацию
-                    request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwtToken);
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwtToken);
                 }
             }
 
-            using HttpResponseMessage response = await _httpClient.SendAsync(request);
+            using HttpResponseMessage response = await _httpClient.SendAsync(request, cancellationToken);
             string responseContent = await response.Content.ReadAsStringAsync();
-            if (string.IsNullOrWhiteSpace(responseContent))
+            if (responseContent.IsEmpty)
             {
-                Error("responseContent is null");
-                return new HttpRequesterResult(false, keyError: L.Error.Server.InvalidResponse);
+                Log("responseContent IsEmpty", L.Error.Server.InvalidResponse);
+                return null;
             }
 
             try
             {
                 var jObject = JObject.Parse(responseContent);
-                if (jObject != null)
+                if (jObject is null)
                 {
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return new HttpRequesterResult(true, jObject);
-                    }
+                    Log("jObject is null", L.Error.Server.InvalidResponse);
+                    return null;
                 }
 
-                return new HttpRequesterResult(false, null, keyError: L.Error.Server.InvalidResponse);
+                return jObject;
             }
             catch
             {
-                Error("jObject can't be parced");
-                return new HttpRequesterResult(false, keyError: L.Error.Server.InvalidResponse);
+                Log("jObject can't be parced", L.Error.Server.InvalidResponse);
+                return null;
             }
         }
         catch (TaskCanceledException ex) when (ex.InnerException is TimeoutException)
         {
-            return new HttpRequesterResult(false, keyError: L.Error.Server.Timeout);
+            Log(ex.ToString(), L.Error.Server.Timeout);
+            return null;
         }
         catch (HttpRequestException ex) when (ex.InnerException is WebException)
         {
             bool haveInternet = await _internetCheckerProvider.CheckInternetConnectionAsync();
-
-            return new HttpRequesterResult(false, keyError: haveInternet ? L.Error.Server.Unavailable : L.Error.Server.NoInternetConnection);
+            string key = haveInternet ? L.Error.Server.Unavailable : L.Error.Server.NoInternetConnection;
+            Log(ex.ToString(), key);
+            return null;
         }
         catch (Exception ex)
         {
-            return new HttpRequesterResult(false, ex: ex);
+            Log(ex.ToString(), L.Error.Server.InvalidResponse);
+            return null;
         }
     }
 

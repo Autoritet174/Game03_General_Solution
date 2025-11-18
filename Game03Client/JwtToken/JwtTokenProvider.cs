@@ -1,57 +1,55 @@
 using Game03Client.HttpRequester;
+using Game03Client.Logger;
+using General;
 using Newtonsoft.Json.Linq;
-using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Game03Client.JwtToken;
 
-internal class JwtTokenProvider(JwtTokenCache jwtTokenCache, IHttpRequesterProvider httpRequesterProvider) : IJwtTokenProvider
+internal class JwtTokenProvider(JwtTokenCache jwtTokenCache, IHttpRequesterProvider httpRequesterProvider, ILoggerProvider logger) : IJwtTokenProvider
 {
-    private static void Error(string error)
+    #region Logger
+    private readonly ILoggerProvider _logger = logger;
+    private const string NAME_THIS_CLASS = nameof(JwtTokenProvider);
+    private void Log(string message, string? keyLocal = null)
     {
-        Console.WriteLine($"[{nameof(JwtTokenProvider)}] {error}");
+        if (!keyLocal.IsEmpty)
+        {
+            message = $"{message}; {G.KEY_LOCALIZATION}:<{keyLocal}>";
+        }
+
+        _logger.LogEx(NAME_THIS_CLASS, message);
     }
-    public async Task<JwtTokenResult> GetTokenAsync(string jsonBody)
+    #endregion Logger
+
+    public async Task<string?> GetTokenAsync(string jsonBody, CancellationToken cancellationToken)
     {
         // Если есть токен — возвращаем сразу
-        if (!string.IsNullOrWhiteSpace(jwtTokenCache.Token))
+        if (!jwtTokenCache.Token.IsEmpty)
         {
-            return new JwtTokenResult(jwtTokenCache.Token);
+            return jwtTokenCache.Token;
         }
 
-        HttpRequesterResult? httpRequesterProviderResult = await httpRequesterProvider.GetResponceAsync(General.Url.Authentication, jsonBody, false);
-        if (httpRequesterProviderResult == null)
+        JObject? jObject = await httpRequesterProvider.GetJObjectAsync(Url.Authentication, cancellationToken, jsonBody, false);
+        if (jObject == null)
         {
-            Error("httpRequesterProviderResult is null");
-            return new JwtTokenResult(null);
+            return null;
         }
 
-        if (!httpRequesterProviderResult.Success)
-        {
-            Error("httpRequesterProviderResult.Success is false");
-            return new JwtTokenResult(null, httpRequesterProviderResult.JObject);
-        }
-
-        if (httpRequesterProviderResult.JObject == null)
-        {
-            Error("httpRequesterProviderResult.JObject is null");
-            return new JwtTokenResult(null);
-        }
-
-        JObject jObject = httpRequesterProviderResult.JObject;
         string? token = jObject["token"]?.ToString();
-        if (string.IsNullOrWhiteSpace(token))
+        if (token.IsEmpty)
         {
-            Error("httpRequesterProviderResult.JObject.token is null");
-            return new JwtTokenResult(null, httpRequesterProviderResult.JObject);
+            Log("token IsEmpty");
+            return null;
         }
 
         jwtTokenCache.Token = token;
-        return new JwtTokenResult(token);
+        return token;
     }
 
     public string? GetTokenIfExists()
     {
-        return string.IsNullOrWhiteSpace(jwtTokenCache.Token) ? null : jwtTokenCache.Token;
+        return jwtTokenCache.Token.IsEmpty ? null : jwtTokenCache.Token;
     }
 }

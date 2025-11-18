@@ -1,17 +1,26 @@
+using System;
+using System.Net.Mail;
+
 namespace General;
 
-public static class StringExtensions
+/// <summary>
+/// Глобальные статические поля, константы и функции.
+/// </summary>
+public static class G
 {
-    /// <summary>
-    /// Если возможно, преобразуем первый символ в верхний регистр, остальные без изменений.
-    /// </summary>
-    /// <param name="s"></param>
-    /// <returns></returns>
-    public static string ToUpper1Char(this string s)
-    {
-        return string.IsNullOrWhiteSpace(s) || s.Length == 0 ? s : $"{s[..1].ToUpper()}{s[1..]}";
-    }
 
+    
+
+    /// <summary>
+    /// Значение для mediaType StringContent.
+    /// </summary>
+    public const string APPLICATION_JSON = "application/json";
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sec"></param>
+    /// <returns></returns>
     public static string SecondsToTimeStr(long sec)
     {
         long min = sec / 60L;

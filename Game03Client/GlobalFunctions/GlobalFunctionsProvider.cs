@@ -1,42 +1,47 @@
 using Game03Client.HttpRequester;
+using Game03Client.Logger;
+using General;
 using General.GameEntities;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using static General.Enums;
+using L = General.LocalizationKeys;
 
 namespace Game03Client.GlobalFunctions;
 
-internal class GlobalFunctionsProvider(IHttpRequesterProvider httpRequesterProvider, GlobalFunctionsProviderCache globalFunctionsProviderCache) : IGlobalFunctionsProvider
+internal class GlobalFunctionsProvider(IHttpRequesterProvider httpRequesterProvider, GlobalFunctionsProviderCache globalFunctionsProviderCache, ILoggerProvider logger) : IGlobalFunctionsProvider
 {
+    #region Logger
+    private readonly ILoggerProvider _logger = logger;
+    private const string NAME_THIS_CLASS = nameof(GlobalFunctionsProvider);
+    private void Log(string message, string? keyLocal = null)
+    {
+        if (!keyLocal.IsEmpty)
+        {
+            message = $"{message}; {L.KEY_LOCALIZATION}:<{keyLocal}>";
+        }
+
+        _logger.LogEx(NAME_THIS_CLASS, message);
+    }
+    #endregion Logger
 
     public IEnumerable<HeroBaseEntity> AllHeroes => globalFunctionsProviderCache._allHeroes;
-
-    private static void Error(string error)
+    public async Task LoadListAllHeroesAsync(CancellationToken cancellationToken)
     {
-        Console.WriteLine($"[{nameof(GlobalFunctionsProvider)}] {error}");
-    }
-    public async Task LoadListAllHeroes()
-    {
-        HttpRequesterResult? httpRequesterResult = await httpRequesterProvider.GetResponceAsync(General.Url.General.ListAllHeroes);
-        if (httpRequesterResult == null)
-        {
-            Error("httpRequesterResult == null");
-            return;
-        }
-        JObject? jObject = httpRequesterResult.JObject;
+        JObject? jObject = await httpRequesterProvider.GetJObjectAsync(General.Url.General.ListAllHeroes, cancellationToken);
         if (jObject == null)
         {
-            Error("jObject == null");
             return;
         }
 
         JToken? heroesToken = jObject["heroes"];
         if (heroesToken is not JArray heroesArray)
         {
-            Error("heroesToken is not JArray heroesArray");
+            Log("heroesToken is not JArray heroesArray");
             return;
         }
 
@@ -47,7 +52,7 @@ internal class GlobalFunctionsProvider(IHttpRequesterProvider httpRequesterProvi
             string? name = heroObj["name"]?.ToString();
             if (name == null)
             {
-                Error("name == null");
+                Log("name == null");
                 continue;
             }
             float baseHealth = (float)Convert.ToDouble(heroObj["baseHealth"]);
