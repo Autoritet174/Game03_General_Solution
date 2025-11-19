@@ -22,8 +22,6 @@ public class WebSocketConnectionHandler // УДАЛЕНО: : BackgroundService
     private readonly Timer _monitoringTimer;
     private readonly MongoRepository _mongoRepository;
     private readonly JwtService _jwtService;
-
-    // HttpListener, _url, _maxConnections - УДАЛЕНЫ
     private readonly int _maxConnections;
 
     /// <summary>

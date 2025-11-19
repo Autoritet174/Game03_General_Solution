@@ -8,4 +8,6 @@ public interface IJwtTokenProvider
     Task<string?> GetTokenAsync(string jsonBody, CancellationToken cancellationToken);
 
     string? GetTokenIfExists();
+
+    void DeleteToken();
 }

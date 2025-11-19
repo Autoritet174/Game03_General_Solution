@@ -53,4 +53,9 @@ internal class JwtTokenProvider(JwtTokenCache jwtTokenCache, IHttpRequesterProvi
     {
         return jwtTokenCache.Token.IsEmpty() ? null : jwtTokenCache.Token;
     }
+
+    public void DeleteToken()
+    {
+        jwtTokenCache.Token = null;
+    }
 }

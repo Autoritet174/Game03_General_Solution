@@ -1,4 +1,5 @@
 using Game03Client.JwtToken;
+using General;
 using Newtonsoft.Json;
 using System;
 using System.Net.WebSockets;
@@ -8,69 +9,68 @@ using System.Threading.Tasks;
 
 namespace Game03Client.WebSocketClient;
 
-internal class WebSocketClientProvider : IWebSocketClientProvider
+internal class WebSocketClientProvider(IJwtTokenProvider jwtTokenProvider) : IWebSocketClientProvider
 {
     private const string serverUrl = "wss://localhost:7227/ws/";
-    private readonly ClientWebSocket _webSocket;
-    private readonly Uri _serverUri;
-    private readonly CancellationTokenSource _cts;
+    private ClientWebSocket _webSocket = new();
+    private readonly Uri _serverUri = new(serverUrl);
+    private readonly CancellationTokenSource _cts = new();
     private bool _isReceiving = false;
     public bool Connected { get; private set; } = false;
 
-    private readonly IJwtTokenProvider _jwtTokenProvider;
-
-    // Событие для уведомления о статусе аутентификации
-    // public event Action<bool, string> OnAuthenticationResult;
-
-    public WebSocketClientProvider(IJwtTokenProvider jwtTokenProvider)
-    {
-        _jwtTokenProvider = jwtTokenProvider;
-        _webSocket = new ClientWebSocket();
-        _serverUri = new Uri(serverUrl);
-        _cts = new CancellationTokenSource();
-    }
-
-    public async Task ConnectAsync()
+    public async Task ConnectAsync(CancellationToken cancellationToken)
     {
 
-        Exception? ex1 = null;
+        //Exception? ex1 = null;
 
 
         // Добавляем JWT токен в заголовки, если он предоставлен
-        string? jwtToken = _jwtTokenProvider.GetTokenIfExists();
-        if (!string.IsNullOrEmpty(jwtToken))
-        {
-            _webSocket.Options.SetRequestHeader("Authorization", $"Bearer {jwtToken}");
-        }
+        string? jwtToken = jwtTokenProvider.GetTokenIfExists();
 
 
-        for (int i = 0; i < 3; i++) // делаем 3 попытки подключения
-        {
-            try
-            {
-                await _webSocket.ConnectAsync(_serverUri, CancellationToken.None);
 
-                // Запускаем прием сообщений без привязки к _cts.Token
-                _isReceiving = true;
-                _ = Task.Run(ReceiveMessagesAsync);
-                Connected = true;
-            }
-            catch (Exception ex)
-            {
-                ex1 = ex;
-                Console.WriteLine($"Ошибка подключения: {ex.Message}");
-                await Task.Delay(1000); // Задержка перед повторной попыткой
-            }
-            if (Connected)
-            {
-                break;
-            }
-        }
-        if (!Connected && ex1 != null)
+        //for (int i = 0; i < 3; i++) // делаем 3 попытки подключения
+        //{
+        //try
+        //{
+        try
         {
-            //GameMessage.Show($"Ошибка подключения: {ex1.Message}", true);
-            //OnAuthenticationResult?.Invoke(false, $"Ошибка подключения: {ex1.Message}");
+            Connected = false;
+            _webSocket = new();
+            if (!jwtToken.IsEmpty())
+            {
+                _webSocket.Options.SetRequestHeader("Authorization", $"Bearer {jwtToken}");
+            }
+            await _webSocket.ConnectAsync(_serverUri, cancellationToken);
         }
+        catch { }
+
+        if (_webSocket.State == WebSocketState.Open)
+        {
+            _isReceiving = true;
+            _ = Task.Run(ReceiveMessagesAsync);
+            Connected = true;
+        }
+        // Запускаем прием сообщений без привязки к _cts.Token
+
+        //}
+        //catch (Exception ex)
+        //{
+        //    ex1 = ex;
+        //    Console.WriteLine($"Ошибка подключения: {ex.Message}");
+        //    await Task.Delay(1000); // Задержка перед повторной попыткой
+        //}
+        //if (Connected)
+        //{
+        //    break;
+        //}
+        //}
+        //if (!Connected// && ex1 != null
+        //    )
+        //{
+        //GameMessage.Show($"Ошибка подключения: {ex1.Message}", true);
+        //OnAuthenticationResult?.Invoke(false, $"Ошибка подключения: {ex1.Message}");
+        //}
     }
 
     /// <summary>

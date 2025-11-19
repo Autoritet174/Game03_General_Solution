@@ -19,13 +19,13 @@ public static class LocalizationKeys
             public const string No = $"{_Button}{nameof(No)}";
             public const string Login = $"{_Button}{nameof(Login)}";
             public const string Reg = $"{_Button}{nameof(Reg)}";
-            public const string ExitTheGame = $"{_Button}{nameof(ExitTheGame)}";
+            public const string ExitGame = $"{_Button}{nameof(ExitGame)}";
         }
         public static class Label
         {
             private const string _Label = $"{_UI}{nameof(Label)}.";
 
-            public const string ExitTheGame = $"{_Label}{nameof(ExitTheGame)}";
+            public const string ExitGame = $"{_Label}{nameof(ExitGame)}";
             public const string Email = $"{_Label}{nameof(Email)}";
             public const string Password = $"{_Label}{nameof(Password)}";
         }

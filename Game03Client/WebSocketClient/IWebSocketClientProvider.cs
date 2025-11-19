@@ -1,11 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Net.WebSockets;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Game03Client.WebSocketClient;
+
 public interface IWebSocketClientProvider
 {
-    Task ConnectAsync();
+    Task ConnectAsync(CancellationToken cancellationToken);
     bool Connected { get; }
 }

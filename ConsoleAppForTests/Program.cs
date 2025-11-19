@@ -1,206 +1,51 @@
+using General;
+using Newtonsoft.Json;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 
 namespace ConsoleAppForTests;
 
-public sealed class UltraFastDiceRandom
-{
-    private uint _state;
-
-    /// <summary>
-    /// Инициализация генератора.
-    /// </summary>
-    /// <param name="seed">Начальный сид (должен быть ненулевым).</param>
-    public UltraFastDiceRandom(uint seed = 1)
-    {
-        if (seed == 0) seed = 1;
-        _state = seed;
-    }
-
-    /// <summary>
-    /// Возвращает сумму count случайных целых в диапазоне [1, size].
-    /// Максимально оптимизировано для скорости.
-    /// </summary>
-    /// <param name="count">Количество бросков.</param>
-    /// <param name="size">Верхняя граница.</param>
-    /// <returns>Сумма.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public int GetRandomSum(int count, int size)
-    {
-        uint s = _state;
-        long sum = 0;
-
-        uint usize = (uint)size;
-        for (int i = 0; i < count; i++)
-        {
-            // xorshift32 — 3 простейших операции
-            s ^= s << 13;
-            s ^= s >> 17;
-            s ^= s << 5;
-
-            // масштабирование: равномерное 0..size-1
-            // (uint)(((ulong)s * usize) >> 32) — самое быстрое и корректное преобразование
-            sum += (uint)(((ulong)s * usize) >> 32) + 1;
-        }
-
-        _state = s;
-
-        if (sum > int.MaxValue)
-            throw new OverflowException();
-
-        return (int)sum;
-    }
-}
-
-public sealed class UltraFastDiceRandom2
-{
-    private int _state;
-
-    /// <summary>
-    /// Инициализация генератора.
-    /// </summary>
-    /// <param name="seed">Начальный сид (должен быть ненулевым).</param>
-    public UltraFastDiceRandom2(int seed = 1)
-    {
-        if (seed == 0) seed = 1;
-        _state = seed;
-    }
-
-    /// <summary>
-    /// Возвращает сумму count случайных целых в диапазоне [1, size].
-    /// Максимально оптимизировано для скорости.
-    /// </summary>
-    /// <param name="count">Количество бросков.</param>
-    /// <param name="size">Верхняя граница.</param>
-    /// <returns>Сумма.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public int GetRandomSum(int count, int size)
-    {
-        int s = _state;
-        long sum = 0;
-
-        int usize = size;
-        for (int i = 0; i < count; i++)
-        {
-            // xorshift32 — 3 простейших операции
-            s ^= s << 13;
-            s ^= s >> 17;
-            s ^= s << 5;
-
-            // масштабирование: равномерное 0..size-1
-            // (uint)(((ulong)s * usize) >> 32) — самое быстрое и корректное преобразование
-            sum += (int)(((long)s * usize) >> 32) + 1;
-        }
-
-        _state = s;
-
-        return (int)sum;
-    }
-}
-
-
 internal class Program
 {
-    private static readonly UltraFastDiceRandom rand1 = new((uint)DateTime.Now.Ticks);
-    private static readonly UltraFastDiceRandom2 rand2 = new();
-    private static void Main()
+
+    private static void Main() {
+        Start();
+    }
+    private static void Game_OnLog(object message)
     {
-        //Game03Client.Game03 gameClient = Game03Client.Game03.Create(
-        //    Path.Combine(@"c:\UnityProjects\Game03_Git\Client_Game03\Assets", @"GameData\Config\Main.ini"),
-        //    new General.StringCapsule());
-        //string qwe = gameClient.JwtToken.GetTokenAsync();
-        //for (int i = 0; i < 20; i++)
-        //{
-        //    Console.WriteLine(r.GetRandomSum(1, 3));
-        //}
-        //return;
-
-        return;
-        for (int sim = 0; sim < 1000; sim++)
+        Console.WriteLine("[Library: Game03Client] " + message);
+    }
+    private static void Start()
+    {
+        General.StringCapsule capsule = new()
         {
-            _ = GetRandomInt(10, 10);
-        }
-        int rand1Min = int.MaxValue, rand1Max = int.MinValue;
+            Value = File.ReadAllText(@"C:\UnityProjects\Game03_Git\Client_Game03\Assets\Resources\localization\ru\data.json"),
+        };
 
-        int cube = 6;
-        int rand1MinNeed = 10, rand1MaxNeed = rand1MinNeed * cube;
-        int iter = 0;
-        while (true)
+        var Game = Game03Client.Game03.Create(
+            Path.Combine(@"c:\UnityProjects\Game03_Git\Client_Game03\Assets", @"GameData\Config\Main.ini"),
+            capsule, Game03Client.GameLanguage.Ru);
+        Game.Logger.OnLog += Game_OnLog;
+
+        CancellationTokenSource cancellationTokenSource = new(TimeSpan.FromSeconds(30));
+
+        string json = """
+            {"Email":"SUPERADMIN@MAIL.RU","Password":"testPassword","TimeZoneInfo_Local_BaseUtcOffset_Minutes":480,"System_Environment_UserName":"AUTORITET","DeviceModel":"B550 GAMING X V2 (Gigabyte Technology Co., Ltd.)","DeviceType":"Desktop","OperatingSystem":"Windows 11  (10.0.22000) 64bit","ProcessorType":"AMD Ryzen 7 3700X 8-Core Processor ","ProcessorCount":16,"SystemMemorySize":32691,"GraphicsDeviceName":"NVIDIA GeForce RTX 4070","GraphicsMemorySize":12011,"DeviceUniqueIdentifier":"e307f13fd5fb9d8c59a3a7b4df863c02bdbb300c","SystemInfo_supportsInstancing":true,"SystemInfo_npotSupport":"Full"}
+            """;
+        string? token = Game.JwtToken.GetTokenAsync(json, cancellationTokenSource.Token).Result;
+
+
+        Game03Client.WebSocketClient.IWebSocketClientProvider webSocketClient = Game.WebSocketClient;
+        cancellationTokenSource = new(TimeSpan.FromSeconds(30));
+        webSocketClient.ConnectAsync(cancellationTokenSource.Token).Wait();
+        if (!webSocketClient.Connected)
         {
-            int v = rand1.GetRandomSum(10, 6);
-            if (rand1Min > v)
-            {
-                rand1Min = v;
-            }
-            if (rand1Max < v)
-            {
-                rand1Max = v;
-            }
-            iter++;
-            if (rand1Min == rand1MinNeed && rand1Max == rand1MaxNeed)
-            {
-                break;
-            }
+            
         }
-        Console.WriteLine(rand1Min.ToString() + " " + rand1Max.ToString());
-        Console.WriteLine(iter.ToString());
-        
-        for (int sim = 0; sim < 1000; sim++)
-        {
-            //Console.Write(rand2.GetRandomSum(1, 5).ToString() + "; ");
-        }
-
-
-        Console.WriteLine($"Console log.");
-        Console.WriteLine($"100000000 итераций для 3 вариантов.");
-
-        DateTime start = DateTime.Now;
-        for (int sim = 0; sim < 100000000; sim++)
-        {
-            _ = GetRandomInt(10, 10);
-        }
-        double var0 = (DateTime.Now - start).TotalSeconds;
-        Console.WriteLine($"вариант GetRandomInt(10, 10) = {var0} секунд");
-
-
-
-
-        start = DateTime.Now;
-        for (int sim = 0; sim < 100000000; sim++)
-        {
-            _ = rand1.GetRandomSum(10, 10);
-        }
-        var var1 = (DateTime.Now - start).TotalSeconds;
-        Console.WriteLine($"вариант GetRandomSum(10, 10) = {var1} секунд");
-        //Console.WriteLine($"{(var0 / var1 - 1) * 100:0.00}%");
-
-
-
-
-        start = DateTime.Now;
-        for (int sim = 0; sim < 100000000; sim++)
-        {
-            _ = rand2.GetRandomSum(10, 10);
-        }
-        var var2 = (DateTime.Now - start).TotalSeconds;
-        Console.WriteLine($"последний вариант = {var2} секунд");//
-        //Console.WriteLine($"{(var0 / var2 - 1) * 100:0.00}%");
-
-
-
         Console.ReadLine();
     }
 
-    private static readonly Random random = new();
-    private static int GetRandomInt(int count, int size)//13.7
-    {
-        int result = 0;
-        for (int i = 0; i < count; i++)
-        {
-            result += random.Next(size) + 1;
-        }
-        return result;
-    }
+    
 
     public async void webSocketTest()
     {

@@ -180,10 +180,7 @@ internal partial class Program
         _ = services.AddSingleton<MongoRepository>();
 
 
-
-        // WebSocketConnectionHandler теперь регистрируется только как Singleton
         _ = services.AddSingleton<WebSocketConnectionHandler>();
-        // УДАЛЕНО: Убрана регистрация как IHostedService, так как HttpListener удален.
 
 
         // Ограничение размера тела
@@ -231,8 +228,6 @@ internal partial class Program
 
         _ = services.AddMemoryCache();
 
-
-        // УДАЛЕНО: //listenOptions.UseHttps(@"C:\UnityProjects\Game03_Security\webSocketCert.pfx", "mypassword");
 
 
         WebApplication app = builder.Build();
