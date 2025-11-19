@@ -20,7 +20,7 @@ public class WebSocketConnectionHandler // УДАЛЕНО: : BackgroundService
     private readonly ConcurrentDictionary<Guid, DateTime> _activeConnections = new();
     private int _activeConnections_Count_Last = 0;
     private readonly Timer _monitoringTimer;
-    private readonly MongoHeroesRepository _mongoRepository;
+    private readonly MongoRepository _mongoRepository;
     private readonly JwtService _jwtService;
 
     // HttpListener, _url, _maxConnections - УДАЛЕНЫ
@@ -34,7 +34,7 @@ public class WebSocketConnectionHandler // УДАЛЕНО: : BackgroundService
     /// <param name="configuration">Конфигурация приложения.</param>
     /// <param name="mongoRepository">Репозиторий для работы с MongoDB.</param>
     /// <param name="jwtService">JWT Сервис</param>
-    public WebSocketConnectionHandler(ILogger<WebSocketConnectionHandler> logger, IServiceProvider serviceProvider, IConfiguration configuration, MongoHeroesRepository mongoRepository, JwtService jwtService)
+    public WebSocketConnectionHandler(ILogger<WebSocketConnectionHandler> logger, IServiceProvider serviceProvider, IConfiguration configuration, MongoRepository mongoRepository, JwtService jwtService)
     {
         ArgumentNullException.ThrowIfNull(configuration);
         _configuration = configuration;

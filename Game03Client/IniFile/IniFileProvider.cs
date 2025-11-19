@@ -4,6 +4,7 @@ using IniParser;
 using IniParser.Model;
 using System.Globalization;
 using System.IO;
+using L = General.LocalizationKeys;
 
 namespace Game03Client.IniFile;
 
@@ -14,9 +15,9 @@ internal class IniFileProvider(IniFileOptions options, ILoggerProvider logger) :
     private const string NAME_THIS_CLASS = nameof(IniFileProvider);
     private void Log(string message, string? keyLocal = null)
     {
-        if (!keyLocal.IsEmpty)
+        if (!keyLocal.IsEmpty())
         {
-            message = $"{message}; {G.KEY_LOCALIZATION}:<{keyLocal}>";
+            message = $"{message}; {L.KEY_LOCALIZATION}:<{keyLocal}>";
         }
 
         _logger.LogEx(NAME_THIS_CLASS, message);

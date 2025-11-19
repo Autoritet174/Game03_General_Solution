@@ -1,45 +1,61 @@
-// DbContext_Game03Users.cs
 using Microsoft.EntityFrameworkCore;
 using Server_Common;
 using Server_DB_Users.Entities;
-using System.Drawing;
 
 namespace Server_DB_Users;
 
-public class DbContext_Game03Users : DbContext
+/// <summary>
+/// Контекст базы данных для работы с данными пользователей (PostgreSQL).
+/// </summary>
+/// <remarks>
+/// Конструктор, необходимый для Dependency Injection (DI) в ASP.NET Core.
+/// Строка подключения и опции передаются через DI из Program.cs.
+/// </remarks>
+/// <param name="options">Настройки контекста, сформированные в Program.cs.</param>
+public class DbContext_Game03Users(DbContextOptions<DbContext_Game03Users> options) : DbContext(options)
 {
-    public static string GetConnectionString()
-    {
-        return "Host=localhost;Port=5432;Database=Game03_Users;Username=postgres;Password=";
-    }
+    /// <summary>
+    /// Набор данных для работы с сущностью пользователя.
+    /// </summary>
+    public DbSet<User> Users { get; set; }
 
-    public static string GetStateConnection()
+    /// <summary>
+    /// Набор данных для работы с сущностью блокировок пользователей.
+    /// </summary>
+    public DbSet<User_Ban> Users_Bans { get; set; }
+
+    /// <summary>
+    /// Статический метод для проверки подключения к базе данных.
+    /// Строка подключения передается из Program.cs.
+    /// </summary>
+    /// <param name="connectionString">Строка подключения, которую необходимо проверить.</param>
+    /// <exception cref="Exception">Генерирует исключение в случае ошибки подключения.</exception>
+    public static void ThrowIfFailureConnection(string connectionString)
     {
         try
         {
-            using DbContext_Game03Users db = new();
+            // Для статической проверки необходимо создать опции вручную, 
+            // используя переданную строку подключения.
+            DbContextOptionsBuilder<DbContext_Game03Users> optionsBuilder = new();
+            DbContextOptions<DbContext_Game03Users> options = optionsBuilder.UseNpgsql(connectionString).Options;
+
+            // Создаем экземпляр DbContext, используя полученные опции
+            using DbContext_Game03Users db = new(options);
+
+            // Выполняем простое чтение для проверки соединения
             _ = db.Users.FirstOrDefault();
-            return Server_Common.Console.ColorizeText("SUCCESS", Color.Black, Color.LightGreen);
         }
-        catch (Exception ex)
+        catch
         {
-            return Server_Common.Console.ColorizeText($"FAILURE [{ex.Message}]", Color.Black, Color.OrangeRed);
+            System.Console.WriteLine($"\r\n\r\nFailureConnection in {nameof(DbContext_Game03Users)}, connectionString={connectionString}\r\n\r\n");
+            throw;
         }
     }
 
-    public DbContext_Game03Users() : base(CreateOptions()) { }
-
-    public DbContext_Game03Users(DbContextOptions<DbContext_Game03Users> options) : base(options) { }
-
-    private static DbContextOptions<DbContext_Game03Users> CreateOptions()
-    {
-        DbContextOptionsBuilder<DbContext_Game03Users> optionsBuilder = new();
-        return optionsBuilder.UseNpgsql(GetConnectionString()).Options;
-    }
-
-    public DbSet<User> Users { get; set; }
-    public DbSet<User_Ban> Users_Bans { get; set; }
-
+    /// <summary>
+    /// Конфигурация модели данных.
+    /// </summary>
+    /// <param name="modelBuilder">Построитель модели.</param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         _ = modelBuilder.ApplyConfiguration(new Configurations.Users());

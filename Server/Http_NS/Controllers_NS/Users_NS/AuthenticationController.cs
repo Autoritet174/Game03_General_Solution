@@ -60,7 +60,7 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
 
         // Извлечение и валидация email.
         string email = jsonObject.GetString("email");
-        if (email.IsEmpty || email.Length > Server_Common.Consts.EMAIL_MAX_LENGTH)
+        if (email.IsEmpty() || email.Length > Server_Common.Consts.EMAIL_MAX_LENGTH)
         {
             // Если пользователь временно заблокирован — возвращаем 429
             if (IsRateLimited(email))
@@ -76,7 +76,7 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
         }
 
         // Проверка формата email
-        if (!email.IsEmail)
+        if (!email.IsEmail())
         {
             LoggingAuthentification(false, jsonObject, email, null);
             IncrementFailedLoginAttempt(email);
@@ -85,7 +85,7 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
 
         // Извлечение и валидация пароля
         string password = jsonObject.GetString("password", removeAfterSuccessGetting: true);
-        if (password.IsEmpty || password.Length > Server_Common.Consts.PASSWORD_MAX_LENGTH)
+        if (password.IsEmpty() || password.Length > Server_Common.Consts.PASSWORD_MAX_LENGTH)
         {
             LoggingAuthentification(false, jsonObject, email, null);
             IncrementFailedLoginAttempt(email);
@@ -109,7 +109,7 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
         }
 
         // если хеш пароля отсутствует
-        if (user.PasswordHash.IsEmpty)
+        if (user.PasswordHash.IsEmpty())
         {
             //_ = PassHasher.Verify(email, "dummy", "dummy"); // Подмена для симуляции задержки. выполняем фиктивную проверку
             IncrementFailedLoginAttempt(email);
@@ -219,7 +219,7 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
     {
         // Пытаемся получить IP из подключения.
         string? ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? null;
-        return ip.IsEmpty
+        return ip.IsEmpty()
             ? null
             : IPAddress.TryParse(ip, out IPAddress? ipAddress) ? new NpgsqlInet(ipAddress) : (NpgsqlInet?)null;
     }
@@ -236,7 +236,7 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
     /// <param name="email">Email пользователя.</param>
     private void IncrementFailedLoginAttempt(string email)
     {
-        if (email.IsEmpty)
+        if (email.IsEmpty())
         {
             return;
         }

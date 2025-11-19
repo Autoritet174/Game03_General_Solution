@@ -1,4 +1,4 @@
-using Game03Client.Collection;
+using Game03Client.PlayerCollection;
 using Game03Client.GlobalFunctions;
 using Game03Client.HttpRequester;
 using Game03Client.IniFile;
@@ -55,7 +55,7 @@ public sealed class Game03 : IAsyncDisposable
     /// <summary>
     /// Провайдер Collection.
     /// </summary>
-    public ICollectionProvider Collection { get; private set; }
+    public IPlayerCollectionProvider Collection { get; private set; }
 
     /// <summary>
     /// Провайдер Logger.
@@ -71,7 +71,7 @@ public sealed class Game03 : IAsyncDisposable
         LocalizationManager = provider.GetRequiredService<ILocalizationManagerProvider>();
         WebSocketClient = provider.GetRequiredService<IWebSocketClientProvider>();
         GlobalFunctions = provider.GetRequiredService<IGlobalFunctionsProvider>();
-        Collection = provider.GetRequiredService<ICollectionProvider>();
+        Collection = provider.GetRequiredService<IPlayerCollectionProvider>();
         Logger = provider.GetRequiredService<ILoggerProvider>();
     }
 
@@ -123,8 +123,8 @@ public sealed class Game03 : IAsyncDisposable
         _ = services.AddSingleton<IGlobalFunctionsProvider, GlobalFunctionsProvider>();
 
         // Collection
-        _ = services.AddSingleton<CollectionCache>();
-        _ = services.AddSingleton<ICollectionProvider, CollectionProvider>();
+        _ = services.AddSingleton<PlayerCollectionCache>();
+        _ = services.AddSingleton<IPlayerCollectionProvider, PlayerCollectionProvider>();
 
         // Logger
         _ = services.AddSingleton<ILoggerProvider, LoggerProvider>();

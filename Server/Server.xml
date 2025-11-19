@@ -442,14 +442,6 @@
             </summary>
             <param name="args">Аргументы командной строки.</param>
         </member>
-        <member name="M:Server.Program.Test(Microsoft.AspNetCore.Builder.WebApplication)">
-            <summary>
-            Тестовая функция для проверки взаимодействия с базой данных.
-            Может быть временной или отладочной.
-            </summary>
-            <param name="app">Экземпляр <see cref="T:Microsoft.AspNetCore.Builder.WebApplication"/>.</param>
-            <returns>Асинхронная задача без значения.</returns>
-        </member>
         <member name="T:Server.UserAuth_NS.OpenWebSocketController">
             <summary>
             Контроллер для аутентификации пользователей.
@@ -559,7 +551,7 @@
             в пайплайн ASP.NET Core Middleware через app.Map().
             </summary>
         </member>
-        <member name="M:Server.WebSocket_NS.WebSocketConnectionHandler.#ctor(Microsoft.Extensions.Logging.ILogger{Server.WebSocket_NS.WebSocketConnectionHandler},System.IServiceProvider,Microsoft.Extensions.Configuration.IConfiguration,Server_DB_UserData.MongoHeroesRepository,Server.Jwt_NS.JwtService)">
+        <member name="M:Server.WebSocket_NS.WebSocketConnectionHandler.#ctor(Microsoft.Extensions.Logging.ILogger{Server.WebSocket_NS.WebSocketConnectionHandler},System.IServiceProvider,Microsoft.Extensions.Configuration.IConfiguration,Server_DB_UserData.MongoRepository,Server.Jwt_NS.JwtService)">
             <summary>
             Инициализирует новый экземпляр <see cref="T:Server.WebSocket_NS.WebSocketConnectionHandler"/>.
             </summary>

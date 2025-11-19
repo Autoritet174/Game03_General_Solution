@@ -20,7 +20,7 @@ internal class GlobalFunctionsProvider(IHttpRequesterProvider httpRequesterProvi
     private const string NAME_THIS_CLASS = nameof(GlobalFunctionsProvider);
     private void Log(string message, string? keyLocal = null)
     {
-        if (!keyLocal.IsEmpty)
+        if (!keyLocal.IsEmpty())
         {
             message = $"{message}; {L.KEY_LOCALIZATION}:<{keyLocal}>";
         }

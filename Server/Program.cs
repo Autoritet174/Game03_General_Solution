@@ -146,34 +146,40 @@ internal partial class Program
                 };
             });
 
-        _ = services.AddCors(options =>
-        {
-            options.AddPolicy("AllowAll", policy =>
-            {
-                _ = policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
-            });
-        });
+        //_ = services.AddCors(options =>
+        //{
+        //    options.AddPolicy("AllowAll", policy =>
+        //    {
+        //        _ = policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+        //    });
+        //});
 
+
+
+        // -- БАЗЫ ДАННЫХ --
 
         // База данных пользователей
-        _ = services.AddDbContext<DbContext_Game03Users>(options => options.UseNpgsql(DbContext_Game03Users.GetConnectionString()));
+        string сonnectionStringUsers = builder.Configuration.GetConnectionString("Postgres_Users")
+            ?? throw new InvalidOperationException("Строка подключения 'Postgres_Users' не найдена.");
+        _ = services.AddDbContext<DbContext_Game03Users>(options => options.UseNpgsql(сonnectionStringUsers));
         _ = services.AddScoped<UserRepository>();
 
+
         // База данных с игровыми данными
-        _ = services.AddDbContext<DbContext_Game03Data>(options => options.UseNpgsql(DbContext_Game03Data.GetConnectionString()));
+        string сonnectionStringData = builder.Configuration.GetConnectionString("Postgres_Data")
+            ?? throw new InvalidOperationException("Строка подключения 'Postgres_Data' не найдена.");
+        _ = services.AddDbContext<DbContext_Game03Data>(options => options.UseNpgsql(сonnectionStringData));
         _ = services.AddScoped<HeroRepository>();
 
-        // Конфигурация MongoDB
-        _ = services.Configure<MongoHeroesSettings>(options =>
-        {
-            options.ConnectionString = "mongodb://localhost:27017";
-            options.DatabaseName = "userData";
-            options.CollectionName = "heroes";
-        });
 
+        // Настройки "MongoDb"
+        IConfigurationSection mongoSection = builder.Configuration.GetSection("MongoDb");
+        builder.Services.Configure<MongoDbSettings>(mongoSection);
 
         // Регистрация репозитория
-        _ = services.AddSingleton<MongoHeroesRepository>();
+        _ = services.AddSingleton<MongoRepository>();
+
+
 
         // WebSocketConnectionHandler теперь регистрируется только как Singleton
         _ = services.AddSingleton<WebSocketConnectionHandler>();
@@ -283,7 +289,7 @@ internal partial class Program
         // Маршрутизация
         _ = app.UseRouting();
 
-        _ = app.UseCors("AllowAll");
+        //_ = app.UseCors("AllowAll");//это нужно только для браузеров, то есть на этом сервере это не нужно
 
         // Подключение аутентификации и авторизации
         _ = app.UseAuthentication();
@@ -310,6 +316,10 @@ internal partial class Program
 
         _ = app.UseForwardedHeaders();
 
+        DbContext_Game03Users.ThrowIfFailureConnection(сonnectionStringUsers);
+        DbContext_Game03Data.ThrowIfFailureConnection(сonnectionStringData);
+
+        // на этом момент есть гарантия что соединения со всеми СУБД корректно.
 
         // Инициализация кэша до старта
         using (IServiceScope scope = app.Services.CreateScope())
@@ -321,21 +331,5 @@ internal partial class Program
 
         // СТАРТ
         app.Run();
-    }
-
-    /// <summary>
-    /// Тестовая функция для проверки взаимодействия с базой данных.
-    /// Может быть временной или отладочной.
-    /// </summary>
-    /// <param name="app">Экземпляр <see cref="WebApplication"/>.</param>
-    /// <returns>Асинхронная задача без значения.</returns>
-    private static async Task Test(WebApplication app)
-    {
-        await Task.Delay(0);
-        //using DbData db = new();
-        //var hero = db.Heroes.First(a=>a.Name == "Warrior");
-        //var ct = db.CreatureTypes.First(a => a.Name == "Humanoid");
-        //hero.CreatureTypes.Add(ct);
-        //db.SaveChanges();
     }
 }

@@ -4,6 +4,7 @@ using General;
 using Newtonsoft.Json.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using L = General.LocalizationKeys;
 
 namespace Game03Client.JwtToken;
 
@@ -14,9 +15,9 @@ internal class JwtTokenProvider(JwtTokenCache jwtTokenCache, IHttpRequesterProvi
     private const string NAME_THIS_CLASS = nameof(JwtTokenProvider);
     private void Log(string message, string? keyLocal = null)
     {
-        if (!keyLocal.IsEmpty)
+        if (!keyLocal.IsEmpty())
         {
-            message = $"{message}; {G.KEY_LOCALIZATION}:<{keyLocal}>";
+            message = $"{message}; {L.KEY_LOCALIZATION}:<{keyLocal}>";
         }
 
         _logger.LogEx(NAME_THIS_CLASS, message);
@@ -26,7 +27,7 @@ internal class JwtTokenProvider(JwtTokenCache jwtTokenCache, IHttpRequesterProvi
     public async Task<string?> GetTokenAsync(string jsonBody, CancellationToken cancellationToken)
     {
         // Если есть токен — возвращаем сразу
-        if (!jwtTokenCache.Token.IsEmpty)
+        if (!jwtTokenCache.Token.IsEmpty())
         {
             return jwtTokenCache.Token;
         }
@@ -38,7 +39,7 @@ internal class JwtTokenProvider(JwtTokenCache jwtTokenCache, IHttpRequesterProvi
         }
 
         string? token = jObject["token"]?.ToString();
-        if (token.IsEmpty)
+        if (token.IsEmpty())
         {
             Log("token IsEmpty");
             return null;
@@ -50,6 +51,6 @@ internal class JwtTokenProvider(JwtTokenCache jwtTokenCache, IHttpRequesterProvi
 
     public string? GetTokenIfExists()
     {
-        return jwtTokenCache.Token.IsEmpty ? null : jwtTokenCache.Token;
+        return jwtTokenCache.Token.IsEmpty() ? null : jwtTokenCache.Token;
     }
 }

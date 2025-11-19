@@ -23,7 +23,7 @@ internal class HttpRequesterProvider : IHttpRequesterProvider
 
     private void Log(string message, string? keyLocal = null)
     {
-        if (!keyLocal.IsEmpty)
+        if (!keyLocal.IsEmpty())
         {
             message = $"{message}; {L.KEY_LOCALIZATION}:<{keyLocal}>";
         }
@@ -45,14 +45,14 @@ internal class HttpRequesterProvider : IHttpRequesterProvider
         _tokenCache = tokenCache;
         _logger = logger;
         _httpClient = new();
-        double timeout = _iniFileProvider.ReadDouble("Http", "timeout", 30d);
+        double timeout = _iniFileProvider.ReadDouble("Http", "Timeout", 30d);
         _httpClient.Timeout = TimeSpan.FromSeconds(timeout);
     }
 
     
     public async Task<JObject?> GetJObjectAsync(string url, CancellationToken cancellationToken, string? jsonBody = null, bool useJwtToken = true)
     {
-        if (url.IsEmpty)
+        if (url.IsEmpty())
         {
             string e = "url IsEmpty";
             Log(e);
@@ -78,7 +78,7 @@ internal class HttpRequesterProvider : IHttpRequesterProvider
             if (useJwtToken)
             {
                 string? jwtToken = _tokenCache.Token;
-                if (!jwtToken.IsEmpty)
+                if (!jwtToken.IsEmpty())
                 {
                     // Если был передан токен то подставляем его в заголовок как авторизацию
                     request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwtToken);
@@ -87,7 +87,7 @@ internal class HttpRequesterProvider : IHttpRequesterProvider
 
             using HttpResponseMessage response = await _httpClient.SendAsync(request, cancellationToken);
             string responseContent = await response.Content.ReadAsStringAsync();
-            if (responseContent.IsEmpty)
+            if (responseContent.IsEmpty())
             {
                 Log("responseContent IsEmpty", L.Error.Server.InvalidResponse);
                 return null;

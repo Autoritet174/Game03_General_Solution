@@ -4,6 +4,50 @@
         <name>Server_DB_Users</name>
     </assembly>
     <members>
+        <member name="T:Server_DB_Users.DbContext_Game03Users">
+            <summary>
+            Контекст базы данных для работы с данными пользователей (PostgreSQL).
+            </summary>
+            <remarks>
+            Конструктор, необходимый для Dependency Injection (DI) в ASP.NET Core.
+            Строка подключения и опции передаются через DI из Program.cs.
+            </remarks>
+            <param name="options">Настройки контекста, сформированные в Program.cs.</param>
+        </member>
+        <member name="M:Server_DB_Users.DbContext_Game03Users.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions{Server_DB_Users.DbContext_Game03Users})">
+            <summary>
+            Контекст базы данных для работы с данными пользователей (PostgreSQL).
+            </summary>
+            <remarks>
+            Конструктор, необходимый для Dependency Injection (DI) в ASP.NET Core.
+            Строка подключения и опции передаются через DI из Program.cs.
+            </remarks>
+            <param name="options">Настройки контекста, сформированные в Program.cs.</param>
+        </member>
+        <member name="P:Server_DB_Users.DbContext_Game03Users.Users">
+            <summary>
+            Набор данных для работы с сущностью пользователя.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Users.DbContext_Game03Users.Users_Bans">
+            <summary>
+            Набор данных для работы с сущностью блокировок пользователей.
+            </summary>
+        </member>
+        <member name="M:Server_DB_Users.DbContext_Game03Users.ThrowIfFailureConnection(System.String)">
+            <summary>
+            Статический метод для проверки подключения к базе данных.
+            Строка подключения передается из Program.cs.
+            </summary>
+            <param name="connectionString">Строка подключения, которую необходимо проверить.</param>
+            <exception cref="T:System.Exception">Генерирует исключение в случае ошибки подключения.</exception>
+        </member>
+        <member name="M:Server_DB_Users.DbContext_Game03Users.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <summary>
+            Конфигурация модели данных.
+            </summary>
+            <param name="modelBuilder">Построитель модели.</param>
+        </member>
         <member name="T:Server_DB_Users.Entities.User">
             <summary>
             Представляет пользователя системы.

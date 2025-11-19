@@ -4,6 +4,55 @@
         <name>Server_DB_Data</name>
     </assembly>
     <members>
+        <member name="T:Server_DB_Data.DbContext_Game03Data">
+            <summary>
+            Контекст базы данных для работы с игровыми данными.
+            </summary>
+            <remarks>
+            Конструктор, необходимый для Dependency Injection (DI) в ASP.NET Core.
+            Строка подключения и опции передаются через DI из Program.cs.
+            </remarks>
+            <param name="options">Настройки контекста, сформированные в Program.cs.</param>
+        </member>
+        <member name="M:Server_DB_Data.DbContext_Game03Data.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions{Server_DB_Data.DbContext_Game03Data})">
+            <summary>
+            Контекст базы данных для работы с игровыми данными.
+            </summary>
+            <remarks>
+            Конструктор, необходимый для Dependency Injection (DI) в ASP.NET Core.
+            Строка подключения и опции передаются через DI из Program.cs.
+            </remarks>
+            <param name="options">Настройки контекста, сформированные в Program.cs.</param>
+        </member>
+        <member name="M:Server_DB_Data.DbContext_Game03Data.ThrowIfFailureConnection(System.String)">
+            <summary>
+            Статический метод для проверки подключения к базе данных.
+            Строка подключения передается из Program.cs.
+            </summary>
+            <param name="connectionString">Строка подключения, которую необходимо проверить.</param>
+            <exception cref="T:System.Exception">Генерирует исключение в случае ошибки подключения.</exception>
+        </member>
+        <member name="P:Server_DB_Data.DbContext_Game03Data.Heroes">
+            <summary>
+            Данные героев.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.DbContext_Game03Data.CreatureTypes">
+            <summary>
+            Типы существ.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.DbContext_Game03Data.HeroCreatureType">
+            <summary>
+            Таблица связи многие ко мноким между Heroes и CreatureTypes.
+            </summary>
+        </member>
+        <member name="M:Server_DB_Data.DbContext_Game03Data.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <summary>
+            Конфигурация модели данных.
+            </summary>
+            <param name="modelBuilder">Построитель модели.</param>
+        </member>
         <member name="T:Server_DB_Data.Migrations.Start">
             <inheritdoc />
         </member>

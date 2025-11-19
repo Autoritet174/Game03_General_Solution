@@ -3,24 +3,40 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Server_DB_UserData;
-public class MongoHeroesRepository
+public class MongoRepository
 {
-    private readonly IMongoCollection<BsonDocument> _collection;
+    private readonly IMongoCollection<BsonDocument> _collection_heroes;
+    private readonly IMongoCollection<BsonDocument> _collection_items;
 
     /// <summary>
     /// Конструктор репозитория, инициализирующий подключение к коллекции.
     /// </summary>
-    public MongoHeroesRepository(IOptions<MongoHeroesSettings> settings)
+    public MongoRepository(IOptions<MongoDbSettings> settings)
     {
         if (settings?.Value == null)
         {
             throw new ArgumentNullException(nameof(settings));
         }
 
-        MongoClient client = new(settings.Value.ConnectionString);
-        IMongoDatabase database = client.GetDatabase(settings.Value.DatabaseName);
+        MongoDbSettings config = settings.Value;
 
-        _collection = database.GetCollection<BsonDocument>(settings.Value.CollectionName);
+        // 1. Найти нужную базу данных по имени
+        DatabaseSettings? userDataDb = config.DataBases.FirstOrDefault(db => db.Name.Equals("UserData", StringComparison.OrdinalIgnoreCase)) ?? throw new ArgumentException("База данных 'UserData' не найдена в конфигурации.");
+
+        // 2. Найти нужные коллекции в этой базе данных
+        string heroesCollectionName = userDataDb.Collections
+            .FirstOrDefault(c => c.Name.Equals("Heroes", StringComparison.OrdinalIgnoreCase))?.Name
+            ?? throw new ArgumentException("Коллекция 'Heroes' не найдена.");
+
+        string itemsCollectionName = userDataDb.Collections
+            .FirstOrDefault(c => c.Name.Equals("Items", StringComparison.OrdinalIgnoreCase))?.Name
+            ?? throw new ArgumentException("Коллекция 'Items' не найдена.");
+
+        MongoClient client = new(settings.Value.ConnectionString);
+        IMongoDatabase database = client.GetDatabase(userDataDb.Name);
+
+        _collection_heroes = database.GetCollection<BsonDocument>(heroesCollectionName);
+        _collection_items = database.GetCollection<BsonDocument>(itemsCollectionName);
     }
 
     /// <summary>
@@ -38,7 +54,7 @@ public class MongoHeroesRepository
         // Фильтр по полю "o" (owner). Поле в базе хранится как UUID, поэтому сравниваем с Guid напрямую
         FilterDefinition<BsonDocument> filter = Builders<BsonDocument>.Filter.Eq("owner_id", owner_id);
 
-        List<BsonDocument> documents = await _collection.Find(filter).ToListAsync();
+        List<BsonDocument> documents = await _collection_heroes.Find(filter).ToListAsync();
 
         var result = documents.Select(d =>
         {
@@ -68,6 +84,6 @@ public class MongoHeroesRepository
     /// </summary>
     public async Task InsertAsync(BsonDocument bd)
     {
-        await _collection.InsertOneAsync(bd);
+        await _collection_heroes.InsertOneAsync(bd);
     }
 }
