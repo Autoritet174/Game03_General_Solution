@@ -29,10 +29,10 @@ r = random.Random
 random_number = random.randint(0, 100)
 
 # Данные для вставки
-for i in range(30):
+for i in range(25):
     data = {
         "owner_id": user_uuid,
-        "hero_id": hero_warrior_uuid,
+        "hero_id": hero_rogue_uuid,
         "health": random.randint(0, 100),
         "attack": random.randint(0, 100),
         "speed": random.randint(0, 100),

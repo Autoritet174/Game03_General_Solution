@@ -67,6 +67,11 @@ internal class HttpRequesterProvider : IHttpRequesterProvider
             throw new Exception(e);
         }
 
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return null;
+        }
+
         try
         {
             using HttpRequestMessage request = new(HttpMethod.Post, uri);
@@ -117,7 +122,7 @@ internal class HttpRequesterProvider : IHttpRequesterProvider
         }
         catch (HttpRequestException ex) when (ex.InnerException is WebException)
         {
-            bool haveInternet = await _internetCheckerProvider.CheckInternetConnectionAsync();
+            bool haveInternet = await _internetCheckerProvider.CheckInternetConnectionAsync(cancellationToken);
             string key = haveInternet ? L.Error.Server.Unavailable : L.Error.Server.NoInternetConnection;
             Log(ex.ToString(), key);
             return null;

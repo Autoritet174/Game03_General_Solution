@@ -30,6 +30,7 @@ public static class LocalizationKeys
             public const string Password = $"{_Label}{nameof(Password)}";
         }
     }
+
     public static class Error {
         private const string _Error = $"{nameof(Error)}.";
 
@@ -55,6 +56,7 @@ public static class LocalizationKeys
             public const string PasswordEmpty = $"{_User}{nameof(PasswordEmpty)}";
         }
     }
+
     public static class Info
     {
         private const string _Info = $"{nameof(Info)}.";

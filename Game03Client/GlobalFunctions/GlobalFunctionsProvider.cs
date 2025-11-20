@@ -32,6 +32,11 @@ internal class GlobalFunctionsProvider(IHttpRequesterProvider httpRequesterProvi
     public IEnumerable<HeroBaseEntity> AllHeroes => globalFunctionsProviderCache._allHeroes;
     public async Task LoadListAllHeroesAsync(CancellationToken cancellationToken)
     {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return;
+        }
+
         JObject? jObject = await httpRequesterProvider.GetJObjectAsync(Url.General.ListAllHeroes, cancellationToken);
         if (jObject == null)
         {

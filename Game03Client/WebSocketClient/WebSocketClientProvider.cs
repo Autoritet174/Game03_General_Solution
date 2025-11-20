@@ -11,34 +11,29 @@ namespace Game03Client.WebSocketClient;
 
 internal class WebSocketClientProvider(IJwtTokenProvider jwtTokenProvider) : IWebSocketClientProvider
 {
-    private const string serverUrl = "wss://localhost:7227/ws/";
+    private const string SERVER_URL = "wss://localhost:7227/ws/";
     private ClientWebSocket _webSocket = new();
-    private readonly Uri _serverUri = new(serverUrl);
-    private readonly CancellationTokenSource _cts = new();
+    private readonly Uri _serverUri = new(SERVER_URL);
     private bool _isReceiving = false;
     public bool Connected { get; private set; } = false;
+    private readonly CancellationTokenSource _cancellationTokenSource = new();
 
     public async Task ConnectAsync(CancellationToken cancellationToken)
     {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return;
+        }
 
-        //Exception? ex1 = null;
-
-
-        // Добавляем JWT токен в заголовки, если он предоставлен
         string? jwtToken = jwtTokenProvider.GetTokenIfExists();
 
-
-
-        //for (int i = 0; i < 3; i++) // делаем 3 попытки подключения
-        //{
-        //try
-        //{
         try
         {
             Connected = false;
             _webSocket = new();
             if (!jwtToken.IsEmpty())
             {
+                // Добавляем JWT токен в заголовки, если он предоставлен
                 _webSocket.Options.SetRequestHeader("Authorization", $"Bearer {jwtToken}");
             }
             await _webSocket.ConnectAsync(_serverUri, cancellationToken);
@@ -51,26 +46,6 @@ internal class WebSocketClientProvider(IJwtTokenProvider jwtTokenProvider) : IWe
             _ = Task.Run(ReceiveMessagesAsync);
             Connected = true;
         }
-        // Запускаем прием сообщений без привязки к _cts.Token
-
-        //}
-        //catch (Exception ex)
-        //{
-        //    ex1 = ex;
-        //    Console.WriteLine($"Ошибка подключения: {ex.Message}");
-        //    await Task.Delay(1000); // Задержка перед повторной попыткой
-        //}
-        //if (Connected)
-        //{
-        //    break;
-        //}
-        //}
-        //if (!Connected// && ex1 != null
-        //    )
-        //{
-        //GameMessage.Show($"Ошибка подключения: {ex1.Message}", true);
-        //OnAuthenticationResult?.Invoke(false, $"Ошибка подключения: {ex1.Message}");
-        //}
     }
 
     /// <summary>
@@ -85,10 +60,9 @@ internal class WebSocketClientProvider(IJwtTokenProvider jwtTokenProvider) : IWe
         {
             while (_isReceiving && _webSocket.State == WebSocketState.Open)
             {
-                // Используем CancellationToken.None вместо _cts.Token
                 WebSocketReceiveResult result = await _webSocket.ReceiveAsync(
                     new ArraySegment<byte>(buffer),
-                    CancellationToken.None
+                    _cancellationTokenSource.Token
                 );
 
                 if (result.MessageType == WebSocketMessageType.Close)
@@ -137,7 +111,7 @@ internal class WebSocketClientProvider(IJwtTokenProvider jwtTokenProvider) : IWe
                 new ArraySegment<byte>(buffer),
                 WebSocketMessageType.Text,
                 true,
-                _cts.Token // Для отправки можно использовать _cts.Token
+                _cancellationTokenSource.Token
             );
             //Console.WriteLine($"Отправлено: {message}");
         }
@@ -153,7 +127,7 @@ internal class WebSocketClientProvider(IJwtTokenProvider jwtTokenProvider) : IWe
 
     public async Task StartSendingMessages(Action<int>? onMessagesSent = null)
     {
-        while (!_cts.Token.IsCancellationRequested && _webSocket.State == WebSocketState.Open)
+        while (!_cancellationTokenSource.Token.IsCancellationRequested && _webSocket.State == WebSocketState.Open)
         {
             //for (int i = 0; i < 1; i++)
             //{
@@ -187,7 +161,7 @@ internal class WebSocketClientProvider(IJwtTokenProvider jwtTokenProvider) : IWe
             // Сообщаем о количестве отправленных сообщений
             onMessagesSent?.Invoke(100);
 
-            await Task.Delay(10, _cts.Token);
+            await Task.Delay(10, _cancellationTokenSource.Token);
 
             if (Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Q)
             {
@@ -197,19 +171,20 @@ internal class WebSocketClientProvider(IJwtTokenProvider jwtTokenProvider) : IWe
 
         onMessagesSent?.Invoke(0); // Завершение
     }
+
     public async Task DisconnectAsync()
     {
         try
         {
             _isReceiving = false; // Останавливаем прием сообщений
-            _cts.Cancel(); // Отменяем операции отправки
+            _cancellationTokenSource.Cancel(); // Отменяем операции отправки
 
             if (_webSocket.State == WebSocketState.Open)
             {
                 await _webSocket.CloseAsync(
                     WebSocketCloseStatus.NormalClosure,
                     "Закрытие клиентом",
-                    CancellationToken.None // Не используем _cts.Token здесь
+                    CancellationToken.None // Не используем _cancellationTokenSource.Token здесь
                 );
             }
         }
@@ -223,6 +198,5 @@ internal class WebSocketClientProvider(IJwtTokenProvider jwtTokenProvider) : IWe
             Console.WriteLine("Отключено");
         }
     }
-
 
 }

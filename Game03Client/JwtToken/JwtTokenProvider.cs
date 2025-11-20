@@ -26,6 +26,11 @@ internal class JwtTokenProvider(JwtTokenCache jwtTokenCache, IHttpRequesterProvi
 
     public async Task<string?> GetTokenAsync(string jsonBody, CancellationToken cancellationToken)
     {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return null;
+        }
+
         // Если есть токен — возвращаем сразу
         if (!jwtTokenCache.Token.IsEmpty())
         {

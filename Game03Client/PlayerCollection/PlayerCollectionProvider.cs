@@ -28,11 +28,15 @@ internal class PlayerCollectionProvider(PlayerCollectionCache _collectionCache, 
     /// <summary>
     /// 
     /// </summary>
-    public async Task LoadAllCollectionFromServer() {
-        double timeout = _iniFile.ReadDouble("Http", "CancellationTokenTimeOut", 30d);
-        CancellationTokenSource cancellationTokenSource = new(TimeSpan.FromSeconds(timeout));
+    public async Task LoadAllCollectionFromServer(CancellationToken cancellationToken) {
+
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return;
+        }
+
         // Получить коллекцию героев игрока
-        JObject? jObject = await _httpRequester.GetJObjectAsync(General.Url.Inventory.Heroes, cancellationTokenSource.Token);
+        JObject? jObject = await _httpRequester.GetJObjectAsync(General.Url.Inventory.Heroes, cancellationToken);
         if (jObject == null)
         {
             Log("jObject == null");
