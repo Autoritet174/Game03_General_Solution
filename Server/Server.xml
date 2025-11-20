@@ -430,11 +430,6 @@
             middleware, маршрутов и баз данных.
             </summary>
         </member>
-        <member name="P:Server.Program.DEV_MODE">
-            <summary>
-            РЕЖИМ РАЗРАБОТКИ
-            </summary>
-        </member>
         <member name="M:Server.Program.Main(System.String[])">
             <summary>
             Точка входа в приложение. Выполняет настройку DI, БД, аутентификации,

@@ -30,7 +30,7 @@ public class DbContext_Game03Users(DbContextOptions<DbContext_Game03Users> optio
     /// </summary>
     /// <param name="connectionString">Строка подключения, которую необходимо проверить.</param>
     /// <exception cref="Exception">Генерирует исключение в случае ошибки подключения.</exception>
-    public static void ThrowIfFailureConnection(string connectionString)
+    public static async Task ThrowIfFailureConnection(string connectionString)
     {
         try
         {
@@ -43,7 +43,7 @@ public class DbContext_Game03Users(DbContextOptions<DbContext_Game03Users> optio
             using DbContext_Game03Users db = new(options);
 
             // Выполняем простое чтение для проверки соединения
-            _ = db.Users.FirstOrDefault();
+            _ = await db.Users.FirstOrDefaultAsync();
         }
         catch
         {

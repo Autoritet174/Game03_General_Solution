@@ -49,7 +49,7 @@ internal class HttpRequesterProvider : IHttpRequesterProvider
         _httpClient.Timeout = TimeSpan.FromSeconds(timeout);
     }
 
-    
+
     public async Task<JObject?> GetJObjectAsync(string url, CancellationToken cancellationToken, string? jsonBody = null, bool useJwtToken = true)
     {
         if (url.IsEmpty())
@@ -69,11 +69,11 @@ internal class HttpRequesterProvider : IHttpRequesterProvider
 
         try
         {
-            using HttpRequestMessage request = new(HttpMethod.Post, uri)
+            using HttpRequestMessage request = new(HttpMethod.Post, uri);
+            if (jsonBody != null)
             {
-                Content = new StringContent(jsonBody ?? "{}", Encoding.UTF8, G.APPLICATION_JSON)
-            };
-
+                request.Content = new StringContent(jsonBody, Encoding.UTF8, G.APPLICATION_JSON);
+            }
 
             if (useJwtToken)
             {

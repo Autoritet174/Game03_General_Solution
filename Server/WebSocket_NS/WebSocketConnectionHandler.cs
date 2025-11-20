@@ -77,7 +77,7 @@ public class WebSocketConnectionHandler // УДАЛЕНО: : BackgroundService
     /// <exception cref="ArgumentNullException">Если контекст равен null.</exception>
     public async Task ProcessKestrelWebSocketRequest(HttpContext context, CancellationToken stoppingToken)
     {
-        Console.WriteLine("Запрос на вебсокет. Обработка Kestrel."); // Ваш отладочный вывод
+        //Console.WriteLine("Запрос на вебсокет. Обработка Kestrel."); // Ваш отладочный вывод
         ArgumentNullException.ThrowIfNull(context);
 
         if (!context.WebSockets.IsWebSocketRequest)
@@ -89,7 +89,6 @@ public class WebSocketConnectionHandler // УДАЛЕНО: : BackgroundService
 
         try
         {
-            // Исправленный вызов для устранения неоднозначности
             WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync((string?)null);
 
             using IServiceScope scope = _serviceProvider.CreateScope();

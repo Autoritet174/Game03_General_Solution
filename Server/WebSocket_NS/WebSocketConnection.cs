@@ -147,8 +147,8 @@ public class WebSocketConnection(WebSocket webSocket, ILogger<WebSocketConnectio
                 true,
                 cancellationToken
             );
-            _logger.LogDebug("сообщение клиенту {ClientId}: {Message}", Id, message);
-            _logger.Log((LogLevel)0, "сообщение клиенту {ClientId}: {Message}", Id, message);
+            _logger.LogInformation("сообщение клиенту {ClientId}: {Message}", Id, message);
+            //_logger.Log((LogLevel)0, "сообщение клиенту {ClientId}: {Message}", Id, message);
         }
         catch (Exception ex) when (IsExpectedDisconnectException(ex))
         {

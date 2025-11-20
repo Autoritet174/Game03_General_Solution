@@ -32,7 +32,7 @@ internal class GlobalFunctionsProvider(IHttpRequesterProvider httpRequesterProvi
     public IEnumerable<HeroBaseEntity> AllHeroes => globalFunctionsProviderCache._allHeroes;
     public async Task LoadListAllHeroesAsync(CancellationToken cancellationToken)
     {
-        JObject? jObject = await httpRequesterProvider.GetJObjectAsync(General.Url.General.ListAllHeroes, cancellationToken);
+        JObject? jObject = await httpRequesterProvider.GetJObjectAsync(Url.General.ListAllHeroes, cancellationToken);
         if (jObject == null)
         {
             return;
@@ -78,7 +78,7 @@ internal class GlobalFunctionsProvider(IHttpRequesterProvider httpRequesterProvi
 
     public HeroBaseEntity GetHeroById(Guid guid)
     {
-        return globalFunctionsProviderCache._allHeroes.First(a => a.Id == guid);
+        return globalFunctionsProviderCache._allHeroes.FirstOrDefault(a => a.Id == guid);
     }
     //public IEnumerable<HeroBaseEntity> GetData() {
     //    return globalFunctionsProviderCache.AllHeroes.AsEnumerable();

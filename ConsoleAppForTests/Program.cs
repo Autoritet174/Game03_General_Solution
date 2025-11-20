@@ -17,6 +17,7 @@ internal class Program
     }
     private static void Start()
     {
+
         General.StringCapsule capsule = new()
         {
             Value = File.ReadAllText(@"C:\UnityProjects\Game03_Git\Client_Game03\Assets\Resources\localization\ru\data.json"),
@@ -35,13 +36,19 @@ internal class Program
         string? token = Game.JwtToken.GetTokenAsync(json, cancellationTokenSource.Token).Result;
 
 
-        Game03Client.WebSocketClient.IWebSocketClientProvider webSocketClient = Game.WebSocketClient;
-        cancellationTokenSource = new(TimeSpan.FromSeconds(30));
-        webSocketClient.ConnectAsync(cancellationTokenSource.Token).Wait();
-        if (!webSocketClient.Connected)
-        {
+        //Game03Client.WebSocketClient.IWebSocketClientProvider webSocketClient = Game.WebSocketClient;
+        //cancellationTokenSource = new(TimeSpan.FromSeconds(30));
+        //webSocketClient.ConnectAsync(cancellationTokenSource.Token).Wait();
+        //if (!webSocketClient.Connected)
+        //{
             
-        }
+        //}
+
+        cancellationTokenSource = new(TimeSpan.FromSeconds(30));
+        Game.GlobalFunctions.LoadListAllHeroesAsync(cancellationTokenSource.Token).Wait();
+
+        Console.ReadLine();
+        //webSocketClient.DisconnectAsync().Wait();
         Console.ReadLine();
     }
 

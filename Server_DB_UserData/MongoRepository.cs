@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using System.Runtime.CompilerServices;
 
 namespace Server_DB_UserData;
 public class MongoRepository
@@ -40,6 +41,33 @@ public class MongoRepository
     }
 
     /// <summary>
+    /// Статический метод для проверки подключения к базе данных.
+    /// </summary>
+    /// <param name="settings"></param>
+    /// <exception cref="Exception">Генерирует исключение в случае ошибки подключения.</exception>
+    public static async Task ThrowIfFailureConnectionAsync(IOptions<MongoDbSettings> settings)
+    {
+        try
+        {
+            DatabaseSettings? userDataDb = settings.Value.DataBases.FirstOrDefault(db => db.Name.Equals("UserData", StringComparison.OrdinalIgnoreCase)) ?? throw new ArgumentException("База данных 'UserData' не найдена в конфигурации.");
+            string heroesCollectionName = userDataDb.Collections
+            .FirstOrDefault(c => c.Name.Equals("Heroes", StringComparison.OrdinalIgnoreCase))?.Name
+            ?? throw new ArgumentException("Коллекция 'Heroes' не найдена.");
+
+            MongoClient client = new(settings.Value.ConnectionString);
+            IMongoDatabase database = client.GetDatabase(userDataDb.Name);
+            IMongoCollection<BsonDocument>  collection_heroes = database.GetCollection<BsonDocument>(heroesCollectionName);
+            _ = await collection_heroes.Find(new BsonDocument()).FirstOrDefaultAsync();
+        }
+        catch
+        {
+            System.Console.WriteLine($"\r\n\r\nFailureConnection in {nameof(MongoRepository)}, connectionString={settings.Value.ConnectionString}\r\n\r\n");
+            throw;
+        }
+    }
+
+
+    /// <summary>
     /// 
     /// </summary>
     //public async Task<List<dynamic>> GetAllHeroesByUserIdAsync()
@@ -51,7 +79,6 @@ public class MongoRepository
     //}
     public async Task<List<object>> GetAllHeroesByUserIdAsync(Guid owner_id)
     {
-        // Фильтр по полю "o" (owner). Поле в базе хранится как UUID, поэтому сравниваем с Guid напрямую
         FilterDefinition<BsonDocument> filter = Builders<BsonDocument>.Filter.Eq("owner_id", owner_id);
 
         List<BsonDocument> documents = await _collection_heroes.Find(filter).ToListAsync();
@@ -86,4 +113,6 @@ public class MongoRepository
     {
         await _collection_heroes.InsertOneAsync(bd);
     }
+
+
 }

@@ -1,11 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.Serializers;
 using Serilog;
 using Serilog.Events;
 using Server.GameDataCache;
@@ -18,10 +15,9 @@ using Server_DB_Data.Repositories;
 using Server_DB_UserData;
 using Server_DB_Users;
 using Server_DB_Users.Repositories;
+using System.Net; // Добавлено для HttpStatusCode
 using System.Text;
 using System.Threading.RateLimiting;
-using Microsoft.AspNetCore.Http; // Добавлено для HttpContext
-using System.Net; // Добавлено для HttpStatusCode
 
 namespace Server;
 
@@ -31,45 +27,16 @@ namespace Server;
 /// </summary>
 internal partial class Program
 {
-    /// <summary>
-    /// РЕЖИМ РАЗРАБОТКИ
-    /// </summary>
-    public static bool DEV_MODE { get; } = true;
-
-    private static void AlertIfDevMode()
-    {
-        if (DEV_MODE)
-        {
-            Console.WriteLine("""
-                DEV_MODE DEV_MODE DEV_MODE DEV_MODE DEV_MODE
-                DEV_MODE DEV_MODE DEV_MODE DEV_MODE DEV_MODE
-                DEV_MODE DEV_MODE DEV_MODE DEV_MODE DEV_MODE
-                DEV_MODE DEV_MODE DEV_MODE DEV_MODE DEV_MODE
-                """);
-        }
-    }
 
     /// <summary>
     /// Точка входа в приложение. Выполняет настройку DI, БД, аутентификации,
     /// регистрацию сервисов и запускает сервер.
     /// </summary>
     /// <param name="args">Аргументы командной строки.</param>
-    private static void Main(string[] args)
+    private static async Task Main(string[] args)
     {
-        //Utilities.ConsoleWindow.Restore();
-        //if (!General.ServerErrors.CheckEnumServerResponse())
-        //{
-        //    Console.WriteLine("Bad enum ServerResponse");
-        //    _ = Console.ReadLine();
-        //    return;
-        //}
-
-        AlertIfDevMode();
-
-        BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
-        BsonSerializer.RegisterSerializer(new NullableSerializer<Guid>(new GuidSerializer(GuidRepresentation.Standard)));
-
-
+        MongoDB.Bson.Serialization.BsonSerializer.RegisterSerializer(new MongoDB.Bson.Serialization.Serializers.GuidSerializer(MongoDB.Bson.GuidRepresentation.Standard));
+        MongoDB.Bson.Serialization.BsonSerializer.RegisterSerializer(new MongoDB.Bson.Serialization.Serializers.NullableSerializer<Guid>(new MongoDB.Bson.Serialization.Serializers.GuidSerializer(MongoDB.Bson.GuidRepresentation.Standard)));
 
 
         string serilogDir = Path.Combine(AppContext.BaseDirectory, "logs-errors");
@@ -174,7 +141,9 @@ internal partial class Program
 
         // Настройки "MongoDb"
         IConfigurationSection mongoSection = builder.Configuration.GetSection("MongoDb");
-        builder.Services.Configure<MongoDbSettings>(mongoSection);
+        _ = builder.Services.Configure<MongoDbSettings>(mongoSection);
+
+
 
         // Регистрация репозитория
         _ = services.AddSingleton<MongoRepository>();
@@ -260,6 +229,14 @@ internal partial class Program
         {
             appBuilder.Run(async context =>
             {
+                // НОВОЕ: Проверка, что это GET-запрос. 
+                // WebSocket-хендшейк всегда использует метод GET.
+                if (context.Request.Method != "GET")
+                {
+                    context.Response.StatusCode = (int)HttpStatusCode.MethodNotAllowed; // 405 Method Not Allowed
+                    await context.Response.WriteAsync("Для WebSocket-хендшейка разрешен только метод GET.");
+                    return;
+                }
                 if (context.WebSockets.IsWebSocketRequest)
                 {
                     // Получаем Singleton-экземпляр обработчика из DI
@@ -308,11 +285,22 @@ internal partial class Program
         // Маршрутизация контроллеров
         _ = app.MapControllers();
 
-
         _ = app.UseForwardedHeaders();
 
-        DbContext_Game03Users.ThrowIfFailureConnection(сonnectionStringUsers);
-        DbContext_Game03Data.ThrowIfFailureConnection(сonnectionStringData);
+        using (IServiceScope scope = app.Services.CreateScope())
+        {
+            Serilog.ILogger logger = scope.ServiceProvider.GetRequiredService<Serilog.ILogger>();
+
+            await DbContext_Game03Users.ThrowIfFailureConnection(сonnectionStringUsers);
+            logger.Information("SERVER=postgres, DB=Users, connection is correct");
+
+            await DbContext_Game03Data.ThrowIfFailureConnection(сonnectionStringData);
+            logger.Information("SERVER=postgres, DB=Data, connection is correct");
+
+            IOptions<MongoDbSettings> mongoSettings = scope.ServiceProvider.GetRequiredService<IOptions<MongoDbSettings>>();
+            await MongoRepository.ThrowIfFailureConnectionAsync(mongoSettings);
+            logger.Information("SERVER=MongoDb, DB=UserData, connection is correct");
+        }
 
         // на этом момент есть гарантия что соединения со всеми СУБД корректно.
 

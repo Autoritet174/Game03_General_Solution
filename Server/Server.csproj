@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>14.0</LangVersion>
 	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	<StartupObject>Server.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="DataBaseModels\**" />

@@ -8,4 +8,5 @@ public interface IWebSocketClientProvider
 {
     Task ConnectAsync(CancellationToken cancellationToken);
     bool Connected { get; }
+    Task DisconnectAsync();
 }

@@ -9,6 +9,13 @@
             Конструктор репозитория, инициализирующий подключение к коллекции.
             </summary>
         </member>
+        <member name="M:Server_DB_UserData.MongoRepository.ThrowIfFailureConnectionAsync(Microsoft.Extensions.Options.IOptions{Server_DB_UserData.MongoDbSettings})">
+            <summary>
+            Статический метод для проверки подключения к базе данных.
+            </summary>
+            <param name="settings"></param>
+            <exception cref="T:System.Exception">Генерирует исключение в случае ошибки подключения.</exception>
+        </member>
         <member name="M:Server_DB_UserData.MongoRepository.GetAllHeroesByUserIdAsync(System.Guid)">
             <summary>
             
