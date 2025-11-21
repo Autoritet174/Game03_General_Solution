@@ -13,6 +13,13 @@ using L = General.LocalizationKeys;
 
 namespace Game03Client.GlobalFunctions;
 
+/// <summary>
+/// Реализация <see cref="IGlobalFunctionsProvider"/>, предоставляющая функциональность для
+/// загрузки и доступа к глобальным игровым данным, таким как список героев.
+/// </summary>
+/// <param name="httpRequesterProvider">Провайдер для выполнения HTTP-запросов.</param>
+/// <param name="globalFunctionsProviderCache">Кэш для хранения глобальных данных.</param>
+/// <param name="logger">Провайдер для ведения журнала.</param>
 internal class GlobalFunctionsProvider(IHttpRequesterProvider httpRequesterProvider, GlobalFunctionsProviderCache globalFunctionsProviderCache, ILoggerProvider logger) : IGlobalFunctionsProvider
 {
     #region Logger
@@ -29,7 +36,11 @@ internal class GlobalFunctionsProvider(IHttpRequesterProvider httpRequesterProvi
     }
     #endregion Logger
 
+    /// <inheritdoc/>
     public IEnumerable<HeroBaseEntity> AllHeroes => globalFunctionsProviderCache._allHeroes;
+
+    /// <inheritdoc/>
+    /// <exception cref="InvalidOperationException">Выбрасывается, если произошла ошибка при конвертации данных (например, неверный формат).</exception>
     public async Task LoadListAllHeroesAsync(CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
@@ -67,25 +78,11 @@ internal class GlobalFunctionsProvider(IHttpRequesterProvider httpRequesterProvi
         }
 
         globalFunctionsProviderCache._allHeroes = allHeroes.AsEnumerable();
-
-        //globalFunctionsProviderCache.AllHeroes.Sort(static (a, b) =>
-        //{
-        //    int result = b.Rarity.CompareTo(a.Rarity);
-        //    if (result != 0)
-        //    {// сортировка по редкости по убыванию
-        //        return result;
-        //    }
-
-        //    // сортировка по имени по возрастанию
-        //    return a.Name.CompareTo(b.Name);
-        //});
     }
 
+    /// <inheritdoc/>
     public HeroBaseEntity GetHeroById(Guid guid)
     {
         return globalFunctionsProviderCache._allHeroes.FirstOrDefault(a => a.Id == guid);
     }
-    //public IEnumerable<HeroBaseEntity> GetData() {
-    //    return globalFunctionsProviderCache.AllHeroes.AsEnumerable();
-    //}
 }

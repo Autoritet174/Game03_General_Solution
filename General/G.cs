@@ -1,28 +1,35 @@
 using System;
-using System.Net.Mail;
 
 namespace General;
 
 /// <summary>
-/// Глобальные статические поля, константы и функции.
+/// Глобальный статический класс, содержащий константы и вспомогательные функции,
+/// которые должны быть легко доступны из любого места приложения.
 /// </summary>
 public static class G
 {
-
-    
-
     /// <summary>
-    /// Значение для mediaType StringContent.
+    /// Константа для типа медиа "application/json", часто используемого в HTTP-запросах.
     /// </summary>
     public const string APPLICATION_JSON = "application/json";
 
     /// <summary>
-    /// 
+    /// Преобразует общее количество секунд в удобочитаемую строку,
+    /// форматируя их в дни, часы, минуты и секунды (d hh mm s).
     /// </summary>
-    /// <param name="sec"></param>
-    /// <returns></returns>
+    /// <param name="sec">Общее количество секунд (<see cref="long"/>), которое необходимо преобразовать.</param>
+    /// <returns>
+    /// Строка, представляющая время в формате "dd hh mm s".
+    /// Пример: "05m 10s", "01h 05m 10s", "1d 01h 05m 10s".
+    /// </returns>
+    /// <exception cref="ArgumentOutOfRangeException">Выбрасывается, если <paramref name="sec"/> меньше нуля.</exception>
     public static string SecondsToTimeStr(long sec)
     {
+        // Проверка входных данных: количество секунд не может быть отрицательным.
+        if (sec < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(sec), "Количество секунд не может быть отрицательным.");
+        }
         long min = sec / 60L;
         sec -= min * 60L;
 

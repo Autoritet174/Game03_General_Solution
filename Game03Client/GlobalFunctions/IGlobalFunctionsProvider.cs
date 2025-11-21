@@ -5,24 +5,31 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Game03Client.GlobalFunctions;
+
+/// <summary>
+/// Определяет интерфейс для поставщика глобальных функций,
+/// предоставляющих доступ к данным, таким как список всех героев.
+/// </summary>
 public interface IGlobalFunctionsProvider
 {
     /// <summary>
-    /// Загрузить список всех героев.
+    /// Асинхронно загружает список всех героев из внешнего источника.
     /// </summary>
-    /// <returns></returns>
+    /// <param name="cancellationToken">Токен отмены для прерывания операции.</param>
+    /// <returns>Задача, представляющая операцию загрузки.</returns>
     Task LoadListAllHeroesAsync(CancellationToken cancellationToken);
 
     /// <summary>
-    /// Получить список героев.
+    /// Получает доступный список всех загруженных базовых сущностей героев.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>Коллекция, содержащая все доступные базовые сущности героев.</returns>
     IEnumerable<HeroBaseEntity> AllHeroes { get; }
 
     /// <summary>
-    /// Получить героя по id.
+    /// Находит и возвращает базовую сущность героя по его уникальному идентификатору.
     /// </summary>
-    /// <param name="guid"></param>
-    /// <returns></returns>
+    /// <param name="guid">Уникальный идентификатор (GUID) искомого героя.</param>
+    /// <returns>Базовая сущность героя (<see cref="HeroBaseEntity"/>) с указанным <paramref name="guid"/>,
+    /// или <c>null</c> (если поддерживается типом), если герой не найден.</returns>
     HeroBaseEntity GetHeroById(Guid guid);
 }

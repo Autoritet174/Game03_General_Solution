@@ -36,12 +36,13 @@ internal class PlayerCollectionProvider(PlayerCollectionCache _collectionCache, 
         }
 
         // Получить коллекцию героев игрока
-        JObject? jObject = await _httpRequester.GetJObjectAsync(General.Url.Inventory.Heroes, cancellationToken);
+        JObject? jObject = await _httpRequester.GetJObjectAsync(General.Url.Collection.Heroes, cancellationToken);
         if (jObject == null)
         {
             Log("jObject == null");
             return;
         }
+
 
 
     }

@@ -5,7 +5,7 @@ namespace General;
 /// </summary>
 public static class Url
 {
-    #pragma warning disable
+#pragma warning disable
 
     /// <summary>
     /// URL API старт
@@ -16,10 +16,10 @@ public static class Url
     public static string Authentication { get; private set; } = $"{URL_HEADER}{nameof(Authentication)}";
     public static string Registration { get; private set; } = $"{URL_HEADER}{nameof(Registration)}";
 
-    public static class Inventory {
-        private const string _Inventory = $"{URL_HEADER}{nameof(Inventory)}/";
-        public static string Heroes { get; private set; } = $"{_Inventory}{nameof(Heroes)}";
-        public static string Items { get; private set; } = $"{_Inventory}{nameof(Items)}";
+    public static class Collection {
+        private const string _Collection = $"{URL_HEADER}{nameof(Collection)}/";
+        public static string Heroes { get; private set; } = $"{_Collection}{nameof(Heroes)}";
+        public static string Items { get; private set; } = $"{_Collection}{nameof(Items)}";
     }
 
     public static string Test { get; private set; } = $"{URL_HEADER}{nameof(Test)}";

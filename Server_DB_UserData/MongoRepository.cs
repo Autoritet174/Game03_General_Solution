@@ -77,7 +77,7 @@ public class MongoRepository
     //    List<dynamic> result = [.. documents.Select(doc => MongoDB.Bson.Serialization.BsonSerializer.Deserialize<dynamic>(doc))];
     //    return result;
     //}
-    public async Task<List<object>> GetAllHeroesByUserIdAsync(Guid owner_id)
+    public async Task<List<object>> GetHeroesByUserIdAsync(Guid owner_id)
     {
         FilterDefinition<BsonDocument> filter = Builders<BsonDocument>.Filter.Eq("owner_id", owner_id);
 
