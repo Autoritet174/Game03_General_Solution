@@ -1,16 +1,15 @@
 namespace Game03Client.Logger;
 
-public delegate void LoggerCallback(object message);
 
-internal class LoggerProvider : ILoggerProvider
+internal class LoggerProvider(LoggerOptions loggerOptions) : ILoggerProvider
 {
-    public event LoggerCallback? OnLog = null;
-
     public void Log(object message)
     {
-        OnLog?.Invoke(message);
+        loggerOptions._loggerCallback?.Invoke(message);
     }
-    public void LogEx(string nameClass, string message) {
-        OnLog?.Invoke($"[{nameClass}] {message}");
+
+    public void LogEx(string nameClass, string message)
+    {
+        loggerOptions._loggerCallback?.Invoke($"[{nameClass}] {message}");
     }
 }

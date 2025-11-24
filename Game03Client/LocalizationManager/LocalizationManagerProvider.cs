@@ -1,3 +1,6 @@
+using Game03Client.JwtToken;
+using Game03Client.Logger;
+using General;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -10,6 +13,20 @@ namespace Game03Client.LocalizationManager;
 /// </summary>
 internal class LocalizationManagerProvider : ILocalizationManagerProvider
 {
+    #region Logger
+    private readonly ILoggerProvider _logger;
+    private const string NAME_THIS_CLASS = nameof(LocalizationManagerProvider);
+    private void Log(string message, string? keyLocal = null)
+    {
+        if (!keyLocal.IsEmpty())
+        {
+            message = $"{message}; {L.KEY_LOCALIZATION}:<{keyLocal}>";
+        }
+
+        _logger.LogEx(NAME_THIS_CLASS, message);
+    }
+    #endregion Logger
+
 
     /// <summary>
     /// Опции, содержащие данные локализации в формате JSON.
@@ -20,10 +37,12 @@ internal class LocalizationManagerProvider : ILocalizationManagerProvider
     /// Инициализирует новый экземпляр класса <see cref="LocalizationManagerProvider"/>.
     /// </summary>
     /// <param name="localizationManagerOptions">Опции локализации, содержащие JSON-строку с данными.</param>
+    /// <param name="logger">Логер для вызова коллбеков в игре.</param>
     /// <exception cref="Newtonsoft.Json.JsonReaderException">Вызывается, если JSON-строка в опциях недействительна.</exception>
-    public LocalizationManagerProvider(LocalizationManagerOptions localizationManagerOptions)
+    public LocalizationManagerProvider(LocalizationManagerOptions localizationManagerOptions, ILoggerProvider logger)
     {
         _localizationManagerOptions = localizationManagerOptions;
+        _logger = logger;
 
         // Очистка предыдущих данных локализации (если конструктор вызывается повторно, что маловероятно для провайдера).
         localization.Clear();
@@ -52,7 +71,10 @@ internal class LocalizationManagerProvider : ILocalizationManagerProvider
 
         // Запуск процесса обхода с корневого объекта и пустым путем.
         ProcessToken(obj, "");
-
+        //foreach (KeyValuePair<string, string> item in localization)
+        //{
+        //    Log($"key={item.Key}; value={item.Value}");
+        //}
     }
 
 

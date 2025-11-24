@@ -16,7 +16,7 @@
             <param name="settings"></param>
             <exception cref="T:System.Exception">Генерирует исключение в случае ошибки подключения.</exception>
         </member>
-        <member name="M:Server_DB_UserData.MongoRepository.GetAllHeroesByUserIdAsync(System.Guid)">
+        <member name="M:Server_DB_UserData.MongoRepository.GetHeroesByUserIdAsync(System.Guid)">
             <summary>
             
             </summary>

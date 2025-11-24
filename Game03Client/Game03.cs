@@ -65,6 +65,7 @@ public sealed class Game03 : IAsyncDisposable
     private Game03(ServiceProvider provider)
     {
         _provider = provider;
+        Logger = provider.GetRequiredService<ILoggerProvider>();
         JwtToken = provider.GetRequiredService<IJwtTokenProvider>();
         IniFile = provider.GetRequiredService<IIniFileProvider>();
         HttpRequester = provider.GetRequiredService<IHttpRequesterProvider>();
@@ -72,7 +73,6 @@ public sealed class Game03 : IAsyncDisposable
         WebSocketClient = provider.GetRequiredService<IWebSocketClientProvider>();
         GlobalFunctions = provider.GetRequiredService<IGlobalFunctionsProvider>();
         Collection = provider.GetRequiredService<IPlayerCollectionProvider>();
-        Logger = provider.GetRequiredService<ILoggerProvider>();
     }
 
     /// <summary>
@@ -91,11 +91,16 @@ public sealed class Game03 : IAsyncDisposable
     /// <param name="iniFileFullPath"></param>
     /// <param name="stringCapsuleJsonFileData"></param>
     /// <param name="languageGame"></param>
+    /// <param name="loggerCallback"></param>
     /// <param name="configure"></param>
     /// <returns></returns>
-    public static Game03 Create(string iniFileFullPath, StringCapsule stringCapsuleJsonFileData, GameLanguage languageGame, Action<IServiceCollection>? configure = null)
+    public static Game03 Create(string iniFileFullPath, StringCapsule stringCapsuleJsonFileData, GameLanguage languageGame, LoggerCallback loggerCallback, Action<IServiceCollection>? configure = null)
     {
         ServiceCollection services = new();
+
+        // Logger
+        _ = services.AddSingleton(new LoggerOptions(loggerCallback));
+        _ = services.AddSingleton<ILoggerProvider, LoggerProvider>();
 
         // JwtToken
         _ = services.AddSingleton<JwtTokenCache>();
@@ -126,8 +131,6 @@ public sealed class Game03 : IAsyncDisposable
         _ = services.AddSingleton<PlayerCollectionCache>();
         _ = services.AddSingleton<IPlayerCollectionProvider, PlayerCollectionProvider>();
 
-        // Logger
-        _ = services.AddSingleton<ILoggerProvider, LoggerProvider>();
 
         configure?.Invoke(services); // опциональные переопределения
 

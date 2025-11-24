@@ -24,9 +24,10 @@ internal class Program
         };
 
         var Game = Game03Client.Game03.Create(
-            Path.Combine(@"c:\UnityProjects\Game03_Git\Client_Game03\Assets", @"GameData\Config\Main.ini"),
-            capsule, Game03Client.GameLanguage.Ru);
-        Game.Logger.OnLog += Game_OnLog;
+            iniFileFullPath: Path.Combine(@"c:\UnityProjects\Game03_Git\Client_Game03\Assets", @"GameData\Config\Main.ini"),
+            stringCapsuleJsonFileData: capsule, languageGame: Game03Client.GameLanguage.Ru, loggerCallback: Game_OnLog);
+
+        Console.WriteLine(Game.LocalizationManager.GetValue(General.LocalizationKeys.Error.Server.InvalidResponse));
 
         CancellationTokenSource cancellationTokenSource = new(TimeSpan.FromSeconds(30));
 
