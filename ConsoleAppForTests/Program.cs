@@ -27,7 +27,6 @@ internal class Program
             iniFileFullPath: Path.Combine(@"c:\UnityProjects\Game03_Git\Client_Game03\Assets", @"GameData\Config\Main.ini"),
             stringCapsuleJsonFileData: capsule, languageGame: Game03Client.GameLanguage.Ru, loggerCallback: Game_OnLog);
 
-        Console.WriteLine(Game.LocalizationManager.GetValue(General.LocalizationKeys.Error.Server.InvalidResponse));
 
         CancellationTokenSource cancellationTokenSource = new(TimeSpan.FromSeconds(30));
 

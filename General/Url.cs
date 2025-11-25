@@ -12,6 +12,7 @@ public static class Url
     /// </summary>
     private const string URL_HEADER = "https://localhost:7227/api/";
 
+    public static string Ping { get; private set; } = $"{URL_HEADER}{nameof(Ping)}";
 
     public static string Authentication { get; private set; } = $"{URL_HEADER}{nameof(Authentication)}";
     public static string Registration { get; private set; } = $"{URL_HEADER}{nameof(Registration)}";

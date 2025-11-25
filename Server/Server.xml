@@ -168,6 +168,17 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="T:Server.Http_NS.Controllers_NS.PingController">
+            <summary>
+            Контроллер для проверки доступности сервера путем отправки тестового сигнала (ping).
+            </summary>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.PingController.Get">
+            <summary>
+            Возвращает сообщение "Pong!" для подтверждения доступности сервера.
+            </summary>
+            <returns>JSON-ответ с полем <see cref="T:System.String"/> message, содержащее значение "Pong!".</returns>
+        </member>
         <member name="T:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController">
             <summary>
             Контроллер аутентификации пользователей. Обрабатывает процесс входа (логин) по email и паролю.

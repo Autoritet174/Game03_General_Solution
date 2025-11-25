@@ -4,19 +4,17 @@ using System.Text;
 
 namespace General.GameEntities;
 
-internal class CollectionHero
+public class CollectionHero(string id, Guid owner_id, Guid hero_id, string groupName, long health, long attack, long strength, long agility, long intelligence, long haste)
 {
-    /*
-     _id = d["_id"].AsObjectId.ToString(),
-                owner_id = d["owner_id"].AsGuid,
-                hero_id = d["hero_id"].AsGuid,
-                health = d["health"].AsInt32,
-                attack = d["attack"].AsInt32,
-                speed = d["speed"].AsInt32,
-                strength = d["strength"].AsInt32,
-                agility = d["agility"].AsInt32,
-                intelligence = d["intelligence"].AsInt32,
-                group_name = groupName,
-     */
+    public string Id { get; private set; } = id;
+    public Guid Owner_id { get; private set; } = owner_id;
+    public Guid Hero_id { get; private set; } = hero_id;
+    public string GroupName { get; private set; } = groupName;
+    public long Health { get; private set; } = health;
+    public long Attack { get; private set; } = attack;
+    public long Strength { get; private set; } = strength;
+    public long Agility { get; private set; } = agility;
+    public long Intelligence { get; private set; } = intelligence;
+    public long Haste { get; private set; } = haste;
 
 }

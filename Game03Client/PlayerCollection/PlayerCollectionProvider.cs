@@ -2,8 +2,10 @@ using Game03Client.HttpRequester;
 using Game03Client.IniFile;
 using Game03Client.Logger;
 using General;
+using General.GameEntities;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using L = General.LocalizationKeys;
@@ -43,7 +45,31 @@ internal class PlayerCollectionProvider(PlayerCollectionCache _collectionCache, 
             return;
         }
 
+        JToken? heroes = jObject["heroes"];
+        if (heroes == null)
+        {
+            Log("heroes == null");
+            return;
+        }
 
+        // Перевести всех героев в C# коллекцию
+        _collectionCache.listHero.Clear();
+        foreach (JToken h in heroes)
+        {
+            string id = h["id"]?.ToString() ?? string.Empty;
+            Guid owner_id = new(h["owner_id"]?.ToString());
+            Guid hero_id = new(h["hero_id"]?.ToString());
+            string group_name = h["group_name"]?.ToString()?.Trim() ?? string.Empty;
+            long health = Convert.ToInt64(h["health"]?.ToString());
+            long attack = Convert.ToInt64(h["attack"]?.ToString());
+            long strength = Convert.ToInt64(h["strength"]?.ToString());
+            long agility = Convert.ToInt64(h["agility"]?.ToString());
+            long intelligence = Convert.ToInt64(h["intelligence"]?.ToString());
+            long haste = Convert.ToInt64(h["haste"]?.ToString());
+
+            CollectionHero cHero = new(id, owner_id, hero_id, group_name, health, attack, strength, agility, intelligence, haste);
+            _collectionCache.listHero.Add(cHero);
+        }
 
     }
 }

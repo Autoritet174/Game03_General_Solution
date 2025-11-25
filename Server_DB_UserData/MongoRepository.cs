@@ -4,6 +4,7 @@ using MongoDB.Driver;
 using System.Runtime.CompilerServices;
 
 namespace Server_DB_UserData;
+
 public class MongoRepository
 {
     private readonly IMongoCollection<BsonDocument> _collection_heroes;
@@ -82,22 +83,50 @@ public class MongoRepository
         FilterDefinition<BsonDocument> filter = Builders<BsonDocument>.Filter.Eq("owner_id", owner_id);
 
         List<BsonDocument> documents = await _collection_heroes.Find(filter).ToListAsync();
-
         var result = documents.Select(d =>
         {
-            string? groupName = d.Contains("group_name") ? d["group_name"].AsString : null;
+            double GetDouble(string key)
+            {
+                return d.Contains(key) ? d[key].AsDouble : 0.0;
+            }
+            long GetLong(string key)
+            {
+                return d.Contains(key) ? d[key].AsInt64 : 0L;
+            }
+            int GetInt(string key)
+            {
+                return d.Contains(key) ? d[key].AsInt32 : 0;
+            }
+            Guid GetGuid(string key)
+            {
+                return d.Contains(key) ? d[key].AsGuid : Guid.Empty;
+            }
+            string? GetString(string key)
+            {
+                return d.Contains(key) ? d[key].AsString : null;
+            }
+
             return new
             {
                 _id = d["_id"].AsObjectId.ToString(),
-                owner_id = d["owner_id"].AsGuid,
-                hero_id = d["hero_id"].AsGuid,
-                health = d["health"].AsInt32,
-                attack = d["attack"].AsInt32,
-                speed = d["speed"].AsInt32,
-                strength = d["strength"].AsInt32,
-                agility = d["agility"].AsInt32,
-                intelligence = d["intelligence"].AsInt32,
-                group_name = groupName,
+                owner_id = GetGuid("owner_id"),
+                hero_id = GetGuid("hero_id"),
+
+                level = GetInt("level"),
+                exp_now = GetDouble("exp_now"),
+                exp_max = GetDouble("exp_max"),
+
+                group_name = GetString("group_name"),
+                health = GetLong("health"),
+                attack = GetLong("attack"),
+                strength = GetLong("strength"),
+                agility = GetLong("agility"),
+                intelligence = GetLong("intelligence"),
+                haste = GetLong("haste"),
+                crit_chance = GetDouble("crit_chance"),
+                crit_power = GetDouble("crit_power"),
+                endurance_physical = GetLong("endurance_physical"),
+                endurance_magical = GetLong("endurance_magical"),
             };
         }).Cast<object>().ToList();
 
