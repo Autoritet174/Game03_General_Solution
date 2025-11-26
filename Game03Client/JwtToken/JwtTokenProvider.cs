@@ -8,10 +8,10 @@ using L = General.LocalizationKeys;
 
 namespace Game03Client.JwtToken;
 
-internal class JwtTokenProvider(JwtTokenCache jwtTokenCache, IHttpRequesterProvider httpRequesterProvider, ILoggerProvider logger) : IJwtTokenProvider
+internal class JwtTokenProvider(JwtTokenCache jwtTokenCache, IHttpRequester httpRequesterProvider, ILogger logger) : IJwtToken
 {
     #region Logger
-    private readonly ILoggerProvider _logger = logger;
+    private readonly ILogger _logger = logger;
     private const string NAME_THIS_CLASS = nameof(JwtTokenProvider);
     private void Log(string message, string? keyLocal = null)
     {

@@ -3,7 +3,7 @@ namespace General;
 /// <summary>
 /// Статический класс, содержащий строковые ключи для доступа к текстовым ресурсам
 /// из файлов локализации (например, JSON).
-/// Ключи сгруппированы по контексту: UI, Ошибки, Информация.
+/// Ключи сгруппированы по контексту.
 /// </summary>
 public static class LocalizationKeys
 {
@@ -67,6 +67,7 @@ public static class LocalizationKeys
             public const string Unavailable = $"{_Server}{nameof(Unavailable)}";
             public const string NoInternetConnection = $"{_Server}{nameof(NoInternetConnection)}";
             public const string OpeningWebSocketFailed = $"{_Server}{nameof(OpeningWebSocketFailed)}";
+            public const string LoadingCollectionFailed = $"{_Server}{nameof(LoadingCollectionFailed)}";
         }
 
         /// <summary>
@@ -92,6 +93,7 @@ public static class LocalizationKeys
         public const string AuthenticationSuccess = $"{_Info}{nameof(AuthenticationSuccess)}";
         public const string OpeningWebSocket = $"{_Info}{nameof(OpeningWebSocket)}";
         public const string LoadingData = $"{_Info}{nameof(LoadingData)}";
+        public const string LoadingCollection = $"{_Info}{nameof(LoadingCollection)}";
     }
 
 

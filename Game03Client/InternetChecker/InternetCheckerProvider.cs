@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Game03Client.InternetChecker;
 
-internal class InternetCheckerProvider : IInternetCheckerProvider
+internal class InternetCheckerProvider : IInternetChecker
 {
     /// <summary>
     /// Асинхронно проверяет наличие интернет-соединения, пингуя известные DNS-сервера.

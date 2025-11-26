@@ -1,7 +1,7 @@
 namespace Game03Client.Logger;
 
 
-internal class LoggerProvider(LoggerOptions loggerOptions) : ILoggerProvider
+internal class LoggerProvider(LoggerOptions loggerOptions) : ILogger
 {
     public void Log(object message)
     {

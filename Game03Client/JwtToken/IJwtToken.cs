@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Game03Client.JwtToken;
 
-public interface IJwtTokenProvider
+public interface IJwtToken
 {
     Task<string?> GetTokenAsync(string jsonBody, CancellationToken cancellationToken);
 

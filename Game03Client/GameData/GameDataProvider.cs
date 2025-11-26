@@ -11,20 +11,20 @@ using System.Threading.Tasks;
 using static General.Enums;
 using L = General.LocalizationKeys;
 
-namespace Game03Client.GlobalFunctions;
+namespace Game03Client.GameData;
 
 /// <summary>
-/// Реализация <see cref="IGlobalFunctionsProvider"/>, предоставляющая функциональность для
+/// Реализация <see cref="IGameData"/>, предоставляющая функциональность для
 /// загрузки и доступа к глобальным игровым данным, таким как список героев.
 /// </summary>
 /// <param name="httpRequesterProvider">Провайдер для выполнения HTTP-запросов.</param>
 /// <param name="globalFunctionsProviderCache">Кэш для хранения глобальных данных.</param>
 /// <param name="logger">Провайдер для ведения журнала.</param>
-internal class GlobalFunctionsProvider(IHttpRequesterProvider httpRequesterProvider, GlobalFunctionsProviderCache globalFunctionsProviderCache, ILoggerProvider logger) : IGlobalFunctionsProvider
+internal class GameDataProvider(IHttpRequester httpRequesterProvider, GameDataCache globalFunctionsProviderCache, ILogger logger) : IGameData
 {
     #region Logger
-    private readonly ILoggerProvider _logger = logger;
-    private const string NAME_THIS_CLASS = nameof(GlobalFunctionsProvider);
+    private readonly ILogger _logger = logger;
+    private const string NAME_THIS_CLASS = nameof(GameDataProvider);
     private void Log(string message, string? keyLocal = null)
     {
         if (!keyLocal.IsEmpty())
@@ -37,7 +37,7 @@ internal class GlobalFunctionsProvider(IHttpRequesterProvider httpRequesterProvi
     #endregion Logger
 
     /// <inheritdoc/>
-    public IEnumerable<HeroBaseEntity> AllHeroes => globalFunctionsProviderCache._allHeroes;
+    public IEnumerable<HeroBase> AllHeroes => globalFunctionsProviderCache._allHeroes;
 
     /// <inheritdoc/>
     /// <exception cref="InvalidOperationException">Выбрасывается, если произошла ошибка при конвертации данных (например, неверный формат).</exception>
@@ -61,7 +61,7 @@ internal class GlobalFunctionsProvider(IHttpRequesterProvider httpRequesterProvi
             return;
         }
 
-        List<HeroBaseEntity> allHeroes = [];
+        List<HeroBase> allHeroes = [];
         foreach (JObject heroObj in heroesArray.Cast<JObject>())
         {
             Guid id = new(heroObj["id"]?.ToString());
@@ -74,14 +74,14 @@ internal class GlobalFunctionsProvider(IHttpRequesterProvider httpRequesterProvi
             float baseHealth = (float)Convert.ToDouble(heroObj["baseHealth"]);
             float baseAttack = (float)Convert.ToDouble(heroObj["baseAttack"]);
             var rarity = (RarityLevel)Convert.ToInt32(heroObj["rarity"]);
-            allHeroes.Add(new HeroBaseEntity(id, name, rarity, baseHealth, baseAttack));
+            allHeroes.Add(new HeroBase(id, name, rarity, baseHealth, baseAttack));
         }
 
         globalFunctionsProviderCache._allHeroes = allHeroes.AsEnumerable();
     }
 
     /// <inheritdoc/>
-    public HeroBaseEntity GetHeroById(Guid guid)
+    public HeroBase GetHeroById(Guid guid)
     {
         return globalFunctionsProviderCache._allHeroes.FirstOrDefault(a => a.Id == guid);
     }

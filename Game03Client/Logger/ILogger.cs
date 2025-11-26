@@ -1,6 +1,6 @@
 namespace Game03Client.Logger;
 
-public interface ILoggerProvider
+public interface ILogger
 {
     void Log(object message);
     void LogEx(string nameClass, string message);

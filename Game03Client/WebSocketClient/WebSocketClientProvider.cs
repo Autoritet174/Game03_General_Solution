@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Game03Client.WebSocketClient;
 
-internal class WebSocketClientProvider(IJwtTokenProvider jwtTokenProvider) : IWebSocketClientProvider
+internal class WebSocketClientProvider(IJwtToken jwtTokenProvider) : IWebSocketClient
 {
     private const string SERVER_URL = "wss://localhost:7227/ws/";
     private ClientWebSocket _webSocket = new();

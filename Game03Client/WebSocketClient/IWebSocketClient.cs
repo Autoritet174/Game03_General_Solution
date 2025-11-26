@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Game03Client.WebSocketClient;
 
-public interface IWebSocketClientProvider
+public interface IWebSocketClient
 {
     Task ConnectAsync(CancellationToken cancellationToken);
     bool Connected { get; }

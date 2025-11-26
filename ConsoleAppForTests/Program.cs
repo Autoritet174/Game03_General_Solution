@@ -45,9 +45,15 @@ internal class Program
         //}
 
         cancellationTokenSource = new(TimeSpan.FromSeconds(30));
-        Game.GlobalFunctions.LoadListAllHeroesAsync(cancellationTokenSource.Token).Wait();
+        Game.GameData.LoadListAllHeroesAsync(cancellationTokenSource.Token).Wait();
 
-        Console.ReadLine();
+        cancellationTokenSource = new(TimeSpan.FromSeconds(30));
+        Game.Collection.LoadAllCollectionFromServer(cancellationTokenSource.Token).Wait();
+
+        var coll = Game.Collection.GetCollectionHeroes();
+        Console.WriteLine(coll.Count());
+
+        //Console.ReadLine();
         //webSocketClient.DisconnectAsync().Wait();
         Console.ReadLine();
     }

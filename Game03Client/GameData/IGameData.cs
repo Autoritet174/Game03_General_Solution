@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Game03Client.GlobalFunctions;
+namespace Game03Client.GameData;
 
 /// <summary>
 /// Определяет интерфейс для поставщика глобальных функций,
 /// предоставляющих доступ к данным, таким как список всех героев.
 /// </summary>
-public interface IGlobalFunctionsProvider
+public interface IGameData
 {
     /// <summary>
     /// Асинхронно загружает список всех героев из внешнего источника.
@@ -23,13 +23,13 @@ public interface IGlobalFunctionsProvider
     /// Получает доступный список всех загруженных базовых сущностей героев.
     /// </summary>
     /// <returns>Коллекция, содержащая все доступные базовые сущности героев.</returns>
-    IEnumerable<HeroBaseEntity> AllHeroes { get; }
+    IEnumerable<HeroBase> AllHeroes { get; }
 
     /// <summary>
     /// Находит и возвращает базовую сущность героя по его уникальному идентификатору.
     /// </summary>
     /// <param name="guid">Уникальный идентификатор (GUID) искомого героя.</param>
-    /// <returns>Базовая сущность героя (<see cref="HeroBaseEntity"/>) с указанным <paramref name="guid"/>,
+    /// <returns>Базовая сущность героя (<see cref="HeroBase"/>) с указанным <paramref name="guid"/>,
     /// или <c>null</c> (если поддерживается типом), если герой не найден.</returns>
-    HeroBaseEntity GetHeroById(Guid guid);
+    HeroBase GetHeroById(Guid guid);
 }

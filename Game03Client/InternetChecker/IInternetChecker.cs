@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Game03Client.InternetChecker;
 
-internal interface IInternetCheckerProvider
+internal interface IInternetChecker
 {
     Task<bool> CheckInternetConnectionAsync(CancellationToken cancellationToken);
 }

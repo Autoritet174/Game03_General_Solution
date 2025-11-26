@@ -8,10 +8,10 @@ using L = General.LocalizationKeys;
 
 namespace Game03Client.IniFile;
 
-internal class IniFileProvider(IniFileOptions options, ILoggerProvider logger) : IIniFileProvider
+internal class IniFileProvider(IniFileOptions options, ILogger logger) : IIniFile
 {
     #region Logger
-    private readonly ILoggerProvider _logger = logger;
+    private readonly ILogger _logger = logger;
     private const string NAME_THIS_CLASS = nameof(IniFileProvider);
     private void Log(string message, string? keyLocal = null)
     {

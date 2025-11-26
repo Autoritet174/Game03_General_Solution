@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Game03Client.HttpRequester;
 
-public interface IHttpRequesterProvider
+public interface IHttpRequester
 {
     Task<JObject?> GetJObjectAsync(string url, CancellationToken cancellationToken, string? jsonBody = null, bool useJwtToken = true);
 }

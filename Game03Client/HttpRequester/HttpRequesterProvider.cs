@@ -15,10 +15,10 @@ using L = General.LocalizationKeys;
 
 namespace Game03Client.HttpRequester;
 
-internal class HttpRequesterProvider : IHttpRequesterProvider
+internal class HttpRequesterProvider : IHttpRequester
 {
     #region Logger
-    private readonly ILoggerProvider _logger;
+    private readonly ILogger _logger;
     private const string NAME_THIS_CLASS = nameof(HttpRequesterProvider);
 
     private void Log(string message, string? keyLocal = null)
@@ -33,12 +33,12 @@ internal class HttpRequesterProvider : IHttpRequesterProvider
     #endregion Logger
 
     private readonly HttpClient _httpClient;
-    private readonly IIniFileProvider _iniFileProvider;
-    private readonly IInternetCheckerProvider _internetCheckerProvider;
+    private readonly IIniFile _iniFileProvider;
+    private readonly IInternetChecker _internetCheckerProvider;
     private readonly JwtTokenCache _tokenCache;
 
 
-    public HttpRequesterProvider(IIniFileProvider iniFileProvider, IInternetCheckerProvider internetCheckerProvider, JwtTokenCache tokenCache, ILoggerProvider logger)
+    public HttpRequesterProvider(IIniFile iniFileProvider, IInternetChecker internetCheckerProvider, JwtTokenCache tokenCache, ILogger logger)
     {
         _iniFileProvider = iniFileProvider;
         _internetCheckerProvider = internetCheckerProvider;

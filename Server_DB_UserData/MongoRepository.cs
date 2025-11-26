@@ -91,7 +91,7 @@ public class MongoRepository
             }
             long GetLong(string key)
             {
-                return d.Contains(key) ? d[key].AsInt64 : 0L;
+                return d.Contains(key) ? Convert.ToInt64(d[key]) : 0L;//Используем Convert.ToInt64 на случай если значения в базе int а не long
             }
             int GetInt(string key)
             {
@@ -118,7 +118,7 @@ public class MongoRepository
 
                 group_name = GetString("group_name"),
                 health = GetLong("health"),
-                attack = GetLong("attack"),
+                //attack = GetLong("attack"),
                 strength = GetLong("strength"),
                 agility = GetLong("agility"),
                 intelligence = GetLong("intelligence"),
@@ -142,6 +142,7 @@ public class MongoRepository
     {
         await _collection_heroes.InsertOneAsync(bd);
     }
+
 
 
 }

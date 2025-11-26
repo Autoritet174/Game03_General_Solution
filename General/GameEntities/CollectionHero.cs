@@ -1,20 +1,21 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace General.GameEntities;
 
-public class CollectionHero(string id, Guid owner_id, Guid hero_id, string groupName, long health, long attack, long strength, long agility, long intelligence, long haste)
+public class CollectionHero(string id, Guid owner_id, HeroBase heroBase, string groupName,
+    long health, //long attack,
+    long strength, long agility, long intelligence, long haste, int level)
 {
-    public string Id { get; private set; } = id;
-    public Guid Owner_id { get; private set; } = owner_id;
-    public Guid Hero_id { get; private set; } = hero_id;
-    public string GroupName { get; private set; } = groupName;
-    public long Health { get; private set; } = health;
-    public long Attack { get; private set; } = attack;
-    public long Strength { get; private set; } = strength;
-    public long Agility { get; private set; } = agility;
-    public long Intelligence { get; private set; } = intelligence;
-    public long Haste { get; private set; } = haste;
+    public string Id { get; } = id;
+    public Guid Owner_id { get; } = owner_id;
+    public HeroBase HeroBase { get; } = heroBase;
+    public string GroupName { get; } = groupName;
+    public long Health { get; } = health;
+    // public long Attack { get; } = attack;
+    public long Strength { get; } = strength;
+    public long Agility { get; } = agility;
+    public long Intelligence { get; } = intelligence;
+    public long Haste { get; } = haste;
+    public int Level { get; } = level;
 
 }

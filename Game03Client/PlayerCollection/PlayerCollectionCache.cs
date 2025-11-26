@@ -8,4 +8,5 @@ namespace Game03Client.PlayerCollection;
 internal class PlayerCollectionCache
 {
     public List<CollectionHero> listHero = [];
+    public List<string> listGroupName = [];
 }

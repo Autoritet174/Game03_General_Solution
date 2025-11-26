@@ -5,7 +5,7 @@ namespace Game03Client.LocalizationManager;
 /// <summary>
 /// Определяет контракт для провайдеров, управляющих получением локализованных строк.
 /// </summary>
-public interface ILocalizationManagerProvider
+public interface ILocalizationManager
 {
     /// <summary>
     /// Получает локализованную строку текста ошибки на основе данных из JSON-объекта.

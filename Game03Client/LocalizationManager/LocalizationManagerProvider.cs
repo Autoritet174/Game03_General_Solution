@@ -11,10 +11,10 @@ namespace Game03Client.LocalizationManager;
 /// <summary>
 /// Реализация провайдера для управления локализацией, загружающая данные из JSON.
 /// </summary>
-internal class LocalizationManagerProvider : ILocalizationManagerProvider
+internal class LocalizationManagerProvider : ILocalizationManager
 {
     #region Logger
-    private readonly ILoggerProvider _logger;
+    private readonly ILogger _logger;
     private const string NAME_THIS_CLASS = nameof(LocalizationManagerProvider);
     private void Log(string message, string? keyLocal = null)
     {
@@ -39,7 +39,7 @@ internal class LocalizationManagerProvider : ILocalizationManagerProvider
     /// <param name="localizationManagerOptions">Опции локализации, содержащие JSON-строку с данными.</param>
     /// <param name="logger">Логер для вызова коллбеков в игре.</param>
     /// <exception cref="Newtonsoft.Json.JsonReaderException">Вызывается, если JSON-строка в опциях недействительна.</exception>
-    public LocalizationManagerProvider(LocalizationManagerOptions localizationManagerOptions, ILoggerProvider logger)
+    public LocalizationManagerProvider(LocalizationManagerOptions localizationManagerOptions, ILogger logger)
     {
         _localizationManagerOptions = localizationManagerOptions;
         _logger = logger;
