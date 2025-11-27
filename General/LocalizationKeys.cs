@@ -94,6 +94,7 @@ public static class LocalizationKeys
         public const string OpeningWebSocket = $"{_Info}{nameof(OpeningWebSocket)}";
         public const string LoadingData = $"{_Info}{nameof(LoadingData)}";
         public const string LoadingCollection = $"{_Info}{nameof(LoadingCollection)}";
+        public const string CheckingServerAvailability = $"{_Info}{nameof(CheckingServerAvailability)}";
     }
 
 

@@ -1,4 +1,4 @@
-﻿using static General.Enums;
+using static General.Enums;
 
 namespace Server_DB_Data.Entities;
 
@@ -12,4 +12,5 @@ public class Hero
     public ICollection<HeroCreatureType> CreatureTypes { get; set; } = [];
     public required float BaseHealth { get; set; }
     public required float BaseAttack { get; set; }
+
 }

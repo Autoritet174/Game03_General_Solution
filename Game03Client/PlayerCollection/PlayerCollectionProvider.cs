@@ -62,7 +62,7 @@ internal class PlayerCollectionProvider(PlayerCollectionCache _collectionCache, 
             Guid hero_id = new(h["hero_id"]?.ToString());
             string group_name = h["group_name"]?.ToString()?.Trim() ?? string.Empty;
             long health = Convert.ToInt64(h["health"]?.ToString());
-            //long attack = Convert.ToInt64(h["attack"]?.ToString());
+            long attack = Convert.ToInt64(h["attack"]?.ToString());
             long strength = Convert.ToInt64(h["strength"]);
             long agility = Convert.ToInt64(h["agility"]?.ToString());
             long intelligence = Convert.ToInt64(h["intelligence"]?.ToString());
@@ -70,7 +70,7 @@ internal class PlayerCollectionProvider(PlayerCollectionCache _collectionCache, 
             int level = Convert.ToInt32(h["level"]);
 
 
-            CollectionHero cHero = new(id, owner_id, _gameData.GetHeroById(hero_id), group_name, health, //attack,
+            CollectionHero cHero = new(id, owner_id, _gameData.GetHeroById(hero_id), group_name, health, attack,
                 strength, agility, intelligence, haste, level);
             _collectionCache.listHero.Add(cHero);
         }

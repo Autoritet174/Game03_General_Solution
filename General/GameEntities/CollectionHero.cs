@@ -3,7 +3,7 @@ using System;
 namespace General.GameEntities;
 
 public class CollectionHero(string id, Guid owner_id, HeroBase heroBase, string groupName,
-    long health, //long attack,
+    long health, long attack,
     long strength, long agility, long intelligence, long haste, int level)
 {
     public string Id { get; } = id;
@@ -11,7 +11,7 @@ public class CollectionHero(string id, Guid owner_id, HeroBase heroBase, string 
     public HeroBase HeroBase { get; } = heroBase;
     public string GroupName { get; } = groupName;
     public long Health { get; } = health;
-    // public long Attack { get; } = attack;
+    public long Attack { get; } = attack;
     public long Strength { get; } = strength;
     public long Agility { get; } = agility;
     public long Intelligence { get; } = intelligence;
