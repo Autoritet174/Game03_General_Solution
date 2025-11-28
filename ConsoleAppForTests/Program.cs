@@ -58,7 +58,6 @@ internal class Program
         Console.ReadLine();
     }
 
-    
 
     public async void webSocketTest()
     {
