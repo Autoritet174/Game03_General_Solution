@@ -53,6 +53,81 @@
             </summary>
             <param name="modelBuilder">Построитель модели.</param>
         </member>
+        <member name="T:Server_DB_Data.Entities.CreatureType">
+            <summary>
+            Тип существа.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.CreatureType.Id">
+            <summary>
+            UUID уникальный идентификатор.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.CreatureType.Name">
+            <summary>
+            Уникальное наименование на английском.
+            </summary>
+        </member>
+        <member name="T:Server_DB_Data.Entities.Entity">
+            <summary>
+            Базовый класс от которого наследуем все сущности.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.Entity.Id">
+            <summary>
+            UUID уникальный идентификатор.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.Entity.Name">
+            <summary>
+            Уникальное наименование на английском.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.Entity.Rarity">
+            <summary>
+            Редкость.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.Entity.IsUnique">
+            <summary>
+            Уникальный в игре, выпадет только один раз.
+            </summary>
+        </member>
+        <member name="T:Server_DB_Data.Entities.EquipmentSword">
+            <summary>
+            Экипировка. Меч.
+            </summary>
+        </member>
+        <member name="T:Server_DB_Data.Entities.Hero">
+            <summary>
+            Базовая версия героя.
+            </summary>
+        </member>
+        <member name="T:Server_DB_Data.Entities.HeroCreatureType">
+            <summary>
+            Таблица для связи Hero и CreatureType.
+            </summary>
+        </member>
+        <member name="T:Server_DB_Data.Entities.TypeDamage">
+            <summary>
+            Тип урона.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.TypeDamage.Id">
+            <summary>
+            UUID уникальный идентификатор.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.TypeDamage.Name">
+            <summary>
+            Уникальное наименование на английском.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.TypeDamage.NameRu">
+            <summary>
+            Уникальное наименование на русском.
+            </summary>
+        </member>
         <member name="T:Server_DB_Data.Migrations.Start">
             <inheritdoc />
         </member>
@@ -75,6 +150,162 @@
             <inheritdoc />
         </member>
         <member name="M:Server_DB_Data.Migrations.Start2.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.Start3">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Start3.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Start3.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Start3.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.Start4">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Start4.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Start4.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Start4.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.start5">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.start5.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.start5.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.start5.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.start6">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.start6.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.start6.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.start6.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.start7">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.start7.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.start7.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.start7.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.МечТипУрона">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.МечТипУрона.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.МечТипУрона.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.МечТипУрона.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.ТипУронаРусскоеНазвание">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.ТипУронаРусскоеНазвание.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.ТипУронаРусскоеНазвание.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.ТипУронаРусскоеНазвание.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.ТипУронаРусскоеНазваниеNoUnique">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.ТипУронаРусскоеНазваниеNoUnique.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.ТипУронаРусскоеНазваниеNoUnique.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.ТипУронаРусскоеНазваниеNoUnique.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.ТипУронаIdInt">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.ТипУронаIdInt.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.ТипУронаIdInt.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.ТипУронаIdInt.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.ТипУронаIdInt2">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.ТипУронаIdInt2.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.ТипУронаIdInt2.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.ТипУронаIdInt2.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.ТипУронаDropTable">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.ТипУронаDropTable.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.ТипУронаDropTable.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.ТипУронаDropTable.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.EquipmentSwordDropTable">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.EquipmentSwordDropTable.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.EquipmentSwordDropTable.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.EquipmentSwordDropTable.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.EquipmentSwordDropTable2">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.EquipmentSwordDropTable2.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.EquipmentSwordDropTable2.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.EquipmentSwordDropTable2.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Server_DB_Data.Repositories.HeroRepository">

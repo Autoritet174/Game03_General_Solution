@@ -39,8 +39,8 @@ public class HeroesCacheService(ILogger<HeroesCacheService> logger) : IHeroCache
                 h.Id,
                 h.Name,
                 h.Rarity,
-                h.BaseHealth,
-                h.BaseAttack,
+                h.Health,
+                h.Attack,
             })
             .ToListAsync();
 
@@ -55,8 +55,8 @@ public class HeroesCacheService(ILogger<HeroesCacheService> logger) : IHeroCache
                 ["id"] = item.Id,
                 ["name"] = item.Name,
                 ["rarity"] = (int)item.Rarity,
-                ["baseHealth"] = (int)item.BaseHealth,
-                ["baseAttack"] = (int)item.BaseAttack,
+                ["health"] = item.Health,
+                ["attack"] = item.Attack,
             };
 
             jsonArray.Add(obj);

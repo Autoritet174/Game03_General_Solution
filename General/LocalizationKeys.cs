@@ -29,6 +29,8 @@ public static class LocalizationKeys
             public const string Login = $"{_Button}{nameof(Login)}";
             public const string Reg = $"{_Button}{nameof(Reg)}";
             public const string ExitGame = $"{_Button}{nameof(ExitGame)}";
+            public const string Heroes = $"{_Button}{nameof(Heroes)}";
+            public const string Equipment = $"{_Button}{nameof(Equipment)}";
         }
 
         /// <summary>

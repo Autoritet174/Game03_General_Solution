@@ -1,10 +1,17 @@
-﻿namespace Server_DB_Data.Entities;
+namespace Server_DB_Data.Entities;
 
+/// <summary>
+/// Тип существа.
+/// </summary>
 public class CreatureType
 {
+    /// <summary>
+    /// UUID уникальный идентификатор.
+    /// </summary>
     public required Guid Id { get; set; }
-    public required DateTimeOffset CreatedAt { get; set; }
-    public required DateTimeOffset UpdatedAt { get; set; }
+
+    /// <summary>
+    /// Уникальное наименование на английском.
+    /// </summary>
     public required string Name { get; set; }
-    public ICollection<HeroCreatureType> Heroes { get; set; } = []; // Обратная навигация
 }

@@ -53,8 +53,6 @@ public class HeroRepository
         ThrowHelper.ThrowIfGuidEmpty(hero.Id);
         ThrowHelper.ThrowIfRecordNotExists(await _heroes.AnyAsync(a => a.Id == hero.Id));
 
-        hero.UpdatedAt = DateTimeOffset.UtcNow;
-
         _ = _heroes.Update(hero);
         _ = await _dbContext.SaveChangesAsync();
     }

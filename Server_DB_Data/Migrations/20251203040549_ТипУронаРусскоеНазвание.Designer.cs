@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server_DB_Data;
@@ -11,9 +12,11 @@ using Server_DB_Data;
 namespace Server_DB_Data.Migrations
 {
     [DbContext(typeof(DbContext_Game03Data))]
-    partial class DbContext_Game03DataModelSnapshot : ModelSnapshot
+    [Migration("20251203040549_ТипУронаРусскоеНазвание")]
+    partial class ТипУронаРусскоеНазвание
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,6 +47,51 @@ namespace Server_DB_Data.Migrations
                         .HasDatabaseName("creature_types_name_idx");
 
                     b.ToTable("creature_types", "_main");
+                });
+
+            modelBuilder.Entity("Server_DB_Data.Entities.EquipmentSword", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<string>("Attack")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("attack");
+
+                    b.Property<bool>("IsUnique")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_unique");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("Rarity")
+                        .HasColumnType("integer")
+                        .HasColumnName("rarity");
+
+                    b.Property<Guid>("TypeDamageId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("_type_damage_id");
+
+                    b.HasKey("Id")
+                        .HasName("sword_pkey");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("sword_name_idx");
+
+                    b.HasIndex("TypeDamageId")
+                        .HasDatabaseName("sword__type_damage_id_idx");
+
+                    b.ToTable("sword", "equipment");
                 });
 
             modelBuilder.Entity("Server_DB_Data.Entities.Hero", b =>
@@ -112,6 +160,52 @@ namespace Server_DB_Data.Migrations
                         .HasDatabaseName("x_hero_creature_type_hero_id_idx");
 
                     b.ToTable("x_hero_creature_type", "xcross");
+                });
+
+            modelBuilder.Entity("Server_DB_Data.Entities.TypeDamage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("NameRu")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("name_ru");
+
+                    b.HasKey("Id")
+                        .HasName("type_damage_pkey");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("type_damage_name_idx");
+
+                    b.HasIndex("NameRu")
+                        .IsUnique()
+                        .HasDatabaseName("type_damage_name_ru_idx");
+
+                    b.ToTable("type_damage", "_main");
+                });
+
+            modelBuilder.Entity("Server_DB_Data.Entities.EquipmentSword", b =>
+                {
+                    b.HasOne("Server_DB_Data.Entities.TypeDamage", "TypeDamage")
+                        .WithMany()
+                        .HasForeignKey("TypeDamageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("sword__type_damage_id_type_damage_fkey");
+
+                    b.Navigation("TypeDamage");
                 });
 
             modelBuilder.Entity("Server_DB_Data.Entities.HeroCreatureType", b =>

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server_DB_Data;
@@ -11,9 +12,11 @@ using Server_DB_Data;
 namespace Server_DB_Data.Migrations
 {
     [DbContext(typeof(DbContext_Game03Data))]
-    partial class DbContext_Game03DataModelSnapshot : ModelSnapshot
+    [Migration("20251202040818_Start3")]
+    partial class Start3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,11 +33,23 @@ namespace Server_DB_Data.Migrations
                         .HasColumnName("id")
                         .HasDefaultValueSql("gen_random_uuid()");
 
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
                         .HasColumnName("name");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
 
                     b.HasKey("Id")
                         .HasName("creature_types_pkey");
@@ -56,21 +71,19 @@ namespace Server_DB_Data.Migrations
 
                     b.Property<string>("Attack")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasColumnType("text")
                         .HasColumnName("attack");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("Health")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasColumnType("text")
                         .HasColumnName("health");
-
-                    b.Property<bool>("IsUnique")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_unique");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -82,6 +95,12 @@ namespace Server_DB_Data.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("rarity");
 
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW()");
+
                     b.HasKey("Id")
                         .HasName("heroes_pkey");
 
@@ -89,7 +108,7 @@ namespace Server_DB_Data.Migrations
                         .IsUnique()
                         .HasDatabaseName("heroes_name_idx");
 
-                    b.ToTable("heroes", "heroes");
+                    b.ToTable("heroes", "_main");
                 });
 
             modelBuilder.Entity("Server_DB_Data.Entities.HeroCreatureType", b =>
@@ -101,6 +120,12 @@ namespace Server_DB_Data.Migrations
                     b.Property<Guid>("CreatureTypeId")
                         .HasColumnType("uuid")
                         .HasColumnName("creature_type_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW()");
 
                     b.HasKey("HeroId", "CreatureTypeId")
                         .HasName("x_hero_creature_type_pkey");
@@ -117,7 +142,7 @@ namespace Server_DB_Data.Migrations
             modelBuilder.Entity("Server_DB_Data.Entities.HeroCreatureType", b =>
                 {
                     b.HasOne("Server_DB_Data.Entities.CreatureType", "CreatureType")
-                        .WithMany()
+                        .WithMany("Heroes")
                         .HasForeignKey("CreatureTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
@@ -133,6 +158,11 @@ namespace Server_DB_Data.Migrations
                     b.Navigation("CreatureType");
 
                     b.Navigation("Hero");
+                });
+
+            modelBuilder.Entity("Server_DB_Data.Entities.CreatureType", b =>
+                {
+                    b.Navigation("Heroes");
                 });
 
             modelBuilder.Entity("Server_DB_Data.Entities.Hero", b =>

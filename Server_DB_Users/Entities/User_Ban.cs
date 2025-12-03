@@ -13,6 +13,6 @@ public class User_Ban
     public DateTimeOffset? ExpiresAt { get; set; }
     public Guid? UserBansReasonsId { get; set; }
 
-    // Навигация на User (многие к одному)
+    /// Навигация на User (многие к одному)
     public User? User { get; set; }
 }

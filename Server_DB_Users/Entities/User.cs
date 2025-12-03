@@ -8,8 +8,6 @@ namespace Server_DB_Users.Entities;
 public class User
 {
     public required Guid Id { get; set; }
-    public required DateTimeOffset CreatedAt { get; set; }
-    public required DateTimeOffset UpdatedAt { get; set; }
     public string? Email { get; set; }
     public DateTimeOffset? EmailVerifiedAt { get; set; }
     public string? PasswordHash { get; set; }
@@ -17,6 +15,8 @@ public class User
     public bool IsAdmin { get; set; } = false;
 
 
-    // Коллекция банов (1 ко многим)
+    /// <summary>
+    /// Коллекция банов (1 ко многим)
+    /// </summary>
     public ICollection<User_Ban> Bans { get; set; } = [];
 }

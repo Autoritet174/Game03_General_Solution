@@ -53,10 +53,18 @@
             Представляет пользователя системы.
             </summary>
         </member>
+        <member name="P:Server_DB_Users.Entities.User.Bans">
+            <summary>
+            Коллекция банов (1 ко многим)
+            </summary>
+        </member>
         <member name="T:Server_DB_Users.Entities.User_Ban">
             <summary>
             Представляет пользователя системы.
             </summary>
+        </member>
+        <member name="P:Server_DB_Users.Entities.User_Ban.User">
+            Навигация на User (многие к одному)
         </member>
         <member name="T:Server_DB_Users.Migrations.start">
             <inheritdoc />
@@ -92,6 +100,18 @@
             <inheritdoc />
         </member>
         <member name="M:Server_DB_Users.Migrations.start002.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Users.Migrations.start3">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Users.Migrations.start3.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Users.Migrations.start3.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Users.Migrations.start3.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Server_DB_Users.Repositories.UserRepository">

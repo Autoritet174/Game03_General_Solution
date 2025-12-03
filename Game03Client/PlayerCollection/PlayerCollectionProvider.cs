@@ -101,6 +101,9 @@ internal class PlayerCollectionProvider(PlayerCollectionCache _collectionCache, 
     {
         return _collectionCache.listHero;
     }
+    public int GetCountHeroes() {
+        return _collectionCache.listHero.Count;
+    }
 
     /// <summary>
     /// Получить коллекцию героев сгруппированную по именам групп.

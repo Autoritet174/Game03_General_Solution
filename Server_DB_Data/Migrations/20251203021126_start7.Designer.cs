@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server_DB_Data;
@@ -11,9 +12,11 @@ using Server_DB_Data;
 namespace Server_DB_Data.Migrations
 {
     [DbContext(typeof(DbContext_Game03Data))]
-    partial class DbContext_Game03DataModelSnapshot : ModelSnapshot
+    [Migration("20251203021126_start7")]
+    partial class start7
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,6 +47,44 @@ namespace Server_DB_Data.Migrations
                         .HasDatabaseName("creature_types_name_idx");
 
                     b.ToTable("creature_types", "_main");
+                });
+
+            modelBuilder.Entity("Server_DB_Data.Entities.EquipmentSword", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<string>("Attack")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("attack");
+
+                    b.Property<bool>("IsUnique")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_unique");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("Rarity")
+                        .HasColumnType("integer")
+                        .HasColumnName("rarity");
+
+                    b.HasKey("Id")
+                        .HasName("sword_pkey");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("sword_name_idx");
+
+                    b.ToTable("sword", "equipment");
                 });
 
             modelBuilder.Entity("Server_DB_Data.Entities.Hero", b =>

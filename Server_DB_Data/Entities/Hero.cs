@@ -1,16 +1,12 @@
-using static General.Enums;
-
 namespace Server_DB_Data.Entities;
 
-public class Hero
+/// <summary>
+/// Базовая версия героя.
+/// </summary>
+public class Hero : Entity
 {
-    public required Guid Id { get; set; }
-    public required DateTimeOffset CreatedAt { get; set; }
-    public required DateTimeOffset UpdatedAt { get; set; }
-    public required string Name { get; set; }
-    public required RarityLevel Rarity { get; set; }
+#pragma warning disable
     public ICollection<HeroCreatureType> CreatureTypes { get; set; } = [];
-    public required float BaseHealth { get; set; }
-    public required float BaseAttack { get; set; }
-
+    public required string Health { get; set; }
+    public required string Attack { get; set; }
 }

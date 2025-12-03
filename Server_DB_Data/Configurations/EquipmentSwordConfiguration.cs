@@ -1,20 +1,23 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Server_DB_Data.Entities;
+using System.Reflection.Emit;
 
 namespace Server_DB_Data.Configurations;
 
-internal class HeroesConfiguration : IEntityTypeConfiguration<Hero>
+internal class EquipmentSwordConfiguration : IEntityTypeConfiguration<EquipmentSword>
 {
-    public void Configure(EntityTypeBuilder<Hero> builder)
+    public void Configure(EntityTypeBuilder<EquipmentSword> builder)
     {
-        _ = builder.ToTable("heroes", "heroes");
+        _ = builder.ToTable("sword", "equipment");
 
 
         //Уникальный идентификатор и индекс первичного ключа
         _ = builder.Property(e => e.Id)
             .HasColumnName("id")
-            .HasDefaultValueSql("gen_random_uuid()");
+            //.HasDefaultValueSql("gen_random_uuid()")
+            .ValueGeneratedOnAdd()
+            ;
 
         _ = builder.HasKey(e => e.Id);
 
@@ -28,13 +31,6 @@ internal class HeroesConfiguration : IEntityTypeConfiguration<Hero>
             .IsUnique();
 
         //-------------------------------------
-        _ = builder.Property(e => e.Health)
-           .HasColumnName("health")
-           .HasMaxLength(50)
-           .HasColumnType(Config.VARCHAR)
-           .IsRequired();
-
-        //-------------------------------------
         _ = builder.Property(e => e.Rarity)
             .HasColumnName("rarity")
             .IsRequired();
@@ -42,7 +38,6 @@ internal class HeroesConfiguration : IEntityTypeConfiguration<Hero>
         //-------------------------------------
         _ = builder.Property(e => e.IsUnique)
             .HasColumnName("is_unique")
-            .HasDefaultValue(false)
             .IsRequired();
 
         //-------------------------------------
@@ -51,6 +46,5 @@ internal class HeroesConfiguration : IEntityTypeConfiguration<Hero>
             .HasMaxLength(50)
             .HasColumnType(Config.VARCHAR)
             .IsRequired();
-
     }
 }

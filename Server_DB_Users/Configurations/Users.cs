@@ -17,20 +17,6 @@ internal class Users : IEntityTypeConfiguration<User>
 
         _ = builder.HasKey(e => e.Id);
 
-
-        //-------------------------------------
-        _ = builder.Property(e => e.CreatedAt)
-            .HasColumnName("created_at")
-            .HasDefaultValueSql("NOW()")
-            .IsRequired();
-
-
-        //-------------------------------------
-        _ = builder.Property(e => e.UpdatedAt)
-            .HasColumnName("updated_at")
-            .HasDefaultValueSql("NOW()")
-            .IsRequired();
-
         //-------------------------------------
         _ = builder.Property(e => e.Email)
             .HasColumnName("email")

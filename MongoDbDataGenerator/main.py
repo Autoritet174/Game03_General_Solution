@@ -1,22 +1,18 @@
-import random
-
-from pymongo import MongoClient
-import bson
-import uuid
-import random
+from Dice.DiceFinder import find_dice_combination
+from Dice.DiceSimulator import DiceSimulator
 
 # Строка подключения
-uri = "mongodb://localhost:27017/"
+# uri = "mongodb://localhost:27017/"
 
 # Создаём клиент
-client = MongoClient(uri, uuidRepresentation='standard')
+# client = MongoClient(uri, uuidRepresentation='standard')
 
 # Выбираем базу данных и коллекцию (они создадутся, если не существуют)
-db = client['userData']
-collection = db['heroes']
+# db = client['userData']
+# collection = db['heroes']
 
 # Используем стандартное пространство имён (например, DNS)
-namespace = uuid.NAMESPACE_DNS  # или NAMESPACE_URL, NAMESPACE_OID и др.
+# namespace = uuid.NAMESPACE_DNS  # или NAMESPACE_URL, NAMESPACE_OID и др.
 #
 # user_uuid = uuid.UUID("113ae534-2310-40e3-a895-f3747ea976ca")
 # hero_warrior_uuid = uuid.UUID("58e860c7-3819-4f5b-bdff-f36850411498")
@@ -45,7 +41,15 @@ namespace = uuid.NAMESPACE_DNS  # или NAMESPACE_URL, NAMESPACE_OID и др.
 
 
 # Обновляем имя поля 'speed' на 'haste'
-result = collection.update_many({"speed": {"$exists": True}}, {"$rename": {"speed": "haste"}})
+# result = collection.update_many({"speed": {"$exists": True}}, {"$rename": {"speed": "haste"}})
 # Закрываем соединение
-client.close()
-print(f"выполнено")
+# client.close()
+# print(f"выполнено")
+mode = 2
+if mode == 1:
+    simulator = DiceSimulator("10d199")
+    stats = simulator.run_simulation(100000)
+else:
+    candidates = find_dice_combination(20, 5, 20)
+    for i in candidates:
+        print(i)

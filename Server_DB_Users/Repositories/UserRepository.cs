@@ -39,8 +39,6 @@ public class UserRepository
         User user = new()
         {
             Id = Guid.NewGuid(),
-            CreatedAt = DateTimeOffset.UtcNow,
-            UpdatedAt = DateTimeOffset.UtcNow,
             Email = emailValidated,
             PasswordHash = passwordHashValidated
         };
@@ -63,7 +61,6 @@ public class UserRepository
         ThrowHelper.ThrowIfGuidEmpty(user.Id);
         ThrowHelper.ThrowIfRecordNotExists(await _users.AnyAsync(a => a.Id == user.Id));
 
-        user.UpdatedAt = DateTimeOffset.UtcNow;
         _ = _users.Update(user);
         _ = await _dbContext.SaveChangesAsync();
     }
