@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using Server_DB_Data.Entities;
 using Server_DB_Data;
 using Server_DB;
+using Server_DB_Data.Entities._Heroes;
 
 namespace Server_DB_Data.Repositories;
 
@@ -39,7 +39,7 @@ public class HeroRepository
         //_ = await _dbContext.SaveChangesAsync();
     //}
 
-
+    /*
     /// <summary>
     /// Обновляет переданную сущность пользователя в базе данных.
     /// </summary>
@@ -47,15 +47,15 @@ public class HeroRepository
     /// <exception cref="ArgumentNullException">Если равен null.</exception>
     /// <exception cref="ArgumentException">Если идентификатор пустой.</exception>
     /// <exception cref="InvalidOperationException">Если сущность с таким идентификатором не найдена.</exception>
-    public async Task UpdateAsync(Hero hero)
-    {
-        ArgumentNullException.ThrowIfNull(hero);
-        ThrowHelper.ThrowIfGuidEmpty(hero.Id);
-        ThrowHelper.ThrowIfRecordNotExists(await _heroes.AnyAsync(a => a.Id == hero.Id));
+    //public async Task UpdateAsync(Hero hero)
+    //{
+    //    ArgumentNullException.ThrowIfNull(hero);
+    //    ThrowHelper.ThrowIfGuidEmpty(hero.Id);
+    //    ThrowHelper.ThrowIfRecordNotExists(await _heroes.AnyAsync(a => a.Id == hero.Id));
 
-        _ = _heroes.Update(hero);
-        _ = await _dbContext.SaveChangesAsync();
-    }
+    //    _ = _heroes.Update(hero);
+    //    _ = await _dbContext.SaveChangesAsync();
+    //}
 
 
     /// <summary>
@@ -80,11 +80,11 @@ public class HeroRepository
         return await _heroes.ToListAsync();
     }
 
-
-    public async Task<Hero?> GetByIdAsync(Guid id)
-    {
-        return id == Guid.Empty ? null : await _heroes.FirstOrDefaultAsync(a => a.Id == id);
-    }
+    */
+    //public async Task<Hero?> GetByIdAsync(Guid id)
+    //{
+    //    return id == Guid.Empty ? null : await _heroes.FirstOrDefaultAsync(a => a.Id == id);
+    //}
 
     /// <summary>
     /// Возвращает пользователя по e-mail (без учёта регистра).

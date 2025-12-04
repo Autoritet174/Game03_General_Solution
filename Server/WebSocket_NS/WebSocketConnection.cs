@@ -7,29 +7,67 @@ using System.Text;
 
 namespace Server.WebSocket_NS;
 
+/// <summary>
+/// Представляет одно WebSocket подключение клиента.
+/// Обрабатывает прием и отправку сообщений, аутентификацию и управление жизненным циклом подключения.
+/// </summary>
 public class WebSocketConnection(WebSocket webSocket, ILogger<WebSocketConnection> logger, IConfiguration configuration, WebSocketConnectionHandler webSocketServer, MongoRepository mongoRepository, JwtService jwtService)
 {
+    /// <summary>
+    /// Уникальный идентификатор подключения.
+    /// </summary>
     public Guid Id { get; private set; } = Guid.NewGuid();
-    private readonly WebSocket _webSocket = webSocket;
-    private readonly ILogger<WebSocketConnection> _logger = logger;
-    private readonly int _receiveBufferSize = configuration.GetValue<int>("WebSocketSettings:ReceiveBufferSize");
-    private readonly WebSocketConnectionHandler _webSocketServer = webSocketServer;
-    private readonly PlayerManager _playerManager = new(mongoRepository);
-    private readonly JwtService _jwtService = jwtService;
-    private bool _isAuthenticated = false;
 
     /// <summary>
-    /// Вызывается при открытии веб сокета из WebSocketConnectionHandler.ProcessWebSocketRequest()
+    /// WebSocket клиента для обмена сообщениями.
     /// </summary>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
+    private readonly WebSocket _webSocket = webSocket;
+
+    /// <summary>
+    /// Логгер для записи событий подключения.
+    /// </summary>
+    private readonly ILogger<WebSocketConnection> _logger = logger;
+
+    /// <summary>
+    /// Размер буфера для приема сообщений из конфигурации.
+    /// </summary>
+    private readonly int _receiveBufferSize = configuration.GetValue<int>("WebSocketSettings:ReceiveBufferSize");
+
+    /// <summary>
+    /// Обработчик WebSocket соединений для управления подключениями.
+    /// </summary>
+    private readonly WebSocketConnectionHandler _webSocketServer = webSocketServer;
+
+    /// <summary>
+    /// Менеджер игроков для обработки игровых команд.
+    /// </summary>
+    private readonly PlayerManager _playerManager = new(mongoRepository);
+
+    /// <summary>
+    /// Сервис для работы с JWT токенами аутентификации.
+    /// </summary>
+    private readonly JwtService _jwtService = jwtService;
+
+    /// <summary>
+    /// Флаг, указывающий на аутентификацию клиента.
+    /// </summary>
+    private readonly bool _isAuthenticated = false;
+
+    /// <summary>
+    /// Обрабатывает WebSocket подключение клиента.
+    /// </summary>
+    /// <param name="cancellationToken">Токен отмены для прерывания обработки.</param>
+    /// <returns>Задача, представляющая асинхронную обработку подключения.</returns>
+    /// <exception cref="OperationCanceledException">
+    /// Возникает при отмене операции через cancellationToken.
+    /// </exception>
+    /// <exception cref="WebSocketException">
+    /// Возникает при ошибках WebSocket соединения.
+    /// </exception>
     public async Task HandleAsync(CancellationToken cancellationToken)
     {
-
-        //Console.WriteLine(m);
-
         // Используем ArrayPool для уменьшения нагрузки на GC
-        var buffer = ArrayPool<byte>.Shared.Rent(_receiveBufferSize);
+        byte[] buffer = ArrayPool<byte>.Shared.Rent(_receiveBufferSize);
 
         try
         {
@@ -38,31 +76,22 @@ public class WebSocketConnection(WebSocket webSocket, ILogger<WebSocketConnectio
 
             while (_webSocket.State == WebSocketState.Open && !cancellationToken.IsCancellationRequested)
             {
+                // Ожидаем сообщение от клиента
                 WebSocketReceiveResult result = await _webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), cancellationToken);
 
+                // Обрабатываем запрос на закрытие соединения
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
                     await CloseSocketAsync(WebSocketCloseStatus.NormalClosure, "Закрытие по инициативе клиента", cancellationToken);
                     break;
                 }
 
-                var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                // Декодируем полученное сообщение
+                string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
                 _logger.LogInformation("Принято сообщение от клиента {ClientId}: {Message}", Id, message);
+
+                // Передаем команду менеджеру игроков для обработки
                 await _playerManager.Command(message);
-                //DateTime dt = DateTime.Now;
-                //string[] sA = message.Split(new string[] { ".", ":" }, StringSplitOptions.None);
-                //int i1 = int.Parse(sA[0]);
-                //int i2 = int.Parse(sA[1]);
-                //int i3 = int.Parse(sA[2]);
-                //int i4 = int.Parse(sA[3]);
-
-                //int m1 = i4 / 1000;
-                //int m2 = i4 - (m1 * 1000);
-
-                //DateTime dtClient = new(2025, 09, 02, i1, i2, i3, m1, m2);
-                //TimeSpan t = dt - dtClient;
-                //Console.WriteLine($"Принято сообщение от клиента {Id}: {message} timeServer: {DateTime.Now:HH:mm:ss.ffffff} {t.TotalMicroseconds}");
-
 
                 // Эхо-ответ (если нужно)
                 if (_webSocket.State == WebSocketState.Open)
@@ -77,9 +106,9 @@ public class WebSocketConnection(WebSocket webSocket, ILogger<WebSocketConnectio
         }
         catch (Exception ex)
         {
+            // Логируем только неожиданные ошибки, ожидаемые исключения игнорируем
             if (IsExpectedDisconnectException(ex))
             {
-                //_logger.LogInformation("Клиент {ClientId} разорвал соединение", _id);
                 Console.WriteLine($"Клиент {Id} разорвал соединение. Активных подключений: {_webSocketServer.GetCount()}");
             }
             else
@@ -89,11 +118,20 @@ public class WebSocketConnection(WebSocket webSocket, ILogger<WebSocketConnectio
         }
         finally
         {
+            // Возвращаем буфер в пул и очищаем ресурсы
             ArrayPool<byte>.Shared.Return(buffer);
             await CleanupSocketAsync();
-            //_logger.LogInformation("Клиент {ClientId} отключён", _id);
         }
     }
+
+    /// <summary>
+    /// Проверяет, является ли исключение ожидаемым при разрыве соединения.
+    /// </summary>
+    /// <param name="ex">Исключение для проверки.</param>
+    /// <returns>
+    /// true - если исключение связано с нормальным разрывом соединения;
+    /// false - если это неожиданная ошибка.
+    /// </returns>
     public static bool IsExpectedDisconnectException(Exception ex)
     {
         // Проверяем само исключение
@@ -126,13 +164,14 @@ public class WebSocketConnection(WebSocket webSocket, ILogger<WebSocketConnectio
     }
 
     /// <summary>
-    /// Отправить сообщение клиенту
+    /// Безопасно отправляет сообщение клиенту.
     /// </summary>
-    /// <param name="message"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
+    /// <param name="message">Текст сообщения для отправки.</param>
+    /// <param name="cancellationToken">Токен отмены операции отправки.</param>
+    /// <returns>Задача, представляющая асинхронную отправку сообщения.</returns>
     private async Task SendMessageSafeAsync(string message, CancellationToken cancellationToken)
     {
+        // Проверяем, что соединение еще открыто
         if (_webSocket.State != WebSocketState.Open)
         {
             return;
@@ -140,18 +179,18 @@ public class WebSocketConnection(WebSocket webSocket, ILogger<WebSocketConnectio
 
         try
         {
-            var buffer = Encoding.UTF8.GetBytes(message);
+            byte[] buffer = Encoding.UTF8.GetBytes(message);
             await _webSocket.SendAsync(
                 new ArraySegment<byte>(buffer),
                 WebSocketMessageType.Text,
-                true,
+                true,  // Отправляем полное сообщение
                 cancellationToken
             );
             _logger.LogInformation("сообщение клиенту {ClientId}: {Message}", Id, message);
-            //_logger.Log((LogLevel)0, "сообщение клиенту {ClientId}: {Message}", Id, message);
         }
         catch (Exception ex) when (IsExpectedDisconnectException(ex))
         {
+            // Игнорируем ошибки при закрытых соединениях
             _logger.LogDebug("Не удалось отправить сообщение клиенту {ClientId} (соединение закрыто): {Message}", Id, ex.Message);
         }
         catch (Exception ex)
@@ -160,6 +199,13 @@ public class WebSocketConnection(WebSocket webSocket, ILogger<WebSocketConnectio
         }
     }
 
+    /// <summary>
+    /// Корректно закрывает WebSocket соединение.
+    /// </summary>
+    /// <param name="closeStatus">Статус закрытия соединения.</param>
+    /// <param name="statusDescription">Описание причины закрытия.</param>
+    /// <param name="cancellationToken">Токен отмены операции закрытия.</param>
+    /// <returns>Задача, представляющая асинхронное закрытие соединения.</returns>
     private async Task CloseSocketAsync(WebSocketCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken)
     {
         if (_webSocket.State == WebSocketState.Open)
@@ -177,10 +223,15 @@ public class WebSocketConnection(WebSocket webSocket, ILogger<WebSocketConnectio
         }
     }
 
+    /// <summary>
+    /// Очищает ресурсы WebSocket соединения.
+    /// </summary>
+    /// <returns>Задача, представляющая асинхронную очистку ресурсов.</returns>
     private async Task CleanupSocketAsync()
     {
         try
         {
+            // Закрываем соединение, если оно еще открыто
             if (_webSocket.State == WebSocketState.Open)
             {
                 await _webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Завершение работы", CancellationToken.None);
@@ -200,7 +251,7 @@ public class WebSocketConnection(WebSocket webSocket, ILogger<WebSocketConnectio
         {
             try
             {
-                _webSocket.Dispose();
+                _webSocket.Dispose();  // Освобождаем ресурсы WebSocket
             }
             catch (Exception ex)
             {
@@ -208,10 +259,12 @@ public class WebSocketConnection(WebSocket webSocket, ILogger<WebSocketConnectio
             }
             try
             {
+                // Удаляем подключение из списка активных
                 _webSocketServer.ActiveConnectionsRemove(Id);
             }
             catch (Exception)
             {
+                // Игнорируем ошибки при удалении из списка подключений
             }
         }
     }

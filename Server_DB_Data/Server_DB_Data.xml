@@ -32,17 +32,27 @@
             <param name="connectionString">Строка подключения, которую необходимо проверить.</param>
             <exception cref="T:System.Exception">Генерирует исключение в случае ошибки подключения.</exception>
         </member>
-        <member name="P:Server_DB_Data.DbContext_Game03Data.Heroes">
-            <summary>
-            Данные героев.
-            </summary>
-        </member>
         <member name="P:Server_DB_Data.DbContext_Game03Data.CreatureTypes">
             <summary>
             Типы существ.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.DbContext_Game03Data.HeroCreatureType">
+        <member name="P:Server_DB_Data.DbContext_Game03Data.TypesDamage">
+            <summary>
+            Типы урона.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.DbContext_Game03Data.Swords">
+            <summary>
+            Экипировка. Мечи.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.DbContext_Game03Data.Heroes">
+            <summary>
+            Данные героев.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.DbContext_Game03Data.X_HeroCreatureType">
             <summary>
             Таблица связи многие ко мноким между Heroes и CreatureTypes.
             </summary>
@@ -53,259 +63,193 @@
             </summary>
             <param name="modelBuilder">Построитель модели.</param>
         </member>
-        <member name="T:Server_DB_Data.Entities.CreatureType">
-            <summary>
-            Тип существа.
-            </summary>
-        </member>
-        <member name="P:Server_DB_Data.Entities.CreatureType.Id">
-            <summary>
-            UUID уникальный идентификатор.
-            </summary>
-        </member>
-        <member name="P:Server_DB_Data.Entities.CreatureType.Name">
-            <summary>
-            Уникальное наименование на английском.
-            </summary>
-        </member>
-        <member name="T:Server_DB_Data.Entities.Entity">
+        <member name="T:Server_DB_Data.Entities.IEntity">
             <summary>
             Базовый класс от которого наследуем все сущности.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.Entity.Id">
+        <member name="P:Server_DB_Data.Entities.IEntity.Id">
             <summary>
-            UUID уникальный идентификатор.
+            Уникальный идентификатор.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.Entity.Name">
+        <member name="P:Server_DB_Data.Entities.IEntity.Name">
             <summary>
             Уникальное наименование на английском.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.Entity.Rarity">
+        <member name="P:Server_DB_Data.Entities.IEntity.Rarity">
             <summary>
             Редкость.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.Entity.IsUnique">
+        <member name="P:Server_DB_Data.Entities.IEntity.IsUnique">
             <summary>
             Уникальный в игре, выпадет только один раз.
             </summary>
         </member>
-        <member name="T:Server_DB_Data.Entities.EquipmentSword">
-            <summary>
-            Экипировка. Меч.
-            </summary>
-        </member>
-        <member name="T:Server_DB_Data.Entities.Hero">
-            <summary>
-            Базовая версия героя.
-            </summary>
-        </member>
-        <member name="T:Server_DB_Data.Entities.HeroCreatureType">
+        <member name="T:Server_DB_Data.Entities.X_Cross.X_HeroCreatureType">
             <summary>
             Таблица для связи Hero и CreatureType.
             </summary>
         </member>
-        <member name="T:Server_DB_Data.Entities.TypeDamage">
+        <member name="P:Server_DB_Data.Entities.X_Cross.X_HeroCreatureType.HeroId">
             <summary>
-            Тип урона.
+            Идентификатор Hero.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.TypeDamage.Id">
+        <member name="P:Server_DB_Data.Entities.X_Cross.X_HeroCreatureType.CreatureTypeId">
             <summary>
-            UUID уникальный идентификатор.
+            Идентификатор CreatureType.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.TypeDamage.Name">
+        <member name="P:Server_DB_Data.Entities.X_Cross.X_HeroCreatureType.Hero">
+            <summary>
+            Сущность Hero.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.X_Cross.X_HeroCreatureType.CreatureType">
+            <summary>
+            Сущность CreatureType.
+            </summary>
+        </member>
+        <member name="T:Server_DB_Data.Entities._Equipment.Sword">
+            <summary>
+            Экипировка. Меч.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities._Equipment.Sword.Id">
+            <summary>
+            Первичный ключ. Автоинкремент.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities._Equipment.Sword.Name">
             <summary>
             Уникальное наименование на английском.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.TypeDamage.NameRu">
+        <member name="P:Server_DB_Data.Entities._Equipment.Sword.Rarity">
             <summary>
-            Уникальное наименование на русском.
+            <inheritdoc/>
             </summary>
         </member>
-        <member name="T:Server_DB_Data.Migrations.Start">
+        <member name="P:Server_DB_Data.Entities._Equipment.Sword.IsUnique">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities._Equipment.Sword.Damage">
+            <summary>
+            Урон. Формат DND кубиков, 2d2.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities._Equipment.Sword.TypeDamageId">
+            <summary>
+            Идентификатор TypeDamage.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities._Equipment.Sword.TypeDamage">
+            <summary>
+            Сущность TypeDamage.
+            </summary>
+        </member>
+        <member name="T:Server_DB_Data.Entities._Heroes.Hero">
+            <summary>
+            Базовая версия героя.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities._Heroes.Hero.Id">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities._Heroes.Hero.Name">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities._Heroes.Hero.Rarity">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities._Heroes.Hero.IsUnique">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities._Heroes.Hero.Health">
+            <summary>
+            Здоровье. Формат DND кубиков, 2d2.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities._Heroes.Hero.Damage">
+            <summary>
+            Урон. Формат DND кубиков, 2d2.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities._Heroes.Hero.CreatureTypes">
+            <summary>
+            Список из типов существ к котором принадлежит герой.
+            </summary>
+        </member>
+        <member name="T:Server_DB_Data.Entities.Directory.CreatureType">
+            <summary>
+            Тип существа.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.Directory.CreatureType.Id">
+            <summary>
+            Первичный ключ. Назначается вручную.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.Directory.CreatureType.Name">
+            <summary>
+            Уникальное наименование на английском.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.Directory.CreatureType.Heroes">
+            <summary>
+            Герои этого типа существа.
+            </summary>
+        </member>
+        <member name="T:Server_DB_Data.Entities.__Lists.TypeDamage">
+            <summary>
+            Тип урона.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.TypeDamage.Id">
+            <summary>
+            Первичный ключ.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.TypeDamage.Name">
+            <summary>
+            Уникальное наименование на английском.
+            </summary>
+        </member>
+        <member name="T:Server_DB_Data.Migrations.Start1">
             <inheritdoc />
         </member>
-        <member name="M:Server_DB_Data.Migrations.Start.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+        <member name="M:Server_DB_Data.Migrations.Start1.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
             <inheritdoc />
         </member>
-        <member name="M:Server_DB_Data.Migrations.Start.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+        <member name="M:Server_DB_Data.Migrations.Start1.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
             <inheritdoc />
         </member>
-        <member name="M:Server_DB_Data.Migrations.Start.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+        <member name="M:Server_DB_Data.Migrations.Start1.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
-        <member name="T:Server_DB_Data.Migrations.Start2">
+        <member name="T:Server_DB_Data.Migrations._EquipmentSwordFix1">
             <inheritdoc />
         </member>
-        <member name="M:Server_DB_Data.Migrations.Start2.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+        <member name="M:Server_DB_Data.Migrations._EquipmentSwordFix1.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
             <inheritdoc />
         </member>
-        <member name="M:Server_DB_Data.Migrations.Start2.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+        <member name="M:Server_DB_Data.Migrations._EquipmentSwordFix1.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
             <inheritdoc />
         </member>
-        <member name="M:Server_DB_Data.Migrations.Start2.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.Start3">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.Start3.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.Start3.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.Start3.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.Start4">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.Start4.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.Start4.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.Start4.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.start5">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.start5.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.start5.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.start5.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.start6">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.start6.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.start6.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.start6.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.start7">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.start7.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.start7.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.start7.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.МечТипУрона">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.МечТипУрона.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.МечТипУрона.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.МечТипУрона.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.ТипУронаРусскоеНазвание">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.ТипУронаРусскоеНазвание.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.ТипУронаРусскоеНазвание.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.ТипУронаРусскоеНазвание.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.ТипУронаРусскоеНазваниеNoUnique">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.ТипУронаРусскоеНазваниеNoUnique.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.ТипУронаРусскоеНазваниеNoUnique.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.ТипУронаРусскоеНазваниеNoUnique.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.ТипУронаIdInt">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.ТипУронаIdInt.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.ТипУронаIdInt.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.ТипУронаIdInt.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.ТипУронаIdInt2">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.ТипУронаIdInt2.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.ТипУронаIdInt2.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.ТипУронаIdInt2.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.ТипУронаDropTable">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.ТипУронаDropTable.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.ТипУронаDropTable.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.ТипУронаDropTable.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.EquipmentSwordDropTable">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.EquipmentSwordDropTable.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.EquipmentSwordDropTable.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.EquipmentSwordDropTable.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.EquipmentSwordDropTable2">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.EquipmentSwordDropTable2.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.EquipmentSwordDropTable2.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.EquipmentSwordDropTable2.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+        <member name="M:Server_DB_Data.Migrations._EquipmentSwordFix1.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Server_DB_Data.Repositories.HeroRepository">
@@ -318,23 +262,6 @@
         </member>
         <member name="M:Server_DB_Data.Repositories.HeroRepository.#ctor(Server_DB_Data.DbContext_Game03Data)">
             <param name="dbContext">Контекст базы данных.</param>
-        </member>
-        <member name="M:Server_DB_Data.Repositories.HeroRepository.UpdateAsync(Server_DB_Data.Entities.Hero)">
-            <summary>
-            Обновляет переданную сущность пользователя в базе данных.
-            </summary>
-            <param name="hero">Сущность с обновлёнными данными.</param>
-            <exception cref="T:System.ArgumentNullException">Если равен null.</exception>
-            <exception cref="T:System.ArgumentException">Если идентификатор пустой.</exception>
-            <exception cref="T:System.InvalidOperationException">Если сущность с таким идентификатором не найдена.</exception>
-        </member>
-        <member name="M:Server_DB_Data.Repositories.HeroRepository.GetAllAsync">
-            <summary>
-            Выполняет мягкое удаление записи по идентификатору без загрузки сущности.
-            </summary>
-            <param name="id">Идентификатор.</param>
-            <exception cref="T:System.ArgumentException">Если идентификатор некорректен.</exception>
-            <exception cref="T:System.InvalidOperationException">Если запись не найдена.</exception>
         </member>
         <member name="M:Server_DB_Data.Repositories.HeroRepository.GetByNameAsync(System.String)">
             <summary>

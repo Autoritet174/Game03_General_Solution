@@ -109,6 +109,60 @@
             Отправить пользователю все его предметы
             </summary>
         </member>
+        <member name="T:Server.GameDataCache.IHeroCacheService">
+            <summary>
+            Интерфейс сервиса кэширования данных о героях.
+            </summary>
+        </member>
+        <member name="P:Server.GameDataCache.IHeroCacheService.HeroesJson">
+            <summary>
+            JSON-строка со всеми героями.
+            </summary>
+        </member>
+        <member name="M:Server.GameDataCache.IHeroCacheService.InitializeAsync(System.IServiceProvider)">
+            <summary>
+            Инициализирует кэш данных о героях.
+            </summary>
+            <param name="serviceProvider">Провайдер служб для получения зависимостей.</param>
+        </member>
+        <member name="T:Server.GameDataCache.HeroesCacheService">
+            <summary>
+            Сервис для кэширования данных о героях в формате JSON.
+            </summary>
+        </member>
+        <member name="M:Server.GameDataCache.HeroesCacheService.#ctor(Microsoft.Extensions.Logging.ILogger{Server.GameDataCache.HeroesCacheService})">
+            <summary>
+            Сервис для кэширования данных о героях в формате JSON.
+            </summary>
+        </member>
+        <member name="F:Server.GameDataCache.HeroesCacheService._logger">
+            <summary>
+            Логгер для записи событий сервиса.
+            </summary>
+        </member>
+        <member name="F:Server.GameDataCache.HeroesCacheService._json">
+            <summary>
+            Кэшированная JSON-строка с данными о героях.
+            </summary>
+        </member>
+        <member name="M:Server.GameDataCache.HeroesCacheService.InitializeAsync(System.IServiceProvider)">
+            <summary>
+            Инициализирует кэш, загружая данные о героях из базы данных.
+            </summary>
+            <param name="serviceProvider">Провайдер служб для создания scope и получения DbContext.</param>
+            <exception cref="T:System.InvalidOperationException">
+            Возникает при невозможности получить DbContext из serviceProvider.
+            </exception>
+        </member>
+        <member name="P:Server.GameDataCache.HeroesCacheService.HeroesJson">
+            <summary>
+            Возвращает JSON-строку с данными о героях.
+            </summary>
+            <returns>JSON-строка со всеми героями.</returns>
+            <exception cref="T:System.InvalidOperationException">
+            Возникает, если кэш не был инициализирован.
+            </exception>
+        </member>
         <member name="M:Server.GF.IsHashFromEmpty(System.String)">
             <summary>
             Проверка получился ли hash из пустой строки
@@ -536,20 +590,103 @@
             Булево значение или <c>null</c>, если ключ не найден, значение <c>null</c> или не удаётся интерпретировать.
             </returns>
         </member>
+        <member name="T:Server.WebSocket_NS.WebSocketConnection">
+            <summary>
+            Представляет одно WebSocket подключение клиента.
+            Обрабатывает прием и отправку сообщений, аутентификацию и управление жизненным циклом подключения.
+            </summary>
+        </member>
+        <member name="M:Server.WebSocket_NS.WebSocketConnection.#ctor(System.Net.WebSockets.WebSocket,Microsoft.Extensions.Logging.ILogger{Server.WebSocket_NS.WebSocketConnection},Microsoft.Extensions.Configuration.IConfiguration,Server.WebSocket_NS.WebSocketConnectionHandler,Server_DB_UserData.MongoRepository,Server.Jwt_NS.JwtService)">
+            <summary>
+            Представляет одно WebSocket подключение клиента.
+            Обрабатывает прием и отправку сообщений, аутентификацию и управление жизненным циклом подключения.
+            </summary>
+        </member>
+        <member name="P:Server.WebSocket_NS.WebSocketConnection.Id">
+            <summary>
+            Уникальный идентификатор подключения.
+            </summary>
+        </member>
+        <member name="F:Server.WebSocket_NS.WebSocketConnection._webSocket">
+            <summary>
+            WebSocket клиента для обмена сообщениями.
+            </summary>
+        </member>
+        <member name="F:Server.WebSocket_NS.WebSocketConnection._logger">
+            <summary>
+            Логгер для записи событий подключения.
+            </summary>
+        </member>
+        <member name="F:Server.WebSocket_NS.WebSocketConnection._receiveBufferSize">
+            <summary>
+            Размер буфера для приема сообщений из конфигурации.
+            </summary>
+        </member>
+        <member name="F:Server.WebSocket_NS.WebSocketConnection._webSocketServer">
+            <summary>
+            Обработчик WebSocket соединений для управления подключениями.
+            </summary>
+        </member>
+        <member name="F:Server.WebSocket_NS.WebSocketConnection._playerManager">
+            <summary>
+            Менеджер игроков для обработки игровых команд.
+            </summary>
+        </member>
+        <member name="F:Server.WebSocket_NS.WebSocketConnection._jwtService">
+            <summary>
+            Сервис для работы с JWT токенами аутентификации.
+            </summary>
+        </member>
+        <member name="F:Server.WebSocket_NS.WebSocketConnection._isAuthenticated">
+            <summary>
+            Флаг, указывающий на аутентификацию клиента.
+            </summary>
+        </member>
         <member name="M:Server.WebSocket_NS.WebSocketConnection.HandleAsync(System.Threading.CancellationToken)">
             <summary>
-            Вызывается при открытии веб сокета из WebSocketConnectionHandler.ProcessWebSocketRequest()
+            Обрабатывает WebSocket подключение клиента.
             </summary>
-            <param name="cancellationToken"></param>
-            <returns></returns>
+            <param name="cancellationToken">Токен отмены для прерывания обработки.</param>
+            <returns>Задача, представляющая асинхронную обработку подключения.</returns>
+            <exception cref="T:System.OperationCanceledException">
+            Возникает при отмене операции через cancellationToken.
+            </exception>
+            <exception cref="T:System.Net.WebSockets.WebSocketException">
+            Возникает при ошибках WebSocket соединения.
+            </exception>
+        </member>
+        <member name="M:Server.WebSocket_NS.WebSocketConnection.IsExpectedDisconnectException(System.Exception)">
+            <summary>
+            Проверяет, является ли исключение ожидаемым при разрыве соединения.
+            </summary>
+            <param name="ex">Исключение для проверки.</param>
+            <returns>
+            true - если исключение связано с нормальным разрывом соединения;
+            false - если это неожиданная ошибка.
+            </returns>
         </member>
         <member name="M:Server.WebSocket_NS.WebSocketConnection.SendMessageSafeAsync(System.String,System.Threading.CancellationToken)">
             <summary>
-            Отправить сообщение клиенту
+            Безопасно отправляет сообщение клиенту.
             </summary>
-            <param name="message"></param>
-            <param name="cancellationToken"></param>
-            <returns></returns>
+            <param name="message">Текст сообщения для отправки.</param>
+            <param name="cancellationToken">Токен отмены операции отправки.</param>
+            <returns>Задача, представляющая асинхронную отправку сообщения.</returns>
+        </member>
+        <member name="M:Server.WebSocket_NS.WebSocketConnection.CloseSocketAsync(System.Net.WebSockets.WebSocketCloseStatus,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Корректно закрывает WebSocket соединение.
+            </summary>
+            <param name="closeStatus">Статус закрытия соединения.</param>
+            <param name="statusDescription">Описание причины закрытия.</param>
+            <param name="cancellationToken">Токен отмены операции закрытия.</param>
+            <returns>Задача, представляющая асинхронное закрытие соединения.</returns>
+        </member>
+        <member name="M:Server.WebSocket_NS.WebSocketConnection.CleanupSocketAsync">
+            <summary>
+            Очищает ресурсы WebSocket соединения.
+            </summary>
+            <returns>Задача, представляющая асинхронную очистку ресурсов.</returns>
         </member>
         <member name="T:Server.WebSocket_NS.WebSocketConnectionHandler">
             <summary>

@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Server_Common;
-using Server_DB_Data.Configurations;
-using Server_DB_Data.Entities;
+using Server_DB_Data.Entities.__Lists;
+using Server_DB_Data.Entities._Equipment;
+using Server_DB_Data.Entities._Heroes;
+using Server_DB_Data.Entities.X_Cross;
 
 namespace Server_DB_Data;
 
@@ -44,19 +46,29 @@ public class DbContext_Game03Data(DbContextOptions<DbContext_Game03Data> options
     }
 
     /// <summary>
+    /// Типы существ.
+    /// </summary>
+    public DbSet<Entities.Directory.CreatureType> CreatureTypes { get; set; }
+
+    /// <summary>
+    /// Типы урона.
+    /// </summary>
+    public DbSet<TypeDamage> TypesDamage { get; set; }
+
+    /// <summary>
+    /// Экипировка. Мечи.
+    /// </summary>
+    public DbSet<Sword> Swords { get; set; }
+
+    /// <summary>
     /// Данные героев.
     /// </summary>
     public DbSet<Hero> Heroes { get; set; }
 
     /// <summary>
-    /// Типы существ.
-    /// </summary>
-    public DbSet<CreatureType> CreatureTypes { get; set; }
-
-    /// <summary>
     /// Таблица связи многие ко мноким между Heroes и CreatureTypes.
     /// </summary>
-    public DbSet<HeroCreatureType> HeroCreatureType { get; set; }
+    public DbSet<X_HeroCreatureType> X_HeroCreatureType { get; set; }
 
     /// <summary>
     /// Конфигурация модели данных.
@@ -64,12 +76,12 @@ public class DbContext_Game03Data(DbContextOptions<DbContext_Game03Data> options
     /// <param name="modelBuilder">Построитель модели.</param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        _ = modelBuilder.ApplyConfiguration(new HeroesConfiguration());
-        _ = modelBuilder.ApplyConfiguration(new CreatureTypesConfiguration());
-        _ = modelBuilder.ApplyConfiguration(new X_HeroCreatureTypeConfiguration());
+        //_ = modelBuilder.ApplyConfiguration(new HeroesConfiguration());
+        //_ = modelBuilder.ApplyConfiguration(new CreatureTypesConfiguration());
+        //_ = modelBuilder.ApplyConfiguration(new X_HeroCreatureTypeConfiguration());
 
-        _ = modelBuilder.ApplyConfiguration(new EquipmentSwordConfiguration());
-        _ = modelBuilder.ApplyConfiguration(new TypeDamageConfiguration());
+        //_ = modelBuilder.ApplyConfiguration(new EquipmentSwordConfiguration());
+        _ = modelBuilder.ApplyConfiguration(new SwordConfiguration());
 
         modelBuilder.ModelToSnakeCase();
     }

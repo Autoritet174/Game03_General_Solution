@@ -5,25 +5,25 @@ namespace Server_DB_Data.Entities;
 /// <summary>
 /// Базовый класс от которого наследуем все сущности.
 /// </summary>
-public abstract class Entity
+public interface IEntity
 {
     /// <summary>
-    /// UUID уникальный идентификатор.
+    /// Уникальный идентификатор.
     /// </summary>
-    public required Guid Id { get; set; }
+    int Id { get; set; }
 
     /// <summary>
     /// Уникальное наименование на английском.
     /// </summary>
-    public required string Name { get; set; }
+    string Name { get; set; }
 
     /// <summary>
     /// Редкость.
     /// </summary>
-    public required RarityLevel Rarity { get; set; }
+    RarityLevel Rarity { get; set; }
 
     /// <summary>
     /// Уникальный в игре, выпадет только один раз.
     /// </summary>
-    public required bool IsUnique { get; set; }
+    bool IsUnique { get; set; }
 }
