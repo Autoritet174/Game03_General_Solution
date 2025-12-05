@@ -1,0 +1,6 @@
+"id","name","rarity","is_unique","health","damage"
+1,"warrior",1,False,"16d24_200","4d21_44"
+2,"huntress",1,False,"10d28_145","5d21_55"
+3,"hammerman",1,False,"11d39_220","3d25_39"
+4,"rogue",1,False,"15d21_165","4d23_48"
+5,"orc with axes",1,False,"16d58_472","4d21_44"

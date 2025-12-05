@@ -7,14 +7,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Server_DB_Data.Entities.__Lists;
 
 /// <summary>
-/// Тип существа.
+/// Тип оружия.
 /// </summary>
-[Table("CreatureTypes", Schema = nameof(__Lists))]
+[Table("WeaponTypes", Schema = nameof(__Lists))]
 [Index(nameof(Name), IsUnique = true)]
-public class CreatureType
+public class WeaponType
 {
     /// <summary>
-    /// Первичный ключ. Назначается вручную.
+    /// Первичный ключ.
     /// </summary>
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
@@ -27,13 +27,13 @@ public class CreatureType
 
 
     /// <summary>
-    /// Навигационное свойство к Heroes.
+    /// Навигационное свойство к DamageTypes.
     /// </summary>
-    public ICollection<X_Hero_CreatureType> X_Hero_CreatureType { get; set; } = [];
+    public ICollection<X_WeaponType_DamageType> X_WeaponType_DamageType { get; set; } = [];
 
     /// <summary>
-    /// Герои этого типа существ. Вычисляемое свойство.
+    /// Типы урона для этого типа оружия. Вычисляемое свойство.
     /// </summary>
     [NotMapped]
-    public IReadOnlyCollection<Hero> Heroes => X_Hero_CreatureType?.Select(static x => x.Hero).ToList() ?? [];
+    public IReadOnlyCollection<DamageType> DamageTypes => X_WeaponType_DamageType?.Select(static x => x.DamageType).ToList() ?? [];
 }

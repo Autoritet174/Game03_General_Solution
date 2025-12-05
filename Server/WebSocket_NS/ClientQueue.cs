@@ -1,11 +1,11 @@
-﻿using System.Net.WebSockets;
-using System.Threading.Channels;
+//using System.Net.WebSockets;
+//using System.Threading.Channels;
 
-namespace Server.WebSocket_NS;
+//namespace Server.WebSocket_NS;
 
-/// <summary>
-/// Очередь WebSocket соединений для фоновой обработки.
-/// </summary>
+///// <summary>
+///// Очередь WebSocket соединений для фоновой обработки.
+///// </summary>
 //public class ClientQueue
 //{
 //    private readonly Channel<WebSocket> _queue = Channel.CreateUnbounded<WebSocket>();

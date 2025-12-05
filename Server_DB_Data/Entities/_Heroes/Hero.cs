@@ -1,5 +1,6 @@
 using General;
 using Microsoft.EntityFrameworkCore;
+using Server_DB_Data.Entities.__Lists;
 using Server_DB_Data.Entities.X_Cross;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -9,7 +10,7 @@ namespace Server_DB_Data.Entities._Heroes;
 /// <summary>
 /// Базовая версия героя.
 /// </summary>
-[Table("heroes", Schema = "_heroes")]
+[Table("Heroes", Schema = nameof(_Heroes))]
 [Index(nameof(Name), IsUnique = true)]
 public class Hero : IEntity
 {
@@ -55,10 +56,15 @@ public class Hero : IEntity
     [Required, MaxLength(255)]
     public required string Damage { get; set; }
 
-    /// <summary>
-    /// Список из типов существ к котором принадлежит герой.
-    /// </summary>
-    [Required]
-    public ICollection<X_HeroCreatureType> CreatureTypes { get; set; } = [];
 
+    /// <summary>
+    /// Навигационное свойство к CreatureTypes.
+    /// </summary>
+    public ICollection<X_Hero_CreatureType> X_Hero_CreatureType { get; set; } = [];
+
+    /// <summary>
+    /// Типы существ героя. Вычисляемое свойство.
+    /// </summary>
+    [NotMapped]
+    public IReadOnlyCollection<CreatureType> CreatureTypes => X_Hero_CreatureType?.Select(static x => x.CreatureType).ToList() ?? [];
 }

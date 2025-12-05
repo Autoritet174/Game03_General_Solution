@@ -1,18 +1,17 @@
 using General;
 using Microsoft.EntityFrameworkCore;
 using Server_DB_Data.Entities.__Lists;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Server_DB_Data.Entities._Equipment;
 
 /// <summary>
-/// Экипировка. Меч.
+/// Экипировка. Оружие.
 /// </summary>
-[Table("sword", Schema = "_equipment")]
+[Table("Weapons", Schema = nameof(_Equipment))]
 [Index(nameof(Name), IsUnique = true)]
-public class Sword : IEntity
+public class Weapon : IEntity
 {
     #region Entity
 
@@ -51,14 +50,14 @@ public class Sword : IEntity
     public required string Damage { get; set; }
 
     /// <summary>
-    /// Идентификатор TypeDamage.
+    /// Идентификатор WeaponType.
     /// </summary>
     [Required]
-    public required int TypeDamageId { get; set; }
+    public required int WeaponTypeId { get; set; }
 
     /// <summary>
-    /// Сущность TypeDamage.
+    /// Сущность WeaponType.
     /// </summary>
-    [Required, ForeignKey(nameof(TypeDamageId))]
-    public required TypeDamage TypeDamage { get; set; }
+    [Required, ForeignKey(nameof(WeaponTypeId))]
+    public required WeaponType WeaponTypes { get; set; }
 }

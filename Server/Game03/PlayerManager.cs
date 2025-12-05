@@ -2,13 +2,22 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using Newtonsoft.Json.Linq;
-using Server_DB_UserData;
 using Server.Extensions;
+using Server_DB_UserData;
 
 namespace Server.Game03;
 
+/// <summary>
+/// Взаимодействие с игроком
+/// </summary>
+/// <param name="mongoRepository"></param>
 public class PlayerManager(MongoRepository mongoRepository)
 {
+    /// <summary>
+    /// Команда от игрока.
+    /// </summary>
+    /// <param name="jsonString"></param>
+    /// <returns></returns>
     public async Task Command(string jsonString)
     {
         var jsonData = JObject.Parse(jsonString);
@@ -17,7 +26,7 @@ public class PlayerManager(MongoRepository mongoRepository)
             return;
         }
 
-        var value = jsonData.GetValueSafe("command");
+        string? value = jsonData.GetValueSafe("command");
         if (string.IsNullOrEmpty(value))
         {
             return;
@@ -37,7 +46,7 @@ public class PlayerManager(MongoRepository mongoRepository)
     /// <summary>
     /// Отправить пользователю все его предметы
     /// </summary>
-    private void PushAllItems()
+    private static void PushAllItems()
     {
 
     }

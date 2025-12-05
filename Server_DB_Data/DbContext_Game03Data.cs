@@ -1,9 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Server_Common;
-using Server_DB_Data.Entities.__Lists;
 using Server_DB_Data.Entities._Equipment;
-using Server_DB_Data.Entities._Heroes;
 using Server_DB_Data.Entities.X_Cross;
+using Server_DB_Data.ModelBuilderData;
 
 namespace Server_DB_Data;
 
@@ -48,27 +47,37 @@ public class DbContext_Game03Data(DbContextOptions<DbContext_Game03Data> options
     /// <summary>
     /// Типы существ.
     /// </summary>
-    public DbSet<Entities.Directory.CreatureType> CreatureTypes { get; set; }
+    public DbSet<Entities.__Lists.CreatureType> CreatureTypes { get; set; }
 
     /// <summary>
     /// Типы урона.
     /// </summary>
-    public DbSet<TypeDamage> TypesDamage { get; set; }
+    public DbSet<Entities.__Lists.DamageType> DamageTypes { get; set; }
 
     /// <summary>
-    /// Экипировка. Мечи.
+    /// Типы оружия.
     /// </summary>
-    public DbSet<Sword> Swords { get; set; }
+    public DbSet<Entities.__Lists.WeaponType> WeaponTypes { get; set; }
+
+    /// <summary>
+    /// Экипировка. оружие.
+    /// </summary>
+    public DbSet<Entities._Equipment.Weapon> Weapons { get; set; }
 
     /// <summary>
     /// Данные героев.
     /// </summary>
-    public DbSet<Hero> Heroes { get; set; }
+    public DbSet<Entities._Heroes.Hero> Heroes { get; set; }
 
     /// <summary>
     /// Таблица связи многие ко мноким между Heroes и CreatureTypes.
     /// </summary>
-    public DbSet<X_HeroCreatureType> X_HeroCreatureType { get; set; }
+    public DbSet<Entities.X_Cross.X_Hero_CreatureType> X_Heros_CreatureTypes { get; set; }
+
+    /// <summary>
+    /// Таблица связи многие ко мноким между WeaponTypes и DamageTypes.
+    /// </summary>
+    public DbSet<Entities.X_Cross.X_WeaponType_DamageType> X_WeaponTypes_DamageTypes { get; set; }
 
     /// <summary>
     /// Конфигурация модели данных.
@@ -76,13 +85,15 @@ public class DbContext_Game03Data(DbContextOptions<DbContext_Game03Data> options
     /// <param name="modelBuilder">Построитель модели.</param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        //_ = modelBuilder.ApplyConfiguration(new HeroesConfiguration());
-        //_ = modelBuilder.ApplyConfiguration(new CreatureTypesConfiguration());
-        //_ = modelBuilder.ApplyConfiguration(new X_HeroCreatureTypeConfiguration());
+        _ = modelBuilder.ApplyConfiguration(new WeaponConfiguration());
+        _ = modelBuilder.ApplyConfiguration(new X_Hero_CreatureType_Configuration());
+        _ = modelBuilder.ApplyConfiguration(new X_WeaponType_DamageTypeConfiguration());
 
-        //_ = modelBuilder.ApplyConfiguration(new EquipmentSwordConfiguration());
-        _ = modelBuilder.ApplyConfiguration(new SwordConfiguration());
+        modelBuilder.ModelToSnakeCase(skipIfNameEnteredManual: true);
+        modelBuilder.FirstLetterToLowerInScheme();
 
-        modelBuilder.ModelToSnakeCase();
+        Data_DamageType.Add(modelBuilder);
+        Data_CreatureType.Add(modelBuilder);
+        Data_Hero.Add(modelBuilder);
     }
 }

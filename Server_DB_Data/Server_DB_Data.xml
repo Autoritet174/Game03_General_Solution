@@ -37,14 +37,19 @@
             Типы существ.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.DbContext_Game03Data.TypesDamage">
+        <member name="P:Server_DB_Data.DbContext_Game03Data.DamageTypes">
             <summary>
             Типы урона.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.DbContext_Game03Data.Swords">
+        <member name="P:Server_DB_Data.DbContext_Game03Data.WeaponTypes">
             <summary>
-            Экипировка. Мечи.
+            Типы оружия.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.DbContext_Game03Data.Weapons">
+            <summary>
+            Экипировка. оружие.
             </summary>
         </member>
         <member name="P:Server_DB_Data.DbContext_Game03Data.Heroes">
@@ -52,9 +57,14 @@
             Данные героев.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.DbContext_Game03Data.X_HeroCreatureType">
+        <member name="P:Server_DB_Data.DbContext_Game03Data.X_Heros_CreatureTypes">
             <summary>
             Таблица связи многие ко мноким между Heroes и CreatureTypes.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.DbContext_Game03Data.X_WeaponTypes_DamageTypes">
+            <summary>
+            Таблица связи многие ко мноким между WeaponTypes и DamageTypes.
             </summary>
         </member>
         <member name="M:Server_DB_Data.DbContext_Game03Data.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
@@ -88,69 +98,94 @@
             Уникальный в игре, выпадет только один раз.
             </summary>
         </member>
-        <member name="T:Server_DB_Data.Entities.X_Cross.X_HeroCreatureType">
+        <member name="T:Server_DB_Data.Entities.X_Cross.X_Hero_CreatureType">
             <summary>
             Таблица для связи Hero и CreatureType.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.X_Cross.X_HeroCreatureType.HeroId">
+        <member name="P:Server_DB_Data.Entities.X_Cross.X_Hero_CreatureType.HeroId">
             <summary>
-            Идентификатор Hero.
+            Идентификатор <see cref="T:Server_DB_Data.Entities._Heroes.Hero"/>.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.X_Cross.X_HeroCreatureType.CreatureTypeId">
+        <member name="P:Server_DB_Data.Entities.X_Cross.X_Hero_CreatureType.CreatureTypeId">
             <summary>
-            Идентификатор CreatureType.
+            Идентификатор <see cref="T:Server_DB_Data.Entities.__Lists.CreatureType"/>.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.X_Cross.X_HeroCreatureType.Hero">
+        <member name="P:Server_DB_Data.Entities.X_Cross.X_Hero_CreatureType.Hero">
             <summary>
-            Сущность Hero.
+            Сущность <see cref="T:Server_DB_Data.Entities._Heroes.Hero"/>.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.X_Cross.X_HeroCreatureType.CreatureType">
+        <member name="P:Server_DB_Data.Entities.X_Cross.X_Hero_CreatureType.CreatureType">
             <summary>
-            Сущность CreatureType.
+            Сущность <see cref="T:Server_DB_Data.Entities.__Lists.CreatureType"/>.
             </summary>
         </member>
-        <member name="T:Server_DB_Data.Entities._Equipment.Sword">
+        <member name="T:Server_DB_Data.Entities.X_Cross.X_WeaponType_DamageType">
             <summary>
-            Экипировка. Меч.
+            Таблица для связи Hero и CreatureType.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities._Equipment.Sword.Id">
+        <member name="P:Server_DB_Data.Entities.X_Cross.X_WeaponType_DamageType.WeaponTypeId">
+            <summary>
+            Идентификатор <see cref="T:Server_DB_Data.Entities.__Lists.WeaponType"/>.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.X_Cross.X_WeaponType_DamageType.DamageTypeId">
+            <summary>
+            Идентификатор <see cref="T:Server_DB_Data.Entities.__Lists.DamageType"/>.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.X_Cross.X_WeaponType_DamageType.WeaponType">
+            <summary>
+            Сущность <see cref="T:Server_DB_Data.Entities.__Lists.WeaponType"/>.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.X_Cross.X_WeaponType_DamageType.DamageType">
+            <summary>
+            Сущность <see cref="T:Server_DB_Data.Entities.__Lists.DamageType"/>.
+            </summary>
+        </member>
+        <member name="T:Server_DB_Data.Entities._Equipment.Weapon">
+            <summary>
+            Экипировка. Оружие.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities._Equipment.Weapon.Id">
             <summary>
             Первичный ключ. Автоинкремент.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities._Equipment.Sword.Name">
+        <member name="P:Server_DB_Data.Entities._Equipment.Weapon.Name">
             <summary>
             Уникальное наименование на английском.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities._Equipment.Sword.Rarity">
+        <member name="P:Server_DB_Data.Entities._Equipment.Weapon.Rarity">
             <summary>
             <inheritdoc/>
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities._Equipment.Sword.IsUnique">
+        <member name="P:Server_DB_Data.Entities._Equipment.Weapon.IsUnique">
             <summary>
             <inheritdoc/>
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities._Equipment.Sword.Damage">
+        <member name="P:Server_DB_Data.Entities._Equipment.Weapon.Damage">
             <summary>
             Урон. Формат DND кубиков, 2d2.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities._Equipment.Sword.TypeDamageId">
+        <member name="P:Server_DB_Data.Entities._Equipment.Weapon.WeaponTypeId">
             <summary>
-            Идентификатор TypeDamage.
+            Идентификатор WeaponType.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities._Equipment.Sword.TypeDamage">
+        <member name="P:Server_DB_Data.Entities._Equipment.Weapon.WeaponTypes">
             <summary>
-            Сущность TypeDamage.
+            Сущность WeaponType.
             </summary>
         </member>
         <member name="T:Server_DB_Data.Entities._Heroes.Hero">
@@ -188,68 +223,123 @@
             Урон. Формат DND кубиков, 2d2.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities._Heroes.Hero.CreatureTypes">
+        <member name="P:Server_DB_Data.Entities._Heroes.Hero.X_Hero_CreatureType">
             <summary>
-            Список из типов существ к котором принадлежит герой.
+            Навигационное свойство к CreatureTypes.
             </summary>
         </member>
-        <member name="T:Server_DB_Data.Entities.Directory.CreatureType">
+        <member name="P:Server_DB_Data.Entities._Heroes.Hero.CreatureTypes">
+            <summary>
+            Типы существ героя. Вычисляемое свойство.
+            </summary>
+        </member>
+        <member name="T:Server_DB_Data.Entities.__Lists.CreatureType">
             <summary>
             Тип существа.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.Directory.CreatureType.Id">
+        <member name="P:Server_DB_Data.Entities.__Lists.CreatureType.Id">
             <summary>
             Первичный ключ. Назначается вручную.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.Directory.CreatureType.Name">
+        <member name="P:Server_DB_Data.Entities.__Lists.CreatureType.Name">
             <summary>
             Уникальное наименование на английском.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.Directory.CreatureType.Heroes">
+        <member name="P:Server_DB_Data.Entities.__Lists.CreatureType.X_Hero_CreatureType">
             <summary>
-            Герои этого типа существа.
+            Навигационное свойство к Heroes.
             </summary>
         </member>
-        <member name="T:Server_DB_Data.Entities.__Lists.TypeDamage">
+        <member name="P:Server_DB_Data.Entities.__Lists.CreatureType.Heroes">
+            <summary>
+            Герои этого типа существ. Вычисляемое свойство.
+            </summary>
+        </member>
+        <member name="T:Server_DB_Data.Entities.__Lists.DamageType">
             <summary>
             Тип урона.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.__Lists.TypeDamage.Id">
+        <member name="P:Server_DB_Data.Entities.__Lists.DamageType.Id">
             <summary>
             Первичный ключ.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.__Lists.TypeDamage.Name">
+        <member name="P:Server_DB_Data.Entities.__Lists.DamageType.Name">
             <summary>
             Уникальное наименование на английском.
             </summary>
         </member>
-        <member name="T:Server_DB_Data.Migrations.Start1">
+        <member name="P:Server_DB_Data.Entities.__Lists.DamageType.NameRu">
+            <summary>
+            Наименование на русском.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.DamageType.DevHintRu">
+            <summary>
+            Подсказка для разработчика.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.DamageType.X_WeaponType_DamageType">
+            <summary>
+            Навигационное свойство к WeaponTypes.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.DamageType.WeaponTypes">
+            <summary>
+            Типы оружия для этого типа урона. Вычисляемое свойство.
+            </summary>
+        </member>
+        <member name="T:Server_DB_Data.Entities.__Lists.WeaponType">
+            <summary>
+            Тип оружия.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.WeaponType.Id">
+            <summary>
+            Первичный ключ.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.WeaponType.Name">
+            <summary>
+            Уникальное наименование на английском.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.WeaponType.X_WeaponType_DamageType">
+            <summary>
+            Навигационное свойство к DamageTypes.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.WeaponType.DamageTypes">
+            <summary>
+            Типы урона для этого типа оружия. Вычисляемое свойство.
+            </summary>
+        </member>
+        <member name="T:Server_DB_Data.Migrations.Init">
             <inheritdoc />
         </member>
-        <member name="M:Server_DB_Data.Migrations.Start1.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+        <member name="M:Server_DB_Data.Migrations.Init.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
             <inheritdoc />
         </member>
-        <member name="M:Server_DB_Data.Migrations.Start1.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+        <member name="M:Server_DB_Data.Migrations.Init.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
             <inheritdoc />
         </member>
-        <member name="M:Server_DB_Data.Migrations.Start1.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+        <member name="M:Server_DB_Data.Migrations.Init.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
-        <member name="T:Server_DB_Data.Migrations._EquipmentSwordFix1">
+        <member name="T:Server_DB_Data.Migrations.Fix1">
             <inheritdoc />
         </member>
-        <member name="M:Server_DB_Data.Migrations._EquipmentSwordFix1.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+        <member name="M:Server_DB_Data.Migrations.Fix1.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
             <inheritdoc />
         </member>
-        <member name="M:Server_DB_Data.Migrations._EquipmentSwordFix1.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+        <member name="M:Server_DB_Data.Migrations.Fix1.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
             <inheritdoc />
         </member>
-        <member name="M:Server_DB_Data.Migrations._EquipmentSwordFix1.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+        <member name="M:Server_DB_Data.Migrations.Fix1.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Server_DB_Data.Repositories.HeroRepository">

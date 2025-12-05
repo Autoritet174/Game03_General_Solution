@@ -53,18 +53,84 @@
             Представляет пользователя системы.
             </summary>
         </member>
+        <member name="P:Server_DB_Users.Entities.User.Id">
+            <summary>
+            Уникальный идентификатор пользователя.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Users.Entities.User.Email">
+            <summary>
+            Email адрес пользователя.
+            Может быть null, если пользователь зарегистрирован через сторонний сервис.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Users.Entities.User.EmailVerifiedAt">
+            <summary>
+            Дата и время подтверждения email адреса.
+            Null, если email еще не подтвержден.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Users.Entities.User.PasswordHash">
+            <summary>
+            Хеш пароля пользователя.
+            Может быть null, если используется аутентификация через сторонние сервисы.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Users.Entities.User.TimeZone">
+            <summary>
+            Часовой пояс пользователя.
+            Используется для корректного отображения времени в интерфейсе.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Users.Entities.User.IsAdmin">
+            <summary>
+            Флаг, указывающий, является ли пользователь администратором системы.
+            По умолчанию false.
+            </summary>
+        </member>
         <member name="P:Server_DB_Users.Entities.User.Bans">
             <summary>
-            Коллекция банов (1 ко многим)
+            Коллекция блокировок (банов), примененных к пользователю.
+            Связь "один ко многим" с сущностью <see cref="T:Server_DB_Users.Entities.User_Ban"/>.
             </summary>
         </member>
         <member name="T:Server_DB_Users.Entities.User_Ban">
             <summary>
-            Представляет пользователя системы.
+            Представляет запись о блокировке (бане) пользователя.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Users.Entities.User_Ban.Id">
+            <summary>
+            Уникальный идентификатор записи о блокировке.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Users.Entities.User_Ban.UserId">
+            <summary>
+            Идентификатор пользователя, к которому применена блокировка.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Users.Entities.User_Ban.CreatedAt">
+            <summary>
+            Дата и время создания записи о блокировке.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Users.Entities.User_Ban.ExpiresAt">
+            <summary>
+            Дата и время окончания блокировки.
+            Null, если блокировка бессрочная.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Users.Entities.User_Ban.UserBansReasonsId">
+            <summary>
+            Идентификатор причины блокировки.
+            Null, если причина не указана или используется системная причина.
             </summary>
         </member>
         <member name="P:Server_DB_Users.Entities.User_Ban.User">
-            Навигация на User (многие к одному)
+            <summary>
+            Навигационное свойство к пользователю, к которому применена блокировка.
+            Связь "многие к одному" с сущностью <see cref="P:Server_DB_Users.Entities.User_Ban.User"/>.
+            </summary>
         </member>
         <member name="T:Server_DB_Users.Migrations.start">
             <inheritdoc />
@@ -118,40 +184,77 @@
             <summary>
             Репозиторий для управления пользователями.
             </summary>
-            <remarks>
-            Создаёт экземпляр <see cref="T:Server_DB_Users.Repositories.UserRepository"/>.
-            </remarks>
         </member>
         <member name="M:Server_DB_Users.Repositories.UserRepository.#ctor(Server_DB_Users.DbContext_Game03Users)">
             <summary>
-            
+            Инициализирует новый экземпляр класса <see cref="T:Server_DB_Users.Repositories.UserRepository"/>.
             </summary>
-            <param name="dbContext">Контекст базы данных.</param>
-            <exception cref="T:System.ArgumentNullException"></exception>
+            <param name="dbContext">Контекст базы данных для работы с пользователями.</param>
+            <exception cref="T:System.ArgumentNullException">
+            Выбрасывается, если <paramref name="dbContext"/> равен null.
+            </exception>
         </member>
         <member name="M:Server_DB_Users.Repositories.UserRepository.AddAsync(System.String,System.String)">
             <summary>
-            Добавляет нового пользователя.
+            Асинхронно добавляет нового пользователя в базу данных.
             </summary>
-            <param name="emailValidated"></param>
-            <param name="passwordHashValidated"></param>
-            <returns></returns>
+            <param name="emailValidated">Подтвержденный email адрес пользователя.</param>
+            <param name="passwordHashValidated">Хеш пароля пользователя.</param>
+            <returns>Задача, представляющая асинхронную операцию добавления.</returns>
+            <remarks>
+            Создает нового пользователя с указанными email и хешем пароля,
+            генерирует уникальный идентификатор и сохраняет в базу данных.
+            </remarks>
         </member>
         <member name="M:Server_DB_Users.Repositories.UserRepository.UpdateAsync(Server_DB_Users.Entities.User)">
             <summary>
-            Обновляет переданную сущность пользователя в базе данных.
+            Асинхронно обновляет данные пользователя в базе данных.
             </summary>
-            <param name="user">Сущность пользователя с обновлёнными данными.</param>
-            <exception cref="T:System.ArgumentNullException">Если равен null.</exception>
-            <exception cref="T:System.ArgumentException">Если идентификатор пустой.</exception>
-            <exception cref="T:System.InvalidOperationException">Если сущность с таким идентификатором не найдена.</exception>
+            <param name="user">Сущность пользователя с обновленными данными.</param>
+            <returns>Задача, представляющая асинхронную операцию обновления.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            Выбрасывается, если <paramref name="user"/> равен null.
+            </exception>
+            <exception cref="T:System.ArgumentException">
+            Выбрасывается, если идентификатор пользователя является пустым GUID.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            Выбрасывается, если сущность пользователя с указанным идентификатором не найдена в базе данных.
+            </exception>
+        </member>
+        <member name="M:Server_DB_Users.Repositories.UserRepository.GetAllAsync">
+            <summary>
+            Асинхронно получает всех пользователей из базы данных.
+            </summary>
+            <returns>
+            Задача, результатом которой является список всех пользователей.
+            Записи возвращаются без отслеживания изменений (AsNoTracking).
+            </returns>
+        </member>
+        <member name="M:Server_DB_Users.Repositories.UserRepository.GetByIdAsync(System.Guid)">
+            <summary>
+            Асинхронно получает пользователя по его идентификатору.
+            </summary>
+            <param name="id">Идентификатор пользователя.</param>
+            <returns>
+            Задача, результатом которой является найденный пользователь или null, если пользователь не найден.
+            </returns>
         </member>
         <member name="M:Server_DB_Users.Repositories.UserRepository.GetByEmailWithBansAsync(System.String)">
             <summary>
-            Возвращает пользователя по e-mail (без учёта регистра) с банами.
+            Асинхронно получает пользователя по email адресу вместе с активными блокировками.
             </summary>
-            <param name="name"></param>
-            <returns>Найденная запись или null.</returns>
+            <param name="email">Email адрес пользователя (без учета регистра).</param>
+            <returns>
+            Задача, результатом которой является найденный пользователь с коллекцией активных блокировок
+            или null, если пользователь не найден или email не указан.
+            Запись возвращается без отслеживания изменений (AsNoTracking).
+            </returns>
+            <remarks>
+            Поиск выполняется без учета регистра символов в email.
+            Включает только активные блокировки (те, у которых дата создания меньше или равна текущей дате
+            и либо не указана дата окончания, либо она еще не наступила).
+            </remarks>
         </member>
     </members>
 </doc>

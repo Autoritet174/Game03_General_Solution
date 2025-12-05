@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.11.35431.28
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11222.15 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{0763086D-3789-4A4B-85C8-C5C1963BF2E0}"
 EndProject
@@ -20,6 +20,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server_DB_Users", "Server_DB_Users\Server_DB_Users.csproj", "{1302F570-402D-B3EC-12D5-3170F63120E8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Game03Client", "Game03Client\Game03Client.csproj", "{B42209D4-00DF-A86F-E711-D9E4DAA3E783}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решения", "Элементы решения", "{F0928380-B10D-4174-AB8E-C54541D80172}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
