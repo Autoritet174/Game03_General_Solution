@@ -4,71 +4,6 @@
         <name>Server</name>
     </assembly>
     <members>
-        <member name="T:Server.ClientManager2">
-            <summary>
-            Управляет всеми подключёнными клиентами.
-            </summary>
-        </member>
-        <member name="F:Server.ClientManager2._clients">
-            <summary>
-            Все клиенты у которых есть хотя бы один открытый веб сокет
-            </summary>
-        </member>
-        <member name="M:Server.ClientManager2.#ctor">
-            <summary>
-            Конструктор и запуск фоновой задачи.
-            </summary>
-        </member>
-        <member name="M:Server.ClientManager2.AddSocket(System.String,System.Net.WebSockets.WebSocket)">
-            <summary>
-            Добавляет WebSocket клиенту.
-            </summary>
-        </member>
-        <member name="M:Server.ClientManager2.RemoveSocket(System.String,System.Net.WebSockets.WebSocket)">
-            <summary>
-            Удаляет WebSocket клиента.
-            </summary>
-        </member>
-        <member name="M:Server.ClientManager2.HandleClientMessage(System.String,System.String)">
-            <summary>
-            Обрабатывает сообщение от клиента.
-            </summary>
-        </member>
-        <member name="M:Server.ClientManager2.GetAllClients">
-            <summary>
-            Возвращает всех клиентов.
-            </summary>
-        </member>
-        <member name="T:Server.ConnectedClient">
-            <summary>
-            Хранит список WebSocket-соединений одного клиента.
-            </summary>
-        </member>
-        <member name="M:Server.ConnectedClient.#ctor(System.String)">
-            <summary>
-            Хранит список WebSocket-соединений одного клиента.
-            </summary>
-        </member>
-        <member name="F:Server.ConnectedClient._socket">
-            <summary>
-            Потокобезопасный список WebSocket-соединений.
-            </summary>
-        </member>
-        <member name="M:Server.ConnectedClient.AddSocket(System.Net.WebSockets.WebSocket)">
-            <summary>
-            Добавляет WebSocket.
-            </summary>
-        </member>
-        <member name="M:Server.ConnectedClient.RemoveSocket(System.Net.WebSockets.WebSocket)">
-            <summary>
-            Удаляет WebSocket.
-            </summary>
-        </member>
-        <member name="M:Server.ConnectedClient.GetSockets">
-            <summary>
-            Возвращает все активные WebSocket'ы клиента.
-            </summary>
-        </member>
         <member name="T:Server.Extensions.BsonDocumentExtension">
             <summary>
             Содержит расширения для работы с объектами <see cref="T:MongoDB.Bson.BsonDocument"/>.
@@ -103,6 +38,25 @@
             <param name="obj">Объект <see cref="T:Newtonsoft.Json.Linq.JObject"/>, из которого извлекается значение.</param>
             <param name="path">Путь к значению в формате JSONPath (например: "$.user.name")</param>
             <returns>Значение как строка, если оно существует и может быть преобразовано в строку; иначе <c>null</c>.</returns>
+        </member>
+        <member name="T:Server.Game03.PlayerManager">
+            <summary>
+            Взаимодействие с игроком
+            </summary>
+            <param name="mongoRepository"></param>
+        </member>
+        <member name="M:Server.Game03.PlayerManager.#ctor(Server_DB_UserData.MongoRepository)">
+            <summary>
+            Взаимодействие с игроком
+            </summary>
+            <param name="mongoRepository"></param>
+        </member>
+        <member name="M:Server.Game03.PlayerManager.Command(System.String)">
+            <summary>
+            Команда от игрока.
+            </summary>
+            <param name="jsonString"></param>
+            <returns></returns>
         </member>
         <member name="M:Server.Game03.PlayerManager.PushAllItems">
             <summary>
@@ -163,25 +117,6 @@
             Возникает, если кэш не был инициализирован.
             </exception>
         </member>
-        <member name="M:Server.GF.IsHashFromEmpty(System.String)">
-            <summary>
-            Проверка получился ли hash из пустой строки
-            </summary>
-            <param name="hash256"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Server.GF.DelayWithOutDebug2000ms">
-            <summary>
-            Добавляет задержку 2000 миллисекунд если работает без отладчика.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Server.GF.DelayWithOutDebug500">
-            <summary>
-            Добавляет задержку 2000 миллисекунд если работает без отладчика.
-            </summary>
-            <returns></returns>
-        </member>
         <member name="T:Server.Http_NS.Controllers_NS.Admin_NS.AddItemController">
             <summary>
             
@@ -192,6 +127,67 @@
             
             </summary>
             <returns></returns>
+        </member>
+        <member name="T:Server.Http_NS.Controllers_NS.Collection_NS.CollectionController">
+            <summary>
+            Контроллер для управления коллекциями пользователя.
+            </summary>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.Collection_NS.CollectionController.#ctor(Server_DB_UserData.MongoRepository)">
+            <summary>
+            Контроллер для управления коллекциями пользователя.
+            </summary>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.Collection_NS.CollectionController.Heroes">
+            <summary>
+            Получает коллекцию героев текущего пользователя.
+            </summary>
+            <returns>
+            Возвращает результат операции HTTP:
+            - 200 OK с коллекцией героев при успешном выполнении
+            - 401 Unauthorized, если пользователь не аутентифицирован или не имеет действительного идентификатора
+            </returns>
+            <remarks>
+            Метод доступен только аутентифицированным пользователям.
+            Применяется ограничение скорости запросов (rate limiting) с политикой "login".
+            Запрос выполняется асинхронно к MongoDB репозиторию для получения данных о героях.
+            </remarks>
+            <response code="200">Коллекция героев успешно получена</response>
+            <response code="401">Пользователь не аутентифицирован</response>
+        </member>
+        <member name="T:Server.Http_NS.Controllers_NS.ControllerBaseApi">
+            <summary>
+            Базовый абстрактный класс для всех контроллеров API.
+            Предоставляет общие функции и настройки для API-контроллеров.
+            </summary>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.ControllerBaseApi.BadRequestWithServerError(System.String)">
+            <summary>
+            Возвращает ответ BadRequest (400) с ключом локализации для ошибки сервера.
+            </summary>
+            <param name="KEY_LOCALIZATION">Ключ локализации, идентифицирующий конкретную ошибку.</param>
+            <returns>Ответ BadRequest с объектом, содержащим ключ локализации.</returns>
+            <remarks>
+            Используется для стандартизированной обработки ошибок с поддержкой локализации.
+            </remarks>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.ControllerBaseApi.BadRequestAuthInvalidCredentials">
+            <summary>
+            Возвращает стандартный ответ BadRequest (400) для ошибки неверных учетных данных аутентификации.
+            </summary>
+            <returns>Ответ BadRequest с ключом локализации для ошибки неверных учетных данных.</returns>
+            <remarks>
+            Соответствует ключу локализации <see cref="F:General.LocalizationKeys.Error.Server.InvalidCredentials"/>.
+            </remarks>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.ControllerBaseApi.BadRequestInvalidResponse">
+            <summary>
+            Возвращает стандартный ответ BadRequest (400) для ошибки неверного ответа сервера.
+            </summary>
+            <returns>Ответ BadRequest с ключом локализации для ошибки неверного ответа.</returns>
+            <remarks>
+            Соответствует ключу локализации <see cref="F:General.LocalizationKeys.Error.Server.InvalidResponse"/>.
+            </remarks>
         </member>
         <member name="T:Server.Http_NS.Controllers_NS.GeneralController">
             <summary>
@@ -417,6 +413,17 @@
             <param name="cancellationToken">Токен, сигнализирующий внешнее завершение приложения.</param>
             <returns>Задача, завершающаяся после попытки обработки остатка.</returns>
         </member>
+        <member name="T:Server.Http_NS.Controllers_NS.Users_NS.RegistrationController">
+            <summary>
+            Контроллер регистрации.
+            </summary>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.RegistrationController.Register">
+            <summary>
+            Регистрация.
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:Server.Http_NS.Middleware_NS.ExceptionLoggingMiddleware">
             <summary>
             Middleware для глобального перехвата исключений и логирования в файл.
@@ -437,6 +444,79 @@
             <summary>
             Основной метод middleware.
             </summary>
+        </member>
+        <member name="T:Server.Http_NS.Middleware_NS.SecurityHeadersMiddleware">
+            <summary>
+            Middleware для добавления HTTP-заголовков безопасности.
+            </summary>
+            <remarks>
+            Инициализирует новый экземпляр класса <see cref="T:Server.Http_NS.Middleware_NS.SecurityHeadersMiddleware"/>.
+            </remarks>
+            <param name="next">Следующий middleware в конвейере обработки запроса.</param>
+        </member>
+        <member name="M:Server.Http_NS.Middleware_NS.SecurityHeadersMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate)">
+            <summary>
+            Middleware для добавления HTTP-заголовков безопасности.
+            </summary>
+            <remarks>
+            Инициализирует новый экземпляр класса <see cref="T:Server.Http_NS.Middleware_NS.SecurityHeadersMiddleware"/>.
+            </remarks>
+            <param name="next">Следующий middleware в конвейере обработки запроса.</param>
+        </member>
+        <member name="M:Server.Http_NS.Middleware_NS.SecurityHeadersMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            Обрабатывает HTTP-запрос, добавляя заголовки безопасности к ответу.
+            </summary>
+            <param name="context">Контекст HTTP-запроса.</param>
+            <returns>Задача, представляющая асинхронную операцию обработки запроса.</returns>
+            <remarks>
+            Добавляет следующие заголовки безопасности:
+            <list type="bullet">
+            <item><description>Strict-Transport-Security: Принудительное использование HTTPS</description></item>
+            <item><description>X-Content-Type-Options: Запрет MIME-sniffing</description></item>
+            <item><description>X-Frame-Options: Запрет встраивания в iframe</description></item>
+            <item><description>X-XSS-Protection: Защита от XSS-атак</description></item>
+            <item><description>Content-Security-Policy: Политика безопасности контента</description></item>
+            </list>
+            </remarks>
+        </member>
+        <member name="T:Server.Jwt_NS.ClaimsExtensions">
+            <summary>
+            Предоставляет расширяющие методы для работы с утверждениями (claims) пользователя.
+            </summary>
+        </member>
+        <member name="M:Server.Jwt_NS.ClaimsExtensions.GetGuid(System.Security.Claims.ClaimsPrincipal)">
+            <summary>
+            Извлекает идентификатор пользователя в формате Guid из утверждений (claims).
+            </summary>
+            <param name="user">Объект <see cref="T:System.Security.Claims.ClaimsPrincipal"/>, представляющий аутентифицированного пользователя.</param>
+            <returns>
+            Идентификатор пользователя в формате <see cref="T:System.Guid"/> или null, если:
+            <list type="bullet">
+            <item><description>Идентификатор не найден в утверждениях</description></item>
+            <item><description>Идентификатор не может быть преобразован в Guid</description></item>
+            <item><description>Утверждения не содержат идентификатора</description></item>
+            </list>
+            </returns>
+            <remarks>
+            Метод ищет идентификатор пользователя в следующих утверждениях (в порядке приоритета):
+            <list type="number">
+            <item><description>"sub" (стандартное утверждение JWT для subject)</description></item>
+            <item><description>"id" (альтернативное утверждение для идентификатора)</description></item>
+            <item><description><see cref="F:System.Security.Claims.ClaimTypes.NameIdentifier"/> (стандартный тип утверждения .NET для идентификатора)</description></item>
+            </list>
+            Метод выполняет безопасное преобразование строки в Guid, возвращая null при неудаче.
+            </remarks>
+            <example>
+            <code>
+            // Получение идентификатора пользователя из контроллера
+            Guid? userId = User.GetGuid();
+            if (userId.HasValue)
+            {
+                // Использование идентификатора
+            }
+            </code>
+            </example>
         </member>
         <member name="T:Server.Jwt_NS.JwtOptions">
             <summary>
@@ -502,29 +582,26 @@
             </summary>
             <param name="args">Аргументы командной строки.</param>
         </member>
-        <member name="T:Server.UserAuth_NS.OpenWebSocketController">
+        <member name="T:Server.UserRegAuth_NS.OpenWebSocketController">
             <summary>
             Контроллер для аутентификации пользователей.
             </summary>
             <remarks>
             Конструктор контроллера.
             </remarks>
-            <param name="configuration">Конфигурация приложения для получения секретного ключа и параметров JWT.</param>
         </member>
-        <member name="M:Server.UserAuth_NS.OpenWebSocketController.#ctor">
+        <member name="M:Server.UserRegAuth_NS.OpenWebSocketController.#ctor">
             <summary>
             Контроллер для аутентификации пользователей.
             </summary>
             <remarks>
             Конструктор контроллера.
             </remarks>
-            <param name="configuration">Конфигурация приложения для получения секретного ключа и параметров JWT.</param>
         </member>
-        <member name="M:Server.UserAuth_NS.OpenWebSocketController.Login">
+        <member name="M:Server.UserRegAuth_NS.OpenWebSocketController.Login">
             <summary>
             Выполняет аутентификацию и возвращает JWT токен.
             </summary>
-            <param name="request">Модель с именем пользователя и паролем.</param>
             <returns>JWT токен при успешной аутентификации или ошибка 401.</returns>
         </member>
         <member name="T:Server.Utilities.JsonObjectExtension">
@@ -589,6 +666,65 @@
             <returns>
             Булево значение или <c>null</c>, если ключ не найден, значение <c>null</c> или не удаётся интерпретировать.
             </returns>
+        </member>
+        <member name="T:Server.Utilities.PassHasher">
+            <summary>
+            Предоставляет утилиты для хеширования и верификации паролей.
+            </summary>
+            <remarks>
+            Класс использует <see cref="T:Microsoft.AspNetCore.Identity.PasswordHasher`1"/> из ASP.NET Core Identity
+            для безопасного хеширования паролей с использованием современных алгоритмов.
+            </remarks>
+        </member>
+        <member name="M:Server.Utilities.PassHasher.Create(System.String,System.String)">
+            <summary>
+            Создает хеш пароля для указанного пользователя.
+            </summary>
+            <param name="user">Идентификатор пользователя или любая строка, связанная с пользователем.
+            Используется для добавления соли (salt) к хешу.</param>
+            <param name="password">Пароль в открытом виде, который необходимо захэшировать.</param>
+            <returns>Хешированная версия пароля, готовая для безопасного хранения.</returns>
+            <remarks>
+            Метод использует стандартный алгоритм хеширования ASP.NET Core Identity,
+            который включает соль (salt) и может автоматически обновлять алгоритмы при необходимости.
+            </remarks>
+            <example>
+            <code>
+            string userId = "user123";
+            string password = "MySecurePassword123";
+            string hashedPassword = PassHasher.Create(userId, password);
+            // Сохранить hashedPassword в базу данных
+            </code>
+            </example>
+        </member>
+        <member name="M:Server.Utilities.PassHasher.Verify(System.String,System.String,System.String)">
+            <summary>
+            Проверяет, соответствует ли предоставленный пароль хранимому хешу.
+            </summary>
+            <param name="user">Идентификатор пользователя или строка, использованная при создании хеша.</param>
+            <param name="hashedPassword">Хранимый хеш пароля из базы данных.</param>
+            <param name="providedPassword">Пароль, предоставленный пользователем для проверки.</param>
+            <returns>
+            <c>true</c>, если предоставленный пароль соответствует хешу; в противном случае <c>false</c>.
+            </returns>
+            <remarks>
+            Метод выполняет безопасное сравнение паролей, устойчивое к атакам по времени.
+            Автоматически определяет и поддерживает различные версии алгоритмов хеширования,
+            что позволяет обновлять старые хеши при следующем успешном входе пользователя.
+            </remarks>
+            <example>
+            <code>
+            string userId = "user123";
+            string storedHash = "..."; // Из базы данных
+            string userInput = "MySecurePassword123";
+            
+            bool isValid = PassHasher.Verify(userId, storedHash, userInput);
+            if (isValid)
+            {
+                // Пароль верный
+            }
+            </code>
+            </example>
         </member>
         <member name="T:Server.WebSocket_NS.WebSocketConnection">
             <summary>

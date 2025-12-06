@@ -32,6 +32,15 @@
             <param name="connectionString">Строка подключения, которую необходимо проверить.</param>
             <exception cref="T:System.Exception">Генерирует исключение в случае ошибки подключения.</exception>
         </member>
+        <member name="M:Server_DB_Data.DbContext_Game03Data.Create(System.String)">
+            <summary>
+            Создаёт новый экземпляр <see cref="T:Server_DB_Data.DbContext_Game03Data"/> с указанной строкой подключения.
+            </summary>
+            <param name="connectionString">Строка подключения к базе данных PostgreSQL.</param>
+            <returns>
+            Новый экземпляр <see cref="T:Server_DB_Data.DbContext_Game03Data"/>, сконфигурированный для работы с указанной базой данных.
+            </returns>
+        </member>
         <member name="P:Server_DB_Data.DbContext_Game03Data.CreatureTypes">
             <summary>
             Типы существ.
@@ -146,6 +155,11 @@
         <member name="P:Server_DB_Data.Entities.X_Cross.X_WeaponType_DamageType.DamageType">
             <summary>
             Сущность <see cref="T:Server_DB_Data.Entities.__Lists.DamageType"/>.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.X_Cross.X_WeaponType_DamageType.DamageCoef">
+            <summary>
+            Коэффициент типа урона у оружия.
             </summary>
         </member>
         <member name="T:Server_DB_Data.Entities._Equipment.Weapon">
@@ -308,6 +322,11 @@
             Уникальное наименование на английском.
             </summary>
         </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.WeaponType.NameRu">
+            <summary>
+            Уникальное наименование на русском.
+            </summary>
+        </member>
         <member name="P:Server_DB_Data.Entities.__Lists.WeaponType.X_WeaponType_DamageType">
             <summary>
             Навигационное свойство к DamageTypes.
@@ -316,6 +335,11 @@
         <member name="P:Server_DB_Data.Entities.__Lists.WeaponType.DamageTypes">
             <summary>
             Типы урона для этого типа оружия. Вычисляемое свойство.
+            </summary>
+        </member>
+        <member name="F:Server_DB_Data.Entities.__Lists.WeaponType.Mass">
+            <summary>
+            Масса оружия в граммах.
             </summary>
         </member>
         <member name="T:Server_DB_Data.Migrations.Init">
@@ -330,16 +354,52 @@
         <member name="M:Server_DB_Data.Migrations.Init.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
-        <member name="T:Server_DB_Data.Migrations.Fix1">
+        <member name="T:Server_DB_Data.Migrations.Fix2">
             <inheritdoc />
         </member>
-        <member name="M:Server_DB_Data.Migrations.Fix1.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+        <member name="M:Server_DB_Data.Migrations.Fix2.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
             <inheritdoc />
         </member>
-        <member name="M:Server_DB_Data.Migrations.Fix1.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+        <member name="M:Server_DB_Data.Migrations.Fix2.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
             <inheritdoc />
         </member>
-        <member name="M:Server_DB_Data.Migrations.Fix1.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+        <member name="M:Server_DB_Data.Migrations.Fix2.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.Fix3">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Fix3.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Fix3.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Fix3.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.Fix4">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Fix4.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Fix4.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Fix4.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.Fix5">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Fix5.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Fix5.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Fix5.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Server_DB_Data.Repositories.HeroRepository">

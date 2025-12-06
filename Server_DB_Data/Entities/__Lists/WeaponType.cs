@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Server_DB_Data.Entities._Heroes;
 using Server_DB_Data.Entities.X_Cross;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -25,6 +24,12 @@ public class WeaponType
     [Required, MaxLength(255)]
     public required string Name { get; set; }
 
+    /// <summary>
+    /// Уникальное наименование на русском.
+    /// </summary>
+    [Required, MaxLength(255)]
+    public required string NameRu { get; set; }
+
 
     /// <summary>
     /// Навигационное свойство к DamageTypes.
@@ -35,5 +40,11 @@ public class WeaponType
     /// Типы урона для этого типа оружия. Вычисляемое свойство.
     /// </summary>
     [NotMapped]
-    public IReadOnlyCollection<DamageType> DamageTypes => X_WeaponType_DamageType?.Select(static x => x.DamageType).ToList() ?? [];
+    public IReadOnlyCollection<DamageType> DamageTypes => X_WeaponType_DamageType.Select(static x => x.DamageType).ToList() ?? [];
+
+    /// <summary>
+    /// Масса оружия в граммах.
+    /// </summary>
+    [Required]
+    public required int Mass = 0;
 }
