@@ -390,18 +390,6 @@
         <member name="M:Server_DB_Data.Migrations.Fix4.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
-        <member name="T:Server_DB_Data.Migrations.Fix5">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.Fix5.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.Fix5.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.Fix5.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
         <member name="T:Server_DB_Data.Repositories.HeroRepository">
             <summary>
             Репозиторий для управления пользователями.

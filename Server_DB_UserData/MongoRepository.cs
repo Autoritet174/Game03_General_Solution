@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using System.Runtime.CompilerServices;
 
 namespace Server_DB_UserData;
 
@@ -57,7 +56,7 @@ public class MongoRepository
 
             MongoClient client = new(settings.Value.ConnectionString);
             IMongoDatabase database = client.GetDatabase(userDataDb.Name);
-            IMongoCollection<BsonDocument>  collection_heroes = database.GetCollection<BsonDocument>(heroesCollectionName);
+            IMongoCollection<BsonDocument> collection_heroes = database.GetCollection<BsonDocument>(heroesCollectionName);
             _ = await collection_heroes.Find(new BsonDocument()).FirstOrDefaultAsync();
         }
         catch
@@ -110,11 +109,11 @@ public class MongoRepository
             {
                 _id = d["_id"].AsObjectId.ToString(),
                 owner_id = GetGuid("owner_id"),
-                hero_id = GetGuid("hero_id"),
+                hero_id = GetInt("hero_id"),
 
                 level = GetInt("level"),
-                exp_now = GetDouble("exp_now"),
-                exp_max = GetDouble("exp_max"),
+                exp_now = GetLong("exp_now"),
+                exp_max = GetLong("exp_max"),
 
                 group_name = GetString("group_name"),
                 health = GetLong("health"),

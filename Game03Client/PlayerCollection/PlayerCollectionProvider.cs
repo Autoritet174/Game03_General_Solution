@@ -57,17 +57,17 @@ internal class PlayerCollectionProvider(PlayerCollectionCache _collectionCache, 
         _collectionCache.listHero.Clear();
         foreach (JToken h in heroes)
         {
-            string id = h["id"]?.ToString() ?? string.Empty;
-            Guid owner_id = new(h["owner_id"]?.ToString());
-            Guid hero_id = new(h["hero_id"]?.ToString());
-            string group_name = h["group_name"]?.ToString()?.Trim() ?? string.Empty;
-            long health = Convert.ToInt64(h["health"]?.ToString());
-            long attack = Convert.ToInt64(h["attack"]?.ToString());
-            long strength = Convert.ToInt64(h["strength"]);
-            long agility = Convert.ToInt64(h["agility"]?.ToString());
-            long intelligence = Convert.ToInt64(h["intelligence"]?.ToString());
-            long haste = Convert.ToInt64(h["haste"]?.ToString());
-            int level = Convert.ToInt32(h["level"]);
+            string id = h["id"].GetString();
+            Guid owner_id = h["owner_id"].GetGuid();
+            int hero_id = h["hero_id"].GetInt();
+            string group_name = h["group_name"].GetString();
+            long health = h["health"].GetLong();
+            long attack = h["attack"].GetLong();
+            long strength = h["strength"].GetLong();
+            long agility = h["agility"].GetLong();
+            long intelligence = h["intelligence"].GetLong();
+            long haste = h["haste"].GetLong();
+            int level = h["level"].GetInt();
 
 
             CollectionHero cHero = new(id, owner_id, _gameData.GetHeroById(hero_id), group_name, health, attack,

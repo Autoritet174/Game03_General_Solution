@@ -28,8 +28,8 @@ public interface IGameData
     /// <summary>
     /// Находит и возвращает базовую сущность героя по его уникальному идентификатору.
     /// </summary>
-    /// <param name="guid">Уникальный идентификатор (GUID) искомого героя.</param>
-    /// <returns>Базовая сущность героя (<see cref="HeroBase"/>) с указанным <paramref name="guid"/>,
+    /// <param name="id">Уникальный идентификатор (int) искомого героя.</param>
+    /// <returns>Базовая сущность героя (<see cref="HeroBase"/>) с указанным <paramref name="id"/>,
     /// или <c>null</c> (если поддерживается типом), если герой не найден.</returns>
-    HeroBase GetHeroById(Guid guid);
+    HeroBase GetHeroById(int id);
 }

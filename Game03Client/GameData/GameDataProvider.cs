@@ -64,7 +64,8 @@ internal class GameDataProvider(IHttpRequester httpRequesterProvider, GameDataCa
         List<HeroBase> allHeroes = [];
         foreach (JObject heroObj in heroesArray.Cast<JObject>())
         {
-            Guid id = new(heroObj["id"]?.ToString());
+            JToken? t_id = heroObj["id"];
+            int id = t_id != null ? (int)t_id : 0;
             string? name = heroObj["name"]?.ToString();
             if (name == null)
             {
@@ -81,8 +82,8 @@ internal class GameDataProvider(IHttpRequester httpRequesterProvider, GameDataCa
     }
 
     /// <inheritdoc/>
-    public HeroBase GetHeroById(Guid guid)
+    public HeroBase GetHeroById(int id)
     {
-        return globalFunctionsProviderCache._allHeroes.FirstOrDefault(a => a.Id == guid);
+        return globalFunctionsProviderCache._allHeroes.FirstOrDefault(a => a.Id == id);
     }
 }

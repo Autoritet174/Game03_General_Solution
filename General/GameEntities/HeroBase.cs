@@ -12,13 +12,13 @@ namespace General.GameEntities;
 /// <param name="rarity">Уровень редкости героя, определяемый перечислением <see cref="RarityLevel"/>.</param>
 /// <param name="baseHealth">Базовое значение здоровья героя.</param>
 /// <param name="baseAttack">Базовое значение атаки героя.</param>
-public class HeroBase(Guid id, string name, RarityLevel rarity, float baseHealth, float baseAttack)
+public class HeroBase(int id, string name, RarityLevel rarity, float baseHealth, float baseAttack)
 {
 
     /// <summary>
     /// Уникальный идентификатор героя.
     /// </summary>
-    public Guid Id { get; } = id;
+    public int Id { get; } = id;
 
     /// <summary>
     /// Имя героя на английском языке.
