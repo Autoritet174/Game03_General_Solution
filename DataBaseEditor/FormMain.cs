@@ -56,7 +56,9 @@ public partial class FormMain : Form
                 {
                     DamageTypeId = damageTypeId,
                     WeaponTypeId = id,
-                    DamageCoef = damageCoef
+                    DamageCoef = damageCoef,
+                    DamageType = db.DamageTypes.First(a => a.Id == damageTypeId),
+                    WeaponType = db.WeaponTypes.First(a => a.Id == id),
                 };
                 _ = db.X_WeaponTypes_DamageTypes.Add(x);
             }

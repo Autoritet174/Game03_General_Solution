@@ -51,6 +51,11 @@
             Типы урона.
             </summary>
         </member>
+        <member name="P:Server_DB_Data.DbContext_Game03Data.SmithingMaterials">
+            <summary>
+            Материалы для кузнечного дела.
+            </summary>
+        </member>
         <member name="P:Server_DB_Data.DbContext_Game03Data.WeaponTypes">
             <summary>
             Типы оружия.
@@ -307,6 +312,66 @@
             Типы оружия для этого типа урона. Вычисляемое свойство.
             </summary>
         </member>
+        <member name="T:Server_DB_Data.Entities.__Lists.MaterialDamagePercent">
+            <summary>
+            Коэфициенты урона для материалов.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.MaterialDamagePercent.Id">
+            <summary>
+            Первичный ключ.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.MaterialDamagePercent.SmithingMaterialsId">
+            <summary>
+            Возвращает или задает идентификатор <see cref="T:Server_DB_Data.Entities.__Lists.SmithingMaterials"/>, связанного с данным объектом.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.MaterialDamagePercent.SmithingMaterials">
+            <summary>
+            Навигационное свойство к <see cref="T:Server_DB_Data.Entities.__Lists.SmithingMaterials"/>.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.MaterialDamagePercent.DamageTypeId">
+            <summary>
+            Возвращает или задает идентификатор <see cref="T:Server_DB_Data.Entities.__Lists.DamageType"/>, связанного с данным объектом.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.MaterialDamagePercent.DamageType">
+            <summary>
+            Навигационное свойство к <see cref="T:Server_DB_Data.Entities.__Lists.DamageType"/>.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.MaterialDamagePercent.Percent">
+            <summary>
+            Урон оружия в процентах.
+            </summary>
+        </member>
+        <member name="T:Server_DB_Data.Entities.__Lists.SmithingMaterials">
+            <summary>
+            Тип существа.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.SmithingMaterials.Id">
+            <summary>
+            Первичный ключ.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.SmithingMaterials.Name">
+            <summary>
+            Уникальное наименование на английском.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.SmithingMaterials.NameRu">
+            <summary>
+            Наименование на русском.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.SmithingMaterials.MaterialDamagePercent">
+            <summary>
+            Навигационное свойство к <see cref="T:Server_DB_Data.Entities.__Lists.MaterialDamagePercent"/>.
+            </summary>
+        </member>
         <member name="T:Server_DB_Data.Entities.__Lists.WeaponType">
             <summary>
             Тип оружия.
@@ -388,6 +453,78 @@
             <inheritdoc />
         </member>
         <member name="M:Server_DB_Data.Migrations.Fix4.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.SmithingMaterials">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SmithingMaterials.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SmithingMaterials.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SmithingMaterials.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.SmithingMaterials_Fix">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.SmithingMaterials_Fix2">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix2.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix2.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix2.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.SmithingMaterials_Fix3">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix3.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix3.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix3.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.SmithingMaterials_Fix4">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix4.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix4.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix4.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.SmithingMaterials_Fix5">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix5.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix5.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix5.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Server_DB_Data.Repositories.HeroRepository">

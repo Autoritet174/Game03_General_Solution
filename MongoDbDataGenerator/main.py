@@ -1,55 +1,16 @@
+from DataGenerator.DataGenerator import Generate
 from Dice.DiceFinder import find_dice_combination
 from Dice.DiceSimulator import DiceSimulator
 
-# Строка подключения
-# uri = "mongodb://localhost:27017/"
-
-# Создаём клиент
-# client = MongoClient(uri, uuidRepresentation='standard')
-
-# Выбираем базу данных и коллекцию (они создадутся, если не существуют)
-# db = client['userData']
-# collection = db['heroes']
-
-# Используем стандартное пространство имён (например, DNS)
-# namespace = uuid.NAMESPACE_DNS  # или NAMESPACE_URL, NAMESPACE_OID и др.
-#
-# user_uuid = uuid.UUID("113ae534-2310-40e3-a895-f3747ea976ca")
-# hero_warrior_uuid = uuid.UUID("58e860c7-3819-4f5b-bdff-f36850411498")
-# hero_huntress_uuid = uuid.UUID("64ec68ff-ee4d-4204-a830-5f992f64fae9")
-# hero_orc_with_axes_uuid = uuid.UUID("b582d3e8-d673-462f-80ad-f59b0deb1373")
-# hero_hammerman_uuid = uuid.UUID("c5c4aaa5-a4d3-4f4b-ac8c-26d77f6ea198")
-# hero_rogue_uuid = uuid.UUID("eb93675d-d05f-43ad-857f-e47d43152e43")
-#
-# r = random.Random
-# random_number = random.randint(0, 100)
-#
-# # Данные для вставки
-# for i in range(30):
-#     data = {
-#         "owner_id": user_uuid,
-#         "hero_id": hero_warrior_uuid,
-#         "health": random.randint(0, 100),
-#         "attack": random.randint(0, 100),
-#         "speed": random.randint(0, 100),
-#         "strength": random.randint(0, 100),
-#         "agility": random.randint(0, 100),
-#         "intelligence": random.randint(0, 100)
-#     }
-#     result = collection.insert_one(data)
-# 
-
-
-# Обновляем имя поля 'speed' на 'haste'
-# result = collection.update_many({"speed": {"$exists": True}}, {"$rename": {"speed": "haste"}})
-# Закрываем соединение
-# client.close()
-# print(f"выполнено")
-mode = 2
+mode = 3
 if mode == 1:
     simulator = DiceSimulator("10d199")
     stats = simulator.run_simulation(100000)
-else:
+
+if mode == 2:
     candidates = find_dice_combination(15, 5, 20)
     for i in candidates:
         print(i)
+
+if mode == 3:
+    Generate()

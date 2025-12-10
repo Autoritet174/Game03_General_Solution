@@ -1,4 +1,4 @@
-dotnet ef migrations add Fix5 `
+dotnet ef migrations add SmithingMaterials_Fix5 `
 --project ".\Server_DB_Data\Server_DB_Data.csproj" `
 --startup-project ".\Server\Server.csproj" `
 --context DbContext_Game03Data
@@ -9,7 +9,7 @@ dotnet ef database update `
 --context DbContext_Game03Data
 
 ÎÁÍÎÂËÅÍÈÅ ÄÎ ÓÊÀÇÀÍÍÎÉ ÌÈÃĞÀÖÈÈ ÂÊËŞ×ÈÒÅËÜÍÎ, ÂÑ¨ ×ÒÎ ÏÎÇÆÅ ÂÛÏÎËÍÈÒ ÎÒÊÀÒ Â ÎÁĞÀÒÅÌ ÏÎĞßÄÊÅ
-dotnet ef database update Fix2 `
+dotnet ef database update SmithingMaterials_Fix3 `
 --project ".\Server_DB_Data\Server_DB_Data.csproj" `
 --startup-project ".\Server\Server.csproj" `
 --context DbContext_Game03Data

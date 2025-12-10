@@ -71,6 +71,11 @@ public class DbContext_Game03Data(DbContextOptions<DbContext_Game03Data> options
     public DbSet<Entities.__Lists.DamageType> DamageTypes { get; set; }
 
     /// <summary>
+    /// Материалы для кузнечного дела.
+    /// </summary>
+    public DbSet<Entities.__Lists.SmithingMaterials> SmithingMaterials { get; set; }
+
+    /// <summary>
     /// Типы оружия.
     /// </summary>
     public DbSet<Entities.__Lists.WeaponType> WeaponTypes { get; set; }

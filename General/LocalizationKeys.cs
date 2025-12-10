@@ -43,6 +43,29 @@ public static class LocalizationKeys
             public const string ExitGame = $"{_Label}{nameof(ExitGame)}";
             public const string Email = $"{_Label}{nameof(Email)}";
             public const string Password = $"{_Label}{nameof(Password)}";
+
+            public static class Slot
+            {
+                private const string _Slots = $"{_Label}{nameof(Slot)}.";
+                public static string GetKey(string slot) => $"{_Slots}{slot}";
+
+                public const string Head = $"{_Slots}{nameof(Head)}";
+                public const string Shoulders = $"{_Slots}{nameof(Shoulders)}";
+                public const string Chest = $"{_Slots}{nameof(Chest)}";
+                public const string Hands = $"{_Slots}{nameof(Hands)}";
+                public const string Legs = $"{_Slots}{nameof(Legs)}";
+                public const string Feet = $"{_Slots}{nameof(Feet)}";
+                public const string Waist = $"{_Slots}{nameof(Waist)}";
+                public const string Wrist = $"{_Slots}{nameof(Wrist)}";
+                public const string Back = $"{_Slots}{nameof(Back)}";
+                public const string Bracelet = $"{_Slots}{nameof(Bracelet)}";
+                public const string LeftHand = $"{_Slots}{nameof(LeftHand)}";
+                public const string RightHand = $"{_Slots}{nameof(RightHand)}";
+                public const string Neck = $"{_Slots}{nameof(Neck)}";
+                public const string Ring = $"{_Slots}{nameof(Ring)}";
+                public const string Earring = $"{_Slots}{nameof(Earring)}";
+                public const string Trinket = $"{_Slots}{nameof(Trinket)}";
+            }
         }
     }
 
