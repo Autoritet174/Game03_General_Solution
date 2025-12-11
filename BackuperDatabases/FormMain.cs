@@ -5,7 +5,7 @@ namespace BackuperDatabases;
 
 public partial class FormMain : Form
 {
-    enum Database
+    private enum Database
     {
         [Description("PostgreSQL - Users database")]
         PostgreSql_Users,
@@ -106,20 +106,20 @@ public partial class FormMain : Form
 
 
     /*
-    должен быть файл
+    РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ С„Р°Р№Р»
     %APPDATA%\postgresql\pgpass.conf
 
-    содержание
-    localhost:5432:*:postgres:мойПароль
+    СЃРѕРґРµСЂР¶Р°РЅРёРµ
+    localhost:5432:*:postgres:РјРѕР№РџР°СЂРѕР»СЊ
     */
-    static void Backup(Database database)
+    private static void Backup(Database database)
     {
         BackupFolderReset();
 
         string dbFileName, dbFilePath, bat, dbName;
 
         ////////////////////////////////////////////////////////////////////////////////////////
-        // Создание бэкапа базы данных
+        // РЎРѕР·РґР°РЅРёРµ Р±СЌРєР°РїР° Р±Р°Р·С‹ РґР°РЅРЅС‹С…
         if (database is Database.PostgreSql_Users or Database.PostgreSql_Data)
         {
             dbName = database == Database.PostgreSql_Users ? "Game03_Users" : "Game03_Data";
@@ -140,14 +140,15 @@ public partial class FormMain : Form
                 """;
             ExecuteBatCommand_and_WaitForExit(bat);
         }
-        else {
+        else
+        {
             return;
         }
         ////////////////////////////////////////////////////////////////////////////////////////
 
 
         ////////////////////////////////////////////////////////////////////////////////////////
-        // Создание архива
+        // РЎРѕР·РґР°РЅРёРµ Р°СЂС…РёРІР°
         string now = $"{DateTime.Now:yyyy-MM-dd HH-mm-ss}";
         string archiveFileName = Path.Combine(dbName, $"{now}");
         if (database is Database.PostgreSql_Users or Database.PostgreSql_Data)
@@ -175,15 +176,16 @@ public partial class FormMain : Form
         BackupFolderClear();
     }
 
-    static void Restore(Database database)
+    private static void Restore(Database database)
     {
         BackupFolderReset();
         OpenFileDialog openFileDialog = new();
 
         ////////////////////////////////////////////////////////////////////////////////////////
-        // Распаковка архива
+        // Р Р°СЃРїР°РєРѕРІРєР° Р°СЂС…РёРІР°
         string DBMS_name, dbName;
-        if (database is Database.PostgreSql_Users or Database.PostgreSql_Data) {
+        if (database is Database.PostgreSql_Users or Database.PostgreSql_Data)
+        {
             DBMS_name = postgre_DBMS_name;
             dbName = database == Database.PostgreSql_Users ? "Game03_Users" : "Game03_Data";
         }
@@ -191,11 +193,13 @@ public partial class FormMain : Form
         {
             dbName = "userData";
             DBMS_name = mongodb_DBMS_name;
-        } else {
+        }
+        else
+        {
             return;
         }
 
-        openFileDialog.InitialDirectory =  Path.Combine(game03_archive_dirPath, DBMS_name, dbName);
+        openFileDialog.InitialDirectory = Path.Combine(game03_archive_dirPath, DBMS_name, dbName);
         if (openFileDialog.ShowDialog() != DialogResult.OK)
         {
             return;
@@ -205,11 +209,11 @@ public partial class FormMain : Form
             "{archivator7z_exeFilePath}" x -y "{openFileDialog.FileName}" -o"{Path.Combine(backup_folder)}"
             """;
         ExecuteBatCommand_and_WaitForExit(bat);
-    ////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////
 
 
         ////////////////////////////////////////////////////////////////////////////////////////
-        // Восстановление базы данных
+        // Р’РѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ Р±Р°Р·С‹ РґР°РЅРЅС‹С…
         if (database is Database.PostgreSql_Users or Database.PostgreSql_Data)
         {
             string dbFilePath = Path.Combine(backup_folder, $"{dbName}.sql");
@@ -234,15 +238,17 @@ public partial class FormMain : Form
     }
 
     /// <summary>
-    /// Выполняет команду через временный BAT-файл, ожидает завершения и удаляет BAT.
+    /// Р’С‹РїРѕР»РЅСЏРµС‚ РєРѕРјР°РЅРґСѓ С‡РµСЂРµР· РІСЂРµРјРµРЅРЅС‹Р№ BAT-С„Р°Р№Р», РѕР¶РёРґР°РµС‚ Р·Р°РІРµСЂС€РµРЅРёСЏ Рё СѓРґР°Р»СЏРµС‚ BAT.
     /// </summary>
-    /// <param name="command">Команда для выполнения.</param>
-    static void ExecuteBatCommand_and_WaitForExit(string command)
+    /// <param name="command">РљРѕРјР°РЅРґР° РґР»СЏ РІС‹РїРѕР»РЅРµРЅРёСЏ.</param>
+    private static void ExecuteBatCommand_and_WaitForExit(string command)
     {
         if (string.IsNullOrWhiteSpace(command))
-            throw new ArgumentException("Команда пуста.", nameof(command));
+        {
+            throw new ArgumentException("РљРѕРјР°РЅРґР° РїСѓСЃС‚Р°.", nameof(command));
+        }
 
-        // создаём временный bat-файл
+        // СЃРѕР·РґР°С‘Рј РІСЂРµРјРµРЅРЅС‹Р№ bat-С„Р°Р№Р»
         string batPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".bat");
         File.WriteAllText(batPath, command);
 
@@ -256,38 +262,42 @@ public partial class FormMain : Form
                 UseShellExecute = false
             };
 
-            using Process? process = Process.Start(psi) ?? throw new InvalidOperationException("Не удалось запустить процесс.");
+            using Process? process = Process.Start(psi) ?? throw new InvalidOperationException("РќРµ СѓРґР°Р»РѕСЃСЊ Р·Р°РїСѓСЃС‚РёС‚СЊ РїСЂРѕС†РµСЃСЃ.");
             process.WaitForExit();
 
             if (process.ExitCode != 0)
-                throw new InvalidOperationException($"Процесс завершился с кодом {process.ExitCode}.");
+            {
+                throw new InvalidOperationException($"РџСЂРѕС†РµСЃСЃ Р·Р°РІРµСЂС€РёР»СЃСЏ СЃ РєРѕРґРѕРј {process.ExitCode}.");
+            }
         }
         finally
         {
-            // безопасное удаление bat-файла
+            // Р±РµР·РѕРїР°СЃРЅРѕРµ СѓРґР°Р»РµРЅРёРµ bat-С„Р°Р№Р»Р°
             try
             {
                 if (File.Exists(batPath))
+                {
                     File.Delete(batPath);
+                }
             }
             catch
             {
-                // подавляем ошибку удаления, чтобы не мешала основной логике
+                // РїРѕРґР°РІР»СЏРµРј РѕС€РёР±РєСѓ СѓРґР°Р»РµРЅРёСЏ, С‡С‚РѕР±С‹ РЅРµ РјРµС€Р°Р»Р° РѕСЃРЅРѕРІРЅРѕР№ Р»РѕРіРёРєРµ
             }
         }
     }
 
-    static void BackupFolderReset()
+    private static void BackupFolderReset()
     {
         BackupFolderClear();
 
         if (!Directory.Exists(backup_folder))
         {
-            Directory.CreateDirectory(backup_folder);
+            _ = Directory.CreateDirectory(backup_folder);
         }
     }
-    
-    static void BackupFolderClear()
+
+    private static void BackupFolderClear()
     {
         if (Directory.Exists(backup_folder))
         {

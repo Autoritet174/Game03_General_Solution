@@ -138,13 +138,13 @@
             Контроллер для управления коллекциями пользователя.
             </summary>
         </member>
-        <member name="M:Server.Http_NS.Controllers_NS.Collection_NS.CollectionController.Heroes">
+        <member name="M:Server.Http_NS.Controllers_NS.Collection_NS.CollectionController.All">
             <summary>
-            Получает коллекцию героев текущего пользователя.
+            Получает коллекцию текущего пользователя.
             </summary>
             <returns>
             Возвращает результат операции HTTP:
-            - 200 OK с коллекцией героев при успешном выполнении
+            - 200 OK с коллекцией при успешном выполнении
             - 401 Unauthorized, если пользователь не аутентифицирован или не имеет действительного идентификатора
             </returns>
             <remarks>
@@ -152,7 +152,7 @@
             Применяется ограничение скорости запросов (rate limiting) с политикой "login".
             Запрос выполняется асинхронно к MongoDB репозиторию для получения данных о героях.
             </remarks>
-            <response code="200">Коллекция героев успешно получена</response>
+            <response code="200">Коллекция успешно получена</response>
             <response code="401">Пользователь не аутентифицирован</response>
         </member>
         <member name="T:Server.Http_NS.Controllers_NS.ControllerBaseApi">

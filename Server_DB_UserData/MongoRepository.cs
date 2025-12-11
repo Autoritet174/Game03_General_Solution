@@ -4,10 +4,13 @@ using MongoDB.Driver;
 
 namespace Server_DB_UserData;
 
+/// <summary>
+/// Репозиторий коллекции героев.
+/// </summary>
 public class MongoRepository
 {
     private readonly IMongoCollection<BsonDocument> _collection_heroes;
-    private readonly IMongoCollection<BsonDocument> _collection_items;
+    private readonly IMongoCollection<BsonDocument> _collection_equipment;
 
     /// <summary>
     /// Конструктор репозитория, инициализирующий подключение к коллекции.
@@ -22,22 +25,22 @@ public class MongoRepository
         MongoDbSettings config = settings.Value;
 
         // 1. Найти нужную базу данных по имени
-        DatabaseSettings? userDataDb = config.DataBases.FirstOrDefault(db => db.Name.Equals("UserData", StringComparison.OrdinalIgnoreCase)) ?? throw new ArgumentException("База данных 'UserData' не найдена в конфигурации.");
+        DatabaseSettings? userDataDb = config.DataBases.FirstOrDefault(db => db.Name.Equals("userData", StringComparison.OrdinalIgnoreCase)) ?? throw new ArgumentException("База данных 'userData' не найдена в конфигурации.");
 
         // 2. Найти нужные коллекции в этой базе данных
         string heroesCollectionName = userDataDb.Collections
-            .FirstOrDefault(c => c.Name.Equals("Heroes", StringComparison.OrdinalIgnoreCase))?.Name
-            ?? throw new ArgumentException("Коллекция 'Heroes' не найдена.");
+            .FirstOrDefault(c => c.Name.Equals("heroes", StringComparison.OrdinalIgnoreCase))?.Name
+            ?? throw new ArgumentException("Коллекция 'heroes' не найдена.");
 
-        string itemsCollectionName = userDataDb.Collections
-            .FirstOrDefault(c => c.Name.Equals("Items", StringComparison.OrdinalIgnoreCase))?.Name
-            ?? throw new ArgumentException("Коллекция 'Items' не найдена.");
+        string equipmentCollectionName = userDataDb.Collections
+            .FirstOrDefault(c => c.Name.Equals("equipment", StringComparison.OrdinalIgnoreCase))?.Name
+            ?? throw new ArgumentException("Коллекция 'equipment' не найдена.");
 
         MongoClient client = new(settings.Value.ConnectionString);
         IMongoDatabase database = client.GetDatabase(userDataDb.Name);
 
         _collection_heroes = database.GetCollection<BsonDocument>(heroesCollectionName);
-        _collection_items = database.GetCollection<BsonDocument>(itemsCollectionName);
+        _collection_equipment = database.GetCollection<BsonDocument>(equipmentCollectionName);
     }
 
     /// <summary>
@@ -84,54 +87,70 @@ public class MongoRepository
         List<BsonDocument> documents = await _collection_heroes.Find(filter).ToListAsync();
         var result = documents.Select(d =>
         {
-            double GetDouble(string key)
-            {
-                return d.Contains(key) ? d[key].AsDouble : 0.0;
-            }
-            long GetLong(string key)
-            {
-                return d.Contains(key) ? Convert.ToInt64(d[key]) : 0L;//Используем Convert.ToInt64 на случай если значения в базе int а не long
-            }
-            int GetInt(string key)
-            {
-                return d.Contains(key) ? d[key].AsInt32 : 0;
-            }
-            Guid GetGuid(string key)
-            {
-                return d.Contains(key) ? d[key].AsGuid : Guid.Empty;
-            }
-            string? GetString(string key)
-            {
-                return d.Contains(key) ? d[key].AsString : null;
-            }
-
             return new
             {
                 _id = d["_id"].AsObjectId.ToString(),
-                owner_id = GetGuid("owner_id"),
-                hero_id = GetInt("hero_id"),
+                owner_id = d.GetGuid("owner_id"),
+                hero_id = d.GetInt("hero_id"),
+                group_name = d.GetString("group_name"),
 
-                level = GetInt("level"),
-                exp_now = GetLong("exp_now"),
-                exp_max = GetLong("exp_max"),
+                //Уровень
+                level = d.GetInt("level"),
+                exp_now = d.GetLong("exp_now"),
+                exp_max = d.GetLong("exp_max"),
 
-                group_name = GetString("group_name"),
-                health = GetLong("health"),
-                //attack = GetLong("attack"),
-                strength = GetLong("strength"),
-                agility = GetLong("agility"),
-                intelligence = GetLong("intelligence"),
-                haste = GetLong("haste"),
-                crit_chance = GetDouble("crit_chance"),
-                crit_power = GetDouble("crit_power"),
-                endurance_physical = GetLong("endurance_physical"),
-                endurance_magical = GetLong("endurance_magical"),
+                //Базовые характеристики
+                health = d.GetLong("health"),
+                attack = d.GetLong("attack"),
+                strength = d.GetLong("strength"),
+                agility = d.GetLong("agility"),
+                intelligence = d.GetLong("intelligence"),
+                haste = d.GetLong("haste"),
+                crit_chance = d.GetDouble("crit_chance"),
+                crit_power = d.GetDouble("crit_power"),
+                endurance_physical = d.GetLong("endurance_physical"),
+                endurance_magical = d.GetLong("endurance_magical"),
             };
         }).Cast<object>().ToList();
 
         return result;
     }
 
+    public async Task<List<object>> GetEquipmentByUserIdAsync(Guid owner_id)
+    {
+        FilterDefinition<BsonDocument> filter = Builders<BsonDocument>.Filter.Eq("owner_id", owner_id);
+
+        List<BsonDocument> documents = await _collection_equipment.Find(filter).ToListAsync();
+        var result = documents.Select(d =>
+        {
+            return new
+            {
+                _id = d["_id"].AsObjectId.ToString(),
+                owner_id = d.GetGuid("owner_id"),
+                hero_id = d.GetInt("hero_id"),
+                group_name = d.GetString("group_name"),
+
+                //Уровень
+                level = d.GetInt("level"),
+                exp_now = d.GetLong("exp_now"),
+                exp_max = d.GetLong("exp_max"),
+
+                //Базовые характеристики
+                health = d.GetLong("health"),
+                attack = d.GetLong("attack"),
+                strength = d.GetLong("strength"),
+                agility = d.GetLong("agility"),
+                intelligence = d.GetLong("intelligence"),
+                haste = d.GetLong("haste"),
+                crit_chance = d.GetDouble("crit_chance"),
+                crit_power = d.GetDouble("crit_power"),
+                endurance_physical = d.GetLong("endurance_physical"),
+                endurance_magical = d.GetLong("endurance_magical"),
+            };
+        }).Cast<object>().ToList();
+
+        return result;
+    }
 
 
     /// <summary>

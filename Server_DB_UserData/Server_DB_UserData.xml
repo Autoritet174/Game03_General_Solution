@@ -4,6 +4,11 @@
         <name>Server_DB_UserData</name>
     </assembly>
     <members>
+        <member name="T:Server_DB_UserData.MongoRepository">
+            <summary>
+            Репозиторий коллекции героев.
+            </summary>
+        </member>
         <member name="M:Server_DB_UserData.MongoRepository.#ctor(Microsoft.Extensions.Options.IOptions{Server_DB_UserData.MongoDbSettings})">
             <summary>
             Конструктор репозитория, инициализирующий подключение к коллекции.

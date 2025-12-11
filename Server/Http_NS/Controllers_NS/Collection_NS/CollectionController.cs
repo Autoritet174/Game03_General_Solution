@@ -10,11 +10,11 @@ namespace Server.Http_NS.Controllers_NS.Collection_NS;
 public class CollectionController(Server_DB_UserData.MongoRepository _mongoRepository) : ControllerBaseApi
 {
     /// <summary>
-    /// Получает коллекцию героев текущего пользователя.
+    /// Получает коллекцию текущего пользователя.
     /// </summary>
     /// <returns>
     /// Возвращает результат операции HTTP:
-    /// - 200 OK с коллекцией героев при успешном выполнении
+    /// - 200 OK с коллекцией при успешном выполнении
     /// - 401 Unauthorized, если пользователь не аутентифицирован или не имеет действительного идентификатора
     /// </returns>
     /// <remarks>
@@ -22,11 +22,11 @@ public class CollectionController(Server_DB_UserData.MongoRepository _mongoRepos
     /// Применяется ограничение скорости запросов (rate limiting) с политикой "login".
     /// Запрос выполняется асинхронно к MongoDB репозиторию для получения данных о героях.
     /// </remarks>
-    /// <response code="200">Коллекция героев успешно получена</response>
+    /// <response code="200">Коллекция успешно получена</response>
     /// <response code="401">Пользователь не аутентифицирован</response>
     [EnableRateLimiting("login")]
-    [HttpPost("Heroes")]
-    public async Task<IActionResult> Heroes()
+    [HttpPost("All")]
+    public async Task<IActionResult> All()
     {
         Guid? userId = User.GetGuid();
         if (userId == null)
@@ -35,10 +35,10 @@ public class CollectionController(Server_DB_UserData.MongoRepository _mongoRepos
         }
 
         Task<List<object>> taskHeroes = _mongoRepository.GetHeroesByUserIdAsync(userId.Value);
-        //Task<List<object>> taskHeroes = _mongoRepository.GetHeroesByUserIdAsync(userId.Value);
+        Task<List<object>> taskEquipment = _mongoRepository.GetEquipmentByUserIdAsync(userId.Value);
 
         List<object> heroes = await taskHeroes;
-        //List<object> result = await taskHeroes;
-        return Ok(new { heroes });
+        List<object> equipment = await taskEquipment;
+        return Ok(new { heroes, equipment });
     }
 }

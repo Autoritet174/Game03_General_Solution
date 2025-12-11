@@ -40,7 +40,7 @@ internal class PlayerCollectionProvider(PlayerCollectionCache _collectionCache, 
         }
 
         // Получить коллекцию героев игрока
-        JObject? jObject = await _httpRequester.GetJObjectAsync(General.Url.Collection.Heroes, cancellationToken);
+        JObject? jObject = await _httpRequester.GetJObjectAsync(General.Url.Collection.All, cancellationToken);
         if (jObject == null)
         {
             Log("jObject == null");

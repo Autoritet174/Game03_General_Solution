@@ -19,8 +19,9 @@ public static class Url
 
     public static class Collection {
         private const string _Collection = $"{URL_HEADER}{nameof(Collection)}/";
-        public static string Heroes { get; private set; } = $"{_Collection}{nameof(Heroes)}";
-        public static string Items { get; private set; } = $"{_Collection}{nameof(Items)}";
+        public static string All { get; private set; } = $"{_Collection}{nameof(All)}";
+        //public static string Heroes { get; private set; } = $"{_Collection}{nameof(Heroes)}";
+        //public static string Items { get; private set; } = $"{_Collection}{nameof(Items)}";
     }
 
     public static string Test { get; private set; } = $"{URL_HEADER}{nameof(Test)}";
