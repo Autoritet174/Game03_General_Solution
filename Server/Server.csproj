@@ -82,7 +82,7 @@
     <ProjectReference Include="..\Server_DB_Data\Server_DB_Data.csproj" />
     <ProjectReference Include="..\Server_DB_UserData\Server_DB_UserData.csproj" />
     <ProjectReference Include="..\Server_DB_Users\Server_DB_Users.csproj" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

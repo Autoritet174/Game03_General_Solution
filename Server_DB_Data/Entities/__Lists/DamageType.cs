@@ -38,13 +38,13 @@ public class DamageType
 
 
     /// <summary>
-    /// Навигационное свойство к WeaponTypes.
+    /// Навигационное свойство к <see cref="X_Cross.X_EquipmentType_DamageType"/>.
     /// </summary>
-    public ICollection<X_WeaponType_DamageType> X_WeaponType_DamageType { get; set; } = [];
+    public ICollection<X_EquipmentType_DamageType> X_EquipmentType_DamageType { get; set; } = [];
 
     /// <summary>
     /// Типы оружия для этого типа урона. Вычисляемое свойство.
     /// </summary>
     [NotMapped]
-    public IReadOnlyCollection<WeaponType> WeaponTypes => X_WeaponType_DamageType?.Select(static x => x.WeaponType).ToList() ?? [];
+    public IReadOnlyCollection<EquipmentType> WeaponTypes => X_EquipmentType_DamageType?.Select(static x => x.EquipmentType).ToList() ?? [];
 }

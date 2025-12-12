@@ -70,9 +70,9 @@ public class MongoRepository
     }
 
 
-    /// <summary>
-    /// 
-    /// </summary>
+    ///// <summary>
+    ///// 
+    ///// </summary>
     //public async Task<List<dynamic>> GetAllHeroesByUserIdAsync()
     //{
     //    List<BsonDocument> documents = await _collection.Find(new BsonDocument()).ToListAsync();
@@ -80,6 +80,10 @@ public class MongoRepository
     //    List<dynamic> result = [.. documents.Select(doc => MongoDB.Bson.Serialization.BsonSerializer.Deserialize<dynamic>(doc))];
     //    return result;
     //}
+
+    /// <summary>
+    /// Получить всех героев.
+    /// </summary>
     public async Task<List<object>> GetHeroesByUserIdAsync(Guid owner_id)
     {
         FilterDefinition<BsonDocument> filter = Builders<BsonDocument>.Filter.Eq("owner_id", owner_id);
@@ -116,6 +120,10 @@ public class MongoRepository
         return result;
     }
 
+
+    /// <summary>
+    /// Получить всю экипировку.
+    /// </summary>
     public async Task<List<object>> GetEquipmentByUserIdAsync(Guid owner_id)
     {
         FilterDefinition<BsonDocument> filter = Builders<BsonDocument>.Filter.Eq("owner_id", owner_id);

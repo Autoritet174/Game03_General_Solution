@@ -11,6 +11,6 @@ internal class X_Hero_CreatureType_Configuration : IEntityTypeConfiguration<X_He
         builder.HasOne(x => x.Hero).WithMany(a => a.X_Hero_CreatureType).HasForeignKey(xx => xx.HeroId).OnDelete(DeleteBehavior.Cascade);
 
         // Связь с CreatureType (Many-to-One)
-        builder.HasOne(x => x.CreatureType).WithMany(a => a.X_Hero_CreatureType).HasForeignKey(xx => xx.CreatureTypeId).OnDelete(DeleteBehavior.Cascade);
+        builder.HasOne(x => x.CreatureTypes).WithMany(a => a.X_Hero_CreatureType).HasForeignKey(xx => xx.CreatureTypeId).OnDelete(DeleteBehavior.Cascade);
     }
 }

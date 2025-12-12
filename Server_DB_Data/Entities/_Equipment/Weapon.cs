@@ -59,5 +59,5 @@ public class Weapon : IEntity
     /// Сущность WeaponType.
     /// </summary>
     [Required, ForeignKey(nameof(WeaponTypeId))]
-    public required WeaponType WeaponTypes { get; set; }
+    public required EquipmentType WeaponTypes { get; set; }
 }

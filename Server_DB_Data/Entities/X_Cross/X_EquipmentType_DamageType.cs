@@ -8,17 +8,17 @@ namespace Server_DB_Data.Entities.X_Cross;
 /// <summary>
 /// Таблица для связи Hero и CreatureType.
 /// </summary>
-[Table(nameof(X_WeaponType_DamageType), Schema = nameof(X_Cross))]
-[Index(nameof(WeaponTypeId))]
+[Table(nameof(X_EquipmentType_DamageType), Schema = nameof(X_Cross))]
+[Index(nameof(EquipmentTypeId))]
 [Index(nameof(DamageTypeId))]
-[PrimaryKey(nameof(WeaponTypeId), nameof(DamageTypeId))]
-public class X_WeaponType_DamageType
+[PrimaryKey(nameof(EquipmentTypeId), nameof(DamageTypeId))]
+public class X_EquipmentType_DamageType
 {
     /// <summary>
-    /// Идентификатор <see cref="__Lists.WeaponType"/>.
+    /// Идентификатор <see cref="__Lists.EquipmentType"/>.
     /// </summary>
     [Key, Column(Order = 0)]
-    public required int WeaponTypeId { get; set; }
+    public required int EquipmentTypeId { get; set; }
 
     /// <summary>
     /// Идентификатор <see cref="__Lists.DamageType"/>.
@@ -27,10 +27,10 @@ public class X_WeaponType_DamageType
     public required int DamageTypeId { get; set; }
 
     /// <summary>
-    /// Сущность <see cref="__Lists.WeaponType"/>.
+    /// Сущность <see cref="__Lists.EquipmentType"/>.
     /// </summary>
-    [Required, ForeignKey(nameof(WeaponTypeId))]
-    public required WeaponType WeaponType { get; set; }
+    [Required, ForeignKey(nameof(EquipmentTypeId))]
+    public required EquipmentType EquipmentType { get; set; }
 
     /// <summary>
     /// Сущность <see cref="__Lists.DamageType"/>.

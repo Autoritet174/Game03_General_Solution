@@ -78,7 +78,12 @@ public class DbContext_Game03Data(DbContextOptions<DbContext_Game03Data> options
     /// <summary>
     /// Типы оружия.
     /// </summary>
-    public DbSet<Entities.__Lists.WeaponType> WeaponTypes { get; set; }
+    public DbSet<Entities.__Lists.EquipmentType> WeaponTypes { get; set; }
+
+    /// <summary>
+    /// Типы слотов экипировки.
+    /// </summary>
+    public DbSet<Entities.__Lists.SlotType> SlotTypes { get; set; }
 
     /// <summary>
     /// Экипировка. оружие.
@@ -98,7 +103,7 @@ public class DbContext_Game03Data(DbContextOptions<DbContext_Game03Data> options
     /// <summary>
     /// Таблица связи многие ко мноким между WeaponTypes и DamageTypes.
     /// </summary>
-    public DbSet<Entities.X_Cross.X_WeaponType_DamageType> X_WeaponTypes_DamageTypes { get; set; }
+    public DbSet<Entities.X_Cross.X_EquipmentType_DamageType> X_WeaponTypes_DamageTypes { get; set; }
 
     /// <summary>
     /// Конфигурация модели данных.
@@ -106,12 +111,12 @@ public class DbContext_Game03Data(DbContextOptions<DbContext_Game03Data> options
     /// <param name="modelBuilder">Построитель модели.</param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        _ = modelBuilder.ApplyConfiguration(new WeaponType_Configuration());
+        _ = modelBuilder.ApplyConfiguration(new EquipmentType_Configuration());
         _ = modelBuilder.ApplyConfiguration(new WeaponConfiguration());
         _ = modelBuilder.ApplyConfiguration(new X_Hero_CreatureType_Configuration());
-        _ = modelBuilder.ApplyConfiguration(new X_WeaponType_DamageType_Configuration());
+        _ = modelBuilder.ApplyConfiguration(new X_EquipmentType_DamageType_Configuration());
 
-        modelBuilder.ModelToSnakeCase(skipIfNameEnteredManual: true);
+        modelBuilder.CorrectNames(skipIfNameEnteredManual: true);
         modelBuilder.FirstLetterToLowerInScheme();
 
         Data_DamageType.Add(modelBuilder);

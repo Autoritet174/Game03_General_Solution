@@ -24,57 +24,14 @@
             Максимальное количество попыток аутентификации.
             </summary>
         </member>
-        <member name="T:Server_Common.Extensions">
-            <summary>
-            Класс, предоставляющий расширяющие методы для работы со строками и другими типами.
-            </summary>
-        </member>
-        <member name="M:Server_Common.Extensions.SnakeCaseRegex">
-            <remarks>
-            Pattern:<br/>
-            <code>(?&lt;=[a-z])([A-Z])</code><br/>
-            Options:<br/>
-            <code>RegexOptions.Compiled</code><br/>
-            Explanation:<br/>
-            <code>
-            ○ Zero-width positive lookbehind.<br/>
-                ○ Match a character in the set [a-z] right-to-left.<br/>
-            ○ 1st capture group.<br/>
-                ○ Match a character in the set [A-Z].<br/>
-            </code>
-            </remarks>
-        </member>
-        <member name="M:Server_Common.Extensions.ToSnakeCase(System.String)">
-            <summary>
-            Преобразует строку в формат snake_case.
-            </summary>
-            <param name="input">Входная строка для преобразования.</param>
-            <returns>
-            Строка в формате snake_case, где слова разделены символами подчеркивания,
-            а все буквы приведены к нижнему регистру.
-            Возвращает исходную строку, если она является null или пустой.
-            </returns>
-            <example>
-            <code>
-            string result = "CamelCaseString".ToSnakeCase(); // "camel_case_string"
-            string result2 = "UserName".ToSnakeCase(); // "user_name"
-            string result3 = "XMLParser".ToSnakeCase(); // "xmlparser"
-            </code>
-            </example>
-            <remarks>
-            Метод преобразует CamelCase строки в snake_case, вставляя символ подчеркивания
-            перед каждой заглавной буквой, которая следует за строчной буквой,
-            а затем приводит всю строку к нижнему регистру.
-            </remarks>
-        </member>
         <member name="T:Server_Common.ModelBuilderExt">
             <summary>
             Класс расширяющих методов для Entity Framework Core ModelBuilder
             </summary>
         </member>
-        <member name="M:Server_Common.ModelBuilderExt.ModelToSnakeCase(Microsoft.EntityFrameworkCore.ModelBuilder,System.Boolean)">
+        <member name="M:Server_Common.ModelBuilderExt.CorrectNames(Microsoft.EntityFrameworkCore.ModelBuilder,System.Boolean)">
             <summary>
-            Преобразует имена таблиц, столбцов, ключей и индексов модели в snake_case.
+            Преобразует имена таблиц, столбцов, ключей и индексов модели.
             </summary>
             <param name="modelBuilder">Экземпляр ModelBuilder.</param>
             <param name="skipIfNameEnteredManual">
@@ -143,47 +100,6 @@
             <summary>
             Выбрасывает ArgumentException если guid равен Guid.Empty.
             </summary>
-        </member>
-        <member name="T:System.Text.RegularExpressions.Generated.SnakeCaseRegex_0">
-            <summary>Custom <see cref="T:System.Text.RegularExpressions.Regex"/>-derived type for the SnakeCaseRegex method.</summary>
-        </member>
-        <member name="F:System.Text.RegularExpressions.Generated.SnakeCaseRegex_0.Instance">
-            <summary>Cached, thread-safe singleton instance.</summary>
-        </member>
-        <member name="M:System.Text.RegularExpressions.Generated.SnakeCaseRegex_0.#ctor">
-            <summary>Initializes the instance.</summary>
-        </member>
-        <member name="T:System.Text.RegularExpressions.Generated.SnakeCaseRegex_0.RunnerFactory">
-            <summary>Provides a factory for creating <see cref="T:System.Text.RegularExpressions.RegexRunner"/> instances to be used by methods on <see cref="T:System.Text.RegularExpressions.Regex"/>.</summary>
-        </member>
-        <member name="M:System.Text.RegularExpressions.Generated.SnakeCaseRegex_0.RunnerFactory.CreateInstance">
-            <summary>Creates an instance of a <see cref="T:System.Text.RegularExpressions.RegexRunner"/> used by methods on <see cref="T:System.Text.RegularExpressions.Regex"/>.</summary>
-        </member>
-        <member name="T:System.Text.RegularExpressions.Generated.SnakeCaseRegex_0.RunnerFactory.Runner">
-            <summary>Provides the runner that contains the custom logic implementing the specified regular expression.</summary>
-        </member>
-        <member name="M:System.Text.RegularExpressions.Generated.SnakeCaseRegex_0.RunnerFactory.Runner.Scan(System.ReadOnlySpan{System.Char})">
-            <summary>Scan the <paramref name="inputSpan"/> starting from base.runtextstart for the next match.</summary>
-            <param name="inputSpan">The text being scanned by the regular expression.</param>
-        </member>
-        <member name="M:System.Text.RegularExpressions.Generated.SnakeCaseRegex_0.RunnerFactory.Runner.TryFindNextPossibleStartingPosition(System.ReadOnlySpan{System.Char})">
-            <summary>Search <paramref name="inputSpan"/> starting from base.runtextpos for the next location a match could possibly start.</summary>
-            <param name="inputSpan">The text being scanned by the regular expression.</param>
-            <returns>true if a possible match was found; false if no more matches are possible.</returns>
-        </member>
-        <member name="M:System.Text.RegularExpressions.Generated.SnakeCaseRegex_0.RunnerFactory.Runner.TryMatchAtCurrentPosition(System.ReadOnlySpan{System.Char})">
-            <summary>Determine whether <paramref name="inputSpan"/> at base.runtextpos is a match for the regular expression.</summary>
-            <param name="inputSpan">The text being scanned by the regular expression.</param>
-            <returns>true if the regular expression matches at the current position; otherwise, false.</returns>
-        </member>
-        <member name="T:System.Text.RegularExpressions.Generated.Utilities">
-            <summary>Helper methods used by generated <see cref="T:System.Text.RegularExpressions.Regex"/>-derived implementations.</summary>
-        </member>
-        <member name="F:System.Text.RegularExpressions.Generated.Utilities.s_defaultTimeout">
-            <summary>Default timeout value set in <see cref="T:System.AppContext"/>, or <see cref="F:System.Text.RegularExpressions.Regex.InfiniteMatchTimeout"/> if none was set.</summary>
-        </member>
-        <member name="F:System.Text.RegularExpressions.Generated.Utilities.s_hasTimeout">
-            <summary>Whether <see cref="F:System.Text.RegularExpressions.Generated.Utilities.s_defaultTimeout"/> is non-infinite.</summary>
         </member>
     </members>
 </doc>

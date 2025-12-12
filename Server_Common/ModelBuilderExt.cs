@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
+using static General.StringExt;
 
 namespace Server_Common;
 
@@ -12,14 +13,14 @@ namespace Server_Common;
 public static class ModelBuilderExt
 {
     /// <summary>
-    /// Преобразует имена таблиц, столбцов, ключей и индексов модели в snake_case.
+    /// Преобразует имена таблиц, столбцов, ключей и индексов модели.
     /// </summary>
     /// <param name="modelBuilder">Экземпляр ModelBuilder.</param>
     /// <param name="skipIfNameEnteredManual">
     /// Пропускать переименование, если имя было явно указано разработчиком.
     /// По умолчанию False, то есть все объекты будут преобразованы независимо от наличия явного имени.
     /// </param>
-    public static void ModelToSnakeCase(this ModelBuilder modelBuilder, bool skipIfNameEnteredManual = false)
+    public static void CorrectNames(this ModelBuilder modelBuilder, bool skipIfNameEnteredManual = false)
     {
         foreach (IMutableEntityType entity in modelBuilder.Model.GetEntityTypes())
         {
@@ -45,7 +46,7 @@ public static class ModelBuilderExt
             IMutableKey? pk = entity.FindPrimaryKey();
             if (pk != null && (!skipIfNameEnteredManual || !pk.IsExplicitlyNamedConstraint()))
             {
-                pk.SetName($"{entity.GetTableName()}_pkey");
+                pk.SetName($"{entity.GetTableName().ToPascalCase(true)}__pkey");
             }
 
             // Обработка индексов: изменение только если имя не задано явно
@@ -54,7 +55,7 @@ public static class ModelBuilderExt
                 if (!skipIfNameEnteredManual || !index.IsExplicitlyNamedIndex())
                 {
                     index.SetDatabaseName(
-                        $"{entity.GetTableName()}_{string.Join("_", index.Properties.Select(p => p.GetColumnName()))}_idx"
+                        $"{entity.GetTableName().ToPascalCase(true)}__{string.Join("__", index.Properties.Select(static p => p.GetColumnName().ToPascalCase()))}__idx"
                     );
                 }
             }
@@ -64,9 +65,12 @@ public static class ModelBuilderExt
             {
                 if (!skipIfNameEnteredManual || !fk.IsExplicitlyNamedConstraint())
                 {
-                    string principalTable = fk.PrincipalEntityType.GetTableName()!.ToSnakeCase();
-                    string columnName = fk.Properties[0].GetColumnName().ToSnakeCase();
-                    fk.SetConstraintName($"{entity.GetTableName()}_{columnName}_{principalTable}_fkey");
+                    string principalTable = fk.PrincipalEntityType.GetTableName().ToPascalCase();
+                    string columnName = fk.Properties[0].GetColumnName().ToPascalCase();
+                    string newName = $"{entity.GetTableName().ToPascalCase(true)}__{columnName}__{principalTable}__fkey";
+                    fk.SetConstraintName(newName);
+                    //Console.WriteLine(newName);
+                    //Console.WriteLine();
                 }
             }
         }

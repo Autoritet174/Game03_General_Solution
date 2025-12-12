@@ -66,5 +66,5 @@ public class Hero : IEntity
     /// Типы существ героя. Вычисляемое свойство.
     /// </summary>
     [NotMapped]
-    public IReadOnlyCollection<CreatureType> CreatureTypes => X_Hero_CreatureType?.Select(static x => x.CreatureType).ToList() ?? [];
+    public IReadOnlyCollection<CreatureType> CreatureTypes => X_Hero_CreatureType?.Select(static x => x.CreatureTypes).ToList() ?? [];
 }

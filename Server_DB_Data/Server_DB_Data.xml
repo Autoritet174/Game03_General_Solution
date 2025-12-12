@@ -61,6 +61,11 @@
             Типы оружия.
             </summary>
         </member>
+        <member name="P:Server_DB_Data.DbContext_Game03Data.SlotTypes">
+            <summary>
+            Типы слотов экипировки.
+            </summary>
+        </member>
         <member name="P:Server_DB_Data.DbContext_Game03Data.Weapons">
             <summary>
             Экипировка. оружие.
@@ -112,6 +117,36 @@
             Уникальный в игре, выпадет только один раз.
             </summary>
         </member>
+        <member name="T:Server_DB_Data.Entities.X_Cross.X_EquipmentType_DamageType">
+            <summary>
+            Таблица для связи Hero и CreatureType.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.X_Cross.X_EquipmentType_DamageType.EquipmentTypeId">
+            <summary>
+            Идентификатор <see cref="T:Server_DB_Data.Entities.__Lists.EquipmentType"/>.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.X_Cross.X_EquipmentType_DamageType.DamageTypeId">
+            <summary>
+            Идентификатор <see cref="T:Server_DB_Data.Entities.__Lists.DamageType"/>.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.X_Cross.X_EquipmentType_DamageType.EquipmentType">
+            <summary>
+            Сущность <see cref="T:Server_DB_Data.Entities.__Lists.EquipmentType"/>.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.X_Cross.X_EquipmentType_DamageType.DamageType">
+            <summary>
+            Сущность <see cref="T:Server_DB_Data.Entities.__Lists.DamageType"/>.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.X_Cross.X_EquipmentType_DamageType.DamageCoef">
+            <summary>
+            Коэффициент типа урона у оружия.
+            </summary>
+        </member>
         <member name="T:Server_DB_Data.Entities.X_Cross.X_Hero_CreatureType">
             <summary>
             Таблица для связи Hero и CreatureType.
@@ -132,39 +167,9 @@
             Сущность <see cref="T:Server_DB_Data.Entities._Heroes.Hero"/>.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.X_Cross.X_Hero_CreatureType.CreatureType">
+        <member name="P:Server_DB_Data.Entities.X_Cross.X_Hero_CreatureType.CreatureTypes">
             <summary>
             Сущность <see cref="T:Server_DB_Data.Entities.__Lists.CreatureType"/>.
-            </summary>
-        </member>
-        <member name="T:Server_DB_Data.Entities.X_Cross.X_WeaponType_DamageType">
-            <summary>
-            Таблица для связи Hero и CreatureType.
-            </summary>
-        </member>
-        <member name="P:Server_DB_Data.Entities.X_Cross.X_WeaponType_DamageType.WeaponTypeId">
-            <summary>
-            Идентификатор <see cref="T:Server_DB_Data.Entities.__Lists.WeaponType"/>.
-            </summary>
-        </member>
-        <member name="P:Server_DB_Data.Entities.X_Cross.X_WeaponType_DamageType.DamageTypeId">
-            <summary>
-            Идентификатор <see cref="T:Server_DB_Data.Entities.__Lists.DamageType"/>.
-            </summary>
-        </member>
-        <member name="P:Server_DB_Data.Entities.X_Cross.X_WeaponType_DamageType.WeaponType">
-            <summary>
-            Сущность <see cref="T:Server_DB_Data.Entities.__Lists.WeaponType"/>.
-            </summary>
-        </member>
-        <member name="P:Server_DB_Data.Entities.X_Cross.X_WeaponType_DamageType.DamageType">
-            <summary>
-            Сущность <see cref="T:Server_DB_Data.Entities.__Lists.DamageType"/>.
-            </summary>
-        </member>
-        <member name="P:Server_DB_Data.Entities.X_Cross.X_WeaponType_DamageType.DamageCoef">
-            <summary>
-            Коэффициент типа урона у оружия.
             </summary>
         </member>
         <member name="T:Server_DB_Data.Entities._Equipment.Weapon">
@@ -302,14 +307,80 @@
             Подсказка для разработчика.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.__Lists.DamageType.X_WeaponType_DamageType">
+        <member name="P:Server_DB_Data.Entities.__Lists.DamageType.X_EquipmentType_DamageType">
             <summary>
-            Навигационное свойство к WeaponTypes.
+            Навигационное свойство к <see cref="T:Server_DB_Data.Entities.X_Cross.X_EquipmentType_DamageType"/>.
             </summary>
         </member>
         <member name="P:Server_DB_Data.Entities.__Lists.DamageType.WeaponTypes">
             <summary>
             Типы оружия для этого типа урона. Вычисляемое свойство.
+            </summary>
+        </member>
+        <member name="T:Server_DB_Data.Entities.__Lists.EquipmentType">
+            <summary>
+            Тип экипировки.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.Id">
+            <summary>
+            Первичный ключ.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.Name">
+            <summary>
+            Уникальное наименование на английском.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.NameRu">
+            <summary>
+            Уникальное наименование на русском.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.X_EquipmentType_DamageType">
+            <summary>
+            Навигационное свойство к DamageTypes если экипировка наносит урон.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.DamageTypes">
+            <summary>
+            Типы урона для этого типа экипировки. Вычисляемое свойство.
+            </summary>
+        </member>
+        <member name="F:Server_DB_Data.Entities.__Lists.EquipmentType.Mass">
+            <summary>
+            Масса предмета в граммах как если бы предмет был из железа.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.SlotTypeId">
+            <summary>
+            Идентификатор <see cref="T:Server_DB_Data.Entities.__Lists.SlotType"/>.
+            </summary>
+        </member>
+        <member name="F:Server_DB_Data.Entities.__Lists.EquipmentType.SlotType">
+            <summary>
+            Тип слота экипировки.
+            Сущность <see cref="T:Server_DB_Data.Entities.__Lists.SlotType"/>.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.CanCraftSmithing">
+            <summary>
+            Можно создать при помощи кузнечного дела.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.CanCraftJewelcrafting">
+            <summary>
+            Можно скрафтить через ювелирное дело.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.Attack">
+            <summary>
+            Базовая атака.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.SpendActionPoints">
+            <summary>
+            Базовая трата очков действия за удар.
             </summary>
         </member>
         <member name="T:Server_DB_Data.Entities.__Lists.MaterialDamagePercent">
@@ -347,6 +418,31 @@
             Урон оружия в процентах.
             </summary>
         </member>
+        <member name="T:Server_DB_Data.Entities.__Lists.SlotType">
+            <summary>
+            Тип слота экипировки.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.SlotType.Id">
+            <summary>
+            Первичный ключ.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.SlotType.Name">
+            <summary>
+            Уникальное наименование на английском.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.SlotType.NameRu">
+            <summary>
+            Наименование на русском.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Data.Entities.__Lists.SlotType.EquipmentTypes">
+            <summary>
+            Навигационное свойство к <see cref="T:Server_DB_Data.Entities.__Lists.EquipmentType"/>.
+            </summary>
+        </member>
         <member name="T:Server_DB_Data.Entities.__Lists.SmithingMaterials">
             <summary>
             Тип существа.
@@ -370,41 +466,6 @@
         <member name="P:Server_DB_Data.Entities.__Lists.SmithingMaterials.MaterialDamagePercent">
             <summary>
             Навигационное свойство к <see cref="T:Server_DB_Data.Entities.__Lists.MaterialDamagePercent"/>.
-            </summary>
-        </member>
-        <member name="T:Server_DB_Data.Entities.__Lists.WeaponType">
-            <summary>
-            Тип оружия.
-            </summary>
-        </member>
-        <member name="P:Server_DB_Data.Entities.__Lists.WeaponType.Id">
-            <summary>
-            Первичный ключ.
-            </summary>
-        </member>
-        <member name="P:Server_DB_Data.Entities.__Lists.WeaponType.Name">
-            <summary>
-            Уникальное наименование на английском.
-            </summary>
-        </member>
-        <member name="P:Server_DB_Data.Entities.__Lists.WeaponType.NameRu">
-            <summary>
-            Уникальное наименование на русском.
-            </summary>
-        </member>
-        <member name="P:Server_DB_Data.Entities.__Lists.WeaponType.X_WeaponType_DamageType">
-            <summary>
-            Навигационное свойство к DamageTypes.
-            </summary>
-        </member>
-        <member name="P:Server_DB_Data.Entities.__Lists.WeaponType.DamageTypes">
-            <summary>
-            Типы урона для этого типа оружия. Вычисляемое свойство.
-            </summary>
-        </member>
-        <member name="F:Server_DB_Data.Entities.__Lists.WeaponType.Mass">
-            <summary>
-            Масса оружия в граммах.
             </summary>
         </member>
         <member name="T:Server_DB_Data.Migrations.Init">
@@ -525,6 +586,90 @@
             <inheritdoc />
         </member>
         <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix5.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.SmithingMaterials_Fix6">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix6.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix6.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix6.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.SlotType">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SlotType.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SlotType.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SlotType.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.SlotType_Fix1">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SlotType_Fix1.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SlotType_Fix1.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SlotType_Fix1.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.SlotType_Fix2">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SlotType_Fix2.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SlotType_Fix2.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SlotType_Fix2.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.SlotType_Fix3">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SlotType_Fix3.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SlotType_Fix3.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SlotType_Fix3.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.SlotType_Fix4">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SlotType_Fix4.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SlotType_Fix4.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.SlotType_Fix4.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.Names_Fix1">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Names_Fix1.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Names_Fix1.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Names_Fix1.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Server_DB_Data.Repositories.HeroRepository">

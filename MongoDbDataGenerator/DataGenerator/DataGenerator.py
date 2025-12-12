@@ -27,7 +27,7 @@ def Generate():
     mode = 1
     if mode == 1:
         collection = db['heroes']
-        # # Данные для вставки
+        # Данные для вставки
         for i in range(50):
             data = {
                 "owner_id": user_uuid,
@@ -41,11 +41,20 @@ def Generate():
             }
             result = collection.insert_one(data)
 
-        # Обновляем имя поля 'speed' на 'haste'
-        result = collection.update_many({"speed": {"$exists": True}}, {"$rename": {"speed": "haste"}})
-
     if mode == 2:
-        collection = db['heroes']
+        collection = db['equipment']
+        for i in range(50):
+            data = {
+                "owner_id": user_uuid,
+                "equipment_type_id": 1,
+                "slot_id": 0,  # 0 - в инвентаре, 1+ - в слотах героя 
+                "attack": random.randint(0, 100),
+                "speed": random.randint(0, 100),
+                "strength": random.randint(0, 100),
+                "agility": random.randint(0, 100),
+                "intelligence": random.randint(0, 100)
+            }
+            result = collection.insert_one(data)
 
     # Закрываем соединение
     client.close()

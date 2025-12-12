@@ -7,7 +7,7 @@ namespace Server_DB_Data.Entities.__Lists;
 /// <summary>
 /// Коэфициенты урона для материалов.
 /// </summary>
-[Table("MaterialDamagePercent", Schema = nameof(__Lists))]
+[Table("MaterialDamagePercents", Schema = nameof(__Lists))]
 [Index(nameof(SmithingMaterialsId))]
 [Index(nameof(SmithingMaterialsId))]
 public class MaterialDamagePercent

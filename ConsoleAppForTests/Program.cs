@@ -2,6 +2,7 @@ using General;
 using Newtonsoft.Json;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
+using static General.StringExt;
 
 namespace ConsoleAppForTests;
 
@@ -17,7 +18,9 @@ internal class Program
     }
     private static void Start()
     {
-
+        Console.WriteLine("qqwe_qwe_qwe".ToPascalCase(preserveUnderscores: false));
+        Console.ReadLine();
+        return;
         General.StringCapsule capsule = new()
         {
             Value = File.ReadAllText(@"C:\UnityProjects\Game03_Git\Client_Game03\Assets\Resources\localization\ru\data.json"),

@@ -32,7 +32,7 @@ public partial class FormMain : Form
             dgv_DamageTypes.Rows[i].Cells["id1"].Value = damageTypes[i].Id;
             dgv_DamageTypes.Rows[i].Cells["ColumnNameRu"].Value = damageTypes[i].NameRu;
 
-            int coef = db.X_WeaponTypes_DamageTypes.FirstOrDefault(a => a.DamageTypeId == damageTypes[i].Id && a.WeaponTypeId == id)?.DamageCoef ?? 0;
+            int coef = db.X_WeaponTypes_DamageTypes.FirstOrDefault(a => a.DamageTypeId == damageTypes[i].Id && a.EquipmentTypeId == id)?.DamageCoef ?? 0;
 
             dgv_DamageTypes.Rows[i].Cells["ColumnDamageCoef"].Value = coef;
         }
@@ -42,23 +42,23 @@ public partial class FormMain : Form
     {
         int id = Convert.ToInt32(dgv_WeaponTypes.CurrentRow!.Cells["id"].Value);
         using var db = DbContext_Game03Data.Create(CONNECTION_STRING);
-        IQueryable<X_WeaponType_DamageType> xArray = db.X_WeaponTypes_DamageTypes.Where(a => a.WeaponTypeId == id);
+        IQueryable<X_EquipmentType_DamageType> xArray = db.X_WeaponTypes_DamageTypes.Where(a => a.EquipmentTypeId == id);
         for (int i = 0; i < dgv_DamageTypes.RowCount; i++)
         {
             DataGridViewRow row = dgv_DamageTypes.Rows[i];
             int damageTypeId = Convert.ToInt32(row.Cells["id1"].Value);
             int damageCoef = Convert.ToInt32(row.Cells["ColumnDamageCoef"].Value);
 
-            X_WeaponType_DamageType? x = xArray.FirstOrDefault(a => a.DamageTypeId == damageTypeId);
+            X_EquipmentType_DamageType? x = xArray.FirstOrDefault(a => a.DamageTypeId == damageTypeId);
             if (x == null)
             {
                 x = new()
                 {
                     DamageTypeId = damageTypeId,
-                    WeaponTypeId = id,
+                    EquipmentTypeId = id,
                     DamageCoef = damageCoef,
                     DamageType = db.DamageTypes.First(a => a.Id == damageTypeId),
-                    WeaponType = db.WeaponTypes.First(a => a.Id == id),
+                    EquipmentType = db.WeaponTypes.First(a => a.Id == id),
                 };
                 _ = db.X_WeaponTypes_DamageTypes.Add(x);
             }
@@ -69,7 +69,7 @@ public partial class FormMain : Form
         }
 
         var xArrayForDelete = db.X_WeaponTypes_DamageTypes.Where(a => a.DamageCoef <= 0).ToList();
-        foreach (X_WeaponType_DamageType? x in xArrayForDelete)
+        foreach (X_EquipmentType_DamageType? x in xArrayForDelete)
         {
             _ = db.X_WeaponTypes_DamageTypes.Remove(x);
         }

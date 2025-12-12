@@ -34,8 +34,8 @@ public class X_Hero_CreatureType
     public required Hero Hero { get; set; }
 
     /// <summary>
-    /// Сущность <see cref="__Lists.CreatureType"/>.
+    /// Сущность <see cref="CreatureType"/>.
     /// </summary>
     [Required, ForeignKey(nameof(CreatureTypeId))]
-    public required CreatureType CreatureType { get; set; }
+    public required CreatureType CreatureTypes { get; set; }
 }

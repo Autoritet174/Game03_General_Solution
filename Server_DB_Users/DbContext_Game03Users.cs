@@ -61,6 +61,6 @@ public class DbContext_Game03Users(DbContextOptions<DbContext_Game03Users> optio
         _ = modelBuilder.ApplyConfiguration(new Configurations.Users());
         _ = modelBuilder.ApplyConfiguration(new Configurations.Users_Bans());
 
-        modelBuilder.ModelToSnakeCase();
+        modelBuilder.CorrectNames();
     }
 }

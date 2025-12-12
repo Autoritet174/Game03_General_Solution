@@ -23,7 +23,12 @@
         </member>
         <member name="M:Server_DB_UserData.MongoRepository.GetHeroesByUserIdAsync(System.Guid)">
             <summary>
-            
+            Получить всех героев.
+            </summary>
+        </member>
+        <member name="M:Server_DB_UserData.MongoRepository.GetEquipmentByUserIdAsync(System.Guid)">
+            <summary>
+            Получить всю экипировку.
             </summary>
         </member>
         <member name="M:Server_DB_UserData.MongoRepository.InsertAsync(MongoDB.Bson.BsonDocument)">
