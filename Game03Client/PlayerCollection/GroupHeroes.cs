@@ -1,7 +1,5 @@
 using General.GameEntities;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Game03Client.PlayerCollection;
 
@@ -10,9 +8,18 @@ namespace Game03Client.PlayerCollection;
 /// </summary>
 public class GroupHeroes(string name, IEnumerable<CollectionHero> list)
 {
+    /// <summary>
+    /// Возвращает имя группы героев.
+    /// </summary>
     public string Name { get; } = name;
 
+    /// <summary>
+    /// Получает коллекцию героев, содержащихся в этом экземпляре.
+    /// </summary>
     public IEnumerable<CollectionHero> List { get; } = list;
 
+    /// <summary>
+    /// Возвращает или устанавливает уровень приоритета группы героев.
+    /// </summary>
     public int Priority { get; set; } = 0;
 }

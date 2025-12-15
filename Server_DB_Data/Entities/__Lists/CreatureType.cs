@@ -22,7 +22,7 @@ public class CreatureType
     /// <summary>
     /// Уникальное наименование на английском.
     /// </summary>
-    [Required, MaxLength(255)]
+    [MaxLength(255)]
     public required string Name { get; set; }
 
 

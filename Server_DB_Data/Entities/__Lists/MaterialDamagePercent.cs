@@ -8,8 +8,6 @@ namespace Server_DB_Data.Entities.__Lists;
 /// Коэфициенты урона для материалов.
 /// </summary>
 [Table("MaterialDamagePercents", Schema = nameof(__Lists))]
-[Index(nameof(SmithingMaterialsId))]
-[Index(nameof(SmithingMaterialsId))]
 public class MaterialDamagePercent
 {
     /// <summary>
@@ -21,7 +19,7 @@ public class MaterialDamagePercent
     /// <summary>
     /// Возвращает или задает идентификатор <see cref="__Lists.SmithingMaterials"/>, связанного с данным объектом.
     /// </summary>
-    public required int SmithingMaterialsId { get; set; }
+    public int SmithingMaterialsId { get; set; }
 
     /// <summary>
     /// Навигационное свойство к <see cref="__Lists.SmithingMaterials"/>.
@@ -33,7 +31,7 @@ public class MaterialDamagePercent
     /// <summary>
     /// Возвращает или задает идентификатор <see cref="__Lists.DamageType"/>, связанного с данным объектом.
     /// </summary>
-    public required int DamageTypeId { get; set; }
+    public int DamageTypeId { get; set; }
 
     /// <summary>
     /// Навигационное свойство к <see cref="__Lists.DamageType"/>.
@@ -42,11 +40,8 @@ public class MaterialDamagePercent
     public required DamageType DamageType { get; set; }
 
 
-
-
     /// <summary>
     /// Урон оружия в процентах.
     /// </summary>
-    [Required]
-    public required int Percent { get; set; }
+    public int Percent { get; set; }
 }

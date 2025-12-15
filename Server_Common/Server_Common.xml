@@ -4,6 +4,26 @@
         <name>Server_Common</name>
     </assembly>
     <members>
+        <member name="T:Server_Common.Attributes">
+            <summary>
+            Кастомные атрибуты.
+            </summary>
+        </member>
+        <member name="T:Server_Common.Attributes.HasDefaultValueAttribute">
+            <summary>
+            Значение по умолчанию.
+            </summary>
+        </member>
+        <member name="M:Server_Common.Attributes.HasDefaultValueAttribute.#ctor(System.Object)">
+            <summary>
+            Значение по умолчанию.
+            </summary>
+        </member>
+        <member name="P:Server_Common.Attributes.HasDefaultValueAttribute.Value">
+            <summary>
+            Значение.
+            </summary>
+        </member>
         <member name="T:Server_Common.Consts">
             <summary>
             Константы на весь сервер.

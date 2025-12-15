@@ -1,10 +1,13 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MongoDB.Driver;
 using Server_Common;
 using Server_DB_Data.Entities.__Lists;
 using Server_DB_Data.Entities._Equipment;
 using Server_DB_Data.Entities.X_Cross;
-using Server_DB_Data.ModelBuilderData;
+using System.Reflection;
+using static Server_Common.Attributes;
 
 namespace Server_DB_Data;
 
@@ -78,7 +81,7 @@ public class DbContext_Game03Data(DbContextOptions<DbContext_Game03Data> options
     /// <summary>
     /// Типы оружия.
     /// </summary>
-    public DbSet<Entities.__Lists.EquipmentType> WeaponTypes { get; set; }
+    public DbSet<Entities.__Lists.Equip> WeaponTypes { get; set; }
 
     /// <summary>
     /// Типы слотов экипировки.
@@ -111,16 +114,34 @@ public class DbContext_Game03Data(DbContextOptions<DbContext_Game03Data> options
     /// <param name="modelBuilder">Построитель модели.</param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        _ = modelBuilder.ApplyConfiguration(new EquipmentType_Configuration());
-        _ = modelBuilder.ApplyConfiguration(new HeroConfiguration());
-        _ = modelBuilder.ApplyConfiguration(new X_Hero_CreatureType_Configuration());
-        _ = modelBuilder.ApplyConfiguration(new X_EquipmentType_DamageType_Configuration());
+    //    _ = modelBuilder.ApplyConfiguration(new EquipmentType_Configuration());
+    //    _ = modelBuilder.ApplyConfiguration(new HeroConfiguration());
+    //    _ = modelBuilder.ApplyConfiguration(new X_Hero_CreatureType_Configuration());
+    //    _ = modelBuilder.ApplyConfiguration(new X_EquipmentType_DamageType_Configuration());
 
         modelBuilder.CorrectNames(skipIfNameEnteredManual: true);
         modelBuilder.FirstLetterToLowerInScheme();
-
+        ApplyDefaultValues(modelBuilder);
         //Data_DamageType.Add(modelBuilder);
         //Data_CreatureType.Add(modelBuilder);
         //Data_Hero.Add(modelBuilder);
+    }
+    private void ApplyDefaultValues(ModelBuilder modelBuilder)
+    {
+        IEnumerable<IMutableEntityType> entityTypes = modelBuilder.Model.GetEntityTypes();
+
+        foreach (IMutableEntityType entityType in entityTypes)
+        {
+            EntityTypeBuilder entity = modelBuilder.Entity(entityType.ClrType);
+
+            foreach (PropertyInfo property in entityType.ClrType.GetProperties())
+            {
+                HasDefaultValueAttribute? attr = property.GetCustomAttribute<HasDefaultValueAttribute>();
+                if (attr != null)
+                {
+                    _ = entity.Property(property.Name).HasDefaultValue(attr.Value);
+                }
+            }
+        }
     }
 }

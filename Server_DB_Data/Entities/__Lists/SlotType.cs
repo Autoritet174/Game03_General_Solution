@@ -20,7 +20,7 @@ public class SlotType
     /// <summary>
     /// Уникальное наименование на английском.
     /// </summary>
-    [Required, MaxLength(255)]
+    [MaxLength(255)]
     public required string Name { get; set; }
 
     /// <summary>
@@ -31,7 +31,7 @@ public class SlotType
 
 
     /// <summary>
-    /// Навигационное свойство к <see cref="__Lists.EquipmentType"/>.
+    /// Навигационное свойство к <see cref="__Lists.Equip"/>.
     /// </summary>
-    public ICollection<EquipmentType> EquipmentTypes { get; set; } = [];
+    public ICollection<Equip> EquipmentTypes { get; set; } = [];
 }

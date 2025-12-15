@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Server_DB_Data.Entities.X_Cross;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -21,7 +20,7 @@ public class SmithingMaterials
     /// <summary>
     /// Уникальное наименование на английском.
     /// </summary>
-    [Required, MaxLength(255)]
+    [MaxLength(255)]
     public required string Name { get; set; }
 
     /// <summary>

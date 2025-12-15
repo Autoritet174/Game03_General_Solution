@@ -28,9 +28,6 @@ internal class PlayerCollectionProvider(PlayerCollectionCache _collectionCache, 
     }
     #endregion Logger
 
-    /// <summary>
-    /// 
-    /// </summary>
     public async Task<bool> LoadAllCollectionFromServer(CancellationToken cancellationToken)
     {
 
@@ -54,6 +51,7 @@ internal class PlayerCollectionProvider(PlayerCollectionCache _collectionCache, 
             return false;
         }
 
+        // герои
         _collectionCache.listHero.Clear();
         foreach (JToken h in heroes)
         {
@@ -74,9 +72,12 @@ internal class PlayerCollectionProvider(PlayerCollectionCache _collectionCache, 
                 strength, agility, intelligence, haste, level);
             _collectionCache.listHero.Add(cHero);
         }
-
-
         RefreshListGroupName();
+
+
+        // экипировка
+
+
 
         return true;
     }
@@ -84,7 +85,7 @@ internal class PlayerCollectionProvider(PlayerCollectionCache _collectionCache, 
     public void RefreshListGroupName()
     {
         // Создать список уникальных групп
-        List<string> list = _collectionCache.listGroupName;
+        List<string> list = _collectionCache.listHeroGroupName;
         list.Clear();
         list.Add(string.Empty); // группа по умолчанию
         foreach (CollectionHero hero in _collectionCache.listHero)
@@ -112,7 +113,7 @@ internal class PlayerCollectionProvider(PlayerCollectionCache _collectionCache, 
     public IEnumerable<GroupHeroes> GetCollectionHeroesGroupByGroups()
     {
         List<GroupHeroes> result = [];
-        foreach (string groupName in _collectionCache.listGroupName)
+        foreach (string groupName in _collectionCache.listHeroGroupName)
         {
             GroupHeroes groupHeroes = new(groupName,
                 _collectionCache.listHero.Where(a => a.GroupName == groupName).OrderByDescending(a => a.HeroBase.Rarity).ThenBy(a => a.Level).ThenBy(a => a.HeroBase.Name));

@@ -24,32 +24,35 @@ def Generate():
     # r = random.Random
     # random_number = random.randint(0, 100)
 
-    mode = 1
+    mode = 2
     if mode == 1:
         db['heroes'].drop()
         collection = db['heroes']
         # Данные для вставки
-        for i in range(5000):
+        for i in range(50):
             data = {
                 "OwnerId": user_uuid,
                 "HeroId": random.randint(1, 5),
                 "Health": random.randint(0, 100),
                 "Attack": random.randint(0, 100),
-                "Speed": random.randint(0, 100),
                 "Str": random.randint(0, 100),
                 "Agi": random.randint(0, 100),
-                "Int": random.randint(0, 100)
+                "Int": random.randint(0, 100),
+                "Speed": random.randint(0, 100),
+                "ExpEquip": {
+
+                }
+
             }
             result = collection.insert_one(data)
 
     if mode == 2:
         db['equipment'].drop()
         collection = db['equipment']
-        for i in range(100):
+        for i in range(50):
             data = {
                 "OwnerId": user_uuid,
-                "HeroId": random.randint(1, 5),
-                "EquipmentTypeId": 1,
+                "EquipId": 1,
                 "SlotId": 0,  # 0 - в инвентаре, 1+ - в слотах героя
                 "Attack": {
                     "C": random.randint(1, 5),

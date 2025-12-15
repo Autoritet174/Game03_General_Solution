@@ -117,7 +117,7 @@ public class MongoRepository
                 EnduranceMagical = d.GetLong("EnduranceMagical"),
             };
         }).Cast<object>().ToList();
-        
+
         Console.WriteLine($"ЗАГРУЖЕНО {result.Count} за {(DateTime.Now - now).TotalSeconds} секунд");
         return result;
     }
@@ -136,26 +136,17 @@ public class MongoRepository
             return new
             {
                 _id = d["_id"].AsObjectId.ToString(),
-                OwnerId = d.GetGuid("owner_id"),
-                EquipmentTypeId = d.GetInt("hero_id"),
-                group_name = d.GetString("group_name"),
-
-                //Уровень
-                level = d.GetInt("level"),
-                exp_now = d.GetLong("exp_now"),
-                exp_max = d.GetLong("exp_max"),
+                OwnerId = d.GetGuid("OwnerId"),
+                EquipId = d.GetInt("EquipId"),
+                GroupName = d.GetString("GroupName"),
 
                 //Базовые характеристики
-                health = d.GetLong("health"),
-                attack = d.GetLong("attack"),
-                strength = d.GetLong("strength"),
-                agility = d.GetLong("agility"),
-                intelligence = d.GetLong("intelligence"),
-                haste = d.GetLong("haste"),
-                crit_chance = d.GetDouble("crit_chance"),
-                crit_power = d.GetDouble("crit_power"),
-                endurance_physical = d.GetLong("endurance_physical"),
-                endurance_magical = d.GetLong("endurance_magical"),
+                Health = d.GetLong("Health"),
+                Attack = d.GetLong("Attack"),
+                Str = d.GetLong("Str"),
+                Agi = d.GetLong("Agi"),
+                Int = d.GetLong("Int"),
+                Haste = d.GetLong("Haste")
             };
         }).Cast<object>().ToList();
 

@@ -21,7 +21,7 @@ public class DamageType
     /// <summary>
     /// Уникальное наименование на английском.
     /// </summary>
-    [Required, MaxLength(255)]
+    [MaxLength(255)]
     public required string Name { get; set; }
 
     /// <summary>
@@ -46,5 +46,5 @@ public class DamageType
     /// Типы оружия для этого типа урона. Вычисляемое свойство.
     /// </summary>
     [NotMapped]
-    public IReadOnlyCollection<EquipmentType> WeaponTypes => X_EquipmentType_DamageType?.Select(static x => x.EquipmentType).ToList() ?? [];
+    public IReadOnlyCollection<Equip> WeaponTypes => X_EquipmentType_DamageType?.Select(static x => x.EquipmentType).ToList() ?? [];
 }

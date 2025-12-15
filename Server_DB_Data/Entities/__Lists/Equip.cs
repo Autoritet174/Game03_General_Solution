@@ -2,15 +2,15 @@ using Microsoft.EntityFrameworkCore;
 using Server_DB_Data.Entities.X_Cross;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
+using static Server_Common.Attributes;
 namespace Server_DB_Data.Entities.__Lists;
 
 /// <summary>
 /// Тип экипировки.
 /// </summary>
-[Table("EquipmentTypes", Schema = nameof(__Lists))]
+[Table("Equips", Schema = nameof(__Lists))]
 [Index(nameof(Name), IsUnique = true)]
-public class EquipmentType
+public class Equip
 {
     /// <summary>
     /// Первичный ключ.
@@ -21,13 +21,13 @@ public class EquipmentType
     /// <summary>
     /// Уникальное наименование на английском.
     /// </summary>
-    [Required, MaxLength(255)]
+    [MaxLength(255)]
     public required string Name { get; set; }
 
     /// <summary>
     /// Уникальное наименование на русском.
     /// </summary>
-    [Required, MaxLength(255)]
+    [MaxLength(255)]
     public required string NameRu { get; set; }
 
 
@@ -45,33 +45,32 @@ public class EquipmentType
     /// <summary>
     /// Масса предмета в граммах как если бы предмет был из железа.
     /// </summary>
-    [Required]
-    public required int Mass = 0;
+    [HasDefaultValue(0)]
+    public int Mass { get; set; }
 
 
     /// <summary>
     /// Идентификатор <see cref="__Lists.SlotType"/>.
     /// </summary>
-    [Required]
-    public required int SlotTypeId { get; set; }
+    public int SlotTypeId { get; set; }
 
     /// <summary>
     /// Тип слота экипировки.
     /// Сущность <see cref="__Lists.SlotType"/>.
     /// </summary>
-    [Required, ForeignKey(nameof(SlotTypeId))]
+    [ForeignKey(nameof(SlotTypeId))]
     public required SlotType SlotType;
 
     /// <summary>
     /// Можно создать через Кузнечное дело.
     /// </summary>
-    [Required]
+    [HasDefaultValue(false)]
     public bool CanCraftSmithing { get; set; }
 
     /// <summary>
     /// Можно создать через Ювелирное дело.
     /// </summary>
-    [Required]
+    [HasDefaultValue(false)]
     public bool CanCraftJewelcrafting { get; set; }
 
     /// <summary>
@@ -83,6 +82,6 @@ public class EquipmentType
     /// <summary>
     /// Трата очков действия за удар.
     /// </summary>
-    [Required]
+    [HasDefaultValue(0)]
     public int SpendActionPoints { get; set; }
 }

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Server_DB_Data.Entities.__Lists;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using static Server_Common.Attributes;
 
 namespace Server_DB_Data.Entities._Equipment;
 
@@ -24,20 +25,19 @@ public class Weapon : IEntity
     /// <summary>
     /// Уникальное наименование на английском.
     /// </summary>
-    [Required, MaxLength(255)]
+    [MaxLength(255)]
     public required string Name { get; set; }
 
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
-    [Required]
     public Enums.RarityLevel Rarity { get; set; }
 
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
-    [Required]
-    public bool IsUnique { get; set; } = false;
+    [HasDefaultValue(false)]
+    public bool IsUnique { get; set; }
 
     #endregion Entity
 
@@ -46,18 +46,17 @@ public class Weapon : IEntity
     /// <summary>
     /// Урон. Формат DND кубиков, 2d2.
     /// </summary>
-    [Required, MaxLength(255)]
+    [MaxLength(255)]
     public required string Damage { get; set; }
 
     /// <summary>
     /// Идентификатор WeaponType.
     /// </summary>
-    [Required]
-    public required int WeaponTypeId { get; set; }
+    public int WeaponTypeId { get; set; }
 
     /// <summary>
     /// Сущность WeaponType.
     /// </summary>
-    [Required, ForeignKey(nameof(WeaponTypeId))]
-    public required EquipmentType WeaponTypes { get; set; }
+    [ForeignKey(nameof(WeaponTypeId))]
+    public required Equip WeaponTypes { get; set; }
 }

@@ -10,8 +10,6 @@ namespace Server_DB_Data.Entities.X_Cross;
 /// Таблица для связи Hero и CreatureType.
 /// </summary>
 [Table(nameof(X_Hero_CreatureType), Schema = nameof(X_Cross))]
-[Index(nameof(HeroId))]
-[Index(nameof(CreatureTypeId))]
 [PrimaryKey(nameof(HeroId), nameof(CreatureTypeId))]
 public class X_Hero_CreatureType
 {
@@ -30,12 +28,12 @@ public class X_Hero_CreatureType
     /// <summary>
     /// Сущность <see cref="_Heroes.Hero"/>.
     /// </summary>
-    [Required, ForeignKey(nameof(HeroId))]
+    [ForeignKey(nameof(HeroId))]
     public required Hero Hero { get; set; }
 
     /// <summary>
     /// Сущность <see cref="CreatureType"/>.
     /// </summary>
-    [Required, ForeignKey(nameof(CreatureTypeId))]
+    [ForeignKey(nameof(CreatureTypeId))]
     public required CreatureType CreatureTypes { get; set; }
 }

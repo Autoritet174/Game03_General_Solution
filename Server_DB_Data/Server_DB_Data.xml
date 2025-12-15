@@ -124,7 +124,7 @@
         </member>
         <member name="P:Server_DB_Data.Entities.X_Cross.X_EquipmentType_DamageType.EquipmentTypeId">
             <summary>
-            Идентификатор <see cref="T:Server_DB_Data.Entities.__Lists.EquipmentType"/>.
+            Идентификатор <see cref="T:Server_DB_Data.Entities.__Lists.Equip"/>.
             </summary>
         </member>
         <member name="P:Server_DB_Data.Entities.X_Cross.X_EquipmentType_DamageType.DamageTypeId">
@@ -134,7 +134,7 @@
         </member>
         <member name="P:Server_DB_Data.Entities.X_Cross.X_EquipmentType_DamageType.EquipmentType">
             <summary>
-            Сущность <see cref="T:Server_DB_Data.Entities.__Lists.EquipmentType"/>.
+            Сущность <see cref="T:Server_DB_Data.Entities.__Lists.Equip"/>.
             </summary>
         </member>
         <member name="P:Server_DB_Data.Entities.X_Cross.X_EquipmentType_DamageType.DamageType">
@@ -322,68 +322,68 @@
             Типы оружия для этого типа урона. Вычисляемое свойство.
             </summary>
         </member>
-        <member name="T:Server_DB_Data.Entities.__Lists.EquipmentType">
+        <member name="T:Server_DB_Data.Entities.__Lists.Equip">
             <summary>
             Тип экипировки.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.Id">
+        <member name="P:Server_DB_Data.Entities.__Lists.Equip.Id">
             <summary>
             Первичный ключ.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.Name">
+        <member name="P:Server_DB_Data.Entities.__Lists.Equip.Name">
             <summary>
             Уникальное наименование на английском.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.NameRu">
+        <member name="P:Server_DB_Data.Entities.__Lists.Equip.NameRu">
             <summary>
             Уникальное наименование на русском.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.X_EquipmentType_DamageType">
+        <member name="P:Server_DB_Data.Entities.__Lists.Equip.X_EquipmentType_DamageType">
             <summary>
             Навигационное свойство к DamageTypes если экипировка наносит урон.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.DamageTypes">
+        <member name="P:Server_DB_Data.Entities.__Lists.Equip.DamageTypes">
             <summary>
             Типы урона для этого типа экипировки. Вычисляемое свойство.
             </summary>
         </member>
-        <member name="F:Server_DB_Data.Entities.__Lists.EquipmentType.Mass">
+        <member name="P:Server_DB_Data.Entities.__Lists.Equip.Mass">
             <summary>
             Масса предмета в граммах как если бы предмет был из железа.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.SlotTypeId">
+        <member name="P:Server_DB_Data.Entities.__Lists.Equip.SlotTypeId">
             <summary>
             Идентификатор <see cref="T:Server_DB_Data.Entities.__Lists.SlotType"/>.
             </summary>
         </member>
-        <member name="F:Server_DB_Data.Entities.__Lists.EquipmentType.SlotType">
+        <member name="F:Server_DB_Data.Entities.__Lists.Equip.SlotType">
             <summary>
             Тип слота экипировки.
             Сущность <see cref="T:Server_DB_Data.Entities.__Lists.SlotType"/>.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.CanCraftSmithing">
+        <member name="P:Server_DB_Data.Entities.__Lists.Equip.CanCraftSmithing">
             <summary>
             Можно создать через Кузнечное дело.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.CanCraftJewelcrafting">
+        <member name="P:Server_DB_Data.Entities.__Lists.Equip.CanCraftJewelcrafting">
             <summary>
             Можно создать через Ювелирное дело.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.Attack">
+        <member name="P:Server_DB_Data.Entities.__Lists.Equip.Attack">
             <summary>
             Атака оружия
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.SpendActionPoints">
+        <member name="P:Server_DB_Data.Entities.__Lists.Equip.SpendActionPoints">
             <summary>
             Трата очков действия за удар.
             </summary>
@@ -445,7 +445,7 @@
         </member>
         <member name="P:Server_DB_Data.Entities.__Lists.SlotType.EquipmentTypes">
             <summary>
-            Навигационное свойство к <see cref="T:Server_DB_Data.Entities.__Lists.EquipmentType"/>.
+            Навигационное свойство к <see cref="T:Server_DB_Data.Entities.__Lists.Equip"/>.
             </summary>
         </member>
         <member name="T:Server_DB_Data.Entities.__Lists.SmithingMaterials">
@@ -711,6 +711,30 @@
             <inheritdoc />
         </member>
         <member name="M:Server_DB_Data.Migrations.Hero_Fix1.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.Fix5">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Fix5.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Fix5.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Fix5.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.Equips_Rename">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Equips_Rename.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Equips_Rename.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Equips_Rename.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Server_DB_Data.Repositories.HeroRepository">

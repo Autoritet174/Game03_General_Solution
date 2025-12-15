@@ -4,6 +4,7 @@ using Server_DB_Data.Entities.__Lists;
 using Server_DB_Data.Entities.X_Cross;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using static Server_Common.Attributes;
 
 namespace Server_DB_Data.Entities._Heroes;
 
@@ -25,20 +26,19 @@ public class Hero : IEntity
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
-    [Required, MaxLength(255)]
+    [MaxLength(255)]
     public required string Name { get; set; }
 
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
-    [Required]
     public Enums.RarityLevel Rarity { get; set; }
 
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
-    [Required]
-    public bool IsUnique { get; set; } = false;
+    [HasDefaultValue(false)]
+    public bool IsUnique { get; set; }
 
     #endregion Entity
 
@@ -47,19 +47,19 @@ public class Hero : IEntity
     /// <summary>
     /// Здоровье. Формат DND кубиков, 2d2.
     /// </summary>
-    [Required, MaxLength(255)]
+    [MaxLength(255)]
     public required string Health { get; set; }
 
     /// <summary>
     /// Урон. Формат DND кубиков, 2d2.
     /// </summary>
-    [Required, MaxLength(255)]
+    [MaxLength(255)]
     public required string Damage { get; set; }
 
     /// <summary>
     /// Основной стат который повышает урон. Сила(1) или Ловкость(2) или Интеллект(3).
     /// </summary>
-    [Required]
+    [HasDefaultValue(0)]
     public required int MainStat { get; set; }
 
     /// <summary>
