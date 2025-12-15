@@ -18,9 +18,6 @@ internal class Program
     }
     private static void Start()
     {
-        Console.WriteLine("qqwe_qwe_qwe".ToPascalCase(preserveUnderscores: false));
-        Console.ReadLine();
-        return;
         General.StringCapsule capsule = new()
         {
             Value = File.ReadAllText(@"C:\UnityProjects\Game03_Git\Client_Game03\Assets\Resources\localization\ru\data.json"),
@@ -53,7 +50,8 @@ internal class Program
         cancellationTokenSource = new(TimeSpan.FromSeconds(30));
         Game.Collection.LoadAllCollectionFromServer(cancellationTokenSource.Token).Wait();
 
-        var coll = Game.Collection.GetCollectionHeroes();
+        var coll = Game.Collection.GetCollectionHeroesFromCache();
+        var coll1 = Game.Collection.GetCollectionHeroesGroupByGroups();
         Console.WriteLine(coll.Count());
 
         //Console.ReadLine();

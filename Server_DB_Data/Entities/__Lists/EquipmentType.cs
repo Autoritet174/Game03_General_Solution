@@ -8,7 +8,7 @@ namespace Server_DB_Data.Entities.__Lists;
 /// <summary>
 /// Тип экипировки.
 /// </summary>
-[Table("EquipmentType", Schema = nameof(__Lists))]
+[Table("EquipmentTypes", Schema = nameof(__Lists))]
 [Index(nameof(Name), IsUnique = true)]
 public class EquipmentType
 {
@@ -65,10 +65,24 @@ public class EquipmentType
     /// <summary>
     /// Можно создать через Кузнечное дело.
     /// </summary>
-    public bool? CanCraftSmithing { get; set; }
+    [Required]
+    public bool CanCraftSmithing { get; set; }
 
     /// <summary>
     /// Можно создать через Ювелирное дело.
     /// </summary>
-    public bool? CanCraftJewelcrafting { get; set; }
+    [Required]
+    public bool CanCraftJewelcrafting { get; set; }
+
+    /// <summary>
+    /// Атака оружия
+    /// </summary>
+    [MaxLength(255)]
+    public string? Attack { get; set; }
+
+    /// <summary>
+    /// Трата очков действия за удар.
+    /// </summary>
+    [Required]
+    public int SpendActionPoints { get; set; }
 }

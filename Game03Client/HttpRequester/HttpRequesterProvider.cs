@@ -117,8 +117,7 @@ internal class HttpRequesterProvider : IHttpRequester
         }
         catch (TaskCanceledException ex) when (ex.InnerException is TimeoutException)
         {
-            //Log(ex.ToString(), L.Error.Server.Timeout);
-            Log("blablabla", L.Error.Server.InvalidResponse);
+            Log(ex.ToString(), L.Error.Server.Timeout);
             return null;
         }
         catch (HttpRequestException ex) when (ex.InnerException is WebException)
@@ -126,13 +125,11 @@ internal class HttpRequesterProvider : IHttpRequester
             bool haveInternet = await _internetCheckerProvider.CheckInternetConnectionAsync(cancellationToken);
             string key = haveInternet ? L.Error.Server.Unavailable : L.Error.Server.NoInternetConnection;
             Log(ex.ToString(), key);
-            //Log("blablabla", L.Error.Server.InvalidResponse);
             return null;
         }
         catch (Exception ex)
         {
-            //Log(ex.ToString(), L.Error.Server.InvalidResponse);
-            Log("blablabla", L.Error.Server.InvalidResponse);
+            Log(ex.ToString(), L.Error.Server.InvalidResponse);
             return null;
         }
     }

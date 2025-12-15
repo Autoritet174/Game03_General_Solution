@@ -112,15 +112,15 @@ public class DbContext_Game03Data(DbContextOptions<DbContext_Game03Data> options
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         _ = modelBuilder.ApplyConfiguration(new EquipmentType_Configuration());
-        _ = modelBuilder.ApplyConfiguration(new WeaponConfiguration());
+        _ = modelBuilder.ApplyConfiguration(new HeroConfiguration());
         _ = modelBuilder.ApplyConfiguration(new X_Hero_CreatureType_Configuration());
         _ = modelBuilder.ApplyConfiguration(new X_EquipmentType_DamageType_Configuration());
 
         modelBuilder.CorrectNames(skipIfNameEnteredManual: true);
         modelBuilder.FirstLetterToLowerInScheme();
 
-        Data_DamageType.Add(modelBuilder);
-        Data_CreatureType.Add(modelBuilder);
-        Data_Hero.Add(modelBuilder);
+        //Data_DamageType.Add(modelBuilder);
+        //Data_CreatureType.Add(modelBuilder);
+        //Data_Hero.Add(modelBuilder);
     }
 }

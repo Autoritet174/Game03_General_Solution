@@ -10,5 +10,6 @@ internal class EquipmentType_Configuration : IEntityTypeConfiguration<EquipmentT
         _ = builder.Property(a => a.Mass).HasDefaultValue(0);
         _ = builder.Property(a => a.CanCraftSmithing).HasDefaultValue(false);
         _ = builder.Property(a => a.CanCraftJewelcrafting).HasDefaultValue(false);
+        //_ = builder.Property(a => a.SpendActionPoints).HasDefaultValue(0);
     }
 }

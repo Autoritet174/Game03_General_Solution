@@ -1,4 +1,4 @@
-dotnet ef migrations add Names_Fix1 `
+dotnet ef migrations add Hero_Fix1 `
 --project ".\Server_DB_Data\Server_DB_Data.csproj" `
 --startup-project ".\Server\Server.csproj" `
 --context DbContext_Game03Data

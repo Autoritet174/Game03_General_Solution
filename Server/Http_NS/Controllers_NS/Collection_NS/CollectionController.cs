@@ -39,6 +39,7 @@ public class CollectionController(Server_DB_UserData.MongoRepository _mongoRepos
 
         List<object> heroes = await taskHeroes;
         List<object> equipment = await taskEquipment;
-        return Ok(new { heroes, equipment });
+        OkObjectResult result = Ok(new { heroes, equipment });
+        return result;
     }
 }

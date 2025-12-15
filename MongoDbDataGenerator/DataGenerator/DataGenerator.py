@@ -26,35 +26,46 @@ def Generate():
 
     mode = 1
     if mode == 1:
+        db['heroes'].drop()
         collection = db['heroes']
         # Данные для вставки
-        for i in range(50):
+        for i in range(5000):
             data = {
-                "owner_id": user_uuid,
-                "hero_id": random.randint(1, 5),
-                "health": random.randint(0, 100),
-                "attack": random.randint(0, 100),
-                "speed": random.randint(0, 100),
-                "strength": random.randint(0, 100),
-                "agility": random.randint(0, 100),
-                "intelligence": random.randint(0, 100)
+                "OwnerId": user_uuid,
+                "HeroId": random.randint(1, 5),
+                "Health": random.randint(0, 100),
+                "Attack": random.randint(0, 100),
+                "Speed": random.randint(0, 100),
+                "Str": random.randint(0, 100),
+                "Agi": random.randint(0, 100),
+                "Int": random.randint(0, 100)
             }
             result = collection.insert_one(data)
 
     if mode == 2:
+        db['equipment'].drop()
         collection = db['equipment']
-        for i in range(50):
+        for i in range(100):
             data = {
-                "owner_id": user_uuid,
-                "equipment_type_id": 1,
-                "slot_id": 0,  # 0 - в инвентаре, 1+ - в слотах героя 
-                "attack": random.randint(0, 100),
-                "speed": random.randint(0, 100),
-                "strength": random.randint(0, 100),
-                "agility": random.randint(0, 100),
-                "intelligence": random.randint(0, 100)
+                "OwnerId": user_uuid,
+                "HeroId": random.randint(1, 5),
+                "EquipmentTypeId": 1,
+                "SlotId": 0,  # 0 - в инвентаре, 1+ - в слотах героя
+                "Attack": {
+                    "C": random.randint(1, 5),
+                    "S": random.randint(20, 50),
+                    "M": random.randint(0, 5)
+                },
+                "Level": random.randint(1, 20),
+                "SAP": random.randint(10, 20),
+                "Str": random.randint(0, 100),
+                "Agi": random.randint(0, 100),
+                "Int": random.randint(0, 100)
             }
             result = collection.insert_one(data)
+
+        stats = db.command("collstats", "equipment")
+        print(f"Размер коллекции: {stats['size']} байт")
 
     # Закрываем соединение
     client.close()

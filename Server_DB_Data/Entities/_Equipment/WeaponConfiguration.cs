@@ -4,7 +4,7 @@ using Server_DB_Data.Entities.X_Cross;
 
 namespace Server_DB_Data.Entities._Equipment;
 
-internal class WeaponConfiguration : IEntityTypeConfiguration<_Equipment.Weapon>
+internal class HeroConfiguration : IEntityTypeConfiguration<_Equipment.Weapon>
 {
     public void Configure(EntityTypeBuilder<_Equipment.Weapon> builder)
     {

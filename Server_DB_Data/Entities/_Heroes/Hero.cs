@@ -56,6 +56,11 @@ public class Hero : IEntity
     [Required, MaxLength(255)]
     public required string Damage { get; set; }
 
+    /// <summary>
+    /// Основной стат который повышает урон. Сила(1) или Ловкость(2) или Интеллект(3).
+    /// </summary>
+    [Required]
+    public required int MainStat { get; set; }
 
     /// <summary>
     /// Навигационное свойство к CreatureTypes.

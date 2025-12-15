@@ -84,9 +84,10 @@ public class MongoRepository
     /// <summary>
     /// Получить всех героев.
     /// </summary>
-    public async Task<List<object>> GetHeroesByUserIdAsync(Guid owner_id)
+    public async Task<List<object>> GetHeroesByUserIdAsync(Guid ownerId)
     {
-        FilterDefinition<BsonDocument> filter = Builders<BsonDocument>.Filter.Eq("owner_id", owner_id);
+        DateTime now = DateTime.Now;
+        FilterDefinition<BsonDocument> filter = Builders<BsonDocument>.Filter.Eq("OwnerId", ownerId);
 
         List<BsonDocument> documents = await _collection_heroes.Find(filter).ToListAsync();
         var result = documents.Select(d =>
@@ -94,29 +95,30 @@ public class MongoRepository
             return new
             {
                 _id = d["_id"].AsObjectId.ToString(),
-                owner_id = d.GetGuid("owner_id"),
-                hero_id = d.GetInt("hero_id"),
-                group_name = d.GetString("group_name"),
+                OwnerId = d.GetGuid("OwnerId"),
+                HeroId = d.GetInt("HeroId"),
+                GroupName = d.GetString("GroupName"),
 
                 //Уровень
-                level = d.GetInt("level"),
-                exp_now = d.GetLong("exp_now"),
-                exp_max = d.GetLong("exp_max"),
+                Level = d.GetInt("Level"),
+                ExpNow = d.GetLong("ExpNow"),
+                ExpMax = d.GetLong("ExpMax"),
 
                 //Базовые характеристики
-                health = d.GetLong("health"),
-                attack = d.GetLong("attack"),
-                strength = d.GetLong("strength"),
-                agility = d.GetLong("agility"),
-                intelligence = d.GetLong("intelligence"),
-                haste = d.GetLong("haste"),
-                crit_chance = d.GetDouble("crit_chance"),
-                crit_power = d.GetDouble("crit_power"),
-                endurance_physical = d.GetLong("endurance_physical"),
-                endurance_magical = d.GetLong("endurance_magical"),
+                Health = d.GetLong("Health"),
+                Attack = d.GetLong("Attack"),
+                Str = d.GetLong("Str"),
+                Agi = d.GetLong("Agi"),
+                Int = d.GetLong("Int"),
+                Haste = d.GetLong("Haste"),
+                CritChance = d.GetDouble("CritChance"),
+                CritPower = d.GetDouble("CritPower"),
+                EndurancePhysical = d.GetLong("EndurancePhysical"),
+                EnduranceMagical = d.GetLong("EnduranceMagical"),
             };
         }).Cast<object>().ToList();
-
+        
+        Console.WriteLine($"ЗАГРУЖЕНО {result.Count} за {(DateTime.Now - now).TotalSeconds} секунд");
         return result;
     }
 
@@ -134,8 +136,8 @@ public class MongoRepository
             return new
             {
                 _id = d["_id"].AsObjectId.ToString(),
-                owner_id = d.GetGuid("owner_id"),
-                hero_id = d.GetInt("hero_id"),
+                OwnerId = d.GetGuid("owner_id"),
+                EquipmentTypeId = d.GetInt("hero_id"),
                 group_name = d.GetString("group_name"),
 
                 //Уровень

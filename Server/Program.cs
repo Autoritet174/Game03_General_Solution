@@ -197,6 +197,12 @@ internal partial class Program
 
         _ = services.AddMemoryCache();
 
+        _ = services.AddControllers()
+           .AddJsonOptions(options =>
+           {
+               options.JsonSerializerOptions.PropertyNamingPolicy = null;
+               options.JsonSerializerOptions.DictionaryKeyPolicy = null;
+           });
 
 
         WebApplication app = builder.Build();
@@ -310,7 +316,7 @@ internal partial class Program
             IHeroCacheService heroCache = scope.ServiceProvider.GetRequiredService<IHeroCacheService>();
             heroCache.InitializeAsync(scope.ServiceProvider).GetAwaiter().GetResult();
         }
-
+       
 
         // СТАРТ
         app.Run();

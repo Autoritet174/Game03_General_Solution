@@ -247,6 +247,11 @@
             Урон. Формат DND кубиков, 2d2.
             </summary>
         </member>
+        <member name="P:Server_DB_Data.Entities._Heroes.Hero.MainStat">
+            <summary>
+            Основной стат который повышает урон. Сила(1) или Ловкость(2) или Интеллект(3).
+            </summary>
+        </member>
         <member name="P:Server_DB_Data.Entities._Heroes.Hero.X_Hero_CreatureType">
             <summary>
             Навигационное свойство к CreatureTypes.
@@ -365,22 +370,22 @@
         </member>
         <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.CanCraftSmithing">
             <summary>
-            Можно создать при помощи кузнечного дела.
+            Можно создать через Кузнечное дело.
             </summary>
         </member>
         <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.CanCraftJewelcrafting">
             <summary>
-            Можно скрафтить через ювелирное дело.
+            Можно создать через Ювелирное дело.
             </summary>
         </member>
         <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.Attack">
             <summary>
-            Базовая атака.
+            Атака оружия
             </summary>
         </member>
         <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.SpendActionPoints">
             <summary>
-            Базовая трата очков действия за удар.
+            Трата очков действия за удар.
             </summary>
         </member>
         <member name="T:Server_DB_Data.Entities.__Lists.MaterialDamagePercent">
@@ -670,6 +675,42 @@
             <inheritdoc />
         </member>
         <member name="M:Server_DB_Data.Migrations.Names_Fix1.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.EquipmentTypes_Fix1">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.EquipmentTypes_Fix1.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.EquipmentTypes_Fix1.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.EquipmentTypes_Fix1.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.EquipmentTypes_Fix2">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.EquipmentTypes_Fix2.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.EquipmentTypes_Fix2.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.EquipmentTypes_Fix2.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Data.Migrations.Hero_Fix1">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Hero_Fix1.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Hero_Fix1.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Data.Migrations.Hero_Fix1.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Server_DB_Data.Repositories.HeroRepository">

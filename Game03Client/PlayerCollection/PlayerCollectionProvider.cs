@@ -57,17 +57,17 @@ internal class PlayerCollectionProvider(PlayerCollectionCache _collectionCache, 
         _collectionCache.listHero.Clear();
         foreach (JToken h in heroes)
         {
-            string id = h["id"].GetString();
-            Guid owner_id = h["owner_id"].GetGuid();
-            int hero_id = h["hero_id"].GetInt();
-            string group_name = h["group_name"].GetString();
-            long health = h["health"].GetLong();
-            long attack = h["attack"].GetLong();
-            long strength = h["strength"].GetLong();
-            long agility = h["agility"].GetLong();
-            long intelligence = h["intelligence"].GetLong();
-            long haste = h["haste"].GetLong();
-            int level = h["level"].GetInt();
+            string id = h["_id"].GetString();
+            Guid owner_id = h["OwnerId"].GetGuid();
+            int hero_id = h["HeroId"].GetInt();
+            string group_name = h["GroupName"].GetString();
+            long health = h["Health"].GetLong();
+            long attack = h["Attack"].GetLong();
+            long strength = h["Str"].GetLong();
+            long agility = h["Agi"].GetLong();
+            long intelligence = h["Int"].GetLong();
+            long haste = h["Haste"].GetLong();
+            int level = h["Level"].GetInt();
 
 
             CollectionHero cHero = new(id, owner_id, _gameData.GetHeroById(hero_id), group_name, health, attack,
@@ -97,7 +97,7 @@ internal class PlayerCollectionProvider(PlayerCollectionCache _collectionCache, 
         }
     }
 
-    public IEnumerable<CollectionHero> GetCollectionHeroes()
+    public IEnumerable<CollectionHero> GetCollectionHeroesFromCache()
     {
         return _collectionCache.listHero;
     }

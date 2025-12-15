@@ -9,7 +9,7 @@ namespace Game03Client.PlayerCollection;
 public interface IPlayerCollection
 {
     Task<bool> LoadAllCollectionFromServer(CancellationToken cancellationToken);
-    IEnumerable<CollectionHero> GetCollectionHeroes();
+    IEnumerable<CollectionHero> GetCollectionHeroesFromCache();
     IEnumerable<GroupHeroes> GetCollectionHeroesGroupByGroups();
     int GetCountHeroes();
 }
