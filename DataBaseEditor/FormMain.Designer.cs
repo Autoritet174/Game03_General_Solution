@@ -114,7 +114,7 @@ partial class FormMain
         // 
         // weaponTypeBindingSource
         // 
-        weaponTypeBindingSource.DataSource = typeof(Server_DB_Data.Entities.__Lists.Equip);
+        weaponTypeBindingSource.DataSource = typeof(Server_DB_Data.Entities.__Lists.EquipmentType);
         // 
         // tabControl1
         // 

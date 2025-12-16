@@ -124,7 +124,7 @@
         </member>
         <member name="P:Server_DB_Data.Entities.X_Cross.X_EquipmentType_DamageType.EquipmentTypeId">
             <summary>
-            Идентификатор <see cref="T:Server_DB_Data.Entities.__Lists.Equip"/>.
+            Идентификатор <see cref="T:Server_DB_Data.Entities.__Lists.EquipmentType"/>.
             </summary>
         </member>
         <member name="P:Server_DB_Data.Entities.X_Cross.X_EquipmentType_DamageType.DamageTypeId">
@@ -134,7 +134,7 @@
         </member>
         <member name="P:Server_DB_Data.Entities.X_Cross.X_EquipmentType_DamageType.EquipmentType">
             <summary>
-            Сущность <see cref="T:Server_DB_Data.Entities.__Lists.Equip"/>.
+            Сущность <see cref="T:Server_DB_Data.Entities.__Lists.EquipmentType"/>.
             </summary>
         </member>
         <member name="P:Server_DB_Data.Entities.X_Cross.X_EquipmentType_DamageType.DamageType">
@@ -322,68 +322,68 @@
             Типы оружия для этого типа урона. Вычисляемое свойство.
             </summary>
         </member>
-        <member name="T:Server_DB_Data.Entities.__Lists.Equip">
+        <member name="T:Server_DB_Data.Entities.__Lists.EquipmentType">
             <summary>
             Тип экипировки.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.__Lists.Equip.Id">
+        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.Id">
             <summary>
             Первичный ключ.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.__Lists.Equip.Name">
+        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.Name">
             <summary>
             Уникальное наименование на английском.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.__Lists.Equip.NameRu">
+        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.NameRu">
             <summary>
             Уникальное наименование на русском.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.__Lists.Equip.X_EquipmentType_DamageType">
+        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.X_EquipmentType_DamageType">
             <summary>
             Навигационное свойство к DamageTypes если экипировка наносит урон.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.__Lists.Equip.DamageTypes">
+        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.DamageTypes">
             <summary>
             Типы урона для этого типа экипировки. Вычисляемое свойство.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.__Lists.Equip.Mass">
+        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.Mass">
             <summary>
             Масса предмета в граммах как если бы предмет был из железа.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.__Lists.Equip.SlotTypeId">
+        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.SlotTypeId">
             <summary>
             Идентификатор <see cref="T:Server_DB_Data.Entities.__Lists.SlotType"/>.
             </summary>
         </member>
-        <member name="F:Server_DB_Data.Entities.__Lists.Equip.SlotType">
+        <member name="F:Server_DB_Data.Entities.__Lists.EquipmentType.SlotType">
             <summary>
             Тип слота экипировки.
             Сущность <see cref="T:Server_DB_Data.Entities.__Lists.SlotType"/>.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.__Lists.Equip.CanCraftSmithing">
+        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.CanCraftSmithing">
             <summary>
             Можно создать через Кузнечное дело.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.__Lists.Equip.CanCraftJewelcrafting">
+        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.CanCraftJewelcrafting">
             <summary>
             Можно создать через Ювелирное дело.
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.__Lists.Equip.Attack">
+        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.Attack">
             <summary>
             Атака оружия
             </summary>
         </member>
-        <member name="P:Server_DB_Data.Entities.__Lists.Equip.SpendActionPoints">
+        <member name="P:Server_DB_Data.Entities.__Lists.EquipmentType.SpendActionPoints">
             <summary>
             Трата очков действия за удар.
             </summary>
@@ -445,7 +445,7 @@
         </member>
         <member name="P:Server_DB_Data.Entities.__Lists.SlotType.EquipmentTypes">
             <summary>
-            Навигационное свойство к <see cref="T:Server_DB_Data.Entities.__Lists.Equip"/>.
+            Навигационное свойство к <see cref="T:Server_DB_Data.Entities.__Lists.EquipmentType"/>.
             </summary>
         </member>
         <member name="T:Server_DB_Data.Entities.__Lists.SmithingMaterials">
@@ -483,258 +483,6 @@
             <inheritdoc />
         </member>
         <member name="M:Server_DB_Data.Migrations.Init.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.Fix2">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.Fix2.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.Fix2.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.Fix2.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.Fix3">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.Fix3.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.Fix3.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.Fix3.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.Fix4">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.Fix4.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.Fix4.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.Fix4.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.SmithingMaterials">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SmithingMaterials.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SmithingMaterials.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SmithingMaterials.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.SmithingMaterials_Fix">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.SmithingMaterials_Fix2">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix2.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix2.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix2.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.SmithingMaterials_Fix3">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix3.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix3.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix3.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.SmithingMaterials_Fix4">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix4.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix4.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix4.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.SmithingMaterials_Fix5">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix5.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix5.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix5.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.SmithingMaterials_Fix6">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix6.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix6.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SmithingMaterials_Fix6.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.SlotType">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SlotType.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SlotType.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SlotType.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.SlotType_Fix1">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SlotType_Fix1.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SlotType_Fix1.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SlotType_Fix1.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.SlotType_Fix2">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SlotType_Fix2.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SlotType_Fix2.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SlotType_Fix2.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.SlotType_Fix3">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SlotType_Fix3.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SlotType_Fix3.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SlotType_Fix3.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.SlotType_Fix4">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SlotType_Fix4.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SlotType_Fix4.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.SlotType_Fix4.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.Names_Fix1">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.Names_Fix1.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.Names_Fix1.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.Names_Fix1.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.EquipmentTypes_Fix1">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.EquipmentTypes_Fix1.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.EquipmentTypes_Fix1.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.EquipmentTypes_Fix1.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.EquipmentTypes_Fix2">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.EquipmentTypes_Fix2.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.EquipmentTypes_Fix2.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.EquipmentTypes_Fix2.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.Hero_Fix1">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.Hero_Fix1.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.Hero_Fix1.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.Hero_Fix1.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.Fix5">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.Fix5.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.Fix5.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.Fix5.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:Server_DB_Data.Migrations.Equips_Rename">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.Equips_Rename.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.Equips_Rename.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Server_DB_Data.Migrations.Equips_Rename.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Server_DB_Data.Repositories.HeroRepository">

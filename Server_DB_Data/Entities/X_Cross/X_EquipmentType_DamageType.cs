@@ -14,7 +14,7 @@ namespace Server_DB_Data.Entities.X_Cross;
 public class X_EquipmentType_DamageType
 {
     /// <summary>
-    /// Идентификатор <see cref="__Lists.Equip"/>.
+    /// Идентификатор <see cref="__Lists.EquipmentType"/>.
     /// </summary>
     [Key, Column(Order = 0)]
     public required int EquipmentTypeId { get; set; }
@@ -26,10 +26,10 @@ public class X_EquipmentType_DamageType
     public required int DamageTypeId { get; set; }
 
     /// <summary>
-    /// Сущность <see cref="__Lists.Equip"/>.
+    /// Сущность <see cref="__Lists.EquipmentType"/>.
     /// </summary>
     [ForeignKey(nameof(EquipmentTypeId))]
-    public required Equip EquipmentType { get; set; }
+    public required EquipmentType EquipmentType { get; set; }
 
     /// <summary>
     /// Сущность <see cref="__Lists.DamageType"/>.

@@ -224,7 +224,7 @@ namespace Server_DB_Data.Migrations
                     b.ToTable("DamageTypes", "__lists");
                 });
 
-            modelBuilder.Entity("Server_DB_Data.Entities.__Lists.Equip", b =>
+            modelBuilder.Entity("Server_DB_Data.Entities.__Lists.EquipmentType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -279,16 +279,16 @@ namespace Server_DB_Data.Migrations
                         .HasColumnName("spend_action_points");
 
                     b.HasKey("Id")
-                        .HasName("Equips__pkey");
+                        .HasName("EquipmentTypes__pkey");
 
                     b.HasIndex("Name")
                         .IsUnique()
-                        .HasDatabaseName("Equips__Name__idx");
+                        .HasDatabaseName("EquipmentTypes__Name__idx");
 
                     b.HasIndex("SlotTypeId")
-                        .HasDatabaseName("Equips__SlotTypeId__idx");
+                        .HasDatabaseName("EquipmentTypes__SlotTypeId__idx");
 
-                    b.ToTable("Equips", "__lists");
+                    b.ToTable("EquipmentTypes", "__lists");
                 });
 
             modelBuilder.Entity("Server_DB_Data.Entities.__Lists.MaterialDamagePercent", b =>
@@ -393,12 +393,12 @@ namespace Server_DB_Data.Migrations
                         .IsRequired()
                         .HasConstraintName("X_EquipmentType_DamageType__DamageTypeId__DamageTypes__fkey");
 
-                    b.HasOne("Server_DB_Data.Entities.__Lists.Equip", "EquipmentType")
+                    b.HasOne("Server_DB_Data.Entities.__Lists.EquipmentType", "EquipmentType")
                         .WithMany("X_EquipmentType_DamageType")
                         .HasForeignKey("EquipmentTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("X_EquipmentType_DamageType__EquipmentTypeId__Equips__fkey");
+                        .HasConstraintName("X_EquipmentType_DamageType__EquipmentTypeId__EquipmentTypes__fkey");
 
                     b.Navigation("DamageType");
 
@@ -428,24 +428,24 @@ namespace Server_DB_Data.Migrations
 
             modelBuilder.Entity("Server_DB_Data.Entities._Equipment.Weapon", b =>
                 {
-                    b.HasOne("Server_DB_Data.Entities.__Lists.Equip", "WeaponTypes")
+                    b.HasOne("Server_DB_Data.Entities.__Lists.EquipmentType", "WeaponTypes")
                         .WithMany()
                         .HasForeignKey("WeaponTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("Weapons__WeaponTypeId__Equips__fkey");
+                        .HasConstraintName("Weapons__WeaponTypeId__EquipmentTypes__fkey");
 
                     b.Navigation("WeaponTypes");
                 });
 
-            modelBuilder.Entity("Server_DB_Data.Entities.__Lists.Equip", b =>
+            modelBuilder.Entity("Server_DB_Data.Entities.__Lists.EquipmentType", b =>
                 {
                     b.HasOne("Server_DB_Data.Entities.__Lists.SlotType", null)
                         .WithMany("EquipmentTypes")
                         .HasForeignKey("SlotTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("Equips__SlotTypeId__SlotTypes__fkey");
+                        .HasConstraintName("EquipmentTypes__SlotTypeId__SlotTypes__fkey");
                 });
 
             modelBuilder.Entity("Server_DB_Data.Entities.__Lists.MaterialDamagePercent", b =>
@@ -484,7 +484,7 @@ namespace Server_DB_Data.Migrations
                     b.Navigation("X_EquipmentType_DamageType");
                 });
 
-            modelBuilder.Entity("Server_DB_Data.Entities.__Lists.Equip", b =>
+            modelBuilder.Entity("Server_DB_Data.Entities.__Lists.EquipmentType", b =>
                 {
                     b.Navigation("X_EquipmentType_DamageType");
                 });

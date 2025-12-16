@@ -81,7 +81,7 @@ public class DbContext_Game03Data(DbContextOptions<DbContext_Game03Data> options
     /// <summary>
     /// Типы оружия.
     /// </summary>
-    public DbSet<Entities.__Lists.Equip> WeaponTypes { get; set; }
+    public DbSet<Entities.__Lists.EquipmentType> WeaponTypes { get; set; }
 
     /// <summary>
     /// Типы слотов экипировки.

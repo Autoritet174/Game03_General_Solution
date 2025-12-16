@@ -31,7 +31,7 @@ public class SlotType
 
 
     /// <summary>
-    /// Навигационное свойство к <see cref="__Lists.Equip"/>.
+    /// Навигационное свойство к <see cref="__Lists.EquipmentType"/>.
     /// </summary>
-    public ICollection<Equip> EquipmentTypes { get; set; } = [];
+    public ICollection<EquipmentType> EquipmentTypes { get; set; } = [];
 }

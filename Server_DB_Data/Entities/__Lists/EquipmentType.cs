@@ -3,14 +3,15 @@ using Server_DB_Data.Entities.X_Cross;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using static Server_Common.Attributes;
+
 namespace Server_DB_Data.Entities.__Lists;
 
 /// <summary>
 /// Тип экипировки.
 /// </summary>
-[Table("Equips", Schema = nameof(__Lists))]
+[Table("EquipmentTypes", Schema = nameof(__Lists))]
 [Index(nameof(Name), IsUnique = true)]
-public class Equip
+public class EquipmentType
 {
     /// <summary>
     /// Первичный ключ.

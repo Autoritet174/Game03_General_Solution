@@ -46,5 +46,5 @@ public class DamageType
     /// Типы оружия для этого типа урона. Вычисляемое свойство.
     /// </summary>
     [NotMapped]
-    public IReadOnlyCollection<Equip> WeaponTypes => X_EquipmentType_DamageType?.Select(static x => x.EquipmentType).ToList() ?? [];
+    public IReadOnlyCollection<EquipmentType> WeaponTypes => X_EquipmentType_DamageType?.Select(static x => x.EquipmentType).ToList() ?? [];
 }
