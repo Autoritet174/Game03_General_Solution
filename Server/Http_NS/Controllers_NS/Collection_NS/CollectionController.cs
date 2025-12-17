@@ -7,7 +7,7 @@ namespace Server.Http_NS.Controllers_NS.Collection_NS;
 /// <summary>
 /// Контроллер для управления коллекциями пользователя.
 /// </summary>
-public class CollectionController(Server_DB_UserData.MongoRepository _mongoRepository) : ControllerBaseApi
+public class CollectionController() : ControllerBaseApi
 {
     /// <summary>
     /// Получает коллекцию текущего пользователя.
@@ -34,12 +34,13 @@ public class CollectionController(Server_DB_UserData.MongoRepository _mongoRepos
             return Unauthorized();
         }
 
-        Task<List<object>> taskHeroes = _mongoRepository.GetHeroesByUserIdAsync(userId.Value);
-        Task<List<object>> taskEquipment = _mongoRepository.GetEquipmentByUserIdAsync(userId.Value);
+        //Task<List<object>> taskHeroes = _mongoRepository.GetHeroesByUserIdAsync(userId.Value);
+        //Task<List<object>> taskEquipment = _mongoRepository.GetEquipmentByUserIdAsync(userId.Value);
 
-        List<object> heroes = await taskHeroes;
-        List<object> equipment = await taskEquipment;
-        OkObjectResult result = Ok(new { heroes, equipment });
-        return result;
+        //List<object> heroes = await taskHeroes;
+        //List<object> equipment = await taskEquipment;
+        //OkObjectResult result = Ok(new { heroes, equipment });
+        //return result;
+        return Ok();
     }
 }

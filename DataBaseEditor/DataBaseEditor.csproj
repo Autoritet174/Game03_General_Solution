@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Server_DB_Data\Server_DB_Data.csproj" />
+    <ProjectReference Include="..\Server_DB_Data\Server_DB_Postgres.csproj" />
   </ItemGroup>
 
 </Project>

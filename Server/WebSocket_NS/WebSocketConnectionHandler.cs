@@ -1,9 +1,6 @@
 using Server.Jwt_NS;
-using Server_DB_UserData;
 using System.Collections.Concurrent;
 using System.Net.WebSockets;
-using Microsoft.AspNetCore.Http; // Добавлено
-using Microsoft.Extensions.DependencyInjection;
 using System.Net; // Добавлено для HttpStatusCode
 
 namespace Server.WebSocket_NS;
@@ -20,7 +17,6 @@ public class WebSocketConnectionHandler // УДАЛЕНО: : BackgroundService
     private readonly ConcurrentDictionary<Guid, DateTime> _activeConnections = new();
     private int _activeConnections_Count_Last = 0;
     private readonly Timer _monitoringTimer;
-    private readonly MongoRepository _mongoRepository;
     private readonly JwtService _jwtService;
     private readonly int _maxConnections;
 
@@ -32,7 +28,7 @@ public class WebSocketConnectionHandler // УДАЛЕНО: : BackgroundService
     /// <param name="configuration">Конфигурация приложения.</param>
     /// <param name="mongoRepository">Репозиторий для работы с MongoDB.</param>
     /// <param name="jwtService">JWT Сервис</param>
-    public WebSocketConnectionHandler(ILogger<WebSocketConnectionHandler> logger, IServiceProvider serviceProvider, IConfiguration configuration, MongoRepository mongoRepository, JwtService jwtService)
+    public WebSocketConnectionHandler(ILogger<WebSocketConnectionHandler> logger, IServiceProvider serviceProvider, IConfiguration configuration, JwtService jwtService)
     {
         ArgumentNullException.ThrowIfNull(configuration);
         _configuration = configuration;
@@ -43,7 +39,6 @@ public class WebSocketConnectionHandler // УДАЛЕНО: : BackgroundService
         _maxConnections = configuration.GetValue<int>("WebSocketSettings:MaxConnections");
 
         _monitoringTimer = new Timer(LogConnectionStats, null, TimeSpan.Zero, TimeSpan.FromSeconds(0.33));
-        _mongoRepository = mongoRepository;
         _jwtService = jwtService;
     }
 
@@ -95,7 +90,7 @@ public class WebSocketConnectionHandler // УДАЛЕНО: : BackgroundService
             ILogger<WebSocketConnection> clientLogger = scope.ServiceProvider.GetRequiredService<ILogger<WebSocketConnection>>();
 
             // Создание и инициализация нового WebSocketConnection
-            WebSocketConnection webSocketConnection = new(webSocket, clientLogger, _configuration, this, _mongoRepository, _jwtService);
+            WebSocketConnection webSocketConnection = new(webSocket, clientLogger, _configuration, this, _jwtService);
 
             _ = _activeConnections.TryAdd(webSocketConnection.Id, DateTime.UtcNow);
             Console.WriteLine($"Активных подключений: {_activeConnections.Count}");

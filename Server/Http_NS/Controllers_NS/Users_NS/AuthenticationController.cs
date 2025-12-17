@@ -6,8 +6,8 @@ using Microsoft.Extensions.Caching.Memory;
 using NpgsqlTypes;
 using Server.Jwt_NS;
 using Server.Utilities;
+using Server_DB_Postgres.Repositories;
 using Server_DB_Users.Entities;
-using Server_DB_Users.Repositories;
 using System.Net;
 using System.Text.Json.Nodes;
 using L = General.LocalizationKeys;
@@ -60,7 +60,7 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
 
         // Извлечение и валидация email.
         string email = jsonObject.GetString("email");
-        if (email.IsEmpty() || email.Length > Server_Common.Consts.EMAIL_MAX_LENGTH)
+        if (email.IsEmpty() || email.Length > Consts.EMAIL_MAX_LENGTH)
         {
             // Если пользователь временно заблокирован — возвращаем 429
             if (IsRateLimited(email))
@@ -85,7 +85,7 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
 
         // Извлечение и валидация пароля
         string password = jsonObject.GetString("password", removeAfterSuccessGetting: true);
-        if (password.IsEmpty() || password.Length > Server_Common.Consts.PASSWORD_MAX_LENGTH)
+        if (password.IsEmpty() || password.Length > Consts.PASSWORD_MAX_LENGTH)
         {
             LoggingAuthentification(false, jsonObject, email, null);
             IncrementFailedLoginAttempt(email);
@@ -282,7 +282,7 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
     private bool IsRateLimited(string email)
     {
         string cacheKey = $"login-attempts:{email.ToLowerInvariant()}";
-        return _memoryCache.TryGetValue(cacheKey, out LoginAttempt? attempt) && attempt != null && attempt.Count >= Server_Common.Consts.MAX_LOGIN_ATTEMPTS && attempt.ExpiresAt > DateTimeOffset.UtcNow;
+        return _memoryCache.TryGetValue(cacheKey, out LoginAttempt? attempt) && attempt != null && attempt.Count >= Consts.MAX_LOGIN_ATTEMPTS && attempt.ExpiresAt > DateTimeOffset.UtcNow;
     }
 
     /// <summary>

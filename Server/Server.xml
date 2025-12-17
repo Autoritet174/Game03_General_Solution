@@ -4,26 +4,25 @@
         <name>Server</name>
     </assembly>
     <members>
-        <member name="T:Server.Extensions.BsonDocumentExtension">
+        <member name="T:Server.Consts">
             <summary>
-            Содержит расширения для работы с объектами <see cref="T:MongoDB.Bson.BsonDocument"/>.
+            Константы на весь сервер.
             </summary>
         </member>
-        <member name="M:Server.Extensions.BsonDocumentExtension.ConvertStringToUuid(MongoDB.Bson.BsonDocument,System.String)">
+        <member name="F:Server.Consts.EMAIL_MAX_LENGTH">
             <summary>
-            Преобразует строковое значение в поле документа в UUID-тип <see cref="T:MongoDB.Bson.BsonBinaryData"/>
-            с подтипом <see cref="F:MongoDB.Bson.BsonBinarySubType.UuidStandard"/>, если это возможно.
+            Максимальная длина емаил.
             </summary>
-            <param name="document">Документ <see cref="T:MongoDB.Bson.BsonDocument"/>.</param>
-            <param name="fieldName">Имя поля, содержащего строковое значение.</param>
         </member>
-        <member name="M:Server.Extensions.BsonDocumentExtension.ConvertUuidFields(MongoDB.Bson.BsonDocument,System.String[])">
+        <member name="F:Server.Consts.PASSWORD_MAX_LENGTH">
             <summary>
-            Применяет преобразование строковых значений в UUID-тип <see cref="T:MongoDB.Bson.BsonBinaryData"/>
-            ко всем указанным полям документа, если это возможно.
+            Максимальная длина пароля.
             </summary>
-            <param name="document">Документ <see cref="T:MongoDB.Bson.BsonDocument"/>.</param>
-            <param name="fieldNames">Массив имен полей для обработки.</param>
+        </member>
+        <member name="F:Server.Consts.MAX_LOGIN_ATTEMPTS">
+            <summary>
+            Максимальное количество попыток аутентификации.
+            </summary>
         </member>
         <member name="T:Server.Extensions.JObjectExtension">
             <summary>
@@ -38,30 +37,6 @@
             <param name="obj">Объект <see cref="T:Newtonsoft.Json.Linq.JObject"/>, из которого извлекается значение.</param>
             <param name="path">Путь к значению в формате JSONPath (например: "$.user.name")</param>
             <returns>Значение как строка, если оно существует и может быть преобразовано в строку; иначе <c>null</c>.</returns>
-        </member>
-        <member name="T:Server.Game03.PlayerManager">
-            <summary>
-            Взаимодействие с игроком
-            </summary>
-            <param name="mongoRepository"></param>
-        </member>
-        <member name="M:Server.Game03.PlayerManager.#ctor(Server_DB_UserData.MongoRepository)">
-            <summary>
-            Взаимодействие с игроком
-            </summary>
-            <param name="mongoRepository"></param>
-        </member>
-        <member name="M:Server.Game03.PlayerManager.Command(System.String)">
-            <summary>
-            Команда от игрока.
-            </summary>
-            <param name="jsonString"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Server.Game03.PlayerManager.PushAllItems">
-            <summary>
-            Отправить пользователю все его предметы
-            </summary>
         </member>
         <member name="T:Server.GameDataCache.IHeroCacheService">
             <summary>
@@ -133,7 +108,7 @@
             Контроллер для управления коллекциями пользователя.
             </summary>
         </member>
-        <member name="M:Server.Http_NS.Controllers_NS.Collection_NS.CollectionController.#ctor(Server_DB_UserData.MongoRepository)">
+        <member name="M:Server.Http_NS.Controllers_NS.Collection_NS.CollectionController.#ctor">
             <summary>
             Контроллер для управления коллекциями пользователя.
             </summary>
@@ -235,7 +210,7 @@
             При успешной проверке возвращает JWT-токен доступа.
             </summary>
         </member>
-        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController.#ctor(Server_DB_Users.Repositories.UserRepository,Server.Jwt_NS.JwtService,Microsoft.Extensions.Logging.ILogger{Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController},Microsoft.Extensions.Caching.Memory.IMemoryCache,Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService)">
+        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController.#ctor(Server_DB_Postgres.Repositories.UserRepository,Server.Jwt_NS.JwtService,Microsoft.Extensions.Logging.ILogger{Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController},Microsoft.Extensions.Caching.Memory.IMemoryCache,Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService)">
             <summary>
             Контроллер аутентификации пользователей. Обрабатывает процесс входа (логин) по email и паролю.
             При успешной проверке возвращает JWT-токен доступа.
@@ -732,7 +707,7 @@
             Обрабатывает прием и отправку сообщений, аутентификацию и управление жизненным циклом подключения.
             </summary>
         </member>
-        <member name="M:Server.WebSocket_NS.WebSocketConnection.#ctor(System.Net.WebSockets.WebSocket,Microsoft.Extensions.Logging.ILogger{Server.WebSocket_NS.WebSocketConnection},Microsoft.Extensions.Configuration.IConfiguration,Server.WebSocket_NS.WebSocketConnectionHandler,Server_DB_UserData.MongoRepository,Server.Jwt_NS.JwtService)">
+        <member name="M:Server.WebSocket_NS.WebSocketConnection.#ctor(System.Net.WebSockets.WebSocket,Microsoft.Extensions.Logging.ILogger{Server.WebSocket_NS.WebSocketConnection},Microsoft.Extensions.Configuration.IConfiguration,Server.WebSocket_NS.WebSocketConnectionHandler,Server.Jwt_NS.JwtService)">
             <summary>
             Представляет одно WebSocket подключение клиента.
             Обрабатывает прием и отправку сообщений, аутентификацию и управление жизненным циклом подключения.
@@ -761,11 +736,6 @@
         <member name="F:Server.WebSocket_NS.WebSocketConnection._webSocketServer">
             <summary>
             Обработчик WebSocket соединений для управления подключениями.
-            </summary>
-        </member>
-        <member name="F:Server.WebSocket_NS.WebSocketConnection._playerManager">
-            <summary>
-            Менеджер игроков для обработки игровых команд.
             </summary>
         </member>
         <member name="F:Server.WebSocket_NS.WebSocketConnection._jwtService">
@@ -830,7 +800,7 @@
             в пайплайн ASP.NET Core Middleware через app.Map().
             </summary>
         </member>
-        <member name="M:Server.WebSocket_NS.WebSocketConnectionHandler.#ctor(Microsoft.Extensions.Logging.ILogger{Server.WebSocket_NS.WebSocketConnectionHandler},System.IServiceProvider,Microsoft.Extensions.Configuration.IConfiguration,Server_DB_UserData.MongoRepository,Server.Jwt_NS.JwtService)">
+        <member name="M:Server.WebSocket_NS.WebSocketConnectionHandler.#ctor(Microsoft.Extensions.Logging.ILogger{Server.WebSocket_NS.WebSocketConnectionHandler},System.IServiceProvider,Microsoft.Extensions.Configuration.IConfiguration,Server.Jwt_NS.JwtService)">
             <summary>
             Инициализирует новый экземпляр <see cref="T:Server.WebSocket_NS.WebSocketConnectionHandler"/>.
             </summary>

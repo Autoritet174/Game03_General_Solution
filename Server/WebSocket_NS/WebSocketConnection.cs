@@ -1,6 +1,4 @@
-using Server.Game03;
 using Server.Jwt_NS;
-using Server_DB_UserData;
 using System.Buffers;
 using System.Net.WebSockets;
 using System.Text;
@@ -11,7 +9,7 @@ namespace Server.WebSocket_NS;
 /// Представляет одно WebSocket подключение клиента.
 /// Обрабатывает прием и отправку сообщений, аутентификацию и управление жизненным циклом подключения.
 /// </summary>
-public class WebSocketConnection(WebSocket webSocket, ILogger<WebSocketConnection> logger, IConfiguration configuration, WebSocketConnectionHandler webSocketServer, MongoRepository mongoRepository, JwtService jwtService)
+public class WebSocketConnection(WebSocket webSocket, ILogger<WebSocketConnection> logger, IConfiguration configuration, WebSocketConnectionHandler webSocketServer, JwtService jwtService)
 {
     /// <summary>
     /// Уникальный идентификатор подключения.
@@ -37,11 +35,6 @@ public class WebSocketConnection(WebSocket webSocket, ILogger<WebSocketConnectio
     /// Обработчик WebSocket соединений для управления подключениями.
     /// </summary>
     private readonly WebSocketConnectionHandler _webSocketServer = webSocketServer;
-
-    /// <summary>
-    /// Менеджер игроков для обработки игровых команд.
-    /// </summary>
-    private readonly PlayerManager _playerManager = new(mongoRepository);
 
     /// <summary>
     /// Сервис для работы с JWT токенами аутентификации.
@@ -91,7 +84,7 @@ public class WebSocketConnection(WebSocket webSocket, ILogger<WebSocketConnectio
                 _logger.LogInformation("Принято сообщение от клиента {ClientId}: {Message}", Id, message);
 
                 // Передаем команду менеджеру игроков для обработки
-                await _playerManager.Command(message);
+                //await _playerManager.Command(message);
 
                 // Эхо-ответ (если нужно)
                 if (_webSocket.State == WebSocketState.Open)

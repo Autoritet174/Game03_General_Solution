@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Events;
@@ -10,11 +9,8 @@ using Server.Http_NS.Controllers_NS.Users_NS;
 using Server.Http_NS.Middleware_NS;
 using Server.Jwt_NS;
 using Server.WebSocket_NS;
-using Server_DB_Data;
-using Server_DB_Data.Repositories;
-using Server_DB_UserData;
-using Server_DB_Users;
-using Server_DB_Users.Repositories;
+using Server_DB_Postgres;
+using Server_DB_Postgres.Repositories;
 using System.Net; // Добавлено для HttpStatusCode
 using System.Text;
 using System.Threading.RateLimiting;
@@ -35,8 +31,8 @@ internal partial class Program
     /// <param name="args">Аргументы командной строки.</param>
     private static async Task Main(string[] args)
     {
-        MongoDB.Bson.Serialization.BsonSerializer.RegisterSerializer(new MongoDB.Bson.Serialization.Serializers.GuidSerializer(MongoDB.Bson.GuidRepresentation.Standard));
-        MongoDB.Bson.Serialization.BsonSerializer.RegisterSerializer(new MongoDB.Bson.Serialization.Serializers.NullableSerializer<Guid>(new MongoDB.Bson.Serialization.Serializers.GuidSerializer(MongoDB.Bson.GuidRepresentation.Standard)));
+        //MongoDB.Bson.Serialization.BsonSerializer.RegisterSerializer(new MongoDB.Bson.Serialization.Serializers.GuidSerializer(MongoDB.Bson.GuidRepresentation.Standard));
+        //MongoDB.Bson.Serialization.BsonSerializer.RegisterSerializer(new MongoDB.Bson.Serialization.Serializers.NullableSerializer<Guid>(new MongoDB.Bson.Serialization.Serializers.GuidSerializer(MongoDB.Bson.GuidRepresentation.Standard)));
 
 
         string serilogDir = Path.Combine(AppContext.BaseDirectory, "logs-errors");
@@ -126,27 +122,24 @@ internal partial class Program
         // -- БАЗЫ ДАННЫХ --
 
         // База данных пользователей
-        string сonnectionStringUsers = builder.Configuration.GetConnectionString("Postgres_Users")
-            ?? throw new InvalidOperationException("Строка подключения 'Postgres_Users' не найдена.");
-        _ = services.AddDbContext<DbContext_Game03Users>(options => options.UseNpgsql(сonnectionStringUsers));
-        _ = services.AddScoped<UserRepository>();
+        //string сonnectionStringUsers = builder.Configuration.GetConnectionString("Postgres_Users")
+        //    ?? throw new InvalidOperationException("Строка подключения 'Postgres_Users' не найдена.");
+        //_ = services.AddDbContext<DbContext_Game03Users>(options => options.UseNpgsql(сonnectionStringUsers));
+        //_ = services.AddScoped<UserRepository>();
 
 
         // База данных с игровыми данными
-        string сonnectionStringData = builder.Configuration.GetConnectionString("Postgres_Data")
-            ?? throw new InvalidOperationException("Строка подключения 'Postgres_Data' не найдена.");
-        _ = services.AddDbContext<DbContext_Game03Data>(options => options.UseNpgsql(сonnectionStringData));
+        string сonnectionString = builder.Configuration.GetConnectionString("Postgres")
+            ?? throw new InvalidOperationException("Строка подключения 'Postgres' не найдена.");
+        _ = services.AddDbContext<DbContext_Game>(options => options.UseNpgsql(сonnectionString));
         _ = services.AddScoped<HeroRepository>();
 
 
-        // Настройки "MongoDb"
-        IConfigurationSection mongoSection = builder.Configuration.GetSection("MongoDb");
-        _ = builder.Services.Configure<MongoDbSettings>(mongoSection);
-
-
-
-        // Регистрация репозитория
-        _ = services.AddSingleton<MongoRepository>();
+        //// Настройки "MongoDb"
+        //IConfigurationSection mongoSection = builder.Configuration.GetSection("MongoDb");
+        //_ = builder.Services.Configure<MongoDbSettings>(mongoSection);
+        //// Регистрация репозитория
+        //_ = services.AddSingleton<MongoRepository>();
 
 
         _ = services.AddSingleton<WebSocketConnectionHandler>();
@@ -297,15 +290,15 @@ internal partial class Program
         {
             Serilog.ILogger logger = scope.ServiceProvider.GetRequiredService<Serilog.ILogger>();
 
-            await DbContext_Game03Users.ThrowIfFailureConnection(сonnectionStringUsers);
-            logger.Information("SERVER=postgres, DB=Users, connection is correct");
+            //await DbContext_Game03Users.ThrowIfFailureConnection(сonnectionStringUsers);
+            //logger.Information("SERVER=postgres, DB=Users, connection is correct");
 
-            await DbContext_Game03Data.ThrowIfFailureConnection(сonnectionStringData);
+            await DbContext_Game.ThrowIfFailureConnection(сonnectionString);
             logger.Information("SERVER=postgres, DB=Data, connection is correct");
 
-            IOptions<MongoDbSettings> mongoSettings = scope.ServiceProvider.GetRequiredService<IOptions<MongoDbSettings>>();
-            await MongoRepository.ThrowIfFailureConnectionAsync(mongoSettings);
-            logger.Information("SERVER=MongoDb, DB=UserData, connection is correct");
+            //IOptions<MongoDbSettings> mongoSettings = scope.ServiceProvider.GetRequiredService<IOptions<MongoDbSettings>>();
+            //await MongoRepository.ThrowIfFailureConnectionAsync(mongoSettings);
+            //logger.Information("SERVER=MongoDb, DB=UserData, connection is correct");
         }
 
         // на этом момент есть гарантия что соединения со всеми СУБД корректно.

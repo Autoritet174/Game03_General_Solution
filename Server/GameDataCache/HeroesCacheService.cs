@@ -1,6 +1,6 @@
 // GameDataCache/HeroesCacheService.cs
 using Microsoft.EntityFrameworkCore;
-using Server_DB_Data;
+using Server_DB_Postgres;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -49,7 +49,7 @@ public class HeroesCacheService(ILogger<HeroesCacheService> logger) : IHeroCache
     {
         // Создаём временный scope, чтобы безопасно получить DbContext
         using IServiceScope scope = serviceProvider.CreateScope();
-        DbContext_Game03Data _db = scope.ServiceProvider.GetRequiredService<DbContext_Game03Data>();
+        DbContext_Game _db = scope.ServiceProvider.GetRequiredService<DbContext_Game>();
 
         // Загружаем данные о героях из базы данных (без отслеживания для производительности)
         var data = await _db.Heroes

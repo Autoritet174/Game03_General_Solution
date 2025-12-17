@@ -78,14 +78,18 @@
 
   <ItemGroup>
     <ProjectReference Include="..\General\General.csproj" />
-    <ProjectReference Include="..\Server_Common\Server_Common.csproj" />
-    <ProjectReference Include="..\Server_DB_Data\Server_DB_Data.csproj" />
-    <ProjectReference Include="..\Server_DB_UserData\Server_DB_UserData.csproj" />
-    <ProjectReference Include="..\Server_DB_Users\Server_DB_Users.csproj" />
+    <ProjectReference Include="..\Server_DB_Postgres\Server_DB_Postgres.csproj" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.15.0" />
+    <PackageReference Include="Serilog" Version="4.3.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0" />
 
   </ItemGroup>
 

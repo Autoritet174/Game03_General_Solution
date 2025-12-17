@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using NpgsqlTypes;
 using Server.Utilities;
-using Server_DB_Users;
+using Server_DB_Postgres;
 using System.Collections.Concurrent;
 using System.Text;
 using System.Text.Json.Nodes;
@@ -124,7 +124,7 @@ public class BackgroundLoggerAuthentificationService(
     private async Task WriteBatchToDatabase(List<LogEntry> batch)
     {
         using IServiceScope scope = _serviceProvider.CreateScope();
-        DbContext_Game03Users db = scope.ServiceProvider.GetRequiredService<DbContext_Game03Users>();
+        DbContext_Game db = scope.ServiceProvider.GetRequiredService<DbContext_Game>();
 
         // Начинаем транзакцию — либо всё, либо ничего
         using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = await db.Database.BeginTransactionAsync();
@@ -255,7 +255,7 @@ public class BackgroundLoggerAuthentificationService(
         _logger.LogInformation("Фоновый логгер останавливается.");
 
         // Останавливаем таймер
-        _timer?.Change(Timeout.Infinite, 0);
+        _ = (_timer?.Change(Timeout.Infinite, 0));
 
         // Устанавливаем лимит на обработку остатка
         using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);

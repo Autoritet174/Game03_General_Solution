@@ -1,3 +1,5 @@
+using Server_DB_Data.Entities.GameData__Lists;
+
 namespace DataBaseEditor;
 
 partial class FormMain
@@ -210,7 +212,7 @@ partial class FormMain
         // 
         // damageTypeBindingSource
         // 
-        damageTypeBindingSource.DataSource = typeof(Server_DB_Data.Entities.__Lists.DamageType);
+        damageTypeBindingSource.DataSource = typeof(DamageType);
         // 
         // FormMain
         // 
