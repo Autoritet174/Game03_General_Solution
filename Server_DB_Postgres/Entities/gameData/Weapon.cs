@@ -13,11 +13,9 @@ namespace Server_DB_Postgres.Entities.gameData;
 [Index(nameof(Name), IsUnique = true)]
 public class Weapon
 {
-
     /// <summary>
-    /// Первичный ключ. Автоинкремент.
+    /// Уникальный идентификатор.
     /// </summary>
-    [Key]
     public int Id { get; set; }
 
     /// <summary>
@@ -27,24 +25,22 @@ public class Weapon
     public required string Name { get; set; }
 
     /// <summary>
-    /// <inheritdoc/>
+    /// Редкость.
     /// </summary>
-    public Enums.RarityLevel Rarity { get; set; }
+    public int Rarity { get; set; }
 
     /// <summary>
-    /// <inheritdoc/>
+    /// Уникальный для одного аккаунта.
     /// </summary>
     [HasDefaultValue(false)]
     public bool IsUnique { get; set; }
 
 
-    //------------------------------------------------------------
-
     /// <summary>
     /// Урон. Формат DND кубиков, 2d2.
     /// </summary>
     [MaxLength(255)]
-    public required string Damage { get; set; }
+    public string? Damage { get; set; }
 
     /// <summary>
     /// Идентификатор WeaponType.

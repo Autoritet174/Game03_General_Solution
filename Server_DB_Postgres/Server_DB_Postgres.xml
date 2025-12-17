@@ -184,7 +184,7 @@
         </member>
         <member name="P:Server_DB_Postgres.Entities.gameData.EquipmentType.Id">
             <summary>
-            Первичный ключ.
+            Уникальный идентификатор.
             </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.gameData.EquipmentType.Name">
@@ -202,11 +202,6 @@
             Навигационное свойство к DamageTypes если экипировка наносит урон.
             </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.gameData.EquipmentType.DamageTypes">
-            <summary>
-            Типы урона для этого типа экипировки. Вычисляемое свойство.
-            </summary>
-        </member>
         <member name="P:Server_DB_Postgres.Entities.gameData.EquipmentType.Mass">
             <summary>
             Масса предмета в граммах как если бы предмет был из железа.
@@ -214,28 +209,28 @@
         </member>
         <member name="P:Server_DB_Postgres.Entities.gameData.EquipmentType.SlotTypeId">
             <summary>
-            Идентификатор <see cref="!:__Lists.SlotType"/>.
+            Идентификатор <see cref="T:Server_DB_Postgres.Entities.gameData.SlotType"/>.
             </summary>
         </member>
         <member name="F:Server_DB_Postgres.Entities.gameData.EquipmentType.SlotType">
             <summary>
-            Тип слота экипировки.
-            Сущность <see cref="!:__Lists.SlotType"/>.
+            Тип слота экипировки. Не индекс слота а его тип, то есть Кольцо или Браслет, а не Кольцо2 или Браслет1.
+            Сущность <see cref="T:Server_DB_Postgres.Entities.gameData.SlotType"/>.
             </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.gameData.EquipmentType.CanCraftSmithing">
             <summary>
-            Можно создать через Кузнечное дело.
+            Можно создать через "Кузнечное дело".
             </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.gameData.EquipmentType.CanCraftJewelcrafting">
             <summary>
-            Можно создать через Ювелирное дело.
+            Можно создать через "Ювелирное дело".
             </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.gameData.EquipmentType.Attack">
             <summary>
-            Атака оружия
+            Атака оружия в виде DND Dice, вычисляется при дропе и фиксируется на экземпляре.
             </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.gameData.EquipmentType.SpendActionPoints">
@@ -260,12 +255,12 @@
         </member>
         <member name="P:Server_DB_Postgres.Entities.gameData.Hero.Rarity">
             <summary>
-            <inheritdoc/>
+            Уровень редкости.
             </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.gameData.Hero.IsUnique">
             <summary>
-            <inheritdoc/>
+            Уникальный для одного аккаунта.
             </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.gameData.Hero.Health">
@@ -385,7 +380,7 @@
         </member>
         <member name="P:Server_DB_Postgres.Entities.gameData.Weapon.Id">
             <summary>
-            Первичный ключ. Автоинкремент.
+            Уникальный идентификатор.
             </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.gameData.Weapon.Name">
@@ -395,12 +390,12 @@
         </member>
         <member name="P:Server_DB_Postgres.Entities.gameData.Weapon.Rarity">
             <summary>
-            <inheritdoc/>
+            Редкость.
             </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.gameData.Weapon.IsUnique">
             <summary>
-            <inheritdoc/>
+            Уникальный для одного аккаунта.
             </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.gameData.Weapon.Damage">
@@ -425,22 +420,22 @@
         </member>
         <member name="P:Server_DB_Postgres.Entities.gameData.x_EquipmentType_DamageType.EquipmentTypeId">
             <summary>
-            Идентификатор <see cref="!:__Lists.EquipmentType"/>.
+            Идентификатор <see cref="T:Server_DB_Postgres.Entities.gameData.EquipmentType"/>.
             </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.gameData.x_EquipmentType_DamageType.DamageTypeId">
             <summary>
-            Идентификатор <see cref="!:GameData__Lists.DamageType"/>.
+            Идентификатор <see cref="T:Server_DB_Postgres.Entities.gameData.DamageType"/>.
             </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.gameData.x_EquipmentType_DamageType.EquipmentType">
             <summary>
-            Сущность <see cref="!:__Lists.EquipmentType"/>.
+            Сущность <see cref="T:Server_DB_Postgres.Entities.gameData.EquipmentType"/>.
             </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.gameData.x_EquipmentType_DamageType.DamageType">
             <summary>
-            Сущность <see cref="!:GameData__Lists.DamageType"/>.
+            Сущность <see cref="T:Server_DB_Postgres.Entities.gameData.DamageType"/>.
             </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.gameData.x_EquipmentType_DamageType.DamageCoef">
@@ -455,22 +450,127 @@
         </member>
         <member name="P:Server_DB_Postgres.Entities.gameData.x_Hero_CreatureType.HeroId">
             <summary>
-            Идентификатор <see cref="!:_Heroes.Hero"/>.
+            Идентификатор <see cref="T:Server_DB_Postgres.Entities.gameData.Hero"/>.
             </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.gameData.x_Hero_CreatureType.CreatureTypeId">
             <summary>
-            Идентификатор <see cref="!:GameData__Lists.CreatureType"/>.
+            Идентификатор <see cref="T:Server_DB_Postgres.Entities.gameData.CreatureType"/>.
             </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.gameData.x_Hero_CreatureType.Hero">
             <summary>
-            Сущность <see cref="!:_Heroes.Hero"/>.
+            Сущность <see cref="T:Server_DB_Postgres.Entities.gameData.Hero"/>.
             </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.gameData.x_Hero_CreatureType.CreatureTypes">
             <summary>
             Сущность <see cref="T:Server_DB_Postgres.Entities.gameData.CreatureType"/>.
+            </summary>
+        </member>
+        <member name="T:Server_DB_Postgres.Entities.server.UserBanReason">
+            <summary>
+            Причины блокировки пользователя
+            </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.server.UserBanReason.Id">
+            <summary>
+            Уникальный идентификатор.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.server.UserBanReason.Name">
+            <summary>
+            Наименование причины блокировки.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.server.UserBanReason.UserBans">
+            <summary>
+            Коллекция <see cref="T:Server_DB_Postgres.Entities.users.UserBan"/>.
+            </summary>
+        </member>
+        <member name="T:Server_DB_Postgres.Entities.users.User">
+            <summary>
+            Представляет пользователя системы.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.users.User.Id">
+            <summary>
+            Уникальный идентификатор.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.users.User.Email">
+            <summary>
+            Email адрес пользователя. Может быть null, если пользователь зарегистрирован через сторонний сервис.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.users.User.EmailVerifiedAt">
+            <summary>
+            Дата и время подтверждения email адреса. Null, если email еще не подтвержден.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.users.User.PasswordHash">
+            <summary>
+            Хеш пароля пользователя.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.users.User.TimeZone">
+            <summary>
+            Часовой пояс пользователя.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.users.User.IsAdmin">
+            <summary>
+            Флаг, указывающий, является ли пользователь администратором системы.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.users.User.UserBans">
+            <summary>
+            Коллекция <see cref="T:Server_DB_Postgres.Entities.users.UserBan"/>.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.users.User.CreatedAt">
+            <summary>
+            UTC Дата время регистрации пользователя.
+            </summary>
+        </member>
+        <member name="T:Server_DB_Postgres.Entities.users.UserBan">
+            <summary>
+            Представляет запись о блокировке (бане) пользователя.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.users.UserBan.Id">
+            <summary>
+            Уникальный идентификатор записи о блокировке.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.users.UserBan.UserId">
+            <summary>
+            Идентификатор пользователя, к которому применена блокировка.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.users.UserBan.User">
+            <summary>
+            Навигационное свойство к <see cref="T:Server_DB_Postgres.Entities.users.User"/>.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.users.UserBan.CreatedAt">
+            <summary>
+            Дата и время создания записи о блокировке.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.users.UserBan.ExpiresAt">
+            <summary>
+            Дата и время окончания блокировки. Null, если блокировка бессрочная.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.users.UserBan.UserBanReasonId">
+            <summary>
+            Идентификатор причины блокировки.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.users.UserBan.UserBanReason">
+            <summary>
+            Навигационное свойство к <see cref="T:Server_DB_Postgres.Entities.server.UserBanReason"/>.
             </summary>
         </member>
         <member name="T:Server_DB_Postgres.Migrations.Init">
@@ -591,7 +691,7 @@
             генерирует уникальный идентификатор и сохраняет в базу данных.
             </remarks>
         </member>
-        <member name="M:Server_DB_Postgres.Repositories.UserRepository.UpdateAsync(Server_DB_Users.Entities.User)">
+        <member name="M:Server_DB_Postgres.Repositories.UserRepository.UpdateAsync(Server_DB_Postgres.Entities.users.User)">
             <summary>
             Асинхронно обновляет данные пользователя в базе данных.
             </summary>
@@ -640,90 +740,6 @@
             Включает только активные блокировки (те, у которых дата создания меньше или равна текущей дате
             и либо не указана дата окончания, либо она еще не наступила).
             </remarks>
-        </member>
-        <member name="T:Server_DB_Users.Entities.User">
-            <summary>
-            Представляет пользователя системы.
-            </summary>
-        </member>
-        <member name="P:Server_DB_Users.Entities.User.Id">
-            <summary>
-            Уникальный идентификатор пользователя.
-            </summary>
-        </member>
-        <member name="P:Server_DB_Users.Entities.User.Email">
-            <summary>
-            Email адрес пользователя.
-            Может быть null, если пользователь зарегистрирован через сторонний сервис.
-            </summary>
-        </member>
-        <member name="P:Server_DB_Users.Entities.User.EmailVerifiedAt">
-            <summary>
-            Дата и время подтверждения email адреса.
-            Null, если email еще не подтвержден.
-            </summary>
-        </member>
-        <member name="P:Server_DB_Users.Entities.User.PasswordHash">
-            <summary>
-            Хеш пароля пользователя.
-            Может быть null, если используется аутентификация через сторонние сервисы.
-            </summary>
-        </member>
-        <member name="P:Server_DB_Users.Entities.User.TimeZone">
-            <summary>
-            Часовой пояс пользователя.
-            Используется для корректного отображения времени в интерфейсе.
-            </summary>
-        </member>
-        <member name="P:Server_DB_Users.Entities.User.IsAdmin">
-            <summary>
-            Флаг, указывающий, является ли пользователь администратором системы.
-            По умолчанию false.
-            </summary>
-        </member>
-        <member name="P:Server_DB_Users.Entities.User.Bans">
-            <summary>
-            Коллекция блокировок (банов), примененных к пользователю.
-            Связь "один ко многим" с сущностью <see cref="T:Server_DB_Users.Entities.User_Ban"/>.
-            </summary>
-        </member>
-        <member name="T:Server_DB_Users.Entities.User_Ban">
-            <summary>
-            Представляет запись о блокировке (бане) пользователя.
-            </summary>
-        </member>
-        <member name="P:Server_DB_Users.Entities.User_Ban.Id">
-            <summary>
-            Уникальный идентификатор записи о блокировке.
-            </summary>
-        </member>
-        <member name="P:Server_DB_Users.Entities.User_Ban.UserId">
-            <summary>
-            Идентификатор пользователя, к которому применена блокировка.
-            </summary>
-        </member>
-        <member name="P:Server_DB_Users.Entities.User_Ban.CreatedAt">
-            <summary>
-            Дата и время создания записи о блокировке.
-            </summary>
-        </member>
-        <member name="P:Server_DB_Users.Entities.User_Ban.ExpiresAt">
-            <summary>
-            Дата и время окончания блокировки.
-            Null, если блокировка бессрочная.
-            </summary>
-        </member>
-        <member name="P:Server_DB_Users.Entities.User_Ban.UserBansReasonsId">
-            <summary>
-            Идентификатор причины блокировки.
-            Null, если причина не указана или используется системная причина.
-            </summary>
-        </member>
-        <member name="P:Server_DB_Users.Entities.User_Ban.User">
-            <summary>
-            Навигационное свойство к пользователю, к которому применена блокировка.
-            Связь "многие к одному" с сущностью <see cref="P:Server_DB_Users.Entities.User_Ban.User"/>.
-            </summary>
         </member>
     </members>
 </doc>

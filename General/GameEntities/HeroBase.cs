@@ -1,6 +1,3 @@
-using System;
-using static General.Enums;
-
 namespace General.GameEntities;
 
 /// <summary>
@@ -12,23 +9,23 @@ namespace General.GameEntities;
 /// <param name="rarity">Уровень редкости героя, определяемый перечислением <see cref="RarityLevel"/>.</param>
 /// <param name="baseHealth">Базовое значение здоровья героя.</param>
 /// <param name="baseAttack">Базовое значение атаки героя.</param>
-public class HeroBase(int id, string name, RarityLevel rarity, float baseHealth, float baseAttack)
+public class HeroBase(int id, string name, int rarity, float baseHealth, float baseAttack)
 {
 
     /// <summary>
-    /// Уникальный идентификатор героя.
+    /// Уникальный идентификатор.
     /// </summary>
     public int Id { get; } = id;
 
     /// <summary>
-    /// Имя героя на английском языке.
+    /// Наименование на английском языке.
     /// </summary>
     public string Name { get; } = name;
 
     /// <summary>
     /// Уровень редкости героя.
     /// </summary>
-    public RarityLevel Rarity { get; } = rarity;
+    public int Rarity { get; } = rarity;
 
     /// <summary>
     /// Базовое значение здоровья героя.

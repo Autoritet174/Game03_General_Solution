@@ -13,25 +13,25 @@ namespace Server_DB_Postgres.Entities.gameData;
 public class x_EquipmentType_DamageType
 {
     /// <summary>
-    /// Идентификатор <see cref="__Lists.EquipmentType"/>.
+    /// Идентификатор <see cref="gameData.EquipmentType"/>.
     /// </summary>
     [Key, Column(Order = 0)]
     public required int EquipmentTypeId { get; set; }
 
     /// <summary>
-    /// Идентификатор <see cref="GameData__Lists.DamageType"/>.
+    /// Идентификатор <see cref="gameData.DamageType"/>.
     /// </summary>
     [Key, Column(Order = 1)]
     public required int DamageTypeId { get; set; }
 
     /// <summary>
-    /// Сущность <see cref="__Lists.EquipmentType"/>.
+    /// Сущность <see cref="gameData.EquipmentType"/>.
     /// </summary>
     [ForeignKey(nameof(EquipmentTypeId))]
     public required EquipmentType EquipmentType { get; set; }
 
     /// <summary>
-    /// Сущность <see cref="GameData__Lists.DamageType"/>.
+    /// Сущность <see cref="gameData.DamageType"/>.
     /// </summary>
     [ForeignKey(nameof(DamageTypeId))]
     public required DamageType DamageType { get; set; }

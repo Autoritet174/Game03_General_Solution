@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Server_DB_Postgres.Entities.gameData;
-using Server_DB_Users.Entities;
+using Server_DB_Postgres.Entities.users;
 using System.Reflection;
 using static Server_DB_Postgres.Attributes;
 

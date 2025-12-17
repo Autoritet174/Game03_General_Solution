@@ -1,6 +1,6 @@
 using General;
 using Microsoft.EntityFrameworkCore;
-using Server_DB_Users.Entities;
+using Server_DB_Postgres.Entities.users;
 
 namespace Server_DB_Postgres.Repositories;
 
@@ -41,7 +41,7 @@ public class UserRepository
         {
             Id = Guid.NewGuid(),
             Email = emailValidated,
-            PasswordHash = passwordHashValidated
+            PasswordHash = passwordHashValidated,
         };
 
         _ = _users.Add(user);
@@ -112,7 +112,7 @@ public class UserRepository
     public async Task<User?> GetByEmailWithBansAsync(string email)
     {
         return string.IsNullOrWhiteSpace(email) ? null :
-            await _users.Include(u => u.Bans.Where(b => b.CreatedAt <= DateTimeOffset.UtcNow && (b.ExpiresAt == null || b.ExpiresAt >= DateTimeOffset.UtcNow)))
+            await _users.Include(u => u.UserBans.Where(b => b.CreatedAt <= DateTimeOffset.UtcNow && (b.ExpiresAt == null || b.ExpiresAt >= DateTimeOffset.UtcNow)))
                 .AsNoTracking().FirstOrDefaultAsync(u => u.Email != null && EF.Functions.ILike(u.Email, email));
     }
 }

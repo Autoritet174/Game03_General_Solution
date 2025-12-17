@@ -6,8 +6,8 @@ using Microsoft.Extensions.Caching.Memory;
 using NpgsqlTypes;
 using Server.Jwt_NS;
 using Server.Utilities;
+using Server_DB_Postgres.Entities.users;
 using Server_DB_Postgres.Repositories;
-using Server_DB_Users.Entities;
 using System.Net;
 using System.Text.Json.Nodes;
 using L = General.LocalizationKeys;
@@ -134,10 +134,10 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
 
         // Проверяем не забанен ли пользователь
         DateTimeOffset dtUnban = DateTimeOffset.MinValue;
-        if (user.Bans != null && user.Bans.Count > 0)
+        if (user.UserBans != null && user.UserBans.Count > 0)
         {
             DateTimeOffset nowUtc = DateTimeOffset.UtcNow;
-            foreach (User_Ban ban in user.Bans)
+            foreach (UserBan ban in user.UserBans)
             {
                 if (ban.ExpiresAt == null)
                 {

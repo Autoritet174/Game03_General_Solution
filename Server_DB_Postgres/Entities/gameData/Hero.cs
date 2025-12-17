@@ -1,4 +1,3 @@
-using General;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -11,34 +10,31 @@ namespace Server_DB_Postgres.Entities.gameData;
 /// </summary>
 [Table("Heroes", Schema = nameof(gameData))]
 [Index(nameof(Name), IsUnique = true)]
-public class Hero 
+public class Hero
 {
 
     /// <summary>
-    /// <inheritdoc/>
+    /// Уникальный идентификатор.
     /// </summary>
-    [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
     /// <summary>
-    /// <inheritdoc/>
+    /// Наименование на английском языке.
     /// </summary>
     [MaxLength(255)]
     public required string Name { get; set; }
 
     /// <summary>
-    /// <inheritdoc/>
+    /// Уровень редкости.
     /// </summary>
-    public Enums.RarityLevel Rarity { get; set; }
+    public int Rarity { get; set; } = 1;
 
     /// <summary>
-    /// <inheritdoc/>
+    /// Уникальный для одного аккаунта.
     /// </summary>
     [HasDefaultValue(false)]
-    public bool IsUnique { get; set; }
+    public bool IsUnique { get; set; } = false;
 
-
-    //------------------------------------------------------------
 
     /// <summary>
     /// Здоровье. Формат DND кубиков, 2d2.
@@ -56,7 +52,7 @@ public class Hero
     /// Основной стат который повышает урон. Сила(1) или Ловкость(2) или Интеллект(3).
     /// </summary>
     [HasDefaultValue(0)]
-    public required int MainStat { get; set; }
+    public int MainStat { get; set; } = 0;
 
     /// <summary>
     /// Навигационное свойство к CreatureTypes.

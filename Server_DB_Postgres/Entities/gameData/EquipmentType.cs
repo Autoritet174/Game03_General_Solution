@@ -13,9 +13,8 @@ namespace Server_DB_Postgres.Entities.gameData;
 public class EquipmentType
 {
     /// <summary>
-    /// Первичный ключ.
+    /// Уникальный идентификатор.
     /// </summary>
-    [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
     /// <summary>
@@ -36,11 +35,11 @@ public class EquipmentType
     /// </summary>
     public ICollection<x_EquipmentType_DamageType> X_EquipmentType_DamageType { get; set; } = [];
 
-    /// <summary>
-    /// Типы урона для этого типа экипировки. Вычисляемое свойство.
-    /// </summary>
-    [NotMapped]
-    public IReadOnlyCollection<DamageType> DamageTypes => X_EquipmentType_DamageType.Select(static x => x.DamageType).ToList() ?? [];
+    ///// <summary>
+    ///// Типы урона для этого типа экипировки. Вычисляемое свойство.
+    ///// </summary>
+    //[NotMapped]
+    //public IReadOnlyCollection<DamageType> DamageTypes => X_EquipmentType_DamageType.Select(static x => x.DamageType).ToList() ?? [];
 
     /// <summary>
     /// Масса предмета в граммах как если бы предмет был из железа.
@@ -50,31 +49,31 @@ public class EquipmentType
 
 
     /// <summary>
-    /// Идентификатор <see cref="__Lists.SlotType"/>.
+    /// Идентификатор <see cref="gameData.SlotType"/>.
     /// </summary>
     public int SlotTypeId { get; set; }
 
     /// <summary>
-    /// Тип слота экипировки.
-    /// Сущность <see cref="__Lists.SlotType"/>.
+    /// Тип слота экипировки. Не индекс слота а его тип, то есть Кольцо или Браслет, а не Кольцо2 или Браслет1.
+    /// Сущность <see cref="gameData.SlotType"/>.
     /// </summary>
     [ForeignKey(nameof(SlotTypeId))]
     public required SlotType SlotType;
 
     /// <summary>
-    /// Можно создать через Кузнечное дело.
+    /// Можно создать через "Кузнечное дело".
     /// </summary>
     [HasDefaultValue(false)]
-    public bool CanCraftSmithing { get; set; }
+    public bool CanCraftSmithing { get; set; } = false;
 
     /// <summary>
-    /// Можно создать через Ювелирное дело.
+    /// Можно создать через "Ювелирное дело".
     /// </summary>
     [HasDefaultValue(false)]
-    public bool CanCraftJewelcrafting { get; set; }
+    public bool CanCraftJewelcrafting { get; set; } = false;
 
     /// <summary>
-    /// Атака оружия
+    /// Атака оружия в виде DND Dice, вычисляется при дропе и фиксируется на экземпляре.
     /// </summary>
     [MaxLength(255)]
     public string? Attack { get; set; }
@@ -83,5 +82,5 @@ public class EquipmentType
     /// Трата очков действия за удар.
     /// </summary>
     [HasDefaultValue(0)]
-    public int SpendActionPoints { get; set; }
+    public int SpendActionPoints { get; set; } = 0;
 }

@@ -1,6 +1,3 @@
-using System;
-using static General.Enums;
-
 namespace General.GameEntities;
 
 /// <summary>
@@ -9,8 +6,13 @@ namespace General.GameEntities;
 /// </summary>
 /// <param name="id">Уникальный идентификатор героя.</param>
 /// <param name="name">Имя героя (на английском).</param>
-/// <param name="rarity">Уровень редкости героя, определяемый перечислением <see cref="RarityLevel"/>.</param>
-public class EquipBase(int id, string name, RarityLevel rarity, int mass, int slotTypeId, bool canCraftJewelcrafting, bool canCraftSmithing, string attack)
+/// <param name="rarity">Уровень редкости героя.</param>
+/// <param name="mass"></param>
+/// <param name="slotTypeId"></param>
+/// <param name="canCraftJewelcrafting"></param>
+/// <param name="canCraftSmithing"></param>
+/// <param name="attack"></param>
+public class EquipBase(int id, string name, int rarity, int mass, int slotTypeId, bool canCraftJewelcrafting, bool canCraftSmithing, string attack)
 {
 
     /// <summary>
@@ -26,7 +28,7 @@ public class EquipBase(int id, string name, RarityLevel rarity, int mass, int sl
     /// <summary>
     /// Уровень редкости.
     /// </summary>
-    public RarityLevel Rarity { get; } = rarity;
+    public int Rarity { get; } = rarity;
 
     public int Mass { get; } = mass;
     public int SlotTypeId { get; } = slotTypeId;

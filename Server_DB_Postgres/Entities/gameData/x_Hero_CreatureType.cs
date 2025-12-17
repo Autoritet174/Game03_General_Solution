@@ -12,19 +12,19 @@ namespace Server_DB_Postgres.Entities.gameData;
 public class x_Hero_CreatureType
 {
     /// <summary>
-    /// Идентификатор <see cref="_Heroes.Hero"/>.
+    /// Идентификатор <see cref="gameData.Hero"/>.
     /// </summary>
     [Key, Column(Order = 0)]
     public int HeroId { get; set; }
 
     /// <summary>
-    /// Идентификатор <see cref="GameData__Lists.CreatureType"/>.
+    /// Идентификатор <see cref="gameData.CreatureType"/>.
     /// </summary>
     [Key, Column(Order = 1)]
     public int CreatureTypeId { get; set; }
 
     /// <summary>
-    /// Сущность <see cref="_Heroes.Hero"/>.
+    /// Сущность <see cref="gameData.Hero"/>.
     /// </summary>
     [ForeignKey(nameof(HeroId))]
     public required Hero Hero { get; set; }
