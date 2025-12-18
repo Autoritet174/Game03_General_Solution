@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using static General.Enums;
 using L = General.LocalizationKeys;
 
 namespace Game03Client.GameData;
@@ -74,7 +73,7 @@ internal class GameDataProvider(IHttpRequester httpRequesterProvider, GameDataCa
             }
             float baseHealth = (float)Convert.ToDouble(heroObj["baseHealth"]);
             float baseAttack = (float)Convert.ToDouble(heroObj["baseAttack"]);
-            var rarity = (RarityLevel)Convert.ToInt32(heroObj["rarity"]);
+            int rarity = Convert.ToInt32(heroObj["rarity"]);
             allHeroes.Add(new HeroBase(id, name, rarity, baseHealth, baseAttack));
         }
 

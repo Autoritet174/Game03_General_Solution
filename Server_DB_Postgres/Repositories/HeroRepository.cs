@@ -12,7 +12,7 @@ namespace Server_DB_Postgres.Repositories;
 public class HeroRepository
 {
     private readonly DbContext_Game _dbContext;
-    private readonly DbSet<Hero> _heroes;
+    private readonly DbSet<BaseHero> _heroes;
 
     /// <param name="dbContext">Контекст базы данных.</param>
     public HeroRepository(DbContext_Game dbContext)
@@ -89,7 +89,7 @@ public class HeroRepository
     /// </summary>
     /// <param name="name"></param>
     /// <returns>Найденная запись или null.</returns>
-    public async Task<Hero?> GetByNameAsync(string name)
+    public async Task<BaseHero?> GetByNameAsync(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
         {

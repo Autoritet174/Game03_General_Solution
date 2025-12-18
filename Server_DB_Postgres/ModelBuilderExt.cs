@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
-using static General.StringExt;
 
 namespace Server_DB_Postgres;
 
@@ -25,28 +24,29 @@ public static class ModelBuilderExt
         foreach (IMutableEntityType entity in modelBuilder.Model.GetEntityTypes())
         {
             // Обработка имен таблиц: изменение только если имя не задано явно
-            if (!skipIfNameEnteredManual || !entity.IsExplicitlyNamedTable())
-            {
-                if (entity.GetTableName() is string tableName)
-                {
-                    entity.SetTableName(tableName.ToSnakeCase());
-                }
-            }
+            //if (!skipIfNameEnteredManual || !entity.IsExplicitlyNamedTable())
+            //{
+            //    if (entity.GetTableName() is string tableName)
+            //    {
+            //        entity.SetTableName(tableName.ToSnakeCase());
+            //    }
+            //}
 
             // Обработка имен столбцов: изменение только если имя не задано явно
-            foreach (IMutableProperty property in entity.GetProperties())
-            {
-                if (!skipIfNameEnteredManual || !property.IsExplicitlyNamedColumn())
-                {
-                    property.SetColumnName(property.GetColumnName().ToSnakeCase());
-                }
-            }
+            //foreach (IMutableProperty property in entity.GetProperties())
+            //{
+            //    if (!skipIfNameEnteredManual || !property.IsExplicitlyNamedColumn())
+            //    {
+            //        property.SetColumnName(property.GetColumnName().ToSnakeCase());
+            //    }
+            //}
 
             // Обработка первичных ключей: изменение только если имя не задано явно
             IMutableKey? pk = entity.FindPrimaryKey();
             if (pk != null && (!skipIfNameEnteredManual || !pk.IsExplicitlyNamedConstraint()))
             {
-                pk.SetName($"{entity.GetTableName().ToPascalCase(true)}__pkey");
+                //pk.SetName($"{entity.GetTableName().ToPascalCase(true)}__pkey");
+                pk.SetName($"{entity.GetTableName()}__pkey");
             }
 
             // Обработка индексов: изменение только если имя не задано явно
@@ -54,9 +54,8 @@ public static class ModelBuilderExt
             {
                 if (!skipIfNameEnteredManual || !index.IsExplicitlyNamedIndex())
                 {
-                    index.SetDatabaseName(
-                        $"{entity.GetTableName().ToPascalCase(true)}__{string.Join("__", index.Properties.Select(static p => p.GetColumnName().ToPascalCase()))}__idx"
-                    );
+                    //index.SetDatabaseName($"{entity.GetTableName().ToPascalCase(true)}__{string.Join("__", index.Properties.Select(static p => p.GetColumnName().ToPascalCase()))}__idx");
+                    index.SetDatabaseName($"{entity.GetTableName()}__{string.Join("__", index.Properties.Select(static p => p.GetColumnName()))}__idx");
                 }
             }
 
@@ -65,12 +64,14 @@ public static class ModelBuilderExt
             {
                 if (!skipIfNameEnteredManual || !fk.IsExplicitlyNamedConstraint())
                 {
-                    string principalTable = fk.PrincipalEntityType.GetTableName().ToPascalCase();
-                    string columnName = fk.Properties[0].GetColumnName().ToPascalCase();
-                    string newName = $"{entity.GetTableName().ToPascalCase(true)}__{columnName}__{principalTable}__fkey";
+                    //string principalTable = fk.PrincipalEntityType.GetTableName().ToPascalCase();
+                    //string columnName = fk.Properties[0].GetColumnName().ToPascalCase();
+                    //string newName = $"{entity.GetTableName().ToPascalCase(true)}__{columnName}__{principalTable}__fkey";
+                    //fk.SetConstraintName(newName);
+                    string principalTable = fk.PrincipalEntityType.GetTableName() ?? string.Empty;
+                    string columnName = fk.Properties[0].GetColumnName();
+                    string newName = $"{entity.GetTableName()}__{columnName}__{principalTable}__fkey";
                     fk.SetConstraintName(newName);
-                    //Console.WriteLine(newName);
-                    //Console.WriteLine();
                 }
             }
         }
@@ -105,7 +106,9 @@ public static class ModelBuilderExt
     private static string FirstLetterToLower(string input)
     {
         if (string.IsNullOrEmpty(input))
+        {
             return input;
+        }
 
         char[] chars = input.ToCharArray();
 

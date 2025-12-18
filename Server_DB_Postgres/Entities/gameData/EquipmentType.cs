@@ -5,82 +5,61 @@ using static Server_DB_Postgres.Attributes;
 
 namespace Server_DB_Postgres.Entities.gameData;
 
-/// <summary>
-/// Тип экипировки.
-/// </summary>
+/// <summary> Тип экипировки. </summary>
 [Table("EquipmentTypes", Schema = nameof(gameData))]
 [Index(nameof(Name), IsUnique = true)]
 public class EquipmentType
 {
-    /// <summary>
-    /// Уникальный идентификатор.
-    /// </summary>
+    /// <summary> Уникальный идентификатор. </summary>
     public int Id { get; set; }
 
-    /// <summary>
-    /// Уникальное наименование на английском.
-    /// </summary>
+    /// <summary> Уникальное наименование на английском. </summary>
     [MaxLength(255)]
     public required string Name { get; set; }
 
-    /// <summary>
-    /// Уникальное наименование на русском.
-    /// </summary>
+    /// <summary> Уникальное наименование на русском. </summary>
     [MaxLength(255)]
     public required string NameRu { get; set; }
 
 
-    /// <summary>
-    /// Навигационное свойство к DamageTypes если экипировка наносит урон.
-    /// </summary>
+    /// <summary> Навигационное свойство к DamageTypes если экипировка наносит урон. </summary>
     public ICollection<x_EquipmentType_DamageType> X_EquipmentType_DamageType { get; set; } = [];
 
-    ///// <summary>
-    ///// Типы урона для этого типа экипировки. Вычисляемое свойство.
+    ///// <summary>// Типы урона для этого типа экипировки. Вычисляемое свойство.
     ///// </summary>
     //[NotMapped]
     //public IReadOnlyCollection<DamageType> DamageTypes => X_EquipmentType_DamageType.Select(static x => x.DamageType).ToList() ?? [];
 
-    /// <summary>
-    /// Масса предмета в граммах как если бы предмет был из железа.
-    /// </summary>
+    /// <summary> Масса предмета в граммах как если бы предмет был из железа. </summary>
     [HasDefaultValue(0)]
-    public int Mass { get; set; }
+    public int MassPhysical { get; set; }
+
+    /// <summary> Магическая масса предмета. </summary>
+    [HasDefaultValue(0)]
+    public int MassMagical { get; set; }
 
 
-    /// <summary>
-    /// Идентификатор <see cref="gameData.SlotType"/>.
-    /// </summary>
+    /// <summary> Идентификатор <see cref="gameData.SlotType"/>. </summary>
     public int SlotTypeId { get; set; }
 
-    /// <summary>
-    /// Тип слота экипировки. Не индекс слота а его тип, то есть Кольцо или Браслет, а не Кольцо2 или Браслет1.
-    /// Сущность <see cref="gameData.SlotType"/>.
-    /// </summary>
+    /// <summary> Тип слота экипировки. Не индекс слота а его тип, то есть Кольцо или Браслет, а не Кольцо2 или Браслет1.
+    /// Сущность <see cref="gameData.SlotType"/>. </summary>
     [ForeignKey(nameof(SlotTypeId))]
     public required SlotType SlotType;
 
-    /// <summary>
-    /// Можно создать через "Кузнечное дело".
-    /// </summary>
+    /// <summary> Можно создать через "Кузнечное дело". </summary>
     [HasDefaultValue(false)]
     public bool CanCraftSmithing { get; set; } = false;
 
-    /// <summary>
-    /// Можно создать через "Ювелирное дело".
-    /// </summary>
+    /// <summary> Можно создать через "Ювелирное дело". </summary>
     [HasDefaultValue(false)]
     public bool CanCraftJewelcrafting { get; set; } = false;
 
-    /// <summary>
-    /// Атака оружия в виде DND Dice, вычисляется при дропе и фиксируется на экземпляре.
-    /// </summary>
+    /// <summary> Атака оружия в виде DND Dice, вычисляется при дропе и фиксируется на экземпляре. </summary>
     [MaxLength(255)]
     public string? Attack { get; set; }
 
-    /// <summary>
-    /// Трата очков действия за удар.
-    /// </summary>
+    /// <summary> Трата очков действия за удар. </summary>
     [HasDefaultValue(0)]
     public int SpendActionPoints { get; set; } = 0;
 }

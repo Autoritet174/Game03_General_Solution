@@ -5,9 +5,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Server_DB_Postgres.Entities.gameData;
 
 /// <summary> Тип существа. </summary>
-[Table("CreatureTypes", Schema = nameof(gameData))]
+[Table("SmithingMaterials", Schema = nameof(gameData))]
 [Index(nameof(Name), IsUnique = true)]
-public class CreatureType
+public class SmithingMaterial
 {
     /// <summary> Уникальный идентификатор. </summary>
     public int Id { get; set; }
@@ -16,12 +16,10 @@ public class CreatureType
     [MaxLength(255)]
     public required string Name { get; set; }
 
+    /// <summary> Наименование на русском. </summary>
+    [MaxLength(255)]
+    public string? NameRu { get; set; }
 
-    /// <summary> Навигационное свойство к Heroes. </summary>
-    public ICollection<x_Hero_CreatureType> X_Hero_CreatureType { get; set; } = [];
-
-    ///// <summary>// Герои этого типа существ. Вычисляемое свойство.
-    ///// </summary>
-    //[NotMapped]
-    //public IReadOnlyCollection<Hero> Heroes => X_Hero_CreatureType?.Select(static x => x.Hero).ToList() ?? [];
+    /// <summary> Навигационное свойство к <see cref="MaterialDamagePercent"/>. </summary>
+    public ICollection<MaterialDamagePercent> MaterialDamagePercents { get; set; } = [];
 }

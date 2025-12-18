@@ -1,0 +1,35 @@
+using Server_DB_Postgres.Entities.gameData;
+using Server_DB_Postgres.Entities.users;
+using Server_DB_Postgres.Interfaces;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Server_DB_Postgres.Entities.collection;
+
+/// <summary> Герой в коллекции пользователя. </summary>
+[Table("Equipments", Schema = nameof(collection))]
+public class Equipment : IVersion, ICreatedAt, IUpdatedAt
+{
+    /// <summary> Уникальный идентификатор. </summary>
+    public Guid Id { get; set; } = Guid.NewGuid();
+
+    /// <summary> Уникальный идентификатор владельца. </summary>
+    public Guid UserId { get; set; }
+    /// <summary> Сущность <see cref="users.User"/>. </summary>
+    [ForeignKey(nameof(UserId))]
+    public required User User { get; set; }
+
+    /// <summary> <inheritdoc/> </summary>
+    public long Version { get; set; }
+
+    /// <summary> <inheritdoc/> </summary>
+    public DateTimeOffset CreatedAt { get; set; }
+
+    /// <summary> <inheritdoc/> </summary>
+    public DateTimeOffset UpdatedAt { get; set; }
+
+    /// <summary> Идентификатор базовой версии экипировки. </summary>
+    public int BaseEquipmentId { get; set; }
+    /// <summary> Сущность <see cref="gameData.BaseEquipment"/>. </summary>
+    [ForeignKey(nameof(BaseEquipmentId))]
+    public required BaseEquipment BaseEquipment { get; set; }
+}

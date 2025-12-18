@@ -17,9 +17,4 @@
 
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Entities\collection\" />
-    <Folder Include="Entities\logs\" />
-  </ItemGroup>
-
 </Project>
