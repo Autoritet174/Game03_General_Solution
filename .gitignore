@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 
 !BackuperDatabases/
+!Server_DB_Postgres/Entities/logs
