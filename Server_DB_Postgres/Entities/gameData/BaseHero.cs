@@ -3,10 +3,10 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using static Server_DB_Postgres.Attributes;
 
-namespace Server_DB_Postgres.Entities.gameData;
+namespace Server_DB_Postgres.Entities.GameData;
 
 /// <summary> Базовая версия героя. </summary>
-[Table("BaseHeroes", Schema = nameof(gameData))]
+[Table("BaseHeroes", Schema = nameof(GameData))]
 [Index(nameof(Name), IsUnique = true)]
 public class BaseHero
 {
@@ -39,7 +39,7 @@ public class BaseHero
     public int MainStat { get; set; } = 0;
 
     /// <summary> Навигационное свойство к CreatureTypes. </summary>
-    public ICollection<x_Hero_CreatureType> X_Hero_CreatureType { get; set; } = [];
+    public ICollection<X_Hero_CreatureType> X_Hero_CreatureType { get; set; } = [];
 
     ///// <summary>// Типы существ героя. Вычисляемое свойство. </summary>
     //[NotMapped]

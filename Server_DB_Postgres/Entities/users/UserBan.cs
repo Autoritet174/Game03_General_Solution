@@ -1,11 +1,11 @@
-using Server_DB_Postgres.Entities.server;
+using Server_DB_Postgres.Entities.Server;
 using Server_DB_Postgres.Interfaces;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Server_DB_Postgres.Entities.users;
+namespace Server_DB_Postgres.Entities.Users;
 
 /// <summary> Представляет запись о блокировке (бане) пользователя. </summary>
-[Table("UserBans", Schema = nameof(users))]
+[Table("UserBans", Schema = nameof(Users))]
 public class UserBan : IVersion, ICreatedAt, IUpdatedAt
 {
     /// <summary> Уникальный идентификатор. </summary>
@@ -14,7 +14,7 @@ public class UserBan : IVersion, ICreatedAt, IUpdatedAt
 
     /// <summary> Идентификатор пользователя, к которому применена блокировка. </summary>
     public required Guid UserId { get; set; }
-    /// <summary> Навигационное свойство к <see cref="users.User"/>. </summary>
+    /// <summary> Навигационное свойство к <see cref="Users.User"/>. </summary>
     [ForeignKey(nameof(UserId))]
     public required User User { get; set; }
 
@@ -34,7 +34,7 @@ public class UserBan : IVersion, ICreatedAt, IUpdatedAt
 
     /// <summary> Идентификатор причины блокировки. </summary>
     public int UserBanReasonId { get; set; }
-    /// <summary> Навигационное свойство к <see cref="server.UserBanReason"/>. </summary>
+    /// <summary> Навигационное свойство к <see cref="Server.UserBanReason"/>. </summary>
     [ForeignKey(nameof(UserBanReasonId))]
     public required UserBanReason UserBanReason { get; set; }
 

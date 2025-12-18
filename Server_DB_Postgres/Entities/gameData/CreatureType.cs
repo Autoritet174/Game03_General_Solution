@@ -2,10 +2,10 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Server_DB_Postgres.Entities.gameData;
+namespace Server_DB_Postgres.Entities.GameData;
 
 /// <summary> Тип существа. </summary>
-[Table("CreatureTypes", Schema = nameof(gameData))]
+[Table("CreatureTypes", Schema = nameof(GameData))]
 [Index(nameof(Name), IsUnique = true)]
 public class CreatureType
 {
@@ -18,7 +18,7 @@ public class CreatureType
 
 
     /// <summary> Навигационное свойство к Heroes. </summary>
-    public ICollection<x_Hero_CreatureType> X_Hero_CreatureType { get; set; } = [];
+    public ICollection<X_Hero_CreatureType> X_Hero_CreatureType { get; set; } = [];
 
     ///// <summary>// Герои этого типа существ. Вычисляемое свойство.
     ///// </summary>

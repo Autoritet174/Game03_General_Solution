@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using Server_DB_Postgres.Entities.users;
+using Server_DB_Postgres.Entities.Users;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Server_DB_Postgres.Entities.server;
+namespace Server_DB_Postgres.Entities.Server;
 
 /// <summary> Причины блокировки пользователя </summary>
-[Table("UserBanReasons", Schema = nameof(server))]
+[Table("UserBanReasons", Schema = nameof(Server))]
 [Index(nameof(Name), IsUnique = true)]
 public class UserBanReason
 {

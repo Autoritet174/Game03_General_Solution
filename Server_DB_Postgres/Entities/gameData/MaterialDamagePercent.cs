@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Server_DB_Postgres.Entities.gameData;
+namespace Server_DB_Postgres.Entities.GameData;
 
 /// <summary> Коэфициенты урона для материалов. </summary>
-[Table("MaterialDamagePercents", Schema = nameof(gameData))]
+[Table("MaterialDamagePercents", Schema = nameof(GameData))]
 public class MaterialDamagePercent
 {
     /// <summary> Уникальный идентификатор. </summary>
@@ -17,10 +17,10 @@ public class MaterialDamagePercent
     public required SmithingMaterial SmithingMaterials { get; set; }
 
 
-    /// <summary> Возвращает или задает идентификатор <see cref="gameData.DamageType"/>, связанного с данным объектом. </summary>
+    /// <summary> Возвращает или задает идентификатор <see cref="GameData.DamageType"/>, связанного с данным объектом. </summary>
     public int DamageTypeId { get; set; }
 
-    /// <summary> Навигационное свойство к <see cref="gameData.DamageType"/>. </summary>
+    /// <summary> Навигационное свойство к <see cref="GameData.DamageType"/>. </summary>
     [ForeignKey(nameof(DamageTypeId))]
     public required DamageType DamageType { get; set; }
 

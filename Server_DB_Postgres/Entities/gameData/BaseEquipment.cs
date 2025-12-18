@@ -3,10 +3,10 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using static Server_DB_Postgres.Attributes;
 
-namespace Server_DB_Postgres.Entities.gameData;
+namespace Server_DB_Postgres.Entities.GameData;
 
 /// <summary> Экипировка. Базовые болванки. </summary>
-[Table("BaseEquipments", Schema = nameof(gameData))]
+[Table("BaseEquipments", Schema = nameof(GameData))]
 [Index(nameof(Name), IsUnique = true)]
 public class BaseEquipment
 {

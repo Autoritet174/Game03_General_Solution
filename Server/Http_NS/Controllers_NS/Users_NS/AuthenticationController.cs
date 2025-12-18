@@ -6,7 +6,7 @@ using Microsoft.Extensions.Caching.Memory;
 using NpgsqlTypes;
 using Server.Jwt_NS;
 using Server.Utilities;
-using Server_DB_Postgres.Entities.users;
+using Server_DB_Postgres.Entities.Users;
 using Server_DB_Postgres.Repositories;
 using System.Net;
 using System.Text.Json.Nodes;

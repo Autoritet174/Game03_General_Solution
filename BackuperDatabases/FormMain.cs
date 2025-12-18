@@ -7,6 +7,9 @@ public partial class FormMain : Form
 {
     private enum Database
     {
+        [Description("PostgreSQL")]
+        PostgreSql,
+
         [Description("PostgreSQL - Users database")]
         PostgreSql_Users,
 
@@ -25,7 +28,7 @@ public partial class FormMain : Form
     private void button_Backup_PostgreSql_Users_Click(object sender, EventArgs e)
     {
         Enabled = false;
-        Backup(Database.PostgreSql_Users);
+        Backup(Database.PostgreSql);
         Enabled = true;
     }
 
@@ -120,9 +123,10 @@ public partial class FormMain : Form
 
         ////////////////////////////////////////////////////////////////////////////////////////
         // Создание бэкапа базы данных
-        if (database is Database.PostgreSql_Users or Database.PostgreSql_Data)
+        if (database is Database.PostgreSql_Users or Database.PostgreSql_Data or Database.PostgreSql)
         {
-            dbName = database == Database.PostgreSql_Users ? "Game03_Users" : "Game03_Data";
+            //dbName = database == Database.PostgreSql_Users ? "Game03_Users" : "Game03_Data";
+            dbName = "Game";
             dbFilePath = Path.Combine(backup_folder, $"{dbName}.sql");
             //--format=plain --format=custom //sql OR binary
             bat = $"""
@@ -151,7 +155,7 @@ public partial class FormMain : Form
         // Создание архива
         string now = $"{DateTime.Now:yyyy-MM-dd HH-mm-ss}";
         string archiveFileName = Path.Combine(dbName, $"{now}");
-        if (database is Database.PostgreSql_Users or Database.PostgreSql_Data)
+        if (database is Database.PostgreSql_Users or Database.PostgreSql_Data or Database.PostgreSql)
         {
             archiveFileName += $".postgre.sql.7z";
             bat = $"""
@@ -184,10 +188,11 @@ public partial class FormMain : Form
         ////////////////////////////////////////////////////////////////////////////////////////
         // Распаковка архива
         string DBMS_name, dbName;
-        if (database is Database.PostgreSql_Users or Database.PostgreSql_Data)
+        if (database is Database.PostgreSql_Users or Database.PostgreSql_Data or Database.PostgreSql)
         {
             DBMS_name = postgre_DBMS_name;
-            dbName = database == Database.PostgreSql_Users ? "Game03_Users" : "Game03_Data";
+            //dbName = database == Database.PostgreSql_Users ? "Game03_Users" : "Game03_Data";
+            dbName = "Game";
         }
         else if (database is Database.MongoDb_UserData)
         {
@@ -214,7 +219,7 @@ public partial class FormMain : Form
 
         ////////////////////////////////////////////////////////////////////////////////////////
         // Восстановление базы данных
-        if (database is Database.PostgreSql_Users or Database.PostgreSql_Data)
+        if (database is Database.PostgreSql_Users or Database.PostgreSql_Data or Database.PostgreSql)
         {
             string dbFilePath = Path.Combine(backup_folder, $"{dbName}.sql");
             // "{Path.Combine(postgre_tools_pathDir, "pg_restore.exe")}" -U postgres --host={postgre_server_host} --clean --if-exists --verbose --dbname={dbName} "{dbFilePath}"

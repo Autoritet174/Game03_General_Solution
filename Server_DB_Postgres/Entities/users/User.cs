@@ -4,10 +4,10 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using static Server_DB_Postgres.Attributes;
 
-namespace Server_DB_Postgres.Entities.users;
+namespace Server_DB_Postgres.Entities.Users;
 
 /// <summary> Представляет пользователя системы. </summary>
-[Table("Users", Schema = nameof(users))]
+[Table("Users", Schema = nameof(Users))]
 [Index(nameof(Email), IsUnique = true)]
 public class User : IVersion, ICreatedAt, IUpdatedAt
 {

@@ -1,6 +1,6 @@
 using General;
 using Microsoft.EntityFrameworkCore;
-using Server_DB_Postgres.Entities.users;
+using Server_DB_Postgres.Entities.Users;
 
 namespace Server_DB_Postgres.Repositories;
 

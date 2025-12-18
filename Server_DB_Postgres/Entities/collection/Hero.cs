@@ -1,12 +1,12 @@
-using Server_DB_Postgres.Entities.gameData;
-using Server_DB_Postgres.Entities.users;
+using Server_DB_Postgres.Entities.GameData;
+using Server_DB_Postgres.Entities.Users;
 using Server_DB_Postgres.Interfaces;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Server_DB_Postgres.Entities.collection;
+namespace Server_DB_Postgres.Entities.Collection;
 
 /// <summary> Герой в коллекции пользователя. </summary>
-[Table("Heroes", Schema = nameof(collection))]
+[Table("Heroes", Schema = nameof(Collection))]
 public class Hero : IVersion, ICreatedAt, IUpdatedAt
 {
     /// <summary> Уникальный идентификатор. </summary>
@@ -14,7 +14,7 @@ public class Hero : IVersion, ICreatedAt, IUpdatedAt
 
     /// <summary> Уникальный идентификатор владельца. </summary>
     public Guid UserId { get; set; }
-    /// <summary> Сущность <see cref="users.User"/>. </summary>
+    /// <summary> Сущность <see cref="Users.User"/>. </summary>
     [ForeignKey(nameof(UserId))]
     public required User User { get; set; }
 
@@ -29,7 +29,7 @@ public class Hero : IVersion, ICreatedAt, IUpdatedAt
 
     /// <summary> Идентификатор базовой версии героя. </summary>
     public int BaseHeroId { get; set; }
-    /// <summary> Сущность <see cref="gameData.BaseHero"/>. </summary>
+    /// <summary> Сущность <see cref="GameData.BaseHero"/>. </summary>
     [ForeignKey(nameof(BaseHeroId))]
     public required BaseHero BaseHero { get; set; }
 

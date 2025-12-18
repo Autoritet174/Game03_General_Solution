@@ -52,7 +52,7 @@ public class HeroesCacheService(ILogger<HeroesCacheService> logger) : IHeroCache
         DbContext_Game _db = scope.ServiceProvider.GetRequiredService<DbContext_Game>();
 
         // Загружаем данные о героях из базы данных (без отслеживания для производительности)
-        var data = await _db.Heroes
+        var data = await _db.BaseHeroes
             .AsNoTracking()  // Отключаем отслеживание изменений для увеличения производительности
             .Select(h => new
             {

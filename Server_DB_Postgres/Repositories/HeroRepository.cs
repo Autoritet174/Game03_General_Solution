@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Server_DB_Postgres.Entities.gameData;
+using Server_DB_Postgres.Entities.GameData;
 
 namespace Server_DB_Postgres.Repositories;
 
@@ -18,7 +18,7 @@ public class HeroRepository
     public HeroRepository(DbContext_Game dbContext)
     {
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-        _heroes = _dbContext.Heroes;
+        _heroes = _dbContext.BaseHeroes;
     }
 
     //public async Task AddAsync(string name)

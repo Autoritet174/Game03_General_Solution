@@ -1,4 +1,4 @@
-using Server_DB_Data.Entities.GameData__Lists;
+using Server_DB_Postgres.Entities.GameData;
 
 namespace DataBaseEditor;
 
@@ -116,7 +116,7 @@ partial class FormMain
         // 
         // weaponTypeBindingSource
         // 
-        weaponTypeBindingSource.DataSource = typeof(Server_DB_Data.Entities.__Lists.EquipmentType);
+        weaponTypeBindingSource.DataSource = typeof(Server_DB_Postgres.Entities.GameData.EquipmentType);
         // 
         // tabControl1
         // 

@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Server_DB_Postgres.Entities.gameData;
-using Server_DB_Postgres.Entities.logs;
-using Server_DB_Postgres.Entities.server;
-using Server_DB_Postgres.Entities.users;
+using Server_DB_Postgres.Entities.GameData;
+using Server_DB_Postgres.Entities.Logs;
+using Server_DB_Postgres.Entities.Server;
+using Server_DB_Postgres.Entities.Users;
 using Server_DB_Postgres.Interfaces;
 using System.Collections.Concurrent;
 using System.Reflection;
@@ -110,12 +110,12 @@ public class DbContext_Game(DbContextOptions<DbContext_Game> options) : DbContex
     /// <summary>
     /// Таблица связи многие ко мноким между Heroes и CreatureTypes.
     /// </summary>
-    public DbSet<x_Hero_CreatureType> x_Heroes_CreatureTypes { get; set; }
+    public DbSet<X_Hero_CreatureType> x_Heroes_CreatureTypes { get; set; }
 
     /// <summary>
     /// Таблица связи многие ко мноким между WeaponTypes и DamageTypes.
     /// </summary>
-    public DbSet<x_EquipmentType_DamageType> x_EquipmentTypes_DamageTypes { get; set; }
+    public DbSet<X_EquipmentType_DamageType> x_EquipmentTypes_DamageTypes { get; set; }
 
     #endregion gameData
 
@@ -162,7 +162,7 @@ public class DbContext_Game(DbContextOptions<DbContext_Game> options) : DbContex
         //    _ = modelBuilder.ApplyConfiguration(new X_Hero_CreatureType_Configuration());
         //    _ = modelBuilder.ApplyConfiguration(new X_EquipmentType_DamageType_Configuration());
 
-        modelBuilder.CorrectNames(skipIfNameEnteredManual: true);
+        modelBuilder.CorrectNames();
         //modelBuilder.FirstLetterToLowerInScheme();
         ApplyDefaultValues(modelBuilder);
         //Data_DamageType.Add(modelBuilder);

@@ -1,4 +1,4 @@
-﻿namespace BackuperDatabases;
+namespace BackuperDatabases;
 
 partial class FormMain
 {
@@ -47,9 +47,9 @@ partial class FormMain
         label1.Location = new Point(8, 19);
         label1.Margin = new Padding(4, 0, 4, 0);
         label1.Name = "label1";
-        label1.Size = new Size(130, 21);
+        label1.Size = new Size(84, 21);
         label1.TabIndex = 0;
-        label1.Text = "PostgreSql_Users";
+        label1.Text = "PostgreSql";
         // 
         // button_Backup_PostgreSql_Users
         // 
@@ -82,6 +82,7 @@ partial class FormMain
         label2.Size = new Size(123, 21);
         label2.TabIndex = 0;
         label2.Text = "PostgreSql_Data";
+        label2.Visible = false;
         // 
         // button_Backup_PostgreSql_GameData
         // 
@@ -92,6 +93,7 @@ partial class FormMain
         button_Backup_PostgreSql_GameData.TabIndex = 1;
         button_Backup_PostgreSql_GameData.Text = "Backup";
         button_Backup_PostgreSql_GameData.UseVisualStyleBackColor = true;
+        button_Backup_PostgreSql_GameData.Visible = false;
         button_Backup_PostgreSql_GameData.Click += button_Backup_PostgreSql_GameData_Click;
         // 
         // button_Restore_PostgreSql_GameData
@@ -103,6 +105,7 @@ partial class FormMain
         button_Restore_PostgreSql_GameData.TabIndex = 1;
         button_Restore_PostgreSql_GameData.Text = "Restore";
         button_Restore_PostgreSql_GameData.UseVisualStyleBackColor = true;
+        button_Restore_PostgreSql_GameData.Visible = false;
         button_Restore_PostgreSql_GameData.Click += button_Restore_PostgreSql_GameData_Click;
         // 
         // label3
@@ -114,6 +117,7 @@ partial class FormMain
         label3.Size = new Size(151, 21);
         label3.TabIndex = 0;
         label3.Text = "MongoDb_UserData";
+        label3.Visible = false;
         // 
         // button_Backup_MongoDb_UserData
         // 
@@ -124,6 +128,7 @@ partial class FormMain
         button_Backup_MongoDb_UserData.TabIndex = 1;
         button_Backup_MongoDb_UserData.Text = "Backup";
         button_Backup_MongoDb_UserData.UseVisualStyleBackColor = true;
+        button_Backup_MongoDb_UserData.Visible = false;
         button_Backup_MongoDb_UserData.Click += button_Backup_MongoDb_UserData_Click;
         // 
         // button_Restore_MongoDb_UserData
@@ -135,6 +140,7 @@ partial class FormMain
         button_Restore_MongoDb_UserData.TabIndex = 1;
         button_Restore_MongoDb_UserData.Text = "Restore";
         button_Restore_MongoDb_UserData.UseVisualStyleBackColor = true;
+        button_Restore_MongoDb_UserData.Visible = false;
         button_Restore_MongoDb_UserData.Click += button_Restore_MongoDb_UserData_Click;
         // 
         // button_Backup_All
@@ -146,6 +152,7 @@ partial class FormMain
         button_Backup_All.TabIndex = 1;
         button_Backup_All.Text = "Backup all";
         button_Backup_All.UseVisualStyleBackColor = true;
+        button_Backup_All.Visible = false;
         button_Backup_All.Click += button_Backup_All_Click;
         // 
         // button_Restore_All
@@ -157,6 +164,7 @@ partial class FormMain
         button_Restore_All.TabIndex = 1;
         button_Restore_All.Text = "Restore all";
         button_Restore_All.UseVisualStyleBackColor = true;
+        button_Restore_All.Visible = false;
         button_Restore_All.Click += button_Restore_All_Click;
         // 
         // FormMain

@@ -3,26 +3,24 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using static Server_DB_Postgres.Attributes;
 
-namespace Server_DB_Postgres.Entities.gameData;
+namespace Server_DB_Postgres.Entities.GameData;
 
 /// <summary> Таблица для связи Hero и CreatureType. </summary>
-[Table(nameof(x_EquipmentType_DamageType), Schema = nameof(gameData))]
+[Table(nameof(X_EquipmentType_DamageType), Schema = nameof(GameData))]
 [PrimaryKey(nameof(EquipmentTypeId), nameof(DamageTypeId))]
-public class x_EquipmentType_DamageType
+public class X_EquipmentType_DamageType
 {
-    /// <summary> Идентификатор <see cref="gameData.EquipmentType"/>. </summary>
+    /// <summary> Идентификатор <see cref="GameData.EquipmentType"/>. </summary>
     [Key, Column(Order = 0)]
     public required int EquipmentTypeId { get; set; }
+    /// <summary> Сущность <see cref="GameData.EquipmentType"/>. </summary>
+    [ForeignKey(nameof(EquipmentTypeId))]
 
-    /// <summary> Идентификатор <see cref="gameData.DamageType"/>. </summary>
+    public required EquipmentType EquipmentType { get; set; }
+    /// <summary> Идентификатор <see cref="GameData.DamageType"/>. </summary>
     [Key, Column(Order = 1)]
     public required int DamageTypeId { get; set; }
-
-    /// <summary> Сущность <see cref="gameData.EquipmentType"/>. </summary>
-    [ForeignKey(nameof(EquipmentTypeId))]
-    public required EquipmentType EquipmentType { get; set; }
-
-    /// <summary> Сущность <see cref="gameData.DamageType"/>. </summary>
+    /// <summary> Сущность <see cref="GameData.DamageType"/>. </summary>
     [ForeignKey(nameof(DamageTypeId))]
     public required DamageType DamageType { get; set; }
 

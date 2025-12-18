@@ -3,10 +3,10 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using static Server_DB_Postgres.Attributes;
 
-namespace Server_DB_Postgres.Entities.gameData;
+namespace Server_DB_Postgres.Entities.GameData;
 
 /// <summary> Тип экипировки. </summary>
-[Table("EquipmentTypes", Schema = nameof(gameData))]
+[Table("EquipmentTypes", Schema = nameof(GameData))]
 [Index(nameof(Name), IsUnique = true)]
 public class EquipmentType
 {
@@ -23,7 +23,7 @@ public class EquipmentType
 
 
     /// <summary> Навигационное свойство к DamageTypes если экипировка наносит урон. </summary>
-    public ICollection<x_EquipmentType_DamageType> X_EquipmentType_DamageType { get; set; } = [];
+    public ICollection<X_EquipmentType_DamageType> X_EquipmentType_DamageType { get; set; } = [];
 
     ///// <summary>// Типы урона для этого типа экипировки. Вычисляемое свойство.
     ///// </summary>
@@ -39,11 +39,11 @@ public class EquipmentType
     public int MassMagical { get; set; }
 
 
-    /// <summary> Идентификатор <see cref="gameData.SlotType"/>. </summary>
+    /// <summary> Идентификатор <see cref="GameData.SlotType"/>. </summary>
     public int SlotTypeId { get; set; }
 
     /// <summary> Тип слота экипировки. Не индекс слота а его тип, то есть Кольцо или Браслет, а не Кольцо2 или Браслет1.
-    /// Сущность <see cref="gameData.SlotType"/>. </summary>
+    /// Сущность <see cref="GameData.SlotType"/>. </summary>
     [ForeignKey(nameof(SlotTypeId))]
     public required SlotType SlotType;
 

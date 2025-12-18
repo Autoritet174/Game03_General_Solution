@@ -1,12 +1,12 @@
-using Server_DB_Postgres.Entities.gameData;
-using Server_DB_Postgres.Entities.users;
+using Server_DB_Postgres.Entities.GameData;
+using Server_DB_Postgres.Entities.Users;
 using Server_DB_Postgres.Interfaces;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Server_DB_Postgres.Entities.collection;
+namespace Server_DB_Postgres.Entities.Collection;
 
 /// <summary> Герой в коллекции пользователя. </summary>
-[Table("Equipments", Schema = nameof(collection))]
+[Table("Equipments", Schema = nameof(Collection))]
 public class Equipment : IVersion, ICreatedAt, IUpdatedAt
 {
     /// <summary> Уникальный идентификатор. </summary>
@@ -14,7 +14,7 @@ public class Equipment : IVersion, ICreatedAt, IUpdatedAt
 
     /// <summary> Уникальный идентификатор владельца. </summary>
     public Guid UserId { get; set; }
-    /// <summary> Сущность <see cref="users.User"/>. </summary>
+    /// <summary> Сущность <see cref="Users.User"/>. </summary>
     [ForeignKey(nameof(UserId))]
     public required User User { get; set; }
 
@@ -29,7 +29,7 @@ public class Equipment : IVersion, ICreatedAt, IUpdatedAt
 
     /// <summary> Идентификатор базовой версии экипировки. </summary>
     public int BaseEquipmentId { get; set; }
-    /// <summary> Сущность <see cref="gameData.BaseEquipment"/>. </summary>
+    /// <summary> Сущность <see cref="GameData.BaseEquipment"/>. </summary>
     [ForeignKey(nameof(BaseEquipmentId))]
     public required BaseEquipment BaseEquipment { get; set; }
 }

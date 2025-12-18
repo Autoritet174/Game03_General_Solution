@@ -2,10 +2,10 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Server_DB_Postgres.Entities.gameData;
+namespace Server_DB_Postgres.Entities.GameData;
 
 /// <summary> Тип урона. </summary>
-[Table("DamageTypes", Schema = nameof(gameData))]
+[Table("DamageTypes", Schema = nameof(GameData))]
 [Index(nameof(Name), IsUnique = true)]
 public class DamageType
 {
@@ -25,8 +25,8 @@ public class DamageType
     public string? DevHintRu { get; set; }
 
 
-    /// <summary> Навигационное свойство к <see cref="gameData.x_EquipmentType_DamageType"/>. </summary>
-    public ICollection<x_EquipmentType_DamageType> X_EquipmentType_DamageType { get; set; } = [];
+    /// <summary> Навигационное свойство к <see cref="GameData.X_EquipmentType_DamageType"/>. </summary>
+    public ICollection<X_EquipmentType_DamageType> X_EquipmentType_DamageType { get; set; } = [];
 
     ///// <summary>// Типы оружия для этого типа урона. Вычисляемое свойство.
     ///// </summary>

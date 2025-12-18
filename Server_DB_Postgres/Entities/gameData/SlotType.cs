@@ -2,10 +2,10 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Server_DB_Postgres.Entities.gameData;
+namespace Server_DB_Postgres.Entities.GameData;
 
 /// <summary> Тип слота экипировки. </summary>
-[Table("SlotTypes", Schema = nameof(gameData))]
+[Table("SlotTypes", Schema = nameof(GameData))]
 [Index(nameof(Name), IsUnique = true)]
 public class SlotType
 {

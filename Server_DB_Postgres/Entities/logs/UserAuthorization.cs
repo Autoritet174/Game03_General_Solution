@@ -1,12 +1,12 @@
-using Server_DB_Postgres.Entities.users;
+using Server_DB_Postgres.Entities.Users;
 using Server_DB_Postgres.Interfaces;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Server_DB_Postgres.Entities.logs;
+namespace Server_DB_Postgres.Entities.Logs;
 
 /// <summary> Лог авторизации пользователей. </summary>
-[Table("UserAuthorizations", Schema = nameof(logs))]
+[Table("UserAuthorizations", Schema = nameof(Logs))]
 public class UserAuthorization : IVersion, ICreatedAt
 {
     /// <summary> Уникальный идентификатор. </summary>
@@ -18,7 +18,7 @@ public class UserAuthorization : IVersion, ICreatedAt
 
     /// <summary> Идентификатор пользователя. </summary>
     public Guid? UserId { get; set; }
-    /// <summary> Навигационное свойство к <see cref="users.User"/>. </summary>
+    /// <summary> Навигационное свойство к <see cref="Users.User"/>. </summary>
     [ForeignKey(nameof(UserId))]
     public User? User { get; set; }
 

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
+using static General.StringExt;
 
 namespace Server_DB_Postgres;
 
@@ -15,65 +16,53 @@ public static class ModelBuilderExt
     /// Преобразует имена таблиц, столбцов, ключей и индексов модели.
     /// </summary>
     /// <param name="modelBuilder">Экземпляр ModelBuilder.</param>
-    /// <param name="skipIfNameEnteredManual">
-    /// Пропускать переименование, если имя было явно указано разработчиком.
-    /// По умолчанию False, то есть все объекты будут преобразованы независимо от наличия явного имени.
-    /// </param>
-    public static void CorrectNames(this ModelBuilder modelBuilder, bool skipIfNameEnteredManual = false)
+    public static void CorrectNames(this ModelBuilder modelBuilder)
     {
         foreach (IMutableEntityType entity in modelBuilder.Model.GetEntityTypes())
         {
-            // Обработка имен таблиц: изменение только если имя не задано явно
-            //if (!skipIfNameEnteredManual || !entity.IsExplicitlyNamedTable())
-            //{
-            //    if (entity.GetTableName() is string tableName)
-            //    {
-            //        entity.SetTableName(tableName.ToSnakeCase());
-            //    }
-            //}
+            if (entity.GetTableName() is string tableName)
+            {
+                entity.SetTableName(tableName.ToSnakeCase());
+            }
 
             // Обработка имен столбцов: изменение только если имя не задано явно
-            //foreach (IMutableProperty property in entity.GetProperties())
-            //{
-            //    if (!skipIfNameEnteredManual || !property.IsExplicitlyNamedColumn())
-            //    {
-            //        property.SetColumnName(property.GetColumnName().ToSnakeCase());
-            //    }
-            //}
+            foreach (IMutableProperty property in entity.GetProperties())
+            {
+                property.SetColumnName(property.GetColumnName().ToSnakeCase());
+            }
 
             // Обработка первичных ключей: изменение только если имя не задано явно
             IMutableKey? pk = entity.FindPrimaryKey();
-            if (pk != null && (!skipIfNameEnteredManual || !pk.IsExplicitlyNamedConstraint()))
-            {
-                //pk.SetName($"{entity.GetTableName().ToPascalCase(true)}__pkey");
-                pk.SetName($"{entity.GetTableName()}__pkey");
-            }
+            pk?.SetName($"{entity.GetTableName().ToSnakeCase()}__pkey");
 
             // Обработка индексов: изменение только если имя не задано явно
             foreach (IMutableIndex index in entity.GetIndexes())
             {
-                if (!skipIfNameEnteredManual || !index.IsExplicitlyNamedIndex())
-                {
-                    //index.SetDatabaseName($"{entity.GetTableName().ToPascalCase(true)}__{string.Join("__", index.Properties.Select(static p => p.GetColumnName().ToPascalCase()))}__idx");
-                    index.SetDatabaseName($"{entity.GetTableName()}__{string.Join("__", index.Properties.Select(static p => p.GetColumnName()))}__idx");
-                }
+                index.SetDatabaseName($"{entity.GetTableName().ToSnakeCase()}__{string.Join("__", index.Properties.Select(static p => p.GetColumnName().ToSnakeCase()))}__idx");
             }
 
             // Обработка внешних ключей: изменение только если имя не задано явно
             foreach (IMutableForeignKey fk in entity.GetForeignKeys())
             {
-                if (!skipIfNameEnteredManual || !fk.IsExplicitlyNamedConstraint())
+                string principalTable = fk.PrincipalEntityType.GetTableName().ToSnakeCase() ?? string.Empty;
+                string columnName = fk.Properties[0].GetColumnName().ToSnakeCase();
+                string newName = $"{entity.GetTableName().ToSnakeCase()}__{columnName}__{principalTable}__fkey";
+                fk.SetConstraintName(newName);
+            }
+
+            // Обработка схем (пространств имен)
+            if (entity.GetSchema() is string schemaName)
+            {
+                // Преобразуем первую букву в нижний регистр
+                string newSchemaName = schemaName.ToSnakeCase();
+
+                // Применяем только если изменилось
+                if (newSchemaName != schemaName)
                 {
-                    //string principalTable = fk.PrincipalEntityType.GetTableName().ToPascalCase();
-                    //string columnName = fk.Properties[0].GetColumnName().ToPascalCase();
-                    //string newName = $"{entity.GetTableName().ToPascalCase(true)}__{columnName}__{principalTable}__fkey";
-                    //fk.SetConstraintName(newName);
-                    string principalTable = fk.PrincipalEntityType.GetTableName() ?? string.Empty;
-                    string columnName = fk.Properties[0].GetColumnName();
-                    string newName = $"{entity.GetTableName()}__{columnName}__{principalTable}__fkey";
-                    fk.SetConstraintName(newName);
+                    entity.SetSchema(newSchemaName);
                 }
             }
+            
         }
     }
 
