@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using Server_DB_Postgres.Entities.GameData;
 using Server_DB_Postgres.Entities.Users;
 using Server_DB_Postgres.Interfaces;
@@ -16,7 +17,7 @@ public class Hero : IVersion, ICreatedAt, IUpdatedAt
     public Guid UserId { get; set; }
     /// <summary> Сущность <see cref="Users.User"/>. </summary>
     [ForeignKey(nameof(UserId))]
-    public required User User { get; set; }
+    public User? User { get; set; }
 
     /// <summary> <inheritdoc/> </summary>
     public long Version { get; set; }
@@ -31,7 +32,7 @@ public class Hero : IVersion, ICreatedAt, IUpdatedAt
     public int BaseHeroId { get; set; }
     /// <summary> Сущность <see cref="GameData.BaseHero"/>. </summary>
     [ForeignKey(nameof(BaseHeroId))]
-    public required BaseHero BaseHero { get; set; }
+    public BaseHero? BaseHero { get; set; }
 
     /// <summary> Здоровье. </summary>
     public int Health { get; set; }

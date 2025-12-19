@@ -21,7 +21,6 @@ public class EquipmentType
     [MaxLength(255)]
     public required string NameRu { get; set; }
 
-
     /// <summary> Навигационное свойство к DamageTypes если экипировка наносит урон. </summary>
     public ICollection<X_EquipmentType_DamageType> X_EquipmentType_DamageType { get; set; } = [];
 
@@ -38,14 +37,11 @@ public class EquipmentType
     [HasDefaultValue(0)]
     public int MassMagical { get; set; }
 
-
     /// <summary> Идентификатор <see cref="GameData.SlotType"/>. </summary>
     public int SlotTypeId { get; set; }
-
-    /// <summary> Тип слота экипировки. Не индекс слота а его тип, то есть Кольцо или Браслет, а не Кольцо2 или Браслет1.
-    /// Сущность <see cref="GameData.SlotType"/>. </summary>
+    /// <summary> Тип слота экипировки. Не индекс слота а его тип, то есть Кольцо или Браслет, а не Кольцо2 или Браслет1. Сущность <see cref="GameData.SlotType"/>. </summary>
     [ForeignKey(nameof(SlotTypeId))]
-    public required SlotType SlotType;
+    public SlotType? SlotType;
 
     /// <summary> Можно создать через "Кузнечное дело". </summary>
     [HasDefaultValue(false)]

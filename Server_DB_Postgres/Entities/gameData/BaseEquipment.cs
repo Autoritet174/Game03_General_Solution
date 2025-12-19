@@ -24,15 +24,13 @@ public class BaseEquipment
     [HasDefaultValue(false)]
     public bool IsUnique { get; set; }
 
-
     /// <summary> Урон. Формат DND кубиков, 2d2. </summary>
     [MaxLength(255)]
     public string? Damage { get; set; }
 
     /// <summary> Идентификатор EquipmentType. </summary>
     public int EquipmentTypeId { get; set; }
-
     /// <summary> Сущность EquipmentType. </summary>
     [ForeignKey(nameof(EquipmentTypeId))]
-    public required EquipmentType EquipmentTypes { get; set; }
+    public EquipmentType? EquipmentTypes { get; set; }
 }

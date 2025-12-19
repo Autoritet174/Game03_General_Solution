@@ -16,7 +16,6 @@ public class CreatureType
     [MaxLength(255)]
     public required string Name { get; set; }
 
-
     /// <summary> Навигационное свойство к Heroes. </summary>
     public ICollection<X_Hero_CreatureType> X_Hero_CreatureType { get; set; } = [];
 

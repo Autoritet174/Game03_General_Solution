@@ -15,14 +15,14 @@ public class X_EquipmentType_DamageType
     public required int EquipmentTypeId { get; set; }
     /// <summary> Сущность <see cref="GameData.EquipmentType"/>. </summary>
     [ForeignKey(nameof(EquipmentTypeId))]
+    public EquipmentType? EquipmentType { get; set; }
 
-    public required EquipmentType EquipmentType { get; set; }
     /// <summary> Идентификатор <see cref="GameData.DamageType"/>. </summary>
     [Key, Column(Order = 1)]
     public required int DamageTypeId { get; set; }
     /// <summary> Сущность <see cref="GameData.DamageType"/>. </summary>
     [ForeignKey(nameof(DamageTypeId))]
-    public required DamageType DamageType { get; set; }
+    public DamageType? DamageType { get; set; }
 
     /// <summary> Коэффициент типа урона у оружия. </summary>
     [Column(name: nameof(DamageCoef)), HasDefaultValue(0)]

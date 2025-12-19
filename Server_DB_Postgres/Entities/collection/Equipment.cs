@@ -16,7 +16,7 @@ public class Equipment : IVersion, ICreatedAt, IUpdatedAt
     public Guid UserId { get; set; }
     /// <summary> Сущность <see cref="Users.User"/>. </summary>
     [ForeignKey(nameof(UserId))]
-    public required User User { get; set; }
+    public User? User { get; set; }
 
     /// <summary> <inheritdoc/> </summary>
     public long Version { get; set; }
@@ -31,5 +31,5 @@ public class Equipment : IVersion, ICreatedAt, IUpdatedAt
     public int BaseEquipmentId { get; set; }
     /// <summary> Сущность <see cref="GameData.BaseEquipment"/>. </summary>
     [ForeignKey(nameof(BaseEquipmentId))]
-    public required BaseEquipment BaseEquipment { get; set; }
+    public BaseEquipment? BaseEquipment { get; set; }
 }

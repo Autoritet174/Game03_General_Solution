@@ -16,7 +16,7 @@ public class UserBan : IVersion, ICreatedAt, IUpdatedAt
     public required Guid UserId { get; set; }
     /// <summary> Навигационное свойство к <see cref="Users.User"/>. </summary>
     [ForeignKey(nameof(UserId))]
-    public required User User { get; set; }
+    public User? User { get; set; }
 
 
     /// <summary> <inheritdoc/> </summary>
@@ -36,6 +36,6 @@ public class UserBan : IVersion, ICreatedAt, IUpdatedAt
     public int UserBanReasonId { get; set; }
     /// <summary> Навигационное свойство к <see cref="Server.UserBanReason"/>. </summary>
     [ForeignKey(nameof(UserBanReasonId))]
-    public required UserBanReason UserBanReason { get; set; }
+    public UserBanReason? UserBanReason { get; set; }
 
 }

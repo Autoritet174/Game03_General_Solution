@@ -14,7 +14,7 @@ public class MaterialDamagePercent
 
     /// <summary> Навигационное свойство к <see cref="SmithingMaterial"/>. </summary>
     [ForeignKey(nameof(SmithingMaterialsId))]
-    public required SmithingMaterial SmithingMaterials { get; set; }
+    public SmithingMaterial? SmithingMaterials { get; set; }
 
 
     /// <summary> Возвращает или задает идентификатор <see cref="GameData.DamageType"/>, связанного с данным объектом. </summary>
@@ -22,7 +22,7 @@ public class MaterialDamagePercent
 
     /// <summary> Навигационное свойство к <see cref="GameData.DamageType"/>. </summary>
     [ForeignKey(nameof(DamageTypeId))]
-    public required DamageType DamageType { get; set; }
+    public DamageType? DamageType { get; set; }
 
 
     /// <summary> Урон оружия в процентах. </summary>

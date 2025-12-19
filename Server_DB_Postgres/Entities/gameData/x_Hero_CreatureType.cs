@@ -14,12 +14,12 @@ public class X_Hero_CreatureType
     public int HeroId { get; set; }
     /// <summary> Сущность <see cref="GameData.BaseHero"/>. </summary>
     [ForeignKey(nameof(HeroId))]
-    public required BaseHero BaseHero { get; set; }
+    public BaseHero? BaseHero { get; set; }
 
     /// <summary> Идентификатор <see cref="GameData.CreatureType"/>. </summary>
     [Key, Column(Order = 1)]
     public int CreatureTypeId { get; set; }
     /// <summary> Сущность <see cref="CreatureType"/>. </summary>
     [ForeignKey(nameof(CreatureTypeId))]
-    public required CreatureType CreatureTypes { get; set; }
+    public CreatureType? CreatureTypes { get; set; }
 }

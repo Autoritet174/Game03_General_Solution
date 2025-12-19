@@ -104,31 +104,13 @@
             <returns></returns>
         </member>
         <member name="T:Server.Http_NS.Controllers_NS.Collection_NS.CollectionController">
-            <summary>
-            Контроллер для управления коллекциями пользователя.
-            </summary>
+            <summary> Контроллер для управления коллекциями пользователя. </summary>
         </member>
-        <member name="M:Server.Http_NS.Controllers_NS.Collection_NS.CollectionController.#ctor">
-            <summary>
-            Контроллер для управления коллекциями пользователя.
-            </summary>
+        <member name="M:Server.Http_NS.Controllers_NS.Collection_NS.CollectionController.#ctor(Server_DB_Postgres.DbContext_Game)">
+            <summary> Контроллер для управления коллекциями пользователя. </summary>
         </member>
         <member name="M:Server.Http_NS.Controllers_NS.Collection_NS.CollectionController.All">
-            <summary>
-            Получает коллекцию текущего пользователя.
-            </summary>
-            <returns>
-            Возвращает результат операции HTTP:
-            - 200 OK с коллекцией при успешном выполнении
-            - 401 Unauthorized, если пользователь не аутентифицирован или не имеет действительного идентификатора
-            </returns>
-            <remarks>
-            Метод доступен только аутентифицированным пользователям.
-            Применяется ограничение скорости запросов (rate limiting) с политикой "login".
-            Запрос выполняется асинхронно к MongoDB репозиторию для получения данных о героях.
-            </remarks>
-            <response code="200">Коллекция успешно получена</response>
-            <response code="401">Пользователь не аутентифицирован</response>
+            <summary> Получает коллекцию текущего пользователя. </summary>
         </member>
         <member name="T:Server.Http_NS.Controllers_NS.ControllerBaseApi">
             <summary>

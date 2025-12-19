@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using Serilog;
 using Serilog.Events;
 using Server.GameDataCache;
@@ -125,14 +126,14 @@ internal partial class Program
         //string сonnectionStringUsers = builder.Configuration.GetConnectionString("Postgres_Users")
         //    ?? throw new InvalidOperationException("Строка подключения 'Postgres_Users' не найдена.");
         //_ = services.AddDbContext<DbContext_Game03Users>(options => options.UseNpgsql(сonnectionStringUsers));
-        //_ = services.AddScoped<UserRepository>();
+        _ = services.AddScoped<UserRepository>();
 
 
         // База данных с игровыми данными
         string сonnectionString = builder.Configuration.GetConnectionString("Postgres")
             ?? throw new InvalidOperationException("Строка подключения 'Postgres' не найдена.");
         _ = services.AddDbContext<DbContext_Game>(options => options.UseNpgsql(сonnectionString));
-        _ = services.AddScoped<HeroRepository>();
+        _ = services.AddScoped<CollectionHeroRepository>();
 
 
         //// Настройки "MongoDb"
@@ -196,6 +197,11 @@ internal partial class Program
                options.JsonSerializerOptions.PropertyNamingPolicy = null;
                options.JsonSerializerOptions.DictionaryKeyPolicy = null;
            });
+
+        builder.Services.AddControllers().AddNewtonsoftJson(options =>
+        {
+            options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+        });
 
 
         WebApplication app = builder.Build();
@@ -286,6 +292,8 @@ internal partial class Program
 
         _ = app.UseForwardedHeaders();
 
+        DbContext_Game.Init(сonnectionString);
+
         using (IServiceScope scope = app.Services.CreateScope())
         {
             Serilog.ILogger logger = scope.ServiceProvider.GetRequiredService<Serilog.ILogger>();
@@ -293,7 +301,7 @@ internal partial class Program
             //await DbContext_Game03Users.ThrowIfFailureConnection(сonnectionStringUsers);
             //logger.Information("SERVER=postgres, DB=Users, connection is correct");
 
-            await DbContext_Game.ThrowIfFailureConnection(сonnectionString);
+            await DbContext_Game.ThrowIfFailureConnection();
             logger.Information("SERVER=postgres, DB=Data, connection is correct");
 
             //IOptions<MongoDbSettings> mongoSettings = scope.ServiceProvider.GetRequiredService<IOptions<MongoDbSettings>>();

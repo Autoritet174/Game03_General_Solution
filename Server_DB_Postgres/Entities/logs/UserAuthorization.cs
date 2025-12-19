@@ -30,4 +30,10 @@ public class UserAuthorization : IVersion, ICreatedAt
 
     /// <summary> <inheritdoc/> </summary>
     public DateTimeOffset CreatedAt { get; set; }
+
+    /// <summary> Идентификатор устройства пользователя. </summary>
+    public Guid UserDeviceId { get; set; }
+    /// <summary> Навигационное свойство к <see cref="Users.UserDevice"/>. </summary>
+    [ForeignKey(nameof(UserDeviceId))]
+    public UserDevice? UserDevice { get; set; }
 }

@@ -25,9 +25,7 @@
             </summary>
         </member>
         <member name="T:Server_DB_Postgres.DbContext_Game">
-            <summary>
-            Контекст базы данных для работы с игровыми данными.
-            </summary>
+            <summary> Контекст базы данных для работы с игровыми данными. </summary>
             <remarks>
             Конструктор, необходимый для Dependency Injection (DI) в ASP.NET Core.
             Строка подключения и опции передаются через DI из Program.cs.
@@ -35,118 +33,94 @@
             <param name="options">Настройки контекста, сформированные в Program.cs.</param>
         </member>
         <member name="M:Server_DB_Postgres.DbContext_Game.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions{Server_DB_Postgres.DbContext_Game})">
-            <summary>
-            Контекст базы данных для работы с игровыми данными.
-            </summary>
+            <summary> Контекст базы данных для работы с игровыми данными. </summary>
             <remarks>
             Конструктор, необходимый для Dependency Injection (DI) в ASP.NET Core.
             Строка подключения и опции передаются через DI из Program.cs.
             </remarks>
             <param name="options">Настройки контекста, сформированные в Program.cs.</param>
         </member>
-        <member name="M:Server_DB_Postgres.DbContext_Game.ThrowIfFailureConnection(System.String)">
+        <member name="M:Server_DB_Postgres.DbContext_Game.Init(System.String)">
             <summary>
-            Статический метод для проверки подключения к базе данных.
-            Строка подключения передается из Program.cs.
+            Инициализация.
             </summary>
-            <param name="connectionString">Строка подключения, которую необходимо проверить.</param>
+            <param name="connectionString"></param>
+        </member>
+        <member name="M:Server_DB_Postgres.DbContext_Game.ThrowIfFailureConnection">
+            <summary> Статический метод для проверки подключения к базе данных.
+            Строка подключения передается из Program.cs. </summary>
             <exception cref="T:System.Exception">Генерирует исключение в случае ошибки подключения.</exception>
         </member>
         <member name="M:Server_DB_Postgres.DbContext_Game.Create(System.String)">
-            <summary>
-            Создаёт новый экземпляр <see cref="T:Server_DB_Postgres.DbContext_Game"/> с указанной строкой подключения.
-            </summary>
+            <summary> Создаёт новый экземпляр <see cref="T:Server_DB_Postgres.DbContext_Game"/> с указанной строкой подключения. </summary>
             <param name="connectionString">Строка подключения к базе данных PostgreSQL.</param>
-            <returns>
-            Новый экземпляр <see cref="T:Server_DB_Postgres.DbContext_Game"/>, сконфигурированный для работы с указанной базой данных.
-            </returns>
+            <returns>Новый экземпляр <see cref="T:Server_DB_Postgres.DbContext_Game"/>, сконфигурированный для работы с базой данных. </returns>
+        </member>
+        <member name="M:Server_DB_Postgres.DbContext_Game.Create">
+            <summary> Создаёт новый экземпляр <see cref="T:Server_DB_Postgres.DbContext_Game"/> со строкой подключения по умолчанию. </summary>
+            <returns> Новый экземпляр <see cref="T:Server_DB_Postgres.DbContext_Game"/>, сконфигурированный для работы с базой данных. </returns>
+        </member>
+        <member name="P:Server_DB_Postgres.DbContext_Game.Equipments">
+            <summary> Экипировка игрока. </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.DbContext_Game.Heroes">
+            <summary> Герои игрока. </summary>
         </member>
         <member name="P:Server_DB_Postgres.DbContext_Game.BaseEquipments">
-            <summary>
-            Экипировка, болванки.
-            </summary>
+            <summary> Экипировка, болванки. </summary>
         </member>
         <member name="P:Server_DB_Postgres.DbContext_Game.BaseHeroes">
-            <summary>
-            Данные героев.
-            </summary>
+            <summary> Данные героев. </summary>
         </member>
         <member name="P:Server_DB_Postgres.DbContext_Game.CreatureTypes">
-            <summary>
-            Типы существ.
-            </summary>
+            <summary> Типы существ. </summary>
         </member>
         <member name="P:Server_DB_Postgres.DbContext_Game.DamageTypes">
-            <summary>
-            Типы урона.
-            </summary>
+            <summary> Типы урона. </summary>
         </member>
         <member name="P:Server_DB_Postgres.DbContext_Game.EquipmentTypes">
-            <summary>
-            Типы экипировки.
-            </summary>
+            <summary> Типы экипировки. </summary>
         </member>
         <member name="P:Server_DB_Postgres.DbContext_Game.MaterialDamagePercents">
-            <summary>
-            Дополнительный процентный урон от материала.
-            </summary>
+            <summary> Дополнительный процентный урон от материала. </summary>
         </member>
         <member name="P:Server_DB_Postgres.DbContext_Game.SlotTypes">
-            <summary>
-            Типы слотов экипировки.
-            </summary>
+            <summary> Типы слотов экипировки. </summary>
         </member>
         <member name="P:Server_DB_Postgres.DbContext_Game.SmithingMaterials">
-            <summary>
-            Материалы для кузнечного дела.
-            </summary>
+            <summary> Материалы для кузнечного дела. </summary>
         </member>
         <member name="P:Server_DB_Postgres.DbContext_Game.x_Heroes_CreatureTypes">
-            <summary>
-            Таблица связи многие ко мноким между Heroes и CreatureTypes.
-            </summary>
+            <summary> Таблица связи многие ко мноким между Heroes и CreatureTypes. </summary>
         </member>
         <member name="P:Server_DB_Postgres.DbContext_Game.x_EquipmentTypes_DamageTypes">
-            <summary>
-            Таблица связи многие ко мноким между WeaponTypes и DamageTypes.
-            </summary>
+            <summary> Таблица связи многие ко мноким между WeaponTypes и DamageTypes. </summary>
         </member>
         <member name="P:Server_DB_Postgres.DbContext_Game.UserAuthorizations">
-            <summary>
-            Лог авторизации пользователей.
-            </summary>
+            <summary> Лог авторизации пользователей. </summary>
         </member>
         <member name="P:Server_DB_Postgres.DbContext_Game.UserBanReasons">
-            <summary>
-            Причины бана пользователей.
-            </summary>
+            <summary> Причины бана пользователей. </summary>
         </member>
         <member name="P:Server_DB_Postgres.DbContext_Game.Users">
-            <summary>
-            Пользователи.
-            </summary>
+            <summary> Пользователи. </summary>
         </member>
         <member name="P:Server_DB_Postgres.DbContext_Game.UserBans">
-            <summary>
-            Даны пользователей.
-            </summary>
+            <summary> Баны пользователей. </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.DbContext_Game.UserDevices">
+            <summary> Устройства пользователей. </summary>
         </member>
         <member name="M:Server_DB_Postgres.DbContext_Game.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <summary>
-            Конфигурация модели данных.
-            </summary>
+            <summary> Конфигурация модели данных. </summary>
             <param name="modelBuilder">Построитель модели.</param>
         </member>
         <member name="M:Server_DB_Postgres.DbContext_Game.SaveChanges">
-            <summary>
-            <inheritdoc/>
-            </summary>
+            <summary> <inheritdoc/> </summary>
             <returns></returns>
         </member>
         <member name="M:Server_DB_Postgres.DbContext_Game.SaveChangesAsync(System.Threading.CancellationToken)">
-            <summary>
-            <inheritdoc/>
-            </summary>
+            <summary> <inheritdoc/> </summary>
             <returns></returns>
         </member>
         <member name="T:Server_DB_Postgres.Entities.Collection.Equipment">
@@ -492,8 +466,7 @@
             <summary> Идентификатор <see cref="T:Server_DB_Postgres.Entities.GameData.SlotType"/>. </summary>
         </member>
         <member name="F:Server_DB_Postgres.Entities.GameData.EquipmentType.SlotType">
-            <summary> Тип слота экипировки. Не индекс слота а его тип, то есть Кольцо или Браслет, а не Кольцо2 или Браслет1.
-            Сущность <see cref="T:Server_DB_Postgres.Entities.GameData.SlotType"/>. </summary>
+            <summary> Тип слота экипировки. Не индекс слота а его тип, то есть Кольцо или Браслет, а не Кольцо2 или Браслет1. Сущность <see cref="T:Server_DB_Postgres.Entities.GameData.SlotType"/>. </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.GameData.EquipmentType.CanCraftSmithing">
             <summary> Можно создать через "Кузнечное дело". </summary>
@@ -615,6 +588,12 @@
         <member name="P:Server_DB_Postgres.Entities.Logs.UserAuthorization.CreatedAt">
             <summary> <inheritdoc/> </summary>
         </member>
+        <member name="P:Server_DB_Postgres.Entities.Logs.UserAuthorization.UserDeviceId">
+            <summary> Идентификатор устройства пользователя. </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Logs.UserAuthorization.UserDevice">
+            <summary> Навигационное свойство к <see cref="T:Server_DB_Postgres.Entities.Users.UserDevice"/>. </summary>
+        </member>
         <member name="T:Server_DB_Postgres.Entities.Server.UserBanReason">
             <summary> Причины блокировки пользователя </summary>
         </member>
@@ -690,6 +669,67 @@
         <member name="P:Server_DB_Postgres.Entities.Users.UserBan.UserBanReason">
             <summary> Навигационное свойство к <see cref="T:Server_DB_Postgres.Entities.Server.UserBanReason"/>. </summary>
         </member>
+        <member name="T:Server_DB_Postgres.Entities.Users.UserDevice">
+            <summary> Представляет пользователя системы. </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.Id">
+            <summary> Уникальный идентификатор. </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.CreatedAt">
+            <summary> <inheritdoc/> </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.SystemEnvironmentUserName">
+            <summary> Получает или задаёт имя пользователя операционной системы. </summary>
+            <value>Имя пользователя, под которым запущено приложение (например, 'JohnDoe').</value>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.TimeZoneMinutes">
+            <summary> Получает или задаёт смещение локального часового пояса от UTC в минутах. </summary>
+            <value>Целое число, представляющее разницу во времени (например, +180 для UTC+3).</value>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.DeviceUniqueIdentifier">
+            <summary> Получает или задаёт уникальный идентификатор устройства. </summary>
+            <value>Уникальная строка, идентифицирующая устройство (например, IMEI, UUID).</value>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.DeviceModel">
+            <summary> Получает или задаёт модель устройства. </summary>
+            <value>Описание аппаратной модели устройства.</value>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.DeviceType">
+            <summary> Получает или задаёт тип устройства. </summary>
+            <value>Категория устройства: мобильное, настольное, игровая консоль и т.д.</value>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.OperatingSystem">
+            <summary> Получает или задаёт операционную систему устройства. </summary>
+            <value>Название и версия ОС (например, 'Windows 10', 'iOS 17').</value>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.ProcessorType">
+            <summary> Получает или задаёт тип процессора устройства. </summary>
+            <value>Архитектура и модель процессора (например, 'Intel Core i7', 'Apple M1').</value>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.ProcessorCount">
+            <summary> Получает или задаёт количество логических ядер процессора. </summary>
+            <value>Число, равное количеству потоков процессора.</value>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.SystemMemorySize">
+            <summary> Получает или задаёт объём оперативной памяти устройства в мегабайтах. </summary>
+            <value>Размер ОЗУ в мегабайтах (например, 16384 для 16 ГБ).</value>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.GraphicsDeviceName">
+            <summary> Получает или задаёт название графического устройства. </summary>
+            <value>Модель видеокарты или встроенного GPU.</value>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.GraphicsMemorySize">
+            <summary> Получает или задаёт объём видеопамяти в мегабайтах. </summary>
+            <value>Размер видеопамяти (VRAM) в МБ.</value>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.SystemInfoSupportsInstancing">
+            <summary> Получает или задаёт признак поддержки графической системой инстансинга. </summary>
+            <value><c>true</c>, если поддерживается; иначе <c>false</c>.</value>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.SystemInfo_npotSupport">
+            <summary> Получает или задаёт информацию о поддержке текстур с размерами, не являющимися степенью двойки (NPOT). </summary>
+            <value>Строка, описывающая уровень поддержки NPOT (например, 'Full', 'Restricted', 'None').</value>
+        </member>
         <member name="T:Server_DB_Postgres.Interfaces.ICreatedAt">
             <summary> Интерфейс для времени создания. </summary>
         </member>
@@ -718,6 +758,18 @@
             <inheritdoc />
         </member>
         <member name="M:Server_DB_Postgres.Migrations.Init.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Fix1">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix1.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix1.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix1.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Server_DB_Postgres.ModelBuilderExt">
@@ -778,23 +830,23 @@
             <param name="fk">Внешний ключ EF Core.</param>
             <returns>true, если имя внешнего ключа явно указано; иначе false.</returns>
         </member>
-        <member name="T:Server_DB_Postgres.Repositories.HeroRepository">
-            <summary>
-            Репозиторий для управления пользователями.
-            </summary>
-            <remarks>
-            Создаёт экземпляр <see cref="T:Server_DB_Postgres.Repositories.HeroRepository"/>.
-            </remarks>
+        <member name="T:Server_DB_Postgres.Repositories.CollectionEquipmentRepository">
+            <summary> Репозиторий для управления пользователями. </summary>
         </member>
-        <member name="M:Server_DB_Postgres.Repositories.HeroRepository.#ctor(Server_DB_Postgres.DbContext_Game)">
-            <param name="dbContext">Контекст базы данных.</param>
+        <member name="M:Server_DB_Postgres.Repositories.CollectionEquipmentRepository.#ctor(Server_DB_Postgres.DbContext_Game)">
+            <summary> Репозиторий для управления пользователями. </summary>
         </member>
-        <member name="M:Server_DB_Postgres.Repositories.HeroRepository.GetByNameAsync(System.String)">
-            <summary>
-            Возвращает пользователя по e-mail (без учёта регистра).
-            </summary>
-            <param name="name"></param>
-            <returns>Найденная запись или null.</returns>
+        <member name="M:Server_DB_Postgres.Repositories.CollectionEquipmentRepository.GetCoolectionEquipments(System.Guid)">
+            <summary> Получить всю экипировку из коллекции игрока. </summary>
+        </member>
+        <member name="T:Server_DB_Postgres.Repositories.CollectionHeroRepository">
+            <summary> Репозиторий для управления пользователями. </summary>
+        </member>
+        <member name="M:Server_DB_Postgres.Repositories.CollectionHeroRepository.#ctor(Server_DB_Postgres.DbContext_Game)">
+            <summary> Репозиторий для управления пользователями. </summary>
+        </member>
+        <member name="M:Server_DB_Postgres.Repositories.CollectionHeroRepository.GetCoolectionHeroes(System.Guid)">
+            <summary> Получить всех героев из коллекции игрока. </summary>
         </member>
         <member name="T:Server_DB_Postgres.Repositories.UserRepository">
             <summary>

@@ -127,26 +127,26 @@ public class BackgroundLoggerAuthentificationService(
         DbContext_Game db = scope.ServiceProvider.GetRequiredService<DbContext_Game>();
 
         // Начинаем транзакцию — либо всё, либо ничего
-        using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = await db.Database.BeginTransactionAsync();
+        // using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = await db.Database.BeginTransactionAsync();
 
         foreach (LogEntry log in batch)
         {
             JsonObject obj = log.obj;
 
             // Извлечение данных об устройстве из JSON с ограничением по длине (макс. 255 символов)
-            string? system_Environment_UserName = JsonObjectExtension.GetStringN(obj, "system_Environment_UserName", maxLength: 255);
-            int? timeZoneInfo_Local_BaseUtcOffset_Minutes = JsonObjectExtension.GetIntegerN(obj, "timeZoneInfo_Local_BaseUtcOffset_Minutes");
-            string? deviceUniqueIdentifier = JsonObjectExtension.GetStringN(obj, "deviceUniqueIdentifier", maxLength: 255);
-            string? deviceModel = JsonObjectExtension.GetStringN(obj, "deviceModel", maxLength: 255);
-            string? deviceType = JsonObjectExtension.GetStringN(obj, "deviceType", maxLength: 255);
-            string? operatingSystem = JsonObjectExtension.GetStringN(obj, "operatingSystem", maxLength: 255);
-            string? processorType = JsonObjectExtension.GetStringN(obj, "processorType", maxLength: 255);
-            int? processorCount = JsonObjectExtension.GetIntegerN(obj, "processorCount");
-            int? systemMemorySize = JsonObjectExtension.GetIntegerN(obj, "systemMemorySize");
-            string? graphicsDeviceName = JsonObjectExtension.GetStringN(obj, "graphicsDeviceName", maxLength: 255);
-            int? graphicsMemorySize = JsonObjectExtension.GetIntegerN(obj, "graphicsMemorySize");
-            bool? systemInfo_supportsInstancing = JsonObjectExtension.GetBoolN(obj, "systemInfo_supportsInstancing");
-            string? systemInfo_npotSupport = JsonObjectExtension.GetStringN(obj, "systemInfo_npotSupport", maxLength: 255);
+            string? system_Environment_UserName = obj.GetStringN("system_Environment_UserName", maxLength: 255);
+            int? timeZoneInfo_Local_BaseUtcOffset_Minutes = obj.GetIntegerN("timeZoneInfo_Local_BaseUtcOffset_Minutes");
+            string? deviceUniqueIdentifier = obj.GetStringN("deviceUniqueIdentifier", maxLength: 255);
+            string? deviceModel = obj.GetStringN("deviceModel", maxLength: 255);
+            string? deviceType = obj.GetStringN("deviceType", maxLength: 255);
+            string? operatingSystem = obj.GetStringN("operatingSystem", maxLength: 255);
+            string? processorType = obj.GetStringN("processorType", maxLength: 255);
+            int? processorCount = obj.GetIntegerN("processorCount");
+            int? systemMemorySize = obj.GetIntegerN("systemMemorySize");
+            string? graphicsDeviceName = obj.GetStringN("graphicsDeviceName", maxLength: 255);
+            int? graphicsMemorySize = obj.GetIntegerN("graphicsMemorySize");
+            bool? systemInfo_supportsInstancing = obj.GetBoolN("systemInfo_supportsInstancing");
+            string? systemInfo_npotSupport = obj.GetStringN("systemInfo_npotSupport", maxLength: 255);
 
 
             // Сборка строки с данными устройства для последующего хеширования
