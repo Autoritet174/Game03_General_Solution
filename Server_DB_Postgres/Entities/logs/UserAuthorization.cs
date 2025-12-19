@@ -1,7 +1,9 @@
+using NpgsqlTypes;
 using Server_DB_Postgres.Entities.Users;
 using Server_DB_Postgres.Interfaces;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Net;
 
 namespace Server_DB_Postgres.Entities.Logs;
 
@@ -14,7 +16,7 @@ public class UserAuthorization : IVersion, ICreatedAt
 
     /// <summary> Email при авторизации. </summary>
     [MaxLength(255)]
-    public required string Email { get; set; }
+    public string? Email { get; set; }
 
     /// <summary> Идентификатор пользователя. </summary>
     public Guid? UserId { get; set; }
@@ -32,8 +34,11 @@ public class UserAuthorization : IVersion, ICreatedAt
     public DateTimeOffset CreatedAt { get; set; }
 
     /// <summary> Идентификатор устройства пользователя. </summary>
-    public Guid UserDeviceId { get; set; }
+    public Guid? UserDeviceId { get; set; }
     /// <summary> Навигационное свойство к <see cref="Users.UserDevice"/>. </summary>
     [ForeignKey(nameof(UserDeviceId))]
     public UserDevice? UserDevice { get; set; }
+
+    /// <summary> IP-адрес устройства. </summary>
+    public IPAddress? Ip { get; set; }
 }

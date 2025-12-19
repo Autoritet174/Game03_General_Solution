@@ -214,14 +214,12 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
     /// <summary>
     /// Определяет IP-адрес клиента из HTTP-запроса.
     /// </summary>
-    /// <returns>IP-адрес в формате <see cref="NpgsqlInet"/> или null, если не удалось определить.</returns>
-    private NpgsqlInet? GetClientIpAddress()
+    /// <returns>IP-адрес в формате <see cref="IPAddress"/> или null, если не удалось определить.</returns>
+    private IPAddress? GetClientIpAddress()
     {
         // Пытаемся получить IP из подключения.
         string? ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? null;
-        return ip.IsEmpty()
-            ? null
-            : IPAddress.TryParse(ip, out IPAddress? ipAddress) ? new NpgsqlInet(ipAddress) : (NpgsqlInet?)null;
+        return ip.IsEmpty() ? null : IPAddress.TryParse(ip, out IPAddress? ipAddress) ? ipAddress : null;
     }
 
     /// <summary>

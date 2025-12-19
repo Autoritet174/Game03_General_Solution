@@ -1,4 +1,4 @@
-dotnet ef migrations add Fix1 `
+dotnet ef migrations add Fix5 `
 --project ".\Server_DB_Postgres\Server_DB_Postgres.csproj" `
 --startup-project ".\Server\Server.csproj" `
 --context DbContext_Game

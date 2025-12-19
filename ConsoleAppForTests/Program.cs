@@ -2,6 +2,7 @@ using General;
 using Newtonsoft.Json;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
+using System.Text;
 using static General.StringExt;
 
 namespace ConsoleAppForTests;
@@ -10,6 +11,20 @@ internal class Program
 {
 
     private static void Main() {
+
+        //for (int i = 0; i < 50; i++)
+        //{
+        //    StringBuilder sb = new();
+        //    foreach (byte item in Guid.NewGuid().ToByteArray())
+        //    {
+        //        sb.Append(item.ToString("000"));
+        //        sb.Append('-');
+        //    }
+        //    Console.WriteLine(sb.ToString());
+        //}
+        //Console.ReadLine();
+
+
         Start();
     }
     private static void Game_OnLog(object message)

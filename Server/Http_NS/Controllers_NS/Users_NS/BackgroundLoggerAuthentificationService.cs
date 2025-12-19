@@ -1,280 +1,418 @@
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
-using NpgsqlTypes;
 using Server.Utilities;
 using Server_DB_Postgres;
+using Server_DB_Postgres.Entities.Users;
 using System.Collections.Concurrent;
+using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json.Nodes;
 
 namespace Server.Http_NS.Controllers_NS.Users_NS;
 
 /// <summary>
-/// Фоновый сервис для асинхронной записи логов аутентификации и информации об устройствах пользователей.
-/// Обрабатывает очередь логов с периодичностью и сохраняет данные в базу PostgreSQL.
+/// Фоновый сервис пакетной записи логов авторизации и данных устройств
+/// с контролируемыми повторными попытками и корректной остановкой.
 /// </summary>
-public class BackgroundLoggerAuthentificationService(
+public sealed class BackgroundLoggerAuthentificationService(
     ILogger<BackgroundLoggerAuthentificationService> logger,
     IServiceProvider serviceProvider) : IHostedService, IDisposable
 {
-    private record LogEntry(bool authorizationSuccess, JsonObject obj, string? email, Guid? userId, NpgsqlInet? ip);
+    /// <summary>
+    /// Лог авторизации с поддержкой повторной обработки и кэшированными данными устройства.
+    /// </summary>
+    private sealed record LogEntry(
+        bool AuthorizationSuccess,
+        JsonObject Obj,
+        string? Email,
+        Guid? UserId,
+        IPAddress? Ip,
+        int RetryCount,
+        DateTimeOffset NextRetryAt,
+        DeviceParsedData? CachedDeviceData);
 
     /// <summary>
-    /// Логгер для записи диагностических сообщений.
+    /// Распарсенные данные устройства.
     /// </summary>
+    private sealed record DeviceParsedData(
+        Guid Id,
+        string? DeviceModel,
+        string? DeviceType,
+        string? OperatingSystem,
+        string? ProcessorType,
+        int? ProcessorCount,
+        int? SystemMemorySize,
+        string? GraphicsDeviceName,
+        string? DeviceUniqueIdentifier,
+        int? GraphicsMemorySize,
+        string? SystemEnvironmentUserName,
+        bool? SystemInfoSupportsInstancing,
+        string? SystemInfoNpotSupport,
+        int? TimeZoneMinutes);
+
     private readonly ILogger<BackgroundLoggerAuthentificationService> _logger = logger;
-
-    /// <summary>
-    /// Провайдер сервисов для создания scope-контекстов при работе с EF Core.
-    /// </summary>
     private readonly IServiceProvider _serviceProvider = serviceProvider;
 
-    /// <summary>
-    /// Таймер для периодической обработки очереди логов.
-    /// </summary>
-    private Timer? _timer;
-
-    /// <summary>
-    /// Потокобезопасная очередь логов, ожидающих сохранения в БД.
-    /// </summary>
     private readonly ConcurrentQueue<LogEntry> _queue = new();
+    private readonly SemaphoreSlim _semaphore = new(1, 1);
+
+    private readonly CancellationTokenSource _internalCts = new();
+    private CancellationTokenSource? _linkedCts;
+    private Task? _processingTask;
+    private Task? _cleanupTask;
+
+    private const int MAX_QUEUE_SIZE = 10_000;
+    private const int BATCH_SIZE = 100;
+    private const int MAX_RETRIES = 3;
+    private static readonly char SPLIT = '|';
 
     /// <summary>
-    /// Токен для отмены фоновых операций при остановке сервиса.
+    /// Добавляет лог в очередь с предварительным вычислением данных устройства.
     /// </summary>
-    private readonly CancellationTokenSource _stoppingCts = new();
-
-    /// <summary>
-    /// Разделитель полей при формировании строки для хеширования характеристик устройства.
-    /// Используется для создания уникального идентификатора устройства.
-    /// </summary>
-    private const char SPLIT = '|';
-
-    /// <summary>
-    /// Добавляет запись о попытке аутентификации в очередь на фоновую обработку.
-    /// Вызывается из контроллеров при входе/регистрации.
-    /// </summary>
-    /// <param name="authorizationSuccess">Успешна ли была попытка аутентификации.</param>
-    /// <param name="obj">JSON-объект с информацией об устройстве (например, ОС, модель, GPU и т.д.).</param>
-    /// <param name="email">Email пользователя, если известен.</param>
-    /// <param name="userId">Идентификатор пользователя в системе, если авторизован.</param>
-    /// <param name="ip">IP-адрес клиента.</param>
-    public void EnqueueLog(bool authorizationSuccess, JsonObject obj, string? email, Guid? userId, NpgsqlInet? ip)
+    /// <param name="authorizationSuccess">Успешность авторизации.</param>
+    /// <param name="obj">JSON объект с данными устройства.</param>
+    /// <param name="email">Email пользователя.</param>
+    /// <param name="userId">ID пользователя.</param>
+    /// <param name="ip">IP-адрес запроса.</param>
+    /// <exception cref="ArgumentNullException">Бросается, если obj равен null.</exception>
+    public void EnqueueLog(
+        bool authorizationSuccess,
+        JsonObject obj,
+        string? email,
+        Guid? userId,
+        IPAddress? ip)
     {
-        _queue.Enqueue(new LogEntry(authorizationSuccess, obj, email, userId, ip));
-    }
+        ArgumentNullException.ThrowIfNull(obj);
 
-    /// <summary>
-    /// Вызывается таймером каждые 5 секунд — запускает обработку накопленной партии логов.
-    /// </summary>
-    /// <param name="state">Не используется.</param>
-    private void DoWork(object? state)
-    {
-        ProcessBatch();
-    }
-
-    /// <summary>
-    /// Извлекает пачку логов из очереди (до 100 записей) и асинхронно сохраняет в БД.
-    /// Если очередь пуста — немедленно завершается.
-    /// </summary>
-    private void ProcessBatch()
-    {
-        if (_queue.IsEmpty)
+        if (_queue.Count >= MAX_QUEUE_SIZE)
         {
+            _logger.LogWarning("Очередь логов переполнена. Запись отброшена.");
             return;
         }
 
-        var batch = new List<LogEntry>();
+        DeviceParsedData? deviceData = ParseAndComputeId(obj);
 
-        // Сбор до 100 записей из очереди
-        while (batch.Count < 100 && _queue.TryDequeue(out LogEntry? entry))
-        {
-            batch.Add(entry);
-        }
-
-        if (batch.Count == 0)
-        {
-            return;
-        }
-
-        // Обработка в фоне, чтобы не блокировать таймер
-        _ = Task.Run(async () =>
-        {
-            try
-            {
-                await WriteBatchToDatabase(batch);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Не удалось записать пакет логов в базу данных");
-            }
-        });
+        _queue.Enqueue(new LogEntry(
+            authorizationSuccess,
+            obj,
+            email,
+            userId,
+            ip,
+            RetryCount: 0,
+            NextRetryAt: DateTimeOffset.UtcNow,
+            CachedDeviceData: deviceData));
     }
 
-    /// <summary>
-    /// Сохраняет пачку логов в базу данных с использованием транзакции.
-    /// Для каждого лога:
-    /// - Извлекает параметры устройства из JSON.
-    /// - Формирует уникальный идентификатор устройства через SHA256-хеш.
-    /// - Вставляет запись в таблицу устройств (если ещё не существует).
-    /// - Добавляет запись в лог аутентификаций, ссылаясь на устройство.
-    /// </summary>
-    /// <param name="batch">Пачка логов для сохранения.</param>
-    /// <exception cref="Exception">Любое исключение приведёт к записи в лог, но не остановит сервис.</exception>
-    private async Task WriteBatchToDatabase(List<LogEntry> batch)
+    /// <inheritdoc />
+    public Task StartAsync(CancellationToken ct)
     {
-        using IServiceScope scope = _serviceProvider.CreateScope();
-        DbContext_Game db = scope.ServiceProvider.GetRequiredService<DbContext_Game>();
+        _logger.LogInformation("Запуск сервиса фонового логирования.");
+        _linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct, _internalCts.Token);
 
-        // Начинаем транзакцию — либо всё, либо ничего
-        // using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = await db.Database.BeginTransactionAsync();
-
-        foreach (LogEntry log in batch)
-        {
-            JsonObject obj = log.obj;
-
-            // Извлечение данных об устройстве из JSON с ограничением по длине (макс. 255 символов)
-            string? system_Environment_UserName = obj.GetStringN("system_Environment_UserName", maxLength: 255);
-            int? timeZoneInfo_Local_BaseUtcOffset_Minutes = obj.GetIntegerN("timeZoneInfo_Local_BaseUtcOffset_Minutes");
-            string? deviceUniqueIdentifier = obj.GetStringN("deviceUniqueIdentifier", maxLength: 255);
-            string? deviceModel = obj.GetStringN("deviceModel", maxLength: 255);
-            string? deviceType = obj.GetStringN("deviceType", maxLength: 255);
-            string? operatingSystem = obj.GetStringN("operatingSystem", maxLength: 255);
-            string? processorType = obj.GetStringN("processorType", maxLength: 255);
-            int? processorCount = obj.GetIntegerN("processorCount");
-            int? systemMemorySize = obj.GetIntegerN("systemMemorySize");
-            string? graphicsDeviceName = obj.GetStringN("graphicsDeviceName", maxLength: 255);
-            int? graphicsMemorySize = obj.GetIntegerN("graphicsMemorySize");
-            bool? systemInfo_supportsInstancing = obj.GetBoolN("systemInfo_supportsInstancing");
-            string? systemInfo_npotSupport = obj.GetStringN("systemInfo_npotSupport", maxLength: 255);
-
-
-            // Сборка строки с данными устройства для последующего хеширования
-            StringBuilder stringBuilder = new();
-            // Последовательное добавление полей в строку. Используется null-коалесценция для замены null на пустую строку или 0
-            _ = stringBuilder.Append(system_Environment_UserName ?? string.Empty); _ = stringBuilder.Append(SPLIT);
-            _ = stringBuilder.Append(timeZoneInfo_Local_BaseUtcOffset_Minutes ?? 0); _ = stringBuilder.Append(SPLIT);
-            _ = stringBuilder.Append(deviceUniqueIdentifier ?? string.Empty); _ = stringBuilder.Append(SPLIT);
-            _ = stringBuilder.Append(deviceModel ?? string.Empty); _ = stringBuilder.Append(SPLIT);
-            _ = stringBuilder.Append(deviceType ?? string.Empty); _ = stringBuilder.Append(SPLIT);
-            _ = stringBuilder.Append(operatingSystem ?? string.Empty); _ = stringBuilder.Append(SPLIT);
-            _ = stringBuilder.Append(processorType ?? string.Empty); _ = stringBuilder.Append(SPLIT);
-            _ = stringBuilder.Append(processorCount ?? 0); _ = stringBuilder.Append(SPLIT);
-            _ = stringBuilder.Append(systemMemorySize ?? 0); _ = stringBuilder.Append(SPLIT);
-            _ = stringBuilder.Append(graphicsDeviceName ?? string.Empty); _ = stringBuilder.Append(SPLIT);
-            _ = stringBuilder.Append(graphicsMemorySize ?? 0); _ = stringBuilder.Append(SPLIT);
-            _ = stringBuilder.Append(systemInfo_supportsInstancing == true ? "[true]" : (systemInfo_supportsInstancing == false ? "[false]" : "[null]")); _ = stringBuilder.Append(SPLIT);
-            _ = stringBuilder.Append(systemInfo_npotSupport ?? string.Empty);
-
-            // Преобразование строки в байты и вычисление SHA256-хеша
-            // Хеш используется как уникальный идентификатор комбинации параметров устройства, предотвращая дублирование записей
-            byte[] bytes = Encoding.UTF8.GetBytes(stringBuilder.ToString().ToLowerInvariant());
-            byte[] hash_sha256 = System.Security.Cryptography.SHA256.HashData(bytes);
-
-            // Берём первые 16 байт хеша
-            byte[] guidBytes = [.. hash_sha256.Take(16)];
-
-            var user_device_id = new Guid(guidBytes);
-
-            // Единый запрос: сначала вставка в devices (с игнорированием дублей), затем лог аутентификации
-            await db.Database.ExecuteSqlRawAsync($"""
-                INSERT INTO _main.users_devices 
-                (id, system_environment_username, timezone_minutes, device_unique_identifier, device_model, device_type, operating_system, processor_type, processor_count, system_memory_size, graphics_device_name, graphics_memory_size, system_info_supports_instancing, system_info_npot_support)
-                VALUES
-                (@param__user_device_id, @param__system_environment_username, @param__timezone_minutes, @param__device_unique_identifier, @param__device_model, @param__device_type, @param__operating_system, @param__processor_type, @param__processor_count, @param__system_memory_size, @param__graphics_device_name, @param__graphics_memory_size, @param__system_info_supports_instancing, @param__system_info_npot_support)
-                ON CONFLICT (id) DO NOTHING;
-
-                INSERT INTO _main.users_authorization_logs 
-                (success, email, user_id, ip_address, user_device_id)
-                VALUES
-                (@param__success, @param__email, @param__user_id, @param__ip_address, @param__user_device_id);
-                """,
-
-                new NpgsqlParameter("param__user_device_id", user_device_id),
-                new NpgsqlParameter("param__system_environment_username", system_Environment_UserName),
-                new NpgsqlParameter("param__timezone_minutes", timeZoneInfo_Local_BaseUtcOffset_Minutes),
-                new NpgsqlParameter("param__device_unique_identifier", deviceUniqueIdentifier),
-                new NpgsqlParameter("param__device_model", deviceModel),
-                new NpgsqlParameter("param__device_type", deviceType),
-                new NpgsqlParameter("param__operating_system", operatingSystem),
-                new NpgsqlParameter("param__processor_type", processorType),
-                new NpgsqlParameter("param__processor_count", processorCount),
-                new NpgsqlParameter("param__system_memory_size", systemMemorySize),
-                new NpgsqlParameter("param__graphics_device_name", graphicsDeviceName),
-                new NpgsqlParameter("param__graphics_memory_size", graphicsMemorySize),
-                new NpgsqlParameter("param__system_info_supports_instancing", systemInfo_supportsInstancing),
-                new NpgsqlParameter("param__system_info_npot_support", systemInfo_npotSupport),
-                new NpgsqlParameter("param__success", log.authorizationSuccess),
-                new NpgsqlParameter("param__email", log.email),
-                new NpgsqlParameter("param__user_id", log.userId),
-                new NpgsqlParameter("param__ip_address", log.ip)
-            );
-        }
-
-        // Фиксация транзакции после успешной обработки всех записей
-        await transaction.CommitAsync();
-    }
-
-    /// <summary>
-    /// Освобождает управляемые ресурсы (таймер, токен отмены).
-    /// </summary>
-    public void Dispose()
-    {
-        _timer?.Dispose();
-        _stoppingCts.Cancel();
-        GC.SuppressFinalize(this);
-    }
-
-    /// <summary>
-    /// Запускает фоновый сервис при старте приложения.
-    /// Настраивает таймер на немедленный старт и последующий запуск каждые 5 секунд.
-    /// </summary>
-    /// <param name="cancellationToken">Токен для отмены запуска.</param>
-    /// <returns>Задача, завершаемая немедленно.</returns>
-    public Task StartAsync(CancellationToken cancellationToken)
-    {
-        _logger.LogInformation("Фоновый логгер запущен.");
-        _timer = new Timer(
-            callback: DoWork,
-            state: null,
-            dueTime: TimeSpan.Zero,
-            period: TimeSpan.FromSeconds(5));
+        _processingTask = Task.Run(() => ProcessingLoopAsync(_linkedCts.Token), _linkedCts.Token);
+        _cleanupTask = Task.Run(() => CleanupLoopAsync(_linkedCts.Token), _linkedCts.Token);
 
         return Task.CompletedTask;
     }
 
-    /// <summary>
-    /// Останавливает фоновый сервис при завершении приложения.
-    /// Пытается обработать оставшиеся логи в течение 5 секунд.
-    /// При превышении времени — принудительно завершает с предупреждением.
-    /// </summary>
-    /// <param name="cancellationToken">Токен, сигнализирующий внешнее завершение приложения.</param>
-    /// <returns>Задача, завершающаяся после попытки обработки остатка.</returns>
-    public async Task StopAsync(CancellationToken cancellationToken)
+    private async Task ProcessingLoopAsync(CancellationToken ct)
     {
-        _logger.LogInformation("Фоновый логгер останавливается.");
-
-        // Останавливаем таймер
-        _ = (_timer?.Change(Timeout.Infinite, 0));
-
-        // Устанавливаем лимит на обработку остатка
-        using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        timeoutCts.CancelAfter(TimeSpan.FromSeconds(5));
+        using PeriodicTimer timer = new(TimeSpan.FromSeconds(5));
 
         try
         {
-            await Task.Run(ProcessBatch, timeoutCts.Token);
+            while (await timer.WaitForNextTickAsync(ct))
+            {
+                await ProcessBatchAsync(ct);
+            }
         }
-        catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested)
+        catch (OperationCanceledException)
         {
-            _logger.LogWarning("Мягкая остановка превысила лимит времени. Некоторые логи могут быть утеряны.");
+            _logger.LogInformation("Цикл обработки логов остановлен.");
+        }
+    }
+
+    private async Task CleanupLoopAsync(CancellationToken ct)
+    {
+        using PeriodicTimer timer = new(TimeSpan.FromHours(24));
+
+        try
+        {
+            while (await timer.WaitForNextTickAsync(ct))
+            {
+                await PerformCleanupAsync(ct);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogInformation("Цикл очистки старых логов остановлен.");
+        }
+    }
+
+    /// <summary>
+    /// Обрабатывает один пакет логов из очереди.
+    /// </summary>
+    /// <param name="ct">Токен отмены.</param>
+    /// <returns>True, если пакет успешно записан или очередь была пуста; иначе false.</returns>
+    private async Task<bool> ProcessBatchAsync(CancellationToken ct)
+    {
+        if (_queue.IsEmpty) return true;
+
+        if (!await _semaphore.WaitAsync(TimeSpan.FromSeconds(5), ct))
+            return false;
+
+        try
+        {
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+            List<LogEntry> batch = [];
+
+            // Оптимизированное извлечение с учетом времени повтора
+            while (batch.Count < BATCH_SIZE && _queue.TryPeek(out LogEntry? peekEntry))
+            {
+                if (peekEntry.NextRetryAt > now)
+                    break;
+
+                if (_queue.TryDequeue(out LogEntry? entry))
+                {
+                    batch.Add(entry);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (batch.Count == 0) return true;
+
+            bool success = await WriteBatchToDatabaseAsync(batch, ct);
+
+            if (!success)
+            {
+                foreach (LogEntry item in batch)
+                {
+                    if (item.RetryCount + 1 < MAX_RETRIES)
+                    {
+                        TimeSpan delay = TimeSpan.FromSeconds(Math.Pow(2, item.RetryCount + 1));
+                        _queue.Enqueue(item with
+                        {
+                            RetryCount = item.RetryCount + 1,
+                            NextRetryAt = DateTimeOffset.UtcNow.Add(delay)
+                        });
+                    }
+                    else
+                    {
+                        _logger.LogError("Лог отброшен после {Retries} попыток.", MAX_RETRIES);
+                    }
+                }
+            }
+
+            return success;
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
+    }
+
+    private async Task<bool> WriteBatchToDatabaseAsync(List<LogEntry> batch, CancellationToken ct)
+    {
+        using IServiceScope scope = _serviceProvider.CreateScope();
+        DbContext_Game db = scope.ServiceProvider.GetRequiredService<DbContext_Game>();
+
+        try
+        {
+            HashSet<Guid> addedInBatch = [];
+
+            var uniqueDevices = batch
+                .Where(l => l.CachedDeviceData != null)
+                .Select(l => l.CachedDeviceData!)
+                .Where(d => addedInBatch.Add(d.Id))
+                .ToList();
+
+            if (uniqueDevices.Count > 0)
+            {
+                var deviceIds = uniqueDevices.Select(d => d.Id).ToList();
+
+                HashSet<Guid> existingIds = await db.UserDevices
+                    .Where(d => deviceIds.Contains(d.Id))
+                    .Select(d => d.Id)
+                    .ToHashSetAsync(ct);
+
+                foreach (DeviceParsedData device in uniqueDevices)
+                {
+                    if (!existingIds.Contains(device.Id))
+                    {
+                        db.UserDevices.Add(MapToEntity(device));
+                    }
+                }
+            }
+
+            foreach (LogEntry item in batch)
+            {
+                db.UserAuthorizations.Add(new Server_DB_Postgres.Entities.Logs.UserAuthorization
+                {
+                    Email = item.Email,
+                    Success = item.AuthorizationSuccess,
+                    UserId = item.UserId,
+                    UserDeviceId = item.CachedDeviceData?.Id,
+                    CreatedAt = DateTimeOffset.UtcNow,
+                    Ip = item.Ip
+                });
+            }
+
+            await db.SaveChangesAsync(ct);
+            return true;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Ошибка при остановке фонового логгера");
+            _logger.LogError(ex, "Ошибка записи батча ({Count} записей).", batch.Count);
+            return false;
+        }
+    }
+
+    private async Task PerformCleanupAsync(CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+
+        using IServiceScope scope = _serviceProvider.CreateScope();
+        DbContext_Game db = scope.ServiceProvider.GetRequiredService<DbContext_Game>();
+
+        try
+        {
+            DateTimeOffset cutoff = DateTimeOffset.UtcNow.AddMonths(-24);
+            int deleted = await db.UserAuthorizations
+                .Where(a => a.CreatedAt < cutoff)
+                .ExecuteDeleteAsync(ct);
+
+            if (deleted > 0)
+                _logger.LogInformation("Очистка завершена: удалено {Count} записей.", deleted);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка при очистке старых логов.");
+        }
+    }
+
+    private static DeviceParsedData? ParseAndComputeId(JsonObject obj)
+    {
+        string? uid = obj.GetStringN("deviceUniqueIdentifier");
+        if (string.IsNullOrWhiteSpace(uid))
+            return null;
+
+        var data = new DeviceParsedData(
+            Guid.Empty,
+            obj.GetStringN("deviceModel", 255),
+            obj.GetStringN("deviceType", 255),
+            obj.GetStringN("operatingSystem", 255),
+            obj.GetStringN("processorType", 255),
+            obj.GetIntegerN("processorCount"),
+            obj.GetIntegerN("systemMemorySize"),
+            obj.GetStringN("graphicsDeviceName", 255),
+            uid,
+            obj.GetIntegerN("graphicsMemorySize"),
+            obj.GetStringN("system_Environment_UserName", 255),
+            obj.GetBoolN("systemInfo_supportsInstancing"),
+            obj.GetStringN("systemInfo_npotSupport", 255),
+            obj.GetIntegerN("timeZoneInfo_Local_BaseUtcOffset_Minutes"));
+
+        StringBuilder sb = new();
+        sb.Append(data.SystemEnvironmentUserName ?? "").Append(SPLIT)
+          .Append(data.TimeZoneMinutes ?? 0).Append(SPLIT)
+          .Append(data.DeviceUniqueIdentifier).Append(SPLIT)
+          .Append(data.DeviceModel ?? "").Append(SPLIT)
+          .Append(data.DeviceType ?? "").Append(SPLIT)
+          .Append(data.OperatingSystem ?? "").Append(SPLIT)
+          .Append(data.ProcessorType ?? "").Append(SPLIT)
+          .Append(data.ProcessorCount ?? 0).Append(SPLIT)
+          .Append(data.SystemMemorySize ?? 0).Append(SPLIT)
+          .Append(data.GraphicsDeviceName ?? "").Append(SPLIT)
+          .Append(data.GraphicsMemorySize ?? 0).Append(SPLIT)
+          .Append(data.SystemInfoSupportsInstancing == true ? "[true]" :
+                  data.SystemInfoSupportsInstancing == false ? "[false]" : "[null]")
+          .Append(SPLIT)
+          .Append(data.SystemInfoNpotSupport ?? "");
+
+        byte[] hash = SHA256.HashData(Encoding.UTF8.GetBytes(sb.ToString().ToLowerInvariant()));
+        byte[] guidBytes = new byte[16];
+        Array.Copy(hash, guidBytes, 16);
+
+        // UUID v5 (Fingerprint): Version 5 (0x50), Variant RFC 4122 (0x80)
+        guidBytes[6] = (byte)((guidBytes[6] & 0x0F) | 0x50);
+        guidBytes[8] = (byte)((guidBytes[8] & 0x3F) | 0x80);
+
+        return data with { Id = new Guid(guidBytes) };
+    }
+
+    private static UserDevice MapToEntity(DeviceParsedData d) => new()
+    {
+        Id = d.Id,
+        DeviceModel = d.DeviceModel,
+        DeviceType = d.DeviceType,
+        OperatingSystem = d.OperatingSystem,
+        ProcessorType = d.ProcessorType,
+        ProcessorCount = d.ProcessorCount,
+        SystemMemorySize = d.SystemMemorySize,
+        GraphicsDeviceName = d.GraphicsDeviceName,
+        DeviceUniqueIdentifier = d.DeviceUniqueIdentifier,
+        GraphicsMemorySize = d.GraphicsMemorySize,
+        SystemEnvironmentUserName = d.SystemEnvironmentUserName,
+        SystemInfoSupportsInstancing = d.SystemInfoSupportsInstancing,
+        SystemInfoNpotSupport = d.SystemInfoNpotSupport,
+        TimeZoneMinutes = d.TimeZoneMinutes
+    };
+
+    /// <inheritdoc />
+    public async Task StopAsync(CancellationToken ct)
+    {
+        _logger.LogInformation("Запрос на остановку сервиса логирования...");
+        await _internalCts.CancelAsync();
+
+        // Дожидаемся graceful завершения основных циклов
+        if (_processingTask != null)
+            await _processingTask.WaitAsync(ct).ContinueWith(_ => { }, TaskScheduler.Default);
+
+        if (_cleanupTask != null)
+            await _cleanupTask.WaitAsync(ct).ContinueWith(_ => { }, TaskScheduler.Default);
+
+        // "Умный" финальный flush: до 20 попыток, но не более 2 ошибок БД подряд
+        int consecutiveFailures = 0;
+        const int maxConsecutiveFailures = 2;
+
+        while (!_queue.IsEmpty && !ct.IsCancellationRequested && consecutiveFailures < maxConsecutiveFailures)
+        {
+            bool success = await ProcessBatchAsync(ct);
+
+            if (success)
+            {
+                consecutiveFailures = 0;
+            }
+            else
+            {
+                consecutiveFailures++;
+                _logger.LogWarning("Сбой записи при остановке (ошибка {Count}/{Max}).",
+                    consecutiveFailures, maxConsecutiveFailures);
+            }
+
+            if (!_queue.IsEmpty && !ct.IsCancellationRequested)
+                await Task.Delay(success ? 100 : 1000, ct);
         }
 
-        _stoppingCts.Cancel();
-        _logger.LogInformation("Фоновый логгер остановлен.");
+        if (!_queue.IsEmpty)
+        {
+            _logger.LogWarning("При остановке осталось {Count} необработанных логов.", _queue.Count);
+        }
+        else
+        {
+            _logger.LogInformation("Все логи успешно записаны при остановке.");
+        }
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        _linkedCts?.Dispose();
+        _internalCts.Dispose();
+        _semaphore.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

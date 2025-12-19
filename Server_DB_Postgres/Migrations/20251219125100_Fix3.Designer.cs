@@ -3,6 +3,7 @@ using System;
 using System.Net;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server_DB_Postgres;
@@ -12,9 +13,11 @@ using Server_DB_Postgres;
 namespace Server_DB_Postgres.Migrations
 {
     [DbContext(typeof(DbContext_Game))]
-    partial class DbContext_GameModelSnapshot : ModelSnapshot
+    [Migration("20251219125100_Fix3")]
+    partial class Fix3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -716,10 +719,6 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnType("character varying(255)")
                         .HasColumnName("email");
 
-                    b.Property<IPAddress>("Ip")
-                        .HasColumnType("inet")
-                        .HasColumnName("ip");
-
                     b.Property<bool>("Success")
                         .HasColumnType("boolean")
                         .HasColumnName("success");
@@ -913,6 +912,10 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("graphics_memory_size");
 
+                    b.Property<IPAddress>("Ip")
+                        .HasColumnType("inet")
+                        .HasColumnName("ip");
+
                     b.Property<string>("OperatingSystem")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
@@ -951,6 +954,10 @@ namespace Server_DB_Postgres.Migrations
 
                     b.HasKey("Id")
                         .HasName("user_devices__pkey");
+
+                    b.HasIndex("DeviceUniqueIdentifier")
+                        .IsUnique()
+                        .HasDatabaseName("user_devices__device_unique_identifier__idx");
 
                     b.ToTable("user_devices", "users");
                 });

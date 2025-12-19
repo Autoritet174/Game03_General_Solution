@@ -231,7 +231,7 @@
             <summary>
             Определяет IP-адрес клиента из HTTP-запроса.
             </summary>
-            <returns>IP-адрес в формате <see cref="T:NpgsqlTypes.NpgsqlInet"/> или null, если не удалось определить.</returns>
+            <returns>IP-адрес в формате <see cref="T:System.Net.IPAddress"/> или null, если не удалось определить.</returns>
         </member>
         <member name="T:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController.LoginAttempt">
             <summary>
@@ -272,103 +272,62 @@
         </member>
         <member name="T:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService">
             <summary>
-            Фоновый сервис для асинхронной записи логов аутентификации и информации об устройствах пользователей.
-            Обрабатывает очередь логов с периодичностью и сохраняет данные в базу PostgreSQL.
+            Фоновый сервис пакетной записи логов авторизации и данных устройств
+            с контролируемыми повторными попытками и корректной остановкой.
             </summary>
         </member>
         <member name="M:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService.#ctor(Microsoft.Extensions.Logging.ILogger{Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService},System.IServiceProvider)">
             <summary>
-            Фоновый сервис для асинхронной записи логов аутентификации и информации об устройствах пользователей.
-            Обрабатывает очередь логов с периодичностью и сохраняет данные в базу PostgreSQL.
+            Фоновый сервис пакетной записи логов авторизации и данных устройств
+            с контролируемыми повторными попытками и корректной остановкой.
             </summary>
         </member>
-        <member name="F:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService._logger">
+        <member name="T:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService.LogEntry">
             <summary>
-            Логгер для записи диагностических сообщений.
+            Лог авторизации с поддержкой повторной обработки и кэшированными данными устройства.
             </summary>
         </member>
-        <member name="F:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService._serviceProvider">
+        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService.LogEntry.#ctor(System.Boolean,System.Text.Json.Nodes.JsonObject,System.String,System.Nullable{System.Guid},System.Net.IPAddress,System.Int32,System.DateTimeOffset,Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService.DeviceParsedData)">
             <summary>
-            Провайдер сервисов для создания scope-контекстов при работе с EF Core.
+            Лог авторизации с поддержкой повторной обработки и кэшированными данными устройства.
             </summary>
         </member>
-        <member name="F:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService._timer">
+        <member name="T:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService.DeviceParsedData">
             <summary>
-            Таймер для периодической обработки очереди логов.
+            Распарсенные данные устройства.
             </summary>
         </member>
-        <member name="F:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService._queue">
+        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService.DeviceParsedData.#ctor(System.Guid,System.String,System.String,System.String,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.String,System.String,System.Nullable{System.Int32},System.String,System.Nullable{System.Boolean},System.String,System.Nullable{System.Int32})">
             <summary>
-            Потокобезопасная очередь логов, ожидающих сохранения в БД.
+            Распарсенные данные устройства.
             </summary>
         </member>
-        <member name="F:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService._stoppingCts">
+        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService.EnqueueLog(System.Boolean,System.Text.Json.Nodes.JsonObject,System.String,System.Nullable{System.Guid},System.Net.IPAddress)">
             <summary>
-            Токен для отмены фоновых операций при остановке сервиса.
+            Добавляет лог в очередь с предварительным вычислением данных устройства.
             </summary>
-        </member>
-        <member name="F:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService.SPLIT">
-            <summary>
-            Разделитель полей при формировании строки для хеширования характеристик устройства.
-            Используется для создания уникального идентификатора устройства.
-            </summary>
-        </member>
-        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService.EnqueueLog(System.Boolean,System.Text.Json.Nodes.JsonObject,System.String,System.Nullable{System.Guid},System.Nullable{NpgsqlTypes.NpgsqlInet})">
-            <summary>
-            Добавляет запись о попытке аутентификации в очередь на фоновую обработку.
-            Вызывается из контроллеров при входе/регистрации.
-            </summary>
-            <param name="authorizationSuccess">Успешна ли была попытка аутентификации.</param>
-            <param name="obj">JSON-объект с информацией об устройстве (например, ОС, модель, GPU и т.д.).</param>
-            <param name="email">Email пользователя, если известен.</param>
-            <param name="userId">Идентификатор пользователя в системе, если авторизован.</param>
-            <param name="ip">IP-адрес клиента.</param>
-        </member>
-        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService.DoWork(System.Object)">
-            <summary>
-            Вызывается таймером каждые 5 секунд — запускает обработку накопленной партии логов.
-            </summary>
-            <param name="state">Не используется.</param>
-        </member>
-        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService.ProcessBatch">
-            <summary>
-            Извлекает пачку логов из очереди (до 100 записей) и асинхронно сохраняет в БД.
-            Если очередь пуста — немедленно завершается.
-            </summary>
-        </member>
-        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService.WriteBatchToDatabase(System.Collections.Generic.List{Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService.LogEntry})">
-            <summary>
-            Сохраняет пачку логов в базу данных с использованием транзакции.
-            Для каждого лога:
-            - Извлекает параметры устройства из JSON.
-            - Формирует уникальный идентификатор устройства через SHA256-хеш.
-            - Вставляет запись в таблицу устройств (если ещё не существует).
-            - Добавляет запись в лог аутентификаций, ссылаясь на устройство.
-            </summary>
-            <param name="batch">Пачка логов для сохранения.</param>
-            <exception cref="T:System.Exception">Любое исключение приведёт к записи в лог, но не остановит сервис.</exception>
-        </member>
-        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService.Dispose">
-            <summary>
-            Освобождает управляемые ресурсы (таймер, токен отмены).
-            </summary>
+            <param name="authorizationSuccess">Успешность авторизации.</param>
+            <param name="obj">JSON объект с данными устройства.</param>
+            <param name="email">Email пользователя.</param>
+            <param name="userId">ID пользователя.</param>
+            <param name="ip">IP-адрес запроса.</param>
+            <exception cref="T:System.ArgumentNullException">Бросается, если obj равен null.</exception>
         </member>
         <member name="M:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService.StartAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService.ProcessBatchAsync(System.Threading.CancellationToken)">
             <summary>
-            Запускает фоновый сервис при старте приложения.
-            Настраивает таймер на немедленный старт и последующий запуск каждые 5 секунд.
+            Обрабатывает один пакет логов из очереди.
             </summary>
-            <param name="cancellationToken">Токен для отмены запуска.</param>
-            <returns>Задача, завершаемая немедленно.</returns>
+            <param name="ct">Токен отмены.</param>
+            <returns>True, если пакет успешно записан или очередь была пуста; иначе false.</returns>
         </member>
         <member name="M:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService.StopAsync(System.Threading.CancellationToken)">
-            <summary>
-            Останавливает фоновый сервис при завершении приложения.
-            Пытается обработать оставшиеся логи в течение 5 секунд.
-            При превышении времени — принудительно завершает с предупреждением.
-            </summary>
-            <param name="cancellationToken">Токен, сигнализирующий внешнее завершение приложения.</param>
-            <returns>Задача, завершающаяся после попытки обработки остатка.</returns>
+            <inheritdoc />
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService.Dispose">
+            <inheritdoc />
         </member>
         <member name="T:Server.Http_NS.Controllers_NS.Users_NS.RegistrationController">
             <summary>
