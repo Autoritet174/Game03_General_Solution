@@ -8,23 +8,20 @@ namespace Server.Http_NS.Controllers_NS;
 /// </summary>
 /// <param name="heroCache"></param>
 [Route("api/[controller]/[action]")]
-public class GeneralController(IHeroCacheService heroCache) : ControllerBaseApi
+public class GeneralController(IGameDataCacheService heroCache) : ControllerBaseApi
 {
     private static ContentResult? result = null;
     private static readonly Lock locker = new();
-    private readonly IHeroCacheService _heroCache = heroCache;
+    private readonly IGameDataCacheService _heroCache = heroCache;
 
-    /// <summary>
-    /// Возвращает в ответе список всех героев.
-    /// </summary>
-    /// <returns></returns>
-    public IActionResult ListAllHeroes()
+    /// <summary> Возвращает в ответе список всех константных игровых данных нужных на клиенте игры. </summary>
+    public IActionResult GameData()
     {
         if (result == null)
         {
             lock (locker)
             {
-                result ??= Content(_heroCache.HeroesJson, "application/json");
+                result ??= Content(_heroCache.GameDataJson, "application/json");
             }
         }
 

@@ -58,4 +58,7 @@ public class EquipmentType
     /// <summary> Трата очков действия за удар. </summary>
     [HasDefaultValue(0)]
     public int SpendActionPoints { get; set; } = 0;
-}
+
+    /// <summary> Блокирует ли оружие другую руку, если это оружие. </summary>
+    public bool? BlockOtherHand { get; set; }
+    }

@@ -29,6 +29,8 @@ public static class Url
     public static class General
     {
         private const string _General = $"{URL_HEADER}{nameof(General)}/";
-        public static string ListAllHeroes { get; private set; } = $"{_General}{nameof(ListAllHeroes)}";
+
+        /// <summary> URL. Все игровые данные нужные на клиенте игры. </summary>
+        public static string GameData { get; private set; } = $"{_General}{nameof(GameData)}";
     }
 }

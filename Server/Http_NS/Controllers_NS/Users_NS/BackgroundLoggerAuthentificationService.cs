@@ -123,7 +123,7 @@ public sealed class BackgroundLoggerAuthentificationService(
         {
             while (await timer.WaitForNextTickAsync(ct))
             {
-                await ProcessBatchAsync(ct);
+                _ = await ProcessBatchAsync(ct);
             }
         }
         catch (OperationCanceledException)
@@ -156,10 +156,15 @@ public sealed class BackgroundLoggerAuthentificationService(
     /// <returns>True, если пакет успешно записан или очередь была пуста; иначе false.</returns>
     private async Task<bool> ProcessBatchAsync(CancellationToken ct)
     {
-        if (_queue.IsEmpty) return true;
+        if (_queue.IsEmpty)
+        {
+            return true;
+        }
 
         if (!await _semaphore.WaitAsync(TimeSpan.FromSeconds(5), ct))
+        {
             return false;
+        }
 
         try
         {
@@ -170,7 +175,9 @@ public sealed class BackgroundLoggerAuthentificationService(
             while (batch.Count < BATCH_SIZE && _queue.TryPeek(out LogEntry? peekEntry))
             {
                 if (peekEntry.NextRetryAt > now)
+                {
                     break;
+                }
 
                 if (_queue.TryDequeue(out LogEntry? entry))
                 {
@@ -182,7 +189,10 @@ public sealed class BackgroundLoggerAuthentificationService(
                 }
             }
 
-            if (batch.Count == 0) return true;
+            if (batch.Count == 0)
+            {
+                return true;
+            }
 
             bool success = await WriteBatchToDatabaseAsync(batch, ct);
 
@@ -192,7 +202,7 @@ public sealed class BackgroundLoggerAuthentificationService(
                 {
                     if (item.RetryCount + 1 < MAX_RETRIES)
                     {
-                        TimeSpan delay = TimeSpan.FromSeconds(Math.Pow(2, item.RetryCount + 1));
+                        var delay = TimeSpan.FromSeconds(Math.Pow(2, item.RetryCount + 1));
                         _queue.Enqueue(item with
                         {
                             RetryCount = item.RetryCount + 1,
@@ -201,7 +211,10 @@ public sealed class BackgroundLoggerAuthentificationService(
                     }
                     else
                     {
-                        _logger.LogError("Лог отброшен после {Retries} попыток.", MAX_RETRIES);
+                        if (_logger.IsEnabled(LogLevel.Error))
+                        {
+                            _logger.LogError("Лог отброшен после {Retries} попыток.", MAX_RETRIES);
+                        }
                     }
                 }
             }
@@ -210,7 +223,7 @@ public sealed class BackgroundLoggerAuthentificationService(
         }
         finally
         {
-            _semaphore.Release();
+            _ = _semaphore.Release();
         }
     }
 
@@ -242,14 +255,14 @@ public sealed class BackgroundLoggerAuthentificationService(
                 {
                     if (!existingIds.Contains(device.Id))
                     {
-                        db.UserDevices.Add(MapToEntity(device));
+                        _ = db.UserDevices.Add(MapToEntity(device));
                     }
                 }
             }
 
             foreach (LogEntry item in batch)
             {
-                db.UserAuthorizations.Add(new Server_DB_Postgres.Entities.Logs.UserAuthorization
+                _ = db.UserAuthorizations.Add(new Server_DB_Postgres.Entities.Logs.UserAuthorization
                 {
                     Email = item.Email,
                     Success = item.AuthorizationSuccess,
@@ -260,12 +273,16 @@ public sealed class BackgroundLoggerAuthentificationService(
                 });
             }
 
-            await db.SaveChangesAsync(ct);
+            _ = await db.SaveChangesAsync(ct);
             return true;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Ошибка записи батча ({Count} записей).", batch.Count);
+            if (_logger.IsEnabled(LogLevel.Error))
+            {
+                _logger.LogError(ex, "Ошибка записи батча ({Count} записей).", batch.Count);
+            }
+
             return false;
         }
     }
@@ -285,7 +302,12 @@ public sealed class BackgroundLoggerAuthentificationService(
                 .ExecuteDeleteAsync(ct);
 
             if (deleted > 0)
-                _logger.LogInformation("Очистка завершена: удалено {Count} записей.", deleted);
+            {
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("Очистка завершена: удалено {Count} записей.", deleted);
+                }
+            }
         }
         catch (Exception ex)
         {
@@ -297,7 +319,9 @@ public sealed class BackgroundLoggerAuthentificationService(
     {
         string? uid = obj.GetStringN("deviceUniqueIdentifier");
         if (string.IsNullOrWhiteSpace(uid))
+        {
             return null;
+        }
 
         var data = new DeviceParsedData(
             Guid.Empty,
@@ -316,7 +340,7 @@ public sealed class BackgroundLoggerAuthentificationService(
             obj.GetIntegerN("timeZoneInfo_Local_BaseUtcOffset_Minutes"));
 
         StringBuilder sb = new();
-        sb.Append(data.SystemEnvironmentUserName ?? "").Append(SPLIT)
+        _ = sb.Append(data.SystemEnvironmentUserName ?? "").Append(SPLIT)
           .Append(data.TimeZoneMinutes ?? 0).Append(SPLIT)
           .Append(data.DeviceUniqueIdentifier).Append(SPLIT)
           .Append(data.DeviceModel ?? "").Append(SPLIT)
@@ -343,23 +367,26 @@ public sealed class BackgroundLoggerAuthentificationService(
         return data with { Id = new Guid(guidBytes) };
     }
 
-    private static UserDevice MapToEntity(DeviceParsedData d) => new()
+    private static UserDevice MapToEntity(DeviceParsedData d)
     {
-        Id = d.Id,
-        DeviceModel = d.DeviceModel,
-        DeviceType = d.DeviceType,
-        OperatingSystem = d.OperatingSystem,
-        ProcessorType = d.ProcessorType,
-        ProcessorCount = d.ProcessorCount,
-        SystemMemorySize = d.SystemMemorySize,
-        GraphicsDeviceName = d.GraphicsDeviceName,
-        DeviceUniqueIdentifier = d.DeviceUniqueIdentifier,
-        GraphicsMemorySize = d.GraphicsMemorySize,
-        SystemEnvironmentUserName = d.SystemEnvironmentUserName,
-        SystemInfoSupportsInstancing = d.SystemInfoSupportsInstancing,
-        SystemInfoNpotSupport = d.SystemInfoNpotSupport,
-        TimeZoneMinutes = d.TimeZoneMinutes
-    };
+        return new()
+        {
+            Id = d.Id,
+            DeviceModel = d.DeviceModel,
+            DeviceType = d.DeviceType,
+            OperatingSystem = d.OperatingSystem,
+            ProcessorType = d.ProcessorType,
+            ProcessorCount = d.ProcessorCount,
+            SystemMemorySize = d.SystemMemorySize,
+            GraphicsDeviceName = d.GraphicsDeviceName,
+            DeviceUniqueIdentifier = d.DeviceUniqueIdentifier,
+            GraphicsMemorySize = d.GraphicsMemorySize,
+            SystemEnvironmentUserName = d.SystemEnvironmentUserName,
+            SystemInfoSupportsInstancing = d.SystemInfoSupportsInstancing,
+            SystemInfoNpotSupport = d.SystemInfoNpotSupport,
+            TimeZoneMinutes = d.TimeZoneMinutes
+        };
+    }
 
     /// <inheritdoc />
     public async Task StopAsync(CancellationToken ct)
@@ -369,10 +396,14 @@ public sealed class BackgroundLoggerAuthentificationService(
 
         // Дожидаемся graceful завершения основных циклов
         if (_processingTask != null)
+        {
             await _processingTask.WaitAsync(ct).ContinueWith(_ => { }, TaskScheduler.Default);
+        }
 
         if (_cleanupTask != null)
+        {
             await _cleanupTask.WaitAsync(ct).ContinueWith(_ => { }, TaskScheduler.Default);
+        }
 
         // "Умный" финальный flush: до 20 попыток, но не более 2 ошибок БД подряд
         int consecutiveFailures = 0;
@@ -389,17 +420,24 @@ public sealed class BackgroundLoggerAuthentificationService(
             else
             {
                 consecutiveFailures++;
-                _logger.LogWarning("Сбой записи при остановке (ошибка {Count}/{Max}).",
-                    consecutiveFailures, maxConsecutiveFailures);
+                if (_logger.IsEnabled(LogLevel.Warning))
+                {
+                    _logger.LogWarning("Сбой записи при остановке (ошибка {Count}/{Max}).", consecutiveFailures, maxConsecutiveFailures);
+                }
             }
 
             if (!_queue.IsEmpty && !ct.IsCancellationRequested)
+            {
                 await Task.Delay(success ? 100 : 1000, ct);
+            }
         }
 
         if (!_queue.IsEmpty)
         {
-            _logger.LogWarning("При остановке осталось {Count} необработанных логов.", _queue.Count);
+            if (_logger.IsEnabled(LogLevel.Warning))
+            {
+                _logger.LogWarning("При остановке осталось {Count} необработанных логов.", _queue.Count);
+            }
         }
         else
         {

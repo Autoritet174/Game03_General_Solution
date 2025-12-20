@@ -15,6 +15,7 @@ using Server_DB_Postgres.Repositories;
 using System.Net; // Добавлено для HttpStatusCode
 using System.Text;
 using System.Threading.RateLimiting;
+using static General.StringExt;
 
 namespace Server;
 
@@ -157,13 +158,12 @@ internal partial class Program
         // --- Добавляем Rate Limiting с учётом IP ---
         _ = services.AddRateLimiter(options =>
         {
-            _ = options.AddPolicy("login", context =>
+            _ = options.AddPolicy(Consts.RATE_LIMITER_POLICY_AUTH, context =>
             {
-                // Получаем IP-адрес клиента
                 string? ipAddress = context.Connection.RemoteIpAddress?.ToString();
 
                 // Если не удалось определить (например, в тестах) — используем "unknown"
-                string clientKey = ipAddress ?? "unknown";
+                string clientKey = ipAddress.IsEmpty() ? "unknown" : ipAddress;
 
                 // Создаём "токен бакет" на основе IP
                 return RateLimitPartition.GetFixedWindowLimiter(
@@ -172,6 +172,20 @@ internal partial class Program
                     {
                         Window = TimeSpan.FromMinutes(1),
                         PermitLimit = 5,
+                        QueueLimit = 0
+                    });
+            });
+
+            _ = options.AddPolicy(Consts.RATE_LIMITER_POLICY_COLLECTION, context =>
+            {
+                string? ipAddress = context.Connection.RemoteIpAddress?.ToString();
+                string clientKey = ipAddress.IsEmpty() ? "unknown" : ipAddress;
+                return RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: clientKey,
+                    factory: _ => new FixedWindowRateLimiterOptions
+                    {
+                        Window = TimeSpan.FromSeconds(10),
+                        PermitLimit = 1,
                         QueueLimit = 0
                     });
             });
@@ -187,7 +201,7 @@ internal partial class Program
 
         // Добавляем HeroCacheService
         //_ = services.AddScoped<IHeroCacheService, HeroesCacheService>();
-        _ = services.AddSingleton<IHeroCacheService, HeroesCacheService>();
+        _ = services.AddSingleton<IGameDataCacheService, GameDataCacheService>();
 
         _ = services.AddMemoryCache();
 
@@ -314,8 +328,8 @@ internal partial class Program
         // Инициализация кэша до старта
         using (IServiceScope scope = app.Services.CreateScope())
         {
-            IHeroCacheService heroCache = scope.ServiceProvider.GetRequiredService<IHeroCacheService>();
-            heroCache.InitializeAsync(scope.ServiceProvider).GetAwaiter().GetResult();
+            IGameDataCacheService heroCache = scope.ServiceProvider.GetRequiredService<IGameDataCacheService>();
+            heroCache.RefreshGameDataJsonAsync(scope.ServiceProvider).GetAwaiter().GetResult();
         }
        
 

@@ -177,6 +177,18 @@
         <member name="P:Server_DB_Postgres.Entities.Collection.Hero.BaseHero">
             <summary> Сущность <see cref="T:Server_DB_Postgres.Entities.GameData.BaseHero"/>. </summary>
         </member>
+        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.GroupName">
+            <summary> Имя группы. </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Level">
+            <summary> Редкость. </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.ExperienceNow">
+            <summary> Текущий опыт. </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Rarity">
+            <summary> Редкость. </summary>
+        </member>
         <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Health">
             <summary> Здоровье. </summary>
         </member>
@@ -479,6 +491,9 @@
         </member>
         <member name="P:Server_DB_Postgres.Entities.GameData.EquipmentType.SpendActionPoints">
             <summary> Трата очков действия за удар. </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.GameData.EquipmentType.BlockOtherHand">
+            <summary> Блокирует ли оружие другую руку, если это оружие. </summary>
         </member>
         <member name="T:Server_DB_Postgres.Entities.GameData.MaterialDamagePercent">
             <summary> Коэфициенты урона для материалов. </summary>
@@ -823,6 +838,30 @@
         <member name="M:Server_DB_Postgres.Migrations.Fix5.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:Server_DB_Postgres.Migrations.Fix6">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix6.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix6.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix6.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Fix7">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix7.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix7.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix7.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
         <member name="T:Server_DB_Postgres.ModelBuilderExt">
             <summary>
             Класс расширяющих методов для Entity Framework Core ModelBuilder
@@ -903,77 +942,25 @@
             <summary>
             Репозиторий для управления пользователями.
             </summary>
-        </member>
-        <member name="M:Server_DB_Postgres.Repositories.UserRepository.#ctor(Server_DB_Postgres.DbContext_Game)">
-            <summary>
+            <remarks>
             Инициализирует новый экземпляр класса <see cref="T:Server_DB_Postgres.Repositories.UserRepository"/>.
-            </summary>
+            </remarks>
             <param name="dbContext">Контекст базы данных для работы с пользователями.</param>
             <exception cref="T:System.ArgumentNullException">
             Выбрасывается, если <paramref name="dbContext"/> равен null.
             </exception>
         </member>
-        <member name="M:Server_DB_Postgres.Repositories.UserRepository.AddAsync(System.String,System.String)">
+        <member name="M:Server_DB_Postgres.Repositories.UserRepository.#ctor(Server_DB_Postgres.DbContext_Game)">
             <summary>
-            Асинхронно добавляет нового пользователя в базу данных.
+            Репозиторий для управления пользователями.
             </summary>
-            <param name="emailValidated">Подтвержденный email адрес пользователя.</param>
-            <param name="passwordHashValidated">Хеш пароля пользователя.</param>
-            <returns>Задача, представляющая асинхронную операцию добавления.</returns>
             <remarks>
-            Создает нового пользователя с указанными email и хешем пароля,
-            генерирует уникальный идентификатор и сохраняет в базу данных.
+            Инициализирует новый экземпляр класса <see cref="T:Server_DB_Postgres.Repositories.UserRepository"/>.
             </remarks>
-        </member>
-        <member name="M:Server_DB_Postgres.Repositories.UserRepository.UpdateAsync(Server_DB_Postgres.Entities.Users.User)">
-            <summary>
-            Асинхронно обновляет данные пользователя в базе данных.
-            </summary>
-            <param name="user">Сущность пользователя с обновленными данными.</param>
-            <returns>Задача, представляющая асинхронную операцию обновления.</returns>
+            <param name="dbContext">Контекст базы данных для работы с пользователями.</param>
             <exception cref="T:System.ArgumentNullException">
-            Выбрасывается, если <paramref name="user"/> равен null.
+            Выбрасывается, если <paramref name="dbContext"/> равен null.
             </exception>
-            <exception cref="T:System.ArgumentException">
-            Выбрасывается, если идентификатор пользователя является пустым GUID.
-            </exception>
-            <exception cref="T:System.InvalidOperationException">
-            Выбрасывается, если сущность пользователя с указанным идентификатором не найдена в базе данных.
-            </exception>
-        </member>
-        <member name="M:Server_DB_Postgres.Repositories.UserRepository.GetAllAsync">
-            <summary>
-            Асинхронно получает всех пользователей из базы данных.
-            </summary>
-            <returns>
-            Задача, результатом которой является список всех пользователей.
-            Записи возвращаются без отслеживания изменений (AsNoTracking).
-            </returns>
-        </member>
-        <member name="M:Server_DB_Postgres.Repositories.UserRepository.GetByIdAsync(System.Guid)">
-            <summary>
-            Асинхронно получает пользователя по его идентификатору.
-            </summary>
-            <param name="id">Идентификатор пользователя.</param>
-            <returns>
-            Задача, результатом которой является найденный пользователь или null, если пользователь не найден.
-            </returns>
-        </member>
-        <member name="M:Server_DB_Postgres.Repositories.UserRepository.GetByEmailWithBansAsync(System.String)">
-            <summary>
-            Асинхронно получает пользователя по email адресу вместе с активными блокировками.
-            </summary>
-            <param name="email">Email адрес пользователя (без учета регистра).</param>
-            <returns>
-            Задача, результатом которой является найденный пользователь с коллекцией активных блокировок
-            или null, если пользователь не найден или email не указан.
-            Запись возвращается без отслеживания изменений (AsNoTracking).
-            </returns>
-            <remarks>
-            Поиск выполняется без учета регистра символов в email.
-            Включает только активные блокировки (те, у которых дата создания меньше или равна текущей дате
-            и либо не указана дата окончания, либо она еще не наступила).
-            </remarks>
         </member>
     </members>
 </doc>

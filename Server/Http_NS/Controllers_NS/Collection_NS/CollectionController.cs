@@ -10,8 +10,8 @@ namespace Server.Http_NS.Controllers_NS.Collection_NS;
 public class CollectionController(DbContext_Game dbContext) : ControllerBaseApi
 {
     /// <summary> Получает коллекцию текущего пользователя. </summary>
-    [EnableRateLimiting("login"), HttpPost("All")]
-    public async Task<IActionResult> All()
+    [EnableRateLimiting(Consts.RATE_LIMITER_POLICY_COLLECTION), HttpPost(nameof(General.Url.Collection.All))]
+    public async Task<IActionResult> GetAllCollection()
     {
         Guid? userId = User.GetGuid();
         if (userId == null)
@@ -23,6 +23,10 @@ public class CollectionController(DbContext_Game dbContext) : ControllerBaseApi
         {
             a.Id,
             a.BaseHeroId,
+            a.Rarity,
+            a.GroupName,
+            a.Level,
+            a.ExperienceNow,
             a.Health,
             a.Attack,
             a.Strength,
@@ -70,4 +74,5 @@ public class CollectionController(DbContext_Game dbContext) : ControllerBaseApi
 
         return Ok(new { heroes, equipments });
     }
+    
 }

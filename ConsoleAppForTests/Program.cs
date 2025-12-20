@@ -1,16 +1,13 @@
-using General;
-using Newtonsoft.Json;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
-using System.Text;
-using static General.StringExt;
+using Game03Client.DTO;
+using Game03Client.PlayerCollection;
 
 namespace ConsoleAppForTests;
 
 internal class Program
 {
 
-    private static void Main() {
+    private static void Main()
+    {
 
         //for (int i = 0; i < 50; i++)
         //{
@@ -23,8 +20,8 @@ internal class Program
         //    Console.WriteLine(sb.ToString());
         //}
         //Console.ReadLine();
-
-
+        //Console.WriteLine(nameof(General.Url.Collection.All));
+       
         Start();
     }
     private static void Game_OnLog(object message)
@@ -56,22 +53,22 @@ internal class Program
         //webSocketClient.ConnectAsync(cancellationTokenSource.Token).Wait();
         //if (!webSocketClient.Connected)
         //{
-            
+
         //}
 
         cancellationTokenSource = new(TimeSpan.FromSeconds(30));
-        Game.GameData.LoadListAllHeroesAsync(cancellationTokenSource.Token).Wait();
+        Game.GameData.LoadGameData(cancellationTokenSource.Token).Wait();
 
         cancellationTokenSource = new(TimeSpan.FromSeconds(30));
         Game.Collection.LoadAllCollectionFromServer(cancellationTokenSource.Token).Wait();
 
-        var coll = Game.Collection.GetCollectionHeroesFromCache();
-        var coll1 = Game.Collection.GetCollectionHeroesGroupByGroups();
+        IEnumerable<DtoCollectionHero> coll = Game.Collection.GetCollectionHeroesFromCache();
+        IEnumerable<GroupCollectionElement> coll1 = Game.Collection.GetCollectionHeroesGroupedByGroupNames();
         Console.WriteLine(coll.Count());
 
         //Console.ReadLine();
         //webSocketClient.DisconnectAsync().Wait();
-        Console.ReadLine();
+        _ = Console.ReadLine();
     }
 
 

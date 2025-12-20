@@ -19,4 +19,8 @@ public static class Consts
     /// Максимальное количество попыток аутентификации.
     /// </summary>
     public const int MAX_LOGIN_ATTEMPTS = 5;
+
+    public const string RATE_LIMITER_POLICY_AUTH = nameof(RATE_LIMITER_POLICY_AUTH);
+
+    public const string RATE_LIMITER_POLICY_COLLECTION = nameof(RATE_LIMITER_POLICY_COLLECTION);
 }

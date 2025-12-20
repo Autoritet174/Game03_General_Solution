@@ -1,4 +1,5 @@
-using General.GameEntities;
+using Game03Client.DTO;
+using General.DTO;
 using System.Collections.Generic;
 
 namespace Game03Client.GameData;
@@ -8,9 +9,8 @@ namespace Game03Client.GameData;
 /// </summary>
 internal class GameDataCache
 {
-    /// <summary>
-    /// Коллекция, хранящая кэшированный список всех базовых сущностей героев.
-    /// Инициализируется пустым списком.
-    /// </summary>
-    internal IEnumerable<HeroBase> _allHeroes = [];
+    internal IEnumerable<DtoBaseHero> BaseHeroes = [];
+    internal IEnumerable<DtoBaseEquipment> BaseEquipments = [];
+    internal IEnumerable<DtoSlotType> SlotTypes = [];
+    internal IEnumerable<DtoEquipmentType> EquipmentTypes = [];
 }

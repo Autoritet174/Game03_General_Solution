@@ -1,4 +1,4 @@
-using General.GameEntities;
+using Game03Client.DTO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -9,7 +9,7 @@ namespace Game03Client.PlayerCollection;
 public interface IPlayerCollection
 {
     Task<bool> LoadAllCollectionFromServer(CancellationToken cancellationToken);
-    IEnumerable<CollectionHero> GetCollectionHeroesFromCache();
-    IEnumerable<GroupHeroes> GetCollectionHeroesGroupByGroups();
+    IEnumerable<DtoCollectionHero> GetCollectionHeroesFromCache();
+    IEnumerable<GroupCollectionElement> GetCollectionHeroesGroupedByGroupNames();
     int GetCountHeroes();
 }

@@ -1,7 +1,7 @@
+using General.DTO;
 using Game03Client.HttpRequester;
 using Game03Client.Logger;
 using General;
-using General.GameEntities;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -35,19 +35,20 @@ internal class GameDataProvider(IHttpRequester httpRequesterProvider, GameDataCa
     }
     #endregion Logger
 
-    /// <inheritdoc/>
-    public IEnumerable<HeroBase> AllHeroes => globalFunctionsProviderCache._allHeroes;
+    public IEnumerable<DtoBaseHero> BaseHeroes => globalFunctionsProviderCache.BaseHeroes;
+    public IEnumerable<DtoSlotType> SlotTypes => globalFunctionsProviderCache.SlotTypes;
+    public IEnumerable<DtoEquipmentType> EquipmentTypes => globalFunctionsProviderCache.EquipmentTypes;
+    public IEnumerable<DtoBaseEquipment> BaseEquipments => globalFunctionsProviderCache.BaseEquipments;
 
     /// <inheritdoc/>
-    /// <exception cref="InvalidOperationException">Выбрасывается, если произошла ошибка при конвертации данных (например, неверный формат).</exception>
-    public async Task LoadListAllHeroesAsync(CancellationToken cancellationToken)
+    public async Task LoadGameData(CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
         {
             return;
         }
 
-        JObject? jObject = await httpRequesterProvider.GetJObjectAsync(Url.General.ListAllHeroes, cancellationToken);
+        JObject? jObject = await httpRequesterProvider.GetJObjectAsync(Url.General.GameData, cancellationToken);
         if (jObject == null)
         {
             return;
@@ -60,7 +61,7 @@ internal class GameDataProvider(IHttpRequester httpRequesterProvider, GameDataCa
             return;
         }
 
-        List<HeroBase> allHeroes = [];
+        List<DtoBaseHero> allHeroes = [];
         foreach (JObject heroObj in heroesArray.Cast<JObject>())
         {
             JToken? t_id = heroObj["id"];
@@ -74,15 +75,25 @@ internal class GameDataProvider(IHttpRequester httpRequesterProvider, GameDataCa
             float baseHealth = (float)Convert.ToDouble(heroObj["baseHealth"]);
             float baseAttack = (float)Convert.ToDouble(heroObj["baseAttack"]);
             int rarity = Convert.ToInt32(heroObj["rarity"]);
-            allHeroes.Add(new HeroBase(id, name, rarity, baseHealth, baseAttack));
+            allHeroes.Add(new BaseHero(id, name, rarity, baseHealth, baseAttack));
         }
 
-        globalFunctionsProviderCache._allHeroes = allHeroes.AsEnumerable();
+        globalFunctionsProviderCache.BaseHeroes = allHeroes.AsEnumerable();
     }
 
     /// <inheritdoc/>
-    public HeroBase GetHeroById(int id)
+    public DtoBaseHero GetHeroById(int id)
     {
-        return globalFunctionsProviderCache._allHeroes.FirstOrDefault(a => a.Id == id);
+        return globalFunctionsProviderCache.BaseHeroes.FirstOrDefault(a => a.Id == id);
+    }
+
+    Task IGameData.LoadGameData(CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    DtoBaseHero IGameData.GetHeroById(int id)
+    {
+        throw new NotImplementedException();
     }
 }

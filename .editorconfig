@@ -5,7 +5,7 @@ root = true  # Указывает, что это корневой файл ко�
 
 [*.cs]  # Применяет настройки ко всем C# файлам
 csharp_style_namespace_declarations = file_scoped:suggestion
-dotnet_diagnostic.CS1591.severity = warning
+dotnet_diagnostic.CS1591.severity = none
 
 # Общие настройки
 charset = utf-8  # Использовать кодировку UTF-8
@@ -39,6 +39,7 @@ dotnet_naming_style.uppercase_with_underscores.word_separator = _  # Разде�
 
 # Документация
 dotnet_style_require_documentation_comments = public:warning  # Требовать комментарии документации для публичных членов
+
 dotnet_diagnostic.SA1600.severity = warning  # Каждый элемент должен иметь XML-комментарий
 dotnet_diagnostic.SA1604.severity = warning  # Комментарий должен содержать тег <summary>
 dotnet_diagnostic.SA1611.severity = warning  # Требуется <param> для всех параметров

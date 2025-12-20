@@ -2,12 +2,12 @@ using General;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using NpgsqlTypes;
 using Server.Jwt_NS;
 using Server.Utilities;
+using Server_DB_Postgres;
 using Server_DB_Postgres.Entities.Users;
-using Server_DB_Postgres.Repositories;
 using System.Net;
 using System.Text.Json.Nodes;
 using L = General.LocalizationKeys;
@@ -18,33 +18,29 @@ namespace Server.Http_NS.Controllers_NS.Users_NS;
 /// Контроллер аутентификации пользователей. Обрабатывает процесс входа (логин) по email и паролю.
 /// При успешной проверке возвращает JWT-токен доступа.
 /// </summary>
-public class AuthenticationController(UserRepository userRepository, JwtService jwtService, ILogger<AuthenticationController> logger,
-    IMemoryCache memoryCache, BackgroundLoggerAuthentificationService backgroundLoggerAuthentificationService) : ControllerBaseApi
+public class AuthenticationController(JwtService jwtService, ILogger<AuthenticationController> logger,
+    IMemoryCache memoryCache, BackgroundLoggerAuthentificationService backgroundLoggerAuthentificationService, DbContext_Game dbContext) : ControllerBaseApi
 {
-    private readonly UserRepository _userRepository = userRepository;
-    private readonly JwtService _jwtService = jwtService;
-    private readonly ILogger<AuthenticationController> _logger = logger;
-    private readonly IMemoryCache _memoryCache = memoryCache;
-    private readonly BackgroundLoggerAuthentificationService _backgroundLoggerAuthentificationService = backgroundLoggerAuthentificationService;
 
     /// <summary>
     /// Время блокировки учётной записи при превышении допустимого количества неудачных попыток входа.
     /// </summary>
     private static readonly TimeSpan LockoutPeriod = TimeSpan.FromMinutes(2);
 
+
+    private static readonly Random _randomDelay = new();
+
     /// <summary>
     /// Основной метод аутентификации: принимает email и пароль, проверяет учётные данные,
     /// при успехе возвращает JWT-токен. Доступ разрешён без авторизации.
     /// </summary>
     /// <returns>JWT-токен при успешной аутентификации или соответствующий код ошибки.</returns>
-    [AllowAnonymous]
-    [EnableRateLimiting("login")]
-    [HttpPost]
+    [AllowAnonymous, HttpPost, EnableRateLimiting(Consts.RATE_LIMITER_POLICY_AUTH)]
     public async Task<IActionResult> Main()
     {
         // Проверка, что запрос содержит JSON.
         // Ожидается application/json, иначе — ошибка формата.
-        if (Request.ContentType?.StartsWith(General.G.APPLICATION_JSON) != true)
+        if (Request.ContentType?.StartsWith(G.APPLICATION_JSON) != true || !Request.HasJsonContentType())
         {
             return BadRequestInvalidResponse();
         }
@@ -56,6 +52,7 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
         {
             return BadRequestAuthInvalidCredentials();
         }
+
 
 
         // Извлечение и валидация email.
@@ -72,16 +69,20 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
             LoggingAuthentification(false, jsonObject, null, null);
             // Увеличиваем счётчик неудачных попыток
             IncrementFailedLoginAttempt(email);
+
             return BadRequestAuthInvalidCredentials();
         }
+
 
         // Проверка формата email
         if (!email.IsEmail())
         {
             LoggingAuthentification(false, jsonObject, email, null);
             IncrementFailedLoginAttempt(email);
+
             return BadRequestAuthInvalidCredentials();
         }
+
 
         // Извлечение и валидация пароля
         string password = jsonObject.GetString("password", removeAfterSuccessGetting: true);
@@ -89,32 +90,45 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
         {
             LoggingAuthentification(false, jsonObject, email, null);
             IncrementFailedLoginAttempt(email);
+
             return BadRequestAuthInvalidCredentials();
         }
 
+
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        // ----------------------------------------------------------------------------------------------------------------
+        // Время для проверки блокировки (защита от тайминг-атак)
+        double delaySeconds = _randomDelay.Next(600, 800) / 1000d;
+        DateTimeOffset dtEndCheck = now.AddSeconds(delaySeconds);
+        // ниже перед каждым return вызываем DelayTimingAttack для защиты от тайминг-атак так как тут начинаем читать данные из базы
+
         // Поиск пользователя по email в базе данных
-        User? user = await _userRepository.GetByEmailWithBansAsync(email);
+        User? user = await dbContext.Users.Include(u => u.UserBans.Where(b => b.CreatedAt <= now && (b.ExpiresAt == null || b.ExpiresAt >= now))).AsNoTracking().FirstOrDefaultAsync(u => u.Email != null && EF.Functions.ILike(u.Email, email));
         if (user == null)
         {
             // Даже если пользователь не найден, проверяем лимит запросов
             if (IsRateLimited(email))
             {
+                await DelayTimingAttack(dtEndCheck);
                 return BadRequestEmailRateLimited(email);
             }
 
             // Логируем попытку входа с несуществующим email
             LoggingAuthentification(false, jsonObject, email, null);
             IncrementFailedLoginAttempt(email);
+
+            await DelayTimingAttack(dtEndCheck);
             return BadRequestAuthInvalidCredentials();
         }
 
         // если хеш пароля отсутствует
         if (user.PasswordHash.IsEmpty())
         {
-            //_ = PassHasher.Verify(email, "dummy", "dummy"); // Подмена для симуляции задержки. выполняем фиктивную проверку
             IncrementFailedLoginAttempt(email);
+            await DelayTimingAttack(dtEndCheck);
             return BadRequestAuthInvalidCredentials();
         }
+
 
         // Проверка пароля через хеширование с использованием email как соли
         if (!PassHasher.Verify(email, user.PasswordHash, password))
@@ -126,6 +140,8 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
 
             LoggingAuthentification(false, jsonObject, email, user.Id);
             IncrementFailedLoginAttempt(email);
+
+            await DelayTimingAttack(dtEndCheck);
             return BadRequestAuthInvalidCredentials();
         }
 
@@ -159,25 +175,37 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
 
         if (dtUnban == DateTimeOffset.MaxValue)
         {
+            await DelayTimingAttack(dtEndCheck);
             return BadRequestWithServerError(L.Error.Server.AccountBannedPermanently);
         }
         else
         {
             if (dtUnban > DateTimeOffset.MinValue)
             {
-                BadRequest(new { KEY_LOCALIZATION = L.Error.Server.AccountBannedUntil, DATE_TIME_EXPIRES_AT = $"{dtUnban:yyyy.MM.dd HH:mm:ss} UTC" });
+                _ = BadRequest(new { KEY_LOCALIZATION = L.Error.Server.AccountBannedUntil, DATE_TIME_EXPIRES_AT = $"{dtUnban:yyyy.MM.dd HH:mm:ss} UTC" });
             }
         }
 
 
         // Генерация JWT-токена для пользователя при успешной аутентификации
-        string token = _jwtService.GenerateToken(user.Id);
+        string token = jwtService.GenerateToken(user.Id);
 
         // Логируем успешный вход
         LoggingAuthentification(true, jsonObject, email, user.Id);
 
+        await DelayTimingAttack(dtEndCheck);
         // Возвращаем токен клиенту
         return Ok(new { token });
+    }
+
+
+    private static async Task DelayTimingAttack(DateTimeOffset dtEndCheck_)
+    {
+        TimeSpan timeDelay = dtEndCheck_ - DateTimeOffset.UtcNow;
+        if (timeDelay > TimeSpan.Zero)
+        {
+            await Task.Delay(timeDelay);
+        }
     }
 
     /// <summary>
@@ -203,11 +231,14 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
         try
         {
             _ = obj.Remove("password");
-            _backgroundLoggerAuthentificationService.EnqueueLog(authorizationSuccess, obj, email, userId, GetClientIpAddress());
+            backgroundLoggerAuthentificationService.EnqueueLog(authorizationSuccess, obj, email, userId, GetClientIpAddress());
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Не удалось записать лог успешного входа для пользователя {UserId} (email: {Email})", userId, email);
+            if (logger.IsEnabled(LogLevel.Warning))
+            {
+                logger.LogWarning(ex, "Не удалось записать лог успешного входа для пользователя {UserId} (email: {Email})", userId, email);
+            }
         }
     }
 
@@ -243,7 +274,7 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
         DateTimeOffset now = DateTimeOffset.UtcNow;
         DateTimeOffset expiresAt = now + LockoutPeriod;
 
-        LoginAttempt? attempt = _memoryCache.GetOrCreate(key, entry =>
+        LoginAttempt? attempt = memoryCache.GetOrCreate(key, entry =>
         {
             entry.AbsoluteExpiration = expiresAt;
             return new LoginAttempt(1, expiresAt);
@@ -254,7 +285,7 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
             ExpiresAt: expiresAt
         );
 
-        _ = _memoryCache.Set(key, updated, LockoutPeriod);
+        _ = memoryCache.Set(key, updated, LockoutPeriod);
     }
 
     /// <summary>
@@ -269,7 +300,7 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
         }
 
         string key = $"login-attempts:{email.ToLowerInvariant()}";
-        _memoryCache.Remove(key);
+        memoryCache.Remove(key);
     }
 
     /// <summary>
@@ -280,7 +311,7 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
     private bool IsRateLimited(string email)
     {
         string cacheKey = $"login-attempts:{email.ToLowerInvariant()}";
-        return _memoryCache.TryGetValue(cacheKey, out LoginAttempt? attempt) && attempt != null && attempt.Count >= Consts.MAX_LOGIN_ATTEMPTS && attempt.ExpiresAt > DateTimeOffset.UtcNow;
+        return memoryCache.TryGetValue(cacheKey, out LoginAttempt? attempt) && attempt != null && attempt.Count >= Consts.MAX_LOGIN_ATTEMPTS && attempt.ExpiresAt > DateTimeOffset.UtcNow;
     }
 
     /// <summary>
@@ -291,7 +322,7 @@ public class AuthenticationController(UserRepository userRepository, JwtService 
     private long GetRemainingLockoutTime(string email)
     {
         string cacheKey = $"login-attempts:{email.ToLowerInvariant()}";
-        return _memoryCache.TryGetValue(cacheKey, out LoginAttempt? attempt) && attempt != null && attempt.ExpiresAt > DateTimeOffset.UtcNow
+        return memoryCache.TryGetValue(cacheKey, out LoginAttempt? attempt) && attempt != null && attempt.ExpiresAt > DateTimeOffset.UtcNow
             ? (long)Math.Max(0, Math.Ceiling((attempt.ExpiresAt - DateTimeOffset.UtcNow).TotalSeconds))
             : 0;
     }

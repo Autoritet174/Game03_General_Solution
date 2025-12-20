@@ -148,19 +148,23 @@ public static partial class StringExt
     public static string ToPascalCase(this string? input, bool preserveUnderscores = false, bool keepOriginalAcronyms = false)
     {
         if (string.IsNullOrWhiteSpace(input))
+        {
             return string.Empty;
+        }
 
         // Если нужно сохранить подчеркивания
         if (preserveUnderscores)
         {
             var result = new StringBuilder();
-            var wordsAndSeparators = WordSplitWithUnderscoresRegex.Split(input);
+            string[] wordsAndSeparators = WordSplitWithUnderscoresRegex.Split(input);
 
             for (int i = 0; i < wordsAndSeparators.Length; i++)
             {
-                var part = wordsAndSeparators[i];
+                string part = wordsAndSeparators[i];
                 if (string.IsNullOrEmpty(part))
+                {
                     continue;
+                }
 
                 // Проверяем, является ли часть разделителем
                 if (part.Length == 1 && (part[0] == '_' || part[0] == '-' || char.IsWhiteSpace(part[0])))
@@ -168,12 +172,12 @@ public static partial class StringExt
                     // Сохраняем только подчеркивания
                     if (part[0] == '_')
                     {
-                        result.Append('_');
+                        _ = result.Append('_');
                     }
                     // Дефисы и пробелы заменяем на подчеркивания
                     else if (part[0] == '-' || char.IsWhiteSpace(part[0]))
                     {
-                        result.Append('_');
+                        _ = result.Append('_');
                     }
                     continue;
                 }
@@ -181,16 +185,16 @@ public static partial class StringExt
                 // Обработка слова
                 if (keepOriginalAcronyms && IsAllUpper(part))
                 {
-                    result.Append(part);
+                    _ = result.Append(part);
                 }
                 else
                 {
                     if (part.Length > 0)
                     {
-                        result.Append(char.ToUpperInvariant(part[0]));
+                        _ = result.Append(char.ToUpperInvariant(part[0]));
                         if (part.Length > 1)
                         {
-                            result.Append(part.Substring(1).ToLowerInvariant());
+                            _ = result.Append(part[1..].ToLowerInvariant());
                         }
                     }
                 }
@@ -201,24 +205,26 @@ public static partial class StringExt
         else
         {
             // Старая логика без сохранения подчеркиваний
-            var words = WordSplitRegex.Split(input);
+            string[] words = WordSplitRegex.Split(input);
             var result = new StringBuilder();
 
-            foreach (var word in words)
+            foreach (string? word in words)
             {
                 if (string.IsNullOrWhiteSpace(word))
+                {
                     continue;
+                }
 
                 if (keepOriginalAcronyms && IsAllUpper(word))
                 {
-                    result.Append(word);
+                    _ = result.Append(word);
                 }
                 else
                 {
-                    result.Append(char.ToUpperInvariant(word[0]));
+                    _ = result.Append(char.ToUpperInvariant(word[0]));
                     if (word.Length > 1)
                     {
-                        result.Append(word.Substring(1).ToLowerInvariant());
+                        _ = result.Append(word[1..].ToLowerInvariant());
                     }
                 }
             }
@@ -239,20 +245,24 @@ public static partial class StringExt
     public static string ToCamelCase(this string? input, bool keepOriginalAcronyms = false, bool preserveUnderscores = true)
     {
         if (string.IsNullOrWhiteSpace(input))
+        {
             return string.Empty;
+        }
 
         // Если нужно сохранить подчеркивания
         if (preserveUnderscores)
         {
             var result = new StringBuilder();
-            var wordsAndSeparators = WordSplitWithUnderscoresRegex.Split(input);
-            var isFirstWord = true;
+            string[] wordsAndSeparators = WordSplitWithUnderscoresRegex.Split(input);
+            bool isFirstWord = true;
 
             for (int i = 0; i < wordsAndSeparators.Length; i++)
             {
-                var part = wordsAndSeparators[i];
+                string part = wordsAndSeparators[i];
                 if (string.IsNullOrEmpty(part))
+                {
                     continue;
+                }
 
                 // Проверяем, является ли часть разделителем
                 if (part.Length == 1 && (part[0] == '_' || part[0] == '-' || char.IsWhiteSpace(part[0])))
@@ -260,12 +270,12 @@ public static partial class StringExt
                     // Сохраняем только подчеркивания
                     if (part[0] == '_')
                     {
-                        result.Append('_');
+                        _ = result.Append('_');
                     }
                     // Дефисы и пробелы заменяем на подчеркивания
                     else if (part[0] == '-' || char.IsWhiteSpace(part[0]))
                     {
-                        result.Append('_');
+                        _ = result.Append('_');
                     }
                     continue;
                 }
@@ -273,21 +283,21 @@ public static partial class StringExt
                 // Обработка слова
                 if (isFirstWord)
                 {
-                    result.Append(part.ToLowerInvariant());
+                    _ = result.Append(part.ToLowerInvariant());
                     isFirstWord = false;
                 }
                 else if (keepOriginalAcronyms && IsAllUpper(part))
                 {
-                    result.Append(part);
+                    _ = result.Append(part);
                 }
                 else
                 {
                     if (part.Length > 0)
                     {
-                        result.Append(char.ToUpperInvariant(part[0]));
+                        _ = result.Append(char.ToUpperInvariant(part[0]));
                         if (part.Length > 1)
                         {
-                            result.Append(part.Substring(1).ToLowerInvariant());
+                            _ = result.Append(part[1..].ToLowerInvariant());
                         }
                     }
                 }
@@ -298,30 +308,32 @@ public static partial class StringExt
         else
         {
             // Старая логика без сохранения подчеркиваний
-            var words = WordSplitRegex.Split(input);
+            string[] words = WordSplitRegex.Split(input);
             var result = new StringBuilder();
-            var isFirstWord = true;
+            bool isFirstWord = true;
 
-            foreach (var word in words)
+            foreach (string? word in words)
             {
                 if (string.IsNullOrWhiteSpace(word))
+                {
                     continue;
+                }
 
                 if (isFirstWord)
                 {
-                    result.Append(word.ToLowerInvariant());
+                    _ = result.Append(word.ToLowerInvariant());
                     isFirstWord = false;
                 }
                 else if (keepOriginalAcronyms && IsAllUpper(word))
                 {
-                    result.Append(word);
+                    _ = result.Append(word);
                 }
                 else
                 {
-                    result.Append(char.ToUpperInvariant(word[0]));
+                    _ = result.Append(char.ToUpperInvariant(word[0]));
                     if (word.Length > 1)
                     {
-                        result.Append(word.Substring(1).ToLowerInvariant());
+                        _ = result.Append(word[1..].ToLowerInvariant());
                     }
                 }
             }

@@ -2,7 +2,6 @@ using Game03Client.GameData;
 using Game03Client.HttpRequester;
 using Game03Client.Logger;
 using General;
-using General.GameEntities;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -44,40 +43,63 @@ internal class PlayerCollectionProvider(PlayerCollectionCache _collectionCache, 
             return false;
         }
 
-        JToken? heroes = jObject["heroes"];
-        if (heroes == null)
-        {
-            Log("heroes == null");
-            return false;
-        }
-
         // герои
-        _collectionCache.listHero.Clear();
-        foreach (JToken h in heroes)
+        JToken? heroes = jObject["heroes"];
+        if (heroes != null)
         {
-            string id = h["_id"].GetString();
-            Guid owner_id = h["OwnerId"].GetGuid();
-            int hero_id = h["HeroId"].GetInt();
-            string group_name = h["GroupName"].GetString();
-            long health = h["Health"].GetLong();
-            long attack = h["Attack"].GetLong();
-            long strength = h["Str"].GetLong();
-            long agility = h["Agi"].GetLong();
-            long intelligence = h["Int"].GetLong();
-            long haste = h["Haste"].GetLong();
-            int level = h["Level"].GetInt();
+            _collectionCache.listHero.Clear();
+            foreach (JToken a in heroes)
+            {
+                Guid id = a["id"].GetGuid();
+                Guid userId = a["userId"].GetGuid();
+                int baseHeroId = a["baseHeroId"].GetInt();
+                string groupName = a["groupName"].GetString();
+                int rarity = a["rarity"].GetInt();
+                long health = a["health"].GetLong();
+                long attack = a["attack"].GetLong();
+                int strength = a["strength"].GetInt();
+                int agility = a["agility"].GetInt();
+                int intelligence = a["intelligence"].GetInt();
+                int haste = a["haste"].GetInt();
+                int level = a["level"].GetInt();
+                long experience = a["experience"].GetInt();
 
 
-            CollectionHero cHero = new(id, owner_id, _gameData.GetHeroById(hero_id), group_name, health, attack,
-                strength, agility, intelligence, haste, level);
-            _collectionCache.listHero.Add(cHero);
+                DtoCollectionHero cHero = new(id, userId, _gameData.GetHeroById(baseHeroId), groupName, rarity, health, attack,
+                    strength, agility, intelligence, haste, level, experience);
+                _collectionCache.listHero.Add(cHero);
+            }
+            RefreshListGroupName();
         }
-        RefreshListGroupName();
-
 
         // экипировка
+        JToken? equipment = jObject["equipment"];
+        if (equipment != null)
+        {
+            _collectionCache.listEquipment.Clear();
+            foreach (JToken a in equipment)
+            {
+                Guid id = a["id"].GetGuid();
+                Guid userId = a["userId"].GetGuid();
+                int baseEquipmentId = a["baseEquipmentId"].GetInt();
+                string groupName = a["groupName"].GetString();
+                int rarity = a["rarity"].GetInt();
+                long health = a["health"].GetLong();
+                long attack = a["attack"].GetLong();
+                int strength = a["strength"].GetInt();
+                int agility = a["agility"].GetInt();
+                int intelligence = a["intelligence"].GetInt();
+                int haste = a["haste"].GetInt();
+                int level = a["level"].GetInt();
+                //long experience = a["experience"].GetInt();
 
 
+                DtoCollectionEquipment cEquipment = new(id, userId, _gameData.GetHeroById(baseHeroId), groupName, rarity, health, attack,
+                    strength, agility, intelligence, haste, level, experience);
+                _collectionCache.listEquipment.Add(cEquipment);
+            }
+            RefreshListGroupName();
+        }
 
         return true;
     }
@@ -88,7 +110,7 @@ internal class PlayerCollectionProvider(PlayerCollectionCache _collectionCache, 
         List<string> list = _collectionCache.listHeroGroupName;
         list.Clear();
         list.Add(string.Empty); // группа по умолчанию
-        foreach (CollectionHero hero in _collectionCache.listHero)
+        foreach (DtoCollectionHero hero in _collectionCache.listHero)
         {
             string group_name = hero.GroupName;
             if (!list.Contains(group_name))
@@ -98,11 +120,12 @@ internal class PlayerCollectionProvider(PlayerCollectionCache _collectionCache, 
         }
     }
 
-    public IEnumerable<CollectionHero> GetCollectionHeroesFromCache()
+    public IEnumerable<DtoCollectionHero> GetCollectionHeroesFromCache()
     {
         return _collectionCache.listHero;
     }
-    public int GetCountHeroes() {
+    public int GetCountHeroes()
+    {
         return _collectionCache.listHero.Count;
     }
 
@@ -110,19 +133,31 @@ internal class PlayerCollectionProvider(PlayerCollectionCache _collectionCache, 
     /// Получить коллекцию героев сгруппированную по именам групп.
     /// </summary>
     /// <returns></returns>
-    public IEnumerable<GroupHeroes> GetCollectionHeroesGroupByGroups()
+    public IEnumerable<GroupCollectionElement> GetCollectionHeroesGroupedByGroupNames()
     {
-        List<GroupHeroes> result = [];
+        List<GroupCollectionElement> result = [];
         foreach (string groupName in _collectionCache.listHeroGroupName)
         {
-            GroupHeroes groupHeroes = new(groupName,
-                _collectionCache.listHero.Where(a => a.GroupName == groupName).OrderByDescending(a => a.HeroBase.Rarity).ThenBy(a => a.Level).ThenBy(a => a.HeroBase.Name));
-            result.Add(groupHeroes);
+            IOrderedEnumerable<DtoCollectionHero> heroes = _collectionCache.listHero.Where(a => a.GroupName == groupName).OrderByDescending(a => a.Rarity).ThenBy(a => a.Level).ThenBy(a => a.HeroBase.Name);
+
+            List<CollectionElement> collectionElements = [];
+            foreach (DtoCollectionHero? hero in heroes)
+            {
+                collectionElements.Add(new CollectionElement(hero.Id, hero.HeroBase.Id, hero.Rarity, hero.HeroBase.Name, "hero"));
+            }
+
+            GroupCollectionElement groupCollectionElement = new(groupName, collectionElements);
+            result.Add(groupCollectionElement);
             if (groupName == string.Empty)
             {
-                groupHeroes.Priority = -1;
+                groupCollectionElement.Priority = -1;
             }
         }
-        return result.OrderByDescending(a=>a.Priority);
+        return result.OrderByDescending(a => a.Priority);
     }
+
+    //public IEnumerable<GroupCollectionElement> GetCollectionHeroesGroupByGroups()
+    //{
+    //    throw new NotImplementedException();
+    //}
 }

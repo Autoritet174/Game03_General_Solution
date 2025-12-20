@@ -2,7 +2,9 @@ using Newtonsoft.Json;
 using Server_DB_Postgres.Entities.GameData;
 using Server_DB_Postgres.Entities.Users;
 using Server_DB_Postgres.Interfaces;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using static Server_DB_Postgres.Attributes;
 
 namespace Server_DB_Postgres.Entities.Collection;
 
@@ -34,11 +36,27 @@ public class Hero : IVersion, ICreatedAt, IUpdatedAt
     [ForeignKey(nameof(BaseHeroId))]
     public BaseHero? BaseHero { get; set; }
 
+    /// <summary> Имя группы. </summary>
+    [MaxLength(255)]
+    public string? GroupName { get; set;}
+
+    /// <summary> Редкость. </summary>
+    [HasDefaultValue(1)]
+    public int Level { get; set; } = 1;
+
+    /// <summary> Текущий опыт. </summary>
+    [HasDefaultValue(0)]
+    public long ExperienceNow { get; set; } = 0;
+
+    /// <summary> Редкость. </summary>
+    [HasDefaultValue(1)]
+    public int Rarity { get; set; } = 1;
+
     /// <summary> Здоровье. </summary>
-    public int Health { get; set; }
+    public long Health { get; set; }
 
     /// <summary> Атака. </summary>
-    public int Attack { get; set; }
+    public long Attack { get; set; }
 
     /// <summary> Сила. </summary>
     public int Strength { get; set; }

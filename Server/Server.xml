@@ -38,56 +38,9 @@
             <param name="path">Путь к значению в формате JSONPath (например: "$.user.name")</param>
             <returns>Значение как строка, если оно существует и может быть преобразовано в строку; иначе <c>null</c>.</returns>
         </member>
-        <member name="T:Server.GameDataCache.IHeroCacheService">
-            <summary>
-            Интерфейс сервиса кэширования данных о героях.
-            </summary>
-        </member>
-        <member name="P:Server.GameDataCache.IHeroCacheService.HeroesJson">
-            <summary>
-            JSON-строка со всеми героями.
-            </summary>
-        </member>
-        <member name="M:Server.GameDataCache.IHeroCacheService.InitializeAsync(System.IServiceProvider)">
-            <summary>
-            Инициализирует кэш данных о героях.
-            </summary>
-            <param name="serviceProvider">Провайдер служб для получения зависимостей.</param>
-        </member>
-        <member name="T:Server.GameDataCache.HeroesCacheService">
-            <summary>
-            Сервис для кэширования данных о героях в формате JSON.
-            </summary>
-        </member>
-        <member name="M:Server.GameDataCache.HeroesCacheService.#ctor(Microsoft.Extensions.Logging.ILogger{Server.GameDataCache.HeroesCacheService})">
-            <summary>
-            Сервис для кэширования данных о героях в формате JSON.
-            </summary>
-        </member>
-        <member name="F:Server.GameDataCache.HeroesCacheService._logger">
-            <summary>
-            Логгер для записи событий сервиса.
-            </summary>
-        </member>
-        <member name="F:Server.GameDataCache.HeroesCacheService._json">
-            <summary>
-            Кэшированная JSON-строка с данными о героях.
-            </summary>
-        </member>
-        <member name="M:Server.GameDataCache.HeroesCacheService.InitializeAsync(System.IServiceProvider)">
-            <summary>
-            Инициализирует кэш, загружая данные о героях из базы данных.
-            </summary>
-            <param name="serviceProvider">Провайдер служб для создания scope и получения DbContext.</param>
-            <exception cref="T:System.InvalidOperationException">
-            Возникает при невозможности получить DbContext из serviceProvider.
-            </exception>
-        </member>
-        <member name="P:Server.GameDataCache.HeroesCacheService.HeroesJson">
-            <summary>
-            Возвращает JSON-строку с данными о героях.
-            </summary>
-            <returns>JSON-строка со всеми героями.</returns>
+        <member name="P:Server.GameDataCache.GameDataCacheService.GameDataJson">
+            <summary> Возвращает JSON-строку с данными. </summary>
+            <returns> JSON-строка со всеми константными игровыми данными необходимыми на стороне клиента. </returns>
             <exception cref="T:System.InvalidOperationException">
             Возникает, если кэш не был инициализирован.
             </exception>
@@ -109,7 +62,7 @@
         <member name="M:Server.Http_NS.Controllers_NS.Collection_NS.CollectionController.#ctor(Server_DB_Postgres.DbContext_Game)">
             <summary> Контроллер для управления коллекциями пользователя. </summary>
         </member>
-        <member name="M:Server.Http_NS.Controllers_NS.Collection_NS.CollectionController.All">
+        <member name="M:Server.Http_NS.Controllers_NS.Collection_NS.CollectionController.GetAllCollection">
             <summary> Получает коллекцию текущего пользователя. </summary>
         </member>
         <member name="T:Server.Http_NS.Controllers_NS.ControllerBaseApi">
@@ -152,17 +105,14 @@
             </summary>
             <param name="heroCache"></param>
         </member>
-        <member name="M:Server.Http_NS.Controllers_NS.GeneralController.#ctor(Server.GameDataCache.IHeroCacheService)">
+        <member name="M:Server.Http_NS.Controllers_NS.GeneralController.#ctor(Server.GameDataCache.IGameDataCacheService)">
             <summary>
             Контроллер с общими методами.
             </summary>
             <param name="heroCache"></param>
         </member>
-        <member name="M:Server.Http_NS.Controllers_NS.GeneralController.ListAllHeroes">
-            <summary>
-            Возвращает в ответе список всех героев.
-            </summary>
-            <returns></returns>
+        <member name="M:Server.Http_NS.Controllers_NS.GeneralController.GameData">
+            <summary> Возвращает в ответе список всех константных игровых данных нужных на клиенте игры. </summary>
         </member>
         <member name="T:Server.Http_NS.Controllers_NS.Http_Tests.TestController">
             <summary>
@@ -192,7 +142,7 @@
             При успешной проверке возвращает JWT-токен доступа.
             </summary>
         </member>
-        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController.#ctor(Server_DB_Postgres.Repositories.UserRepository,Server.Jwt_NS.JwtService,Microsoft.Extensions.Logging.ILogger{Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController},Microsoft.Extensions.Caching.Memory.IMemoryCache,Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService)">
+        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController.#ctor(Server.Jwt_NS.JwtService,Microsoft.Extensions.Logging.ILogger{Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController},Microsoft.Extensions.Caching.Memory.IMemoryCache,Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService,Server_DB_Postgres.DbContext_Game)">
             <summary>
             Контроллер аутентификации пользователей. Обрабатывает процесс входа (логин) по email и паролю.
             При успешной проверке возвращает JWT-токен доступа.
@@ -582,65 +532,6 @@
             <returns>
             Булево значение или <c>null</c>, если ключ не найден, значение <c>null</c> или не удаётся интерпретировать.
             </returns>
-        </member>
-        <member name="T:Server.Utilities.PassHasher">
-            <summary>
-            Предоставляет утилиты для хеширования и верификации паролей.
-            </summary>
-            <remarks>
-            Класс использует <see cref="T:Microsoft.AspNetCore.Identity.PasswordHasher`1"/> из ASP.NET Core Identity
-            для безопасного хеширования паролей с использованием современных алгоритмов.
-            </remarks>
-        </member>
-        <member name="M:Server.Utilities.PassHasher.Create(System.String,System.String)">
-            <summary>
-            Создает хеш пароля для указанного пользователя.
-            </summary>
-            <param name="user">Идентификатор пользователя или любая строка, связанная с пользователем.
-            Используется для добавления соли (salt) к хешу.</param>
-            <param name="password">Пароль в открытом виде, который необходимо захэшировать.</param>
-            <returns>Хешированная версия пароля, готовая для безопасного хранения.</returns>
-            <remarks>
-            Метод использует стандартный алгоритм хеширования ASP.NET Core Identity,
-            который включает соль (salt) и может автоматически обновлять алгоритмы при необходимости.
-            </remarks>
-            <example>
-            <code>
-            string userId = "user123";
-            string password = "MySecurePassword123";
-            string hashedPassword = PassHasher.Create(userId, password);
-            // Сохранить hashedPassword в базу данных
-            </code>
-            </example>
-        </member>
-        <member name="M:Server.Utilities.PassHasher.Verify(System.String,System.String,System.String)">
-            <summary>
-            Проверяет, соответствует ли предоставленный пароль хранимому хешу.
-            </summary>
-            <param name="user">Идентификатор пользователя или строка, использованная при создании хеша.</param>
-            <param name="hashedPassword">Хранимый хеш пароля из базы данных.</param>
-            <param name="providedPassword">Пароль, предоставленный пользователем для проверки.</param>
-            <returns>
-            <c>true</c>, если предоставленный пароль соответствует хешу; в противном случае <c>false</c>.
-            </returns>
-            <remarks>
-            Метод выполняет безопасное сравнение паролей, устойчивое к атакам по времени.
-            Автоматически определяет и поддерживает различные версии алгоритмов хеширования,
-            что позволяет обновлять старые хеши при следующем успешном входе пользователя.
-            </remarks>
-            <example>
-            <code>
-            string userId = "user123";
-            string storedHash = "..."; // Из базы данных
-            string userInput = "MySecurePassword123";
-            
-            bool isValid = PassHasher.Verify(userId, storedHash, userInput);
-            if (isValid)
-            {
-                // Пароль верный
-            }
-            </code>
-            </example>
         </member>
         <member name="T:Server.WebSocket_NS.WebSocketConnection">
             <summary>
