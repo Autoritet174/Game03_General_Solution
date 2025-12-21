@@ -40,21 +40,10 @@
             </remarks>
             <param name="options">Настройки контекста, сформированные в Program.cs.</param>
         </member>
-        <member name="M:Server_DB_Postgres.DbContext_Game.Init(System.String)">
-            <summary>
-            Инициализация.
-            </summary>
-            <param name="connectionString"></param>
-        </member>
         <member name="M:Server_DB_Postgres.DbContext_Game.ThrowIfFailureConnection">
             <summary> Статический метод для проверки подключения к базе данных.
             Строка подключения передается из Program.cs. </summary>
             <exception cref="T:System.Exception">Генерирует исключение в случае ошибки подключения.</exception>
-        </member>
-        <member name="M:Server_DB_Postgres.DbContext_Game.Create(System.String)">
-            <summary> Создаёт новый экземпляр <see cref="T:Server_DB_Postgres.DbContext_Game"/> с указанной строкой подключения. </summary>
-            <param name="connectionString">Строка подключения к базе данных PostgreSQL.</param>
-            <returns>Новый экземпляр <see cref="T:Server_DB_Postgres.DbContext_Game"/>, сконфигурированный для работы с базой данных. </returns>
         </member>
         <member name="M:Server_DB_Postgres.DbContext_Game.Create">
             <summary> Создаёт новый экземпляр <see cref="T:Server_DB_Postgres.DbContext_Game"/> со строкой подключения по умолчанию. </summary>
@@ -373,7 +362,7 @@
             <summary> Экипировка, слот 24. </summary>
         </member>
         <member name="T:Server_DB_Postgres.Entities.GameData.BaseEquipment">
-            <summary> Экипировка. Базовые болванки. </summary>
+            <summary> Экипировка. Базовые болванки. Мечи, топоры, шлемы, щиты, кольцо, браслеты, амулеты и так далее. </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.GameData.BaseEquipment.Id">
             <summary> Уникальный идентификатор. </summary>
@@ -386,9 +375,6 @@
         </member>
         <member name="P:Server_DB_Postgres.Entities.GameData.BaseEquipment.IsUnique">
             <summary> Уникальный для одного аккаунта. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.BaseEquipment.Damage">
-            <summary> Урон. Формат DND кубиков, 2d2. </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.GameData.BaseEquipment.EquipmentTypeId">
             <summary> Идентификатор EquipmentType. </summary>
@@ -486,14 +472,14 @@
         <member name="P:Server_DB_Postgres.Entities.GameData.EquipmentType.CanCraftJewelcrafting">
             <summary> Можно создать через "Ювелирное дело". </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.EquipmentType.Attack">
-            <summary> Атака оружия в виде DND Dice, вычисляется при дропе и фиксируется на экземпляре. </summary>
-        </member>
         <member name="P:Server_DB_Postgres.Entities.GameData.EquipmentType.SpendActionPoints">
             <summary> Трата очков действия за удар. </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.GameData.EquipmentType.BlockOtherHand">
             <summary> Блокирует ли оружие другую руку, если это оружие. </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.GameData.EquipmentType.Health">
+            <summary> Атака оружия в виде DND Dice, вычисляется при дропе и фиксируется на экземпляре. </summary>
         </member>
         <member name="T:Server_DB_Postgres.Entities.GameData.MaterialDamagePercent">
             <summary> Коэфициенты урона для материалов. </summary>
@@ -860,6 +846,42 @@
             <inheritdoc />
         </member>
         <member name="M:Server_DB_Postgres.Migrations.Fix7.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Fix8">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix8.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix8.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix8.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Fix9">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix9.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix9.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix9.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Fix10">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix10.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix10.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix10.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Server_DB_Postgres.ModelBuilderExt">

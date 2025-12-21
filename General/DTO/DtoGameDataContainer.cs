@@ -9,9 +9,7 @@ namespace General.DTO;
 /// </summary>
 public class DtoGameDataContainer(List<DtoBaseHero> BaseHeroes, List<DtoSlotType> SlotTypes)
 {
-    [JsonProperty("baseHeroes")]
     public List<DtoBaseHero> BaseHeroes { get; } = BaseHeroes;
 
-    [JsonProperty("slotTypes")]
     public List<DtoSlotType> SlotTypes { get; } = SlotTypes;
 }

@@ -1,3 +1,4 @@
+using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -51,9 +52,6 @@ public class EquipmentType
     [HasDefaultValue(false)]
     public bool CanCraftJewelcrafting { get; set; } = false;
 
-    /// <summary> Атака оружия в виде DND Dice, вычисляется при дропе и фиксируется на экземпляре. </summary>
-    [MaxLength(255)]
-    public string? Attack { get; set; }
 
     /// <summary> Трата очков действия за удар. </summary>
     [HasDefaultValue(0)]
@@ -61,4 +59,13 @@ public class EquipmentType
 
     /// <summary> Блокирует ли оружие другую руку, если это оружие. </summary>
     public bool? BlockOtherHand { get; set; }
-    }
+
+    // --------------Характеристики оружия----------------
+
+    /// <summary> Атака оружия в виде DND Dice, вычисляется при дропе и фиксируется на экземпляре. </summary>
+    [Column(TypeName = "jsonb")]
+    public Dice? Health { get; set; }
+
+    [Column(TypeName = "jsonb")]
+    public Dice? Damage { get; set; }
+}

@@ -1,8 +1,11 @@
+using General.DTO;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Npgsql;
 using Serilog;
 using Serilog.Events;
 using Server.GameDataCache;
@@ -130,12 +133,22 @@ internal partial class Program
         _ = services.AddScoped<UserRepository>();
 
 
-        // База данных с игровыми данными
-        string сonnectionString = builder.Configuration.GetConnectionString("Postgres")
-            ?? throw new InvalidOperationException("Строка подключения 'Postgres' не найдена.");
-        _ = services.AddDbContext<DbContext_Game>(options => options.UseNpgsql(сonnectionString));
-        _ = services.AddScoped<CollectionHeroRepository>();
+        string connectionString = builder.Configuration.GetConnectionString("Postgres") ?? throw new InvalidOperationException("Строка подключения 'Postgres' не найдена.");
+        //var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);// 1. Создаем источник данных
+        //_ = dataSourceBuilder.MapComposite<Dice>("server.dice");// 2. Явно мапим C# тип на существующий в базе тип
+        //using NpgsqlDataSource dataSource = dataSourceBuilder.Build();// 3. Строим источник
+        //_ = services.AddDbContext<DbContext_Game>(options => options.UseNpgsql(dataSource));// 4. Передаем его в DbContext
 
+        
+
+        // База данных с игровыми данными
+        DbContext_Game.Init(connectionString);// Инициализация NpgsqlDataSource с поддержкой Newtonsoft.Json
+        
+        //builder.Services.AddDbContext<DbContext_Game>(DbContext_Game.getop);// Настройка для использования Newtonsoft.Json
+        builder.Services.AddScoped(sp => new DbContext_Game(DbContext_Game.DbContextOptions));
+
+        //_ = services.AddDbContext<DbContext_Game>(options => options.UseNpgsql(connectionString));
+        _ = services.AddScoped<CollectionHeroRepository>();
 
         //// Настройки "MongoDb"
         //IConfigurationSection mongoSection = builder.Configuration.GetSection("MongoDb");
@@ -212,7 +225,7 @@ internal partial class Program
                options.JsonSerializerOptions.DictionaryKeyPolicy = null;
            });
 
-        builder.Services.AddControllers().AddNewtonsoftJson(options =>
+        _ = builder.Services.AddControllers().AddNewtonsoftJson(options =>
         {
             options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
         });
@@ -306,7 +319,8 @@ internal partial class Program
 
         _ = app.UseForwardedHeaders();
 
-        DbContext_Game.Init(сonnectionString);
+
+        //DbContext_Game.InitOptions(connectionString);
 
         using (IServiceScope scope = app.Services.CreateScope())
         {
@@ -323,6 +337,7 @@ internal partial class Program
             //logger.Information("SERVER=MongoDb, DB=UserData, connection is correct");
         }
 
+
         // на этом момент есть гарантия что соединения со всеми СУБД корректно.
 
         // Инициализация кэша до старта
@@ -331,7 +346,7 @@ internal partial class Program
             IGameDataCacheService heroCache = scope.ServiceProvider.GetRequiredService<IGameDataCacheService>();
             heroCache.RefreshGameDataJsonAsync(scope.ServiceProvider).GetAwaiter().GetResult();
         }
-       
+
 
         // СТАРТ
         app.Run();

@@ -19,21 +19,22 @@ public class GameDataCacheService(ILogger<GameDataCacheService> logger) : IGameD
 
     public async Task RefreshGameDataJsonAsync(IServiceProvider serviceProvider)
     {
-        // Создаём временный scope, чтобы безопасно получить DbContext
-        //using IServiceScope scope = serviceProvider.CreateScope();
-        //DbContext_Game _db = scope.ServiceProvider.GetRequiredService<DbContext_Game>();
         var _db = DbContext_Game.Create();
 
-        Task<List<DtoBaseHero>> heroes = _db.BaseHeroes.AsNoTracking().Select(static h =>
-            new DtoBaseHero(h.Id, h.Name, h.Rarity, new Dice(h.Health), new Dice(h.Damage))
-            ).ToListAsync();
+        //Task<List<DtoBaseHero>> heroes = _db.BaseHeroes.AsNoTracking().Select(static h =>
+        //    new DtoBaseHero(h.Id, h.Name, h.Rarity, new Dice(h.Health), new Dice(h.Damage))
+        //    ).ToListAsync();
 
-        Task<List<DtoSlotType>> slotType = _db.SlotTypes.AsNoTracking().Select(static h =>
-           new DtoSlotType(h.Id, h.Name)
-           ).ToListAsync();
+        //Task<List<DtoSlotType>> slotType = _db.SlotTypes.AsNoTracking().Select(static h =>
+        //   new DtoSlotType(h.Id, h.Name)
+        //   ).ToListAsync();
+
+        //Task<List<DtoBaseEquipment>> baseEquipment = _db.BaseEquipments.AsNoTracking().Select(static h =>
+        //   new DtoBaseEquipment(h.Id, h.Name, h.Rarity, h.ma)
+        //   ).ToListAsync();
 
 
-        DtoGameDataContainer container = new(await heroes, await slotType);
+        //DtoGameDataContainer container = new(await heroes, await slotType);
 
         // Настройки сериализации для Newtonsoft.Json
         var settings = new JsonSerializerSettings
@@ -46,7 +47,7 @@ public class GameDataCacheService(ILogger<GameDataCacheService> logger) : IGameD
             NullValueHandling = NullValueHandling.Ignore
         };
 
-        GameDataJson = JsonConvert.SerializeObject(container, settings);
+        //GameDataJson = JsonConvert.SerializeObject(container, settings);
 
         //if (_logger.IsEnabled(LogLevel.Information))
         //{

@@ -1,3 +1,4 @@
+using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -5,7 +6,7 @@ using static Server_DB_Postgres.Attributes;
 
 namespace Server_DB_Postgres.Entities.GameData;
 
-/// <summary> Экипировка. Базовые болванки. </summary>
+/// <summary> Экипировка. Базовые болванки. Мечи, топоры, шлемы, щиты, кольцо, браслеты, амулеты и так далее. </summary>
 [Table("BaseEquipments", Schema = nameof(GameData))]
 [Index(nameof(Name), IsUnique = true)]
 public class BaseEquipment
@@ -24,9 +25,13 @@ public class BaseEquipment
     [HasDefaultValue(false)]
     public bool IsUnique { get; set; }
 
-    /// <summary> Урон. Формат DND кубиков, 2d2. </summary>
-    [MaxLength(255)]
-    public string? Damage { get; set; }
+    /// <summary> Здоровье. Формат DND кубиков, 2d2. </summary>
+    //[MaxLength(255)]
+    //public Dice? Health { get; set; }
+
+    ///// <summary> Урон. Формат DND кубиков, 2d2. </summary>
+    //[MaxLength(255)]
+    //public Dice? Damage { get; set; }
 
     /// <summary> Идентификатор EquipmentType. </summary>
     public int EquipmentTypeId { get; set; }

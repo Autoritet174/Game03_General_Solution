@@ -7,6 +7,7 @@
     <LangVersion>14.0</LangVersion>
 	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	<StartupObject>Server.Program</StartupObject>
+	<UserSecretsId>6780a272-5d1f-45fc-a207-986db0408b3e</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="DataBaseModels\**" />
