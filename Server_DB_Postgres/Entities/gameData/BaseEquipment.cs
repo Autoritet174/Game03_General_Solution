@@ -25,17 +25,13 @@ public class BaseEquipment
     [HasDefaultValue(false)]
     public bool IsUnique { get; set; }
 
-    /// <summary> Здоровье. Формат DND кубиков, 2d2. </summary>
-    //[MaxLength(255)]
-    //public Dice? Health { get; set; }
-
-    ///// <summary> Урон. Формат DND кубиков, 2d2. </summary>
-    //[MaxLength(255)]
-    //public Dice? Damage { get; set; }
-
     /// <summary> Идентификатор EquipmentType. </summary>
     public int EquipmentTypeId { get; set; }
     /// <summary> Сущность EquipmentType. </summary>
     [ForeignKey(nameof(EquipmentTypeId))]
     public EquipmentType? EquipmentTypes { get; set; }
+
+    // --------------Характеристики----------------
+    [Column(TypeName = "jsonb")]
+    public Stats? Stats { get; set; }
 }

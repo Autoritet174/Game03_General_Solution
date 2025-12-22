@@ -1,10 +1,10 @@
-using General.DTO;
 using Game03Client.HttpRequester;
 using Game03Client.Logger;
 using General;
-using Newtonsoft.Json.Linq;
+using General.DTO.Entities;
+using General.DTO.Entities.GameData;
+using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,10 +35,6 @@ internal class GameDataProvider(IHttpRequester httpRequesterProvider, GameDataCa
     }
     #endregion Logger
 
-    public IEnumerable<DtoBaseHero> BaseHeroes => globalFunctionsProviderCache.BaseHeroes;
-    public IEnumerable<DtoSlotType> SlotTypes => globalFunctionsProviderCache.SlotTypes;
-    public IEnumerable<DtoEquipmentType> EquipmentTypes => globalFunctionsProviderCache.EquipmentTypes;
-    public IEnumerable<DtoBaseEquipment> BaseEquipments => globalFunctionsProviderCache.BaseEquipments;
 
     /// <inheritdoc/>
     public async Task LoadGameData(CancellationToken cancellationToken)
@@ -48,52 +44,64 @@ internal class GameDataProvider(IHttpRequester httpRequesterProvider, GameDataCa
             return;
         }
 
-        JObject? jObject = await httpRequesterProvider.GetJObjectAsync(Url.General.GameData, cancellationToken);
-        if (jObject == null)
+        string? response = await httpRequesterProvider.GetResponseAsync(Url.General.GameData, cancellationToken);
+        if (response == null)
         {
             return;
         }
-
-        JToken? heroesToken = jObject["heroes"];
-        if (heroesToken is not JArray heroesArray)
+        DtoContainerGameData? dto_container = JsonConvert.DeserializeObject<DtoContainerGameData>(response);
+        if (dto_container == null)
         {
-            Log("heroesToken is not JArray heroesArray");
             return;
         }
+        DtoContainerGameData c = dto_container;
 
-        List<DtoBaseHero> allHeroes = [];
-        foreach (JObject heroObj in heroesArray.Cast<JObject>())
+        foreach (DtoBaseEquipment i in c.DtoBaseEquipments)
         {
-            JToken? t_id = heroObj["id"];
-            int id = t_id != null ? (int)t_id : 0;
-            string? name = heroObj["name"]?.ToString();
-            if (name == null)
-            {
-                Log("name == null");
-                continue;
-            }
-            float baseHealth = (float)Convert.ToDouble(heroObj["baseHealth"]);
-            float baseAttack = (float)Convert.ToDouble(heroObj["baseAttack"]);
-            int rarity = Convert.ToInt32(heroObj["rarity"]);
-            allHeroes.Add(new BaseHero(id, name, rarity, baseHealth, baseAttack));
+            i.DtoEquipmentType = c.DtoEquipmentTypes.FirstOrDefault(a => a.Id == i.DtoEquipmentTypeId);
         }
+        foreach (DtoEquipmentType i in c.DtoEquipmentTypes)
+        {
+            i.DtoSlotType = c.DtoSlotTypes.FirstOrDefault(a => a.Id == i.DtoSlotTypeId);
+        }
+        foreach (DtoMaterialDamagePercent i in c.DtoMaterialDamagePercents)
+        {
+            i.DtoSmithingMaterial = c.DtoSmithingMaterials.FirstOrDefault(a => a.Id == i.DtoSmithingMaterialId);
+            i.DtoDamageType = c.DtoDamageTypes.FirstOrDefault(a => a.Id == i.DtoDamageTypeId);
+        }
+        globalFunctionsProviderCache.Dto_Container = c;
 
-        globalFunctionsProviderCache.BaseHeroes = allHeroes.AsEnumerable();
+
+
+
+        //JToken? heroesToken = jObject["heroes"];
+        //if (heroesToken is not JArray heroesArray)
+        //{
+        //    Log("heroesToken is not JArray heroesArray");
+        //    return;
+        //}
+
+        //List<DtoBaseHero> allHeroes = [];
+        //foreach (JObject heroObj in heroesArray.Cast<JObject>())
+        //{
+        //    JToken? t_id = heroObj["id"];
+        //    int id = t_id != null ? (int)t_id : 0;
+        //    string? name = heroObj["name"]?.ToString();
+        //    if (name == null)
+        //    {
+        //        Log("name == null");
+        //        continue;
+        //    }
+        //    float baseHealth = (float)Convert.ToDouble(heroObj["baseHealth"]);
+        //    float baseAttack = (float)Convert.ToDouble(heroObj["baseAttack"]);
+        //    int rarity = Convert.ToInt32(heroObj["rarity"]);
+        //    allHeroes.Add(new DtoBaseHero(id, name, rarity,false, 0, null));
+        //}
+
+        //globalFunctionsProviderCache.BaseHeroes = allHeroes.AsEnumerable();
     }
-
-    /// <inheritdoc/>
-    public DtoBaseHero GetHeroById(int id)
+    public DtoContainerGameData GetDtoContainer()
     {
-        return globalFunctionsProviderCache.BaseHeroes.FirstOrDefault(a => a.Id == id);
-    }
-
-    Task IGameData.LoadGameData(CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-
-    DtoBaseHero IGameData.GetHeroById(int id)
-    {
-        throw new NotImplementedException();
+        return globalFunctionsProviderCache.Dto_Container;
     }
 }

@@ -25,6 +25,6 @@ public class MaterialDamagePercent
     public DamageType? DamageType { get; set; }
 
 
-    /// <summary> Урон оружия в процентах. </summary>
+    /// <summary> Усиление урона оружия в процентах сделанного из этого материала. </summary>
     public int Percent { get; set; }
 }

@@ -1,6 +1,7 @@
 using Server_DB_Postgres.Entities.GameData;
 using Server_DB_Postgres.Entities.Users;
 using Server_DB_Postgres.Interfaces;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Server_DB_Postgres.Entities.Collection;
@@ -17,6 +18,10 @@ public class Equipment : IVersion, ICreatedAt, IUpdatedAt
     /// <summary> Сущность <see cref="Users.User"/>. </summary>
     [ForeignKey(nameof(UserId))]
     public User? User { get; set; }
+
+    /// <summary> Имя группы. </summary>
+    [MaxLength(255)]
+    public string? GroupName { get; set; }
 
     /// <summary> <inheritdoc/> </summary>
     public long Version { get; set; }

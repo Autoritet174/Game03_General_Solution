@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using General.DTO;
 using Server_DB_Postgres.Entities.GameData;
 using Server_DB_Postgres.Entities.Users;
 using Server_DB_Postgres.Interfaces;
@@ -38,7 +38,7 @@ public class Hero : IVersion, ICreatedAt, IUpdatedAt
 
     /// <summary> Имя группы. </summary>
     [MaxLength(255)]
-    public string? GroupName { get; set;}
+    public string? GroupName { get; set; }
 
     /// <summary> Редкость. </summary>
     [HasDefaultValue(1)]
@@ -52,11 +52,10 @@ public class Hero : IVersion, ICreatedAt, IUpdatedAt
     [HasDefaultValue(1)]
     public int Rarity { get; set; } = 1;
 
-    /// <summary> Здоровье. </summary>
-    public long Health { get; set; }
 
-    /// <summary> Атака. </summary>
-    public long Attack { get; set; }
+
+    #region Характеристики
+    // --------------Характеристики числовые----------------
 
     /// <summary> Сила. </summary>
     public int Strength { get; set; }
@@ -85,6 +84,18 @@ public class Hero : IVersion, ICreatedAt, IUpdatedAt
     /// <summary> Магическая выносливось. </summary>
     public int EnduranceMagical { get; set; }
 
+    /// <summary> Здоровье. Первые три знака, тысячные доли от единицы видимой игроку. </summary>
+    public long Health1000 { get; set; }
+
+
+    // --------------Характеристики кубика ДНД----------------
+    [Column(TypeName = "jsonb")]
+    public Dice? Damage { get; set; }
+    //[Column(TypeName = "jsonb")]
+    //public Stats? Stats { get; set; }
+    #endregion Характеристики
+
+
     #region Resistances
 
     /// <summary> Сопротивление физическому урону. Выражается числом которое преобразовывается в проценты. </summary>
@@ -92,7 +103,6 @@ public class Hero : IVersion, ICreatedAt, IUpdatedAt
 
     /// <summary> Сопротивление магическому урону. Выражается числом которое преобразовывается в проценты. </summary>
     public int ResistDamageMagical { get; set; }
-
 
     #endregion Resistances
 

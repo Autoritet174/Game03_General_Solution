@@ -1,5 +1,4 @@
-using Game03Client.DTO;
-using General.DTO;
+using General.DTO.Entities;
 using System.Collections.Generic;
 
 namespace Game03Client.GameData;
@@ -9,8 +8,5 @@ namespace Game03Client.GameData;
 /// </summary>
 internal class GameDataCache
 {
-    internal IEnumerable<DtoBaseHero> BaseHeroes = [];
-    internal IEnumerable<DtoBaseEquipment> BaseEquipments = [];
-    internal IEnumerable<DtoSlotType> SlotTypes = [];
-    internal IEnumerable<DtoEquipmentType> EquipmentTypes = [];
+    internal DtoContainerGameData Dto_Container = null!;
 }

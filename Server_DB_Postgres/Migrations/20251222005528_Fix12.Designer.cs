@@ -4,6 +4,7 @@ using System.Net;
 using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server_DB_Postgres;
@@ -13,9 +14,11 @@ using Server_DB_Postgres;
 namespace Server_DB_Postgres.Migrations
 {
     [DbContext(typeof(DbContext_Game))]
-    partial class DbContext_GameModelSnapshot : ModelSnapshot
+    [Migration("20251222005528_Fix12")]
+    partial class Fix12
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -77,6 +80,10 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("agility");
 
+                    b.Property<long>("Attack")
+                        .HasColumnType("bigint")
+                        .HasColumnName("attack");
+
                     b.Property<int>("BaseHeroId")
                         .HasColumnType("integer")
                         .HasColumnName("base_hero_id");
@@ -92,10 +99,6 @@ namespace Server_DB_Postgres.Migrations
                     b.Property<int>("CritPower")
                         .HasColumnType("integer")
                         .HasColumnName("crit_power");
-
-                    b.Property<Dice>("Damage")
-                        .HasColumnType("jsonb")
-                        .HasColumnName("damage");
 
                     b.Property<int>("EnduranceMagical")
                         .HasColumnType("integer")
@@ -216,9 +219,9 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("haste");
 
-                    b.Property<long>("Health1000")
+                    b.Property<long>("Health")
                         .HasColumnType("bigint")
-                        .HasColumnName("health1000");
+                        .HasColumnName("health");
 
                     b.Property<int>("Intelligence")
                         .HasColumnType("integer")
@@ -360,9 +363,17 @@ namespace Server_DB_Postgres.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<Dice>("Damage")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("damage");
+
                     b.Property<int>("EquipmentTypeId")
                         .HasColumnType("integer")
                         .HasColumnName("equipment_type_id");
+
+                    b.Property<Dice>("Health")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("health");
 
                     b.Property<bool>("IsUnique")
                         .ValueGeneratedOnAdd()
@@ -379,10 +390,6 @@ namespace Server_DB_Postgres.Migrations
                     b.Property<int>("Rarity")
                         .HasColumnType("integer")
                         .HasColumnName("rarity");
-
-                    b.Property<Stats>("Stats")
-                        .HasColumnType("jsonb")
-                        .HasColumnName("stats");
 
                     b.HasKey("Id")
                         .HasName("base_equipments__pkey");
@@ -406,6 +413,14 @@ namespace Server_DB_Postgres.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<Dice>("Damage")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("damage");
+
+                    b.Property<Dice>("Health")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("health");
+
                     b.Property<bool>("IsUnique")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -427,10 +442,6 @@ namespace Server_DB_Postgres.Migrations
                     b.Property<int>("Rarity")
                         .HasColumnType("integer")
                         .HasColumnName("rarity");
-
-                    b.Property<Stats>("Stats")
-                        .HasColumnType("jsonb")
-                        .HasColumnName("stats");
 
                     b.HasKey("Id")
                         .HasName("base_heroes__pkey");

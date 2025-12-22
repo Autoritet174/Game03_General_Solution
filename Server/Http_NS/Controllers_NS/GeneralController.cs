@@ -15,6 +15,7 @@ public class GeneralController(IGameDataCacheService heroCache) : ControllerBase
     private readonly IGameDataCacheService _heroCache = heroCache;
 
     /// <summary> Возвращает в ответе список всех константных игровых данных нужных на клиенте игры. </summary>
+    [HttpPost]
     public IActionResult GameData()
     {
         if (result == null)

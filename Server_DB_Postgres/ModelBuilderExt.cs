@@ -1,9 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 using static General.StringExt;
+using static Server_DB_Postgres.Attributes;
 
 namespace Server_DB_Postgres;
 
@@ -12,6 +14,46 @@ namespace Server_DB_Postgres;
 /// </summary>
 public static class ModelBuilderExt
 {
+    public static void ApplyDefaultValues(this ModelBuilder modelBuilder)
+    {
+        IEnumerable<IMutableEntityType> entityTypes = modelBuilder.Model.GetEntityTypes();
+
+        foreach (IMutableEntityType entityType in entityTypes)
+        {
+            EntityTypeBuilder entity = modelBuilder.Entity(entityType.ClrType);
+
+            foreach (PropertyInfo property in entityType.ClrType.GetProperties())
+            {
+                HasDefaultValueAttribute? attr = property.GetCustomAttribute<HasDefaultValueAttribute>();
+                if (attr != null)
+                {
+                    _ = entity.Property(property.Name).HasDefaultValue(attr.Value);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Добавить тег [ConcurrencyToken] к свойствам "Version"
+    /// </summary>
+    /// <param name="modelBuilder"></param>
+    public static void AddConcurrencyTokenToVersion(this ModelBuilder modelBuilder)
+    {
+        foreach (IMutableEntityType entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            IMutableProperty? versionProperty = entityType.FindProperty("Version");
+            if (versionProperty != null && versionProperty.ClrType == typeof(long))
+            {
+                // Делаем Version ConcurrencyToken для всех сущностей
+                versionProperty.IsConcurrencyToken = true;
+
+                // Опционально: устанавливаем значение по умолчанию
+                versionProperty.SetDefaultValue(1L);
+            }
+        }
+    }
+
+
     /// <summary>
     /// Преобразует имена таблиц, столбцов, ключей и индексов модели.
     /// </summary>

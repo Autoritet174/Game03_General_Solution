@@ -4,6 +4,7 @@ using System.Net;
 using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server_DB_Postgres;
@@ -13,9 +14,11 @@ using Server_DB_Postgres;
 namespace Server_DB_Postgres.Migrations
 {
     [DbContext(typeof(DbContext_Game))]
-    partial class DbContext_GameModelSnapshot : ModelSnapshot
+    [Migration("20251222032345_Fix15")]
+    partial class Fix15
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -85,13 +88,13 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
-                    b.Property<int>("CritChance")
+                    b.Property<int>("CritChance1000")
                         .HasColumnType("integer")
-                        .HasColumnName("crit_chance");
+                        .HasColumnName("crit_chance1000");
 
-                    b.Property<int>("CritPower")
+                    b.Property<int>("CritPower1000")
                         .HasColumnType("integer")
-                        .HasColumnName("crit_power");
+                        .HasColumnName("crit_power1000");
 
                     b.Property<Dice>("Damage")
                         .HasColumnType("jsonb")
@@ -212,9 +215,9 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnType("character varying(255)")
                         .HasColumnName("group_name");
 
-                    b.Property<int>("Haste")
+                    b.Property<int>("Haste1000")
                         .HasColumnType("integer")
-                        .HasColumnName("haste");
+                        .HasColumnName("haste1000");
 
                     b.Property<long>("Health1000")
                         .HasColumnType("bigint")
@@ -256,9 +259,9 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("user_id");
 
-                    b.Property<int>("Versality")
+                    b.Property<int>("Versality1000")
                         .HasColumnType("integer")
-                        .HasColumnName("versality");
+                        .HasColumnName("versality1000");
 
                     b.Property<long>("Version")
                         .IsConcurrencyToken()

@@ -1,5 +1,5 @@
-using Game03Client.DTO;
 using Game03Client.PlayerCollection;
+using General.DTO.Entities.Collection;
 
 namespace ConsoleAppForTests;
 

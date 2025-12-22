@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 
 namespace General;
@@ -8,6 +10,19 @@ namespace General;
 /// </summary>
 public static class G
 {
+    public static JsonSerializerSettings JsonSerializerSettings;
+    static G() {
+        JsonSerializerSettings = new JsonSerializerSettings
+        {
+            // Использование CamelCase для всех полей, если атрибуты не заданы явно
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            // Компактный вид (аналог WriteIndented = false)
+            Formatting = Formatting.None,
+            // Игнорирование null значений для уменьшения веса JSON
+            NullValueHandling = NullValueHandling.Ignore
+        };
+    }
+
     /// <summary>
     /// Константа для типа медиа "application/json", часто используемого в HTTP-запросах.
     /// </summary>
@@ -51,4 +66,6 @@ public static class G
 
         return result;
     }
+
+
 }

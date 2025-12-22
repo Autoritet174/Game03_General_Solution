@@ -37,9 +37,24 @@ internal class JwtTokenProvider(JwtTokenCache jwtTokenCache, IHttpRequester http
             return jwtTokenCache.Token;
         }
 
-        JObject? jObject = await httpRequesterProvider.GetJObjectAsync(Url.Authentication, cancellationToken, jsonBody, false);
-        if (jObject == null)
+        string? response = await httpRequesterProvider.GetResponseAsync(Url.Authentication, cancellationToken, jsonBody, false);
+        if (response == null) {
+            Log("response is null", L.Error.Server.InvalidResponse);
+            return null;
+        }
+        JObject? jObject;
+        try
         {
+            jObject = JObject.Parse(response);
+        }
+        catch
+        {
+            Log("jObject can't be parced", L.Error.Server.InvalidResponse);
+            return null;
+        }
+        if (jObject is null)
+        {
+            Log("jObject is null", L.Error.Server.InvalidResponse);
             return null;
         }
 

@@ -1,3 +1,4 @@
+using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -25,15 +26,6 @@ public class BaseHero
     [HasDefaultValue(false)]
     public bool IsUnique { get; set; } = false;
 
-
-    /// <summary> Здоровье. Формат DND кубиков, 2d2. </summary>
-    [MaxLength(255)]
-    public required string Health { get; set; }
-
-    /// <summary> Урон. Формат DND кубиков, 2d2. </summary>
-    [MaxLength(255)]
-    public required string Damage { get; set; }
-
     /// <summary> Основной стат который повышает урон. Сила(1) или Ловкость(2) или Интеллект(3). </summary>
     [HasDefaultValue(0)]
     public int MainStat { get; set; } = 0;
@@ -44,4 +36,9 @@ public class BaseHero
     ///// <summary>// Типы существ героя. Вычисляемое свойство. </summary>
     //[NotMapped]
     //public IReadOnlyCollection<CreatureType> CreatureTypes => X_Hero_CreatureType?.Select(static x => x.CreatureTypes).ToList() ?? [];
+
+    // --------------Характеристики----------------
+    [Column(TypeName = "jsonb")]
+    public Stats? Stats { get; set; }
+
 }

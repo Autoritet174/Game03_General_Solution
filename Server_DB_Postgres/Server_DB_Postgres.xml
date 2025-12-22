@@ -26,19 +26,9 @@
         </member>
         <member name="T:Server_DB_Postgres.DbContext_Game">
             <summary> Контекст базы данных для работы с игровыми данными. </summary>
-            <remarks>
-            Конструктор, необходимый для Dependency Injection (DI) в ASP.NET Core.
-            Строка подключения и опции передаются через DI из Program.cs.
-            </remarks>
-            <param name="options">Настройки контекста, сформированные в Program.cs.</param>
         </member>
         <member name="M:Server_DB_Postgres.DbContext_Game.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions{Server_DB_Postgres.DbContext_Game})">
             <summary> Контекст базы данных для работы с игровыми данными. </summary>
-            <remarks>
-            Конструктор, необходимый для Dependency Injection (DI) в ASP.NET Core.
-            Строка подключения и опции передаются через DI из Program.cs.
-            </remarks>
-            <param name="options">Настройки контекста, сформированные в Program.cs.</param>
         </member>
         <member name="M:Server_DB_Postgres.DbContext_Game.ThrowIfFailureConnection">
             <summary> Статический метод для проверки подключения к базе данных.
@@ -124,6 +114,9 @@
         <member name="P:Server_DB_Postgres.Entities.Collection.Equipment.User">
             <summary> Сущность <see cref="T:Server_DB_Postgres.Entities.Users.User"/>. </summary>
         </member>
+        <member name="P:Server_DB_Postgres.Entities.Collection.Equipment.GroupName">
+            <summary> Имя группы. </summary>
+        </member>
         <member name="P:Server_DB_Postgres.Entities.Collection.Equipment.Version">
             <summary> <inheritdoc/> </summary>
         </member>
@@ -178,12 +171,6 @@
         <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Rarity">
             <summary> Редкость. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Health">
-            <summary> Здоровье. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Attack">
-            <summary> Атака. </summary>
-        </member>
         <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Strength">
             <summary> Сила. </summary>
         </member>
@@ -210,6 +197,9 @@
         </member>
         <member name="P:Server_DB_Postgres.Entities.Collection.Hero.EnduranceMagical">
             <summary> Магическая выносливось. </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Health1000">
+            <summary> Здоровье. Первые три знака, тысячные доли от единицы видимой игроку. </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.Collection.Hero.ResistDamagePhysical">
             <summary> Сопротивление физическому урону. Выражается числом которое преобразовывается в проценты. </summary>
@@ -397,12 +387,6 @@
         <member name="P:Server_DB_Postgres.Entities.GameData.BaseHero.IsUnique">
             <summary> Уникальный для одного аккаунта. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.BaseHero.Health">
-            <summary> Здоровье. Формат DND кубиков, 2d2. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.BaseHero.Damage">
-            <summary> Урон. Формат DND кубиков, 2d2. </summary>
-        </member>
         <member name="P:Server_DB_Postgres.Entities.GameData.BaseHero.MainStat">
             <summary> Основной стат который повышает урон. Сила(1) или Ловкость(2) или Интеллект(3). </summary>
         </member>
@@ -478,9 +462,6 @@
         <member name="P:Server_DB_Postgres.Entities.GameData.EquipmentType.BlockOtherHand">
             <summary> Блокирует ли оружие другую руку, если это оружие. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.EquipmentType.Health">
-            <summary> Атака оружия в виде DND Dice, вычисляется при дропе и фиксируется на экземпляре. </summary>
-        </member>
         <member name="T:Server_DB_Postgres.Entities.GameData.MaterialDamagePercent">
             <summary> Коэфициенты урона для материалов. </summary>
         </member>
@@ -500,7 +481,7 @@
             <summary> Навигационное свойство к <see cref="T:Server_DB_Postgres.Entities.GameData.DamageType"/>. </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.GameData.MaterialDamagePercent.Percent">
-            <summary> Урон оружия в процентах. </summary>
+            <summary> Усиление урона оружия в процентах сделанного из этого материала. </summary>
         </member>
         <member name="T:Server_DB_Postgres.Entities.GameData.SlotType">
             <summary> Тип слота экипировки. </summary>
@@ -884,10 +865,88 @@
         <member name="M:Server_DB_Postgres.Migrations.Fix10.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:Server_DB_Postgres.Migrations.Fix11">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix11.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix11.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix11.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Fix12">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix12.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix12.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix12.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Fix13">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix13.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix13.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix13.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Fix14">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix14.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix14.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix14.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Fix15">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix15.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix15.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix15.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Fix16">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix16.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix16.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix16.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
         <member name="T:Server_DB_Postgres.ModelBuilderExt">
             <summary>
             Класс расширяющих методов для Entity Framework Core ModelBuilder
             </summary>
+        </member>
+        <member name="M:Server_DB_Postgres.ModelBuilderExt.AddConcurrencyTokenToVersion(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <summary>
+            Добавить тег [ConcurrencyToken] к свойствам "Version"
+            </summary>
+            <param name="modelBuilder"></param>
         </member>
         <member name="M:Server_DB_Postgres.ModelBuilderExt.CorrectNames(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <summary>

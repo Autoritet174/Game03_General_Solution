@@ -1,6 +1,5 @@
-using Game03Client.DTO;
+using General.DTO.Entities.Collection;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 

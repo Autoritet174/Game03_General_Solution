@@ -2,7 +2,7 @@ using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using NetTopologySuite.Index.HPRtree;
 using Newtonsoft.Json;
 using Npgsql;
 using Server_DB_Postgres.Entities.Collection;
@@ -12,34 +12,27 @@ using Server_DB_Postgres.Entities.Server;
 using Server_DB_Postgres.Entities.Users;
 using Server_DB_Postgres.Interfaces;
 using System.Collections.Concurrent;
-using System.Reflection;
-using static Server_DB_Postgres.Attributes;
 
 namespace Server_DB_Postgres;
 
 /// <summary> Контекст базы данных для работы с игровыми данными. </summary>
-/// <remarks>
-/// Конструктор, необходимый для Dependency Injection (DI) в ASP.NET Core.
-/// Строка подключения и опции передаются через DI из Program.cs.
-/// </remarks>
-/// <param name="options">Настройки контекста, сформированные в Program.cs.</param>
 public class DbContext_Game(DbContextOptions<DbContext_Game> options) : DbContext(options)
 {
     private static readonly Guid GuidAdmin = Guid.Parse("113ae534-2310-40e3-a895-f3747ea976ca");
 
     public static DbContextOptions<DbContext_Game> DbContextOptions { get; private set; } = null!;
     public static NpgsqlDataSource DataSource { get; private set; } = null!;
-    public static void Init(string connectionString) {
+    public static void Init(string connectionString)
+    {
         JsonSerializerSettings jsonSettings = new()
         {
             NullValueHandling = NullValueHandling.Ignore // Это исключит null поля из JSON
         };
         NpgsqlDataSourceBuilder dataSourceBuilder = new(connectionString);
-        dataSourceBuilder.UseJsonNet(jsonSettings);
+        _ = dataSourceBuilder.UseJsonNet(jsonSettings);
         DataSource = dataSourceBuilder.Build();
         DbContextOptionsBuilder<DbContext_Game> optionsBuilder = new();
         DbContextOptions = optionsBuilder.UseNpgsql(DataSource).Options;
-        
     }
 
     /// <summary> Статический метод для проверки подключения к базе данных.
@@ -55,13 +48,12 @@ public class DbContext_Game(DbContextOptions<DbContext_Game> options) : DbContex
             // Выполняем простое чтение для проверки соединения
             _ = await db.Users.FirstOrDefaultAsync();
 
-            int action = 4;
+            int action = 3;
             switch (action)
             {
                 case 1: AddRandomHeroes(); break;
                 case 2: AddRandomEquipments(); break;
-                case 3: await ChangeEquipment(); break;
-                case 4: AddEquipmentTypes(); break;
+                case 3: await Test(); break;
                 default: break;
             }
 
@@ -106,44 +98,39 @@ public class DbContext_Game(DbContextOptions<DbContext_Game> options) : DbContex
         db.Equipments.AddRange(equipments);
         _ = db.SaveChanges();
     }
-    private static async Task ChangeEquipment()
-    {
-        var task1 = Task.Run(() =>
-        {
-            using DbContext_Game db = Create();
-            Equipment e = db.Equipments.First(a => a.Id == Guid.Parse("05c7c86b-e9c9-4aed-93d6-aa7ce882001b"));
-            e.CreatedAt = DateTimeOffset.Now;
-            Thread.Sleep(900);
-            _ = db.SaveChanges();
-        });
-        var task2 = Task.Run(() =>
-        {
-            using DbContext_Game db = Create();
-            Equipment e = db.Equipments.First(a => a.Id == Guid.Parse("05c7c86b-e9c9-4aed-93d6-aa7ce882001b"));
-            e.CreatedAt = DateTimeOffset.Now;
-            Thread.Sleep(800);
-            _ = db.SaveChanges();
-        });
-
-    }
-    private static void AddEquipmentTypes()
+    private static async Task Test()
     {
         using DbContext_Game db = Create();
+        //var h1 = db.BaseHeroes.First(a => a.Id == 1);
 
-        EquipmentType a = db.EquipmentTypes.First(a => a.Id == 1);
-        a.Damage = new Dice(3, 6, 100);
+        //foreach (var h in db.BaseHeroes)
+        //{
+        //    h.Stats ??= new Stats();
+        //    h.Stats.Health = h.Health;
+        //    h.Stats.Damage = h.Damage;
+        //}
+
+        //h1.Health = new Dice(16, 24);
+        //h1.Damage = new Dice(4, 21);
+
+        //var h2 = db.BaseHeroes.First(a => a.Id == 2);
+        //h2.Health = new Dice(10, 28);
+        //h2.Damage = new Dice(5, 21);
+
+        //var h3 = db.BaseHeroes.First(a => a.Id == 3);
+        //h3.Health = new Dice(11, 39);
+        //h3.Damage = new Dice(3, 25);
+
+        //var h4 = db.BaseHeroes.First(a => a.Id == 4);
+        //h4.Health = new Dice(15, 21);
+        //h4.Damage = new Dice(4, 23);
+
+        //var h5 = db.BaseHeroes.First(a => a.Id == 5);
+        //h5.Health = new Dice(16, 58);
+        //h5.Damage = new Dice(4, 21);
 
         _ = db.SaveChanges();
     }
-
-    ///// <summary> Создаёт новый экземпляр <see cref="DbContext_Game"/> с указанной строкой подключения. </summary>
-    ///// <param name="connectionString">Строка подключения к базе данных PostgreSQL.</param>
-    ///// <returns>Новый экземпляр <see cref="DbContext_Game"/>, сконфигурированный для работы с базой данных. </returns>
-    //public static DbContext_Game Create(string connectionString)
-    //{
-    //    InitOptions(connectionString);
-    //    return new(dbContextOptions);
-    //}
 
     /// <summary> Создаёт новый экземпляр <see cref="DbContext_Game"/> со строкой подключения по умолчанию. </summary>
     /// <returns> Новый экземпляр <see cref="DbContext_Game"/>, сконфигурированный для работы с базой данных. </returns>
@@ -227,7 +214,7 @@ public class DbContext_Game(DbContextOptions<DbContext_Game> options) : DbContex
     {
         if (!optionsBuilder.IsConfigured)
         {
-            var connectionString = "Host=localhost;Port=5432;Database=Game;Username=postgres;Password=";
+            string connectionString = "Host=localhost;Port=5432;Database=Game;Username=postgres;Password=";
             var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
 
             // Обязательно для Newtonsoft
@@ -236,83 +223,21 @@ public class DbContext_Game(DbContextOptions<DbContext_Game> options) : DbContex
             NpgsqlDataSource dataSource = dataSourceBuilder.Build();
             _ = optionsBuilder.UseNpgsql(dataSource);
         }
-        //if (!optionsBuilder.IsConfigured)
-        //{
-        //    var dataSourceBuilder = new NpgsqlDataSourceBuilder("Host=localhost;Port=5432;Database=Game;Username=postgres;Password=");
+    }
 
-        //    // ← Эта строка регистрирует маппинг Dice → server.dice
-        //    dataSourceBuilder.MapComposite<Dice>("server.dice");
-
-        //    var dataSource = dataSourceBuilder.Build();
-        //    optionsBuilder.UseNpgsql(dataSource);
-        //}
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        // Автоматически делаем все свойства типа Dice (или Dice?) колонками jsonb
+        //configurationBuilder.Properties<Dice>().HaveColumnType("jsonb");
     }
 
     /// <summary> Конфигурация модели данных. </summary>
     /// <param name="modelBuilder">Построитель модели.</param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Указываем, что Dice — это комплексный тип, а не сущность
-        //_ = modelBuilder.Ignore<Dice>();
-        //_ = modelBuilder.Entity<EquipmentType>(static entity => entity.Property(e => e.Damage).HasColumnType("server.dice"));
-        //modelBuilder.Entity<EquipmentType>()
-        //.Property(e => e.Damage)
-        //.HasColumnType("server.dice")
-        //.HasConversion(
-        //    // Конвертер из Dice? → object[]
-        //    v => v == null ? null : new object[] { v.Value.Count, v.Value.Sides, v.Value.Modificator ?? (object)DBNull.Value },
-
-        //    // Конвертер из object[] → Dice?
-        //    v => v == null
-        //        ? null
-        //        : new Dice(
-        //            (int)(v[0]),
-        //            (int)(v[1]),
-        //            v[2] == DBNull.Value ? null : (int?)v[2]
-        //        )
-        //    );
-
-        // Указываем EF Core использовать jsonb для свойства Damage
-        modelBuilder.Entity<EquipmentType>(entity =>
-        {
-            entity.Property(e => e.Damage).HasColumnType("jsonb");
-        });
-
+        modelBuilder.AddConcurrencyTokenToVersion();
         modelBuilder.CorrectNames();
-        ApplyDefaultValues(modelBuilder);
-
-        // Добавить тег [ConcurrencyToken] к свойствам "Version"
-        foreach (IMutableEntityType entityType in modelBuilder.Model.GetEntityTypes())
-        {
-            IMutableProperty? versionProperty = entityType.FindProperty("Version");
-            if (versionProperty != null && versionProperty.ClrType == typeof(long))
-            {
-                // Делаем Version ConcurrencyToken для всех сущностей
-                versionProperty.IsConcurrencyToken = true;
-
-                // Опционально: устанавливаем значение по умолчанию
-                versionProperty.SetDefaultValue(1L);
-            }
-        }
-    }
-
-    private static void ApplyDefaultValues(ModelBuilder modelBuilder)
-    {
-        IEnumerable<IMutableEntityType> entityTypes = modelBuilder.Model.GetEntityTypes();
-
-        foreach (IMutableEntityType entityType in entityTypes)
-        {
-            EntityTypeBuilder entity = modelBuilder.Entity(entityType.ClrType);
-
-            foreach (PropertyInfo property in entityType.ClrType.GetProperties())
-            {
-                HasDefaultValueAttribute? attr = property.GetCustomAttribute<HasDefaultValueAttribute>();
-                if (attr != null)
-                {
-                    _ = entity.Property(property.Name).HasDefaultValue(attr.Value);
-                }
-            }
-        }
+        modelBuilder.ApplyDefaultValues();
     }
 
     /// <summary> <inheritdoc/> </summary>

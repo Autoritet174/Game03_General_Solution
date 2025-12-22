@@ -50,7 +50,7 @@ internal class HttpRequesterProvider : IHttpRequester
     }
 
 
-    public async Task<JObject?> GetJObjectAsync(string url, CancellationToken cancellationToken, string? jsonBody = null, bool useJwtToken = true)
+    public async Task<string?> GetResponseAsync(string url, CancellationToken cancellationToken, string? jsonBody = null, bool useJwtToken = true)
     {
         if (url.IsEmpty())
         {
@@ -97,23 +97,24 @@ internal class HttpRequesterProvider : IHttpRequester
                 Log("responseContent IsEmpty", L.Error.Server.InvalidResponse);
                 return null;
             }
+            return responseContent;
 
-            try
-            {
-                var jObject = JObject.Parse(responseContent);
-                if (jObject is null)
-                {
-                    Log("jObject is null", L.Error.Server.InvalidResponse);
-                    return null;
-                }
+            //try
+            //{
+            //    var jObject = JObject.Parse(responseContent);
+            //    if (jObject is null)
+            //    {
+            //        Log("jObject is null", L.Error.Server.InvalidResponse);
+            //        return null;
+            //    }
 
-                return jObject;
-            }
-            catch
-            {
-                Log("jObject can't be parced", L.Error.Server.InvalidResponse);
-                return null;
-            }
+            //    return jObject;
+            //}
+            //catch
+            //{
+            //    Log("jObject can't be parced", L.Error.Server.InvalidResponse);
+            //    return null;
+            //}
         }
         catch (TaskCanceledException ex) when (ex.InnerException is TimeoutException)
         {
@@ -165,6 +166,5 @@ internal class HttpRequesterProvider : IHttpRequester
 
         return headersString.ToString();
     }
-
 
 }

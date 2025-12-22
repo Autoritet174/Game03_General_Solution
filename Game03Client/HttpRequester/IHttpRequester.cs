@@ -6,5 +6,5 @@ namespace Game03Client.HttpRequester;
 
 public interface IHttpRequester
 {
-    Task<JObject?> GetJObjectAsync(string url, CancellationToken cancellationToken, string? jsonBody = null, bool useJwtToken = true);
+    Task<string?> GetResponseAsync(string url, CancellationToken cancellationToken, string? jsonBody = null, bool useJwtToken = true);
 }
