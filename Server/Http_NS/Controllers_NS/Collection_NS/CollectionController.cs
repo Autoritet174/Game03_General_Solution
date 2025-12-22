@@ -22,8 +22,8 @@ public class CollectionController(DbContext_Game dbContext) : ControllerBaseApi
             return Unauthorized();
         }
 
-        List<DtoCollectionEquipment> equipments = await dbContext.Equipments.AsNoTracking().Where(a => a.UserId == userId).Select(a => new
-        DtoCollectionEquipment
+        List<DtoEquipment> equipments = await dbContext.Equipments.AsNoTracking().Where(a => a.UserId == userId).Select(a => new
+        DtoEquipment
         {
             Id = a.Id,
             UserId = a.UserId,
@@ -31,7 +31,7 @@ public class CollectionController(DbContext_Game dbContext) : ControllerBaseApi
             GroupName = a.GroupName
         }).ToListAsync();
 
-        List<DtoCollectionHero> heroes = await dbContext.Heroes.AsNoTracking().Where(a => a.UserId == userId).Select(a => new DtoCollectionHero
+        List<DtoHero> heroes = await dbContext.Heroes.AsNoTracking().Where(a => a.UserId == userId).Select(a => new DtoHero
         {
             Id = a.Id,
             BaseHeroId = a.BaseHeroId,
@@ -82,7 +82,7 @@ public class CollectionController(DbContext_Game dbContext) : ControllerBaseApi
         DtoContainerCollection container = new()
         {
             DtoCollectionEquipments = equipments,
-            DtoCollectionHeros = heroes
+            DtoCollectionHeroes = heroes
         };
 
         string json = JsonConvert.SerializeObject(container, General.G.JsonSerializerSettings);

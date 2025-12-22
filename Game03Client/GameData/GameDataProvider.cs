@@ -69,7 +69,7 @@ internal class GameDataProvider(IHttpRequester httpRequesterProvider, GameDataCa
             i.DtoSmithingMaterial = c.DtoSmithingMaterials.FirstOrDefault(a => a.Id == i.DtoSmithingMaterialId);
             i.DtoDamageType = c.DtoDamageTypes.FirstOrDefault(a => a.Id == i.DtoDamageTypeId);
         }
-        globalFunctionsProviderCache.Dto_Container = c;
+        globalFunctionsProviderCache.DtoContainer = c;
 
 
 
@@ -102,6 +102,6 @@ internal class GameDataProvider(IHttpRequester httpRequesterProvider, GameDataCa
     }
     public DtoContainerGameData GetDtoContainer()
     {
-        return globalFunctionsProviderCache.Dto_Container;
+        return globalFunctionsProviderCache.DtoContainer;
     }
 }

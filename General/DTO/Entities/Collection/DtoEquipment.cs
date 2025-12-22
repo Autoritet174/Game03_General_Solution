@@ -6,7 +6,7 @@ namespace General.DTO.Entities.Collection;
 /// <summary>
 /// Предмет экипировки из коллекции игрока. (MongoDb).
 /// </summary>
-public class DtoCollectionEquipment()
+public class DtoEquipment()
 {
     public Guid Id { get; set; }
     public Guid UserId { get; set; }

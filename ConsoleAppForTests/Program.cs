@@ -60,9 +60,9 @@ internal class Program
         Game.GameData.LoadGameData(cancellationTokenSource.Token).Wait();
 
         cancellationTokenSource = new(TimeSpan.FromSeconds(30));
-        Game.Collection.LoadAllCollectionFromServer(cancellationTokenSource.Token).Wait();
+        Game.Collection.LoadAllCollectionFromServerAsync(cancellationTokenSource.Token).Wait();
 
-        IEnumerable<DtoCollectionHero> coll = Game.Collection.GetCollectionHeroesFromCache();
+        IEnumerable<DtoHero> coll = Game.Collection.GetCollectionHeroesFromCache();
         IEnumerable<GroupCollectionElement> coll1 = Game.Collection.GetCollectionHeroesGroupedByGroupNames();
         Console.WriteLine(coll.Count());
 

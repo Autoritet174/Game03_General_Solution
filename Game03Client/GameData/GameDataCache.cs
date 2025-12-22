@@ -8,5 +8,5 @@ namespace Game03Client.GameData;
 /// </summary>
 internal class GameDataCache
 {
-    internal DtoContainerGameData Dto_Container = null!;
+    internal DtoContainerGameData DtoContainer = null!;
 }
