@@ -16,26 +16,10 @@ namespace Game03Client.GameData;
 /// Реализация <see cref="IGameData"/>, предоставляющая функциональность для
 /// загрузки и доступа к глобальным игровым данным, таким как список героев.
 /// </summary>
-/// <param name="httpRequesterProvider">Провайдер для выполнения HTTP-запросов.</param>
-/// <param name="globalFunctionsProviderCache">Кэш для хранения глобальных данных.</param>
-/// <param name="logger">Провайдер для ведения журнала.</param>
-internal class GameDataProvider(IHttpRequester httpRequesterProvider, GameDataCache globalFunctionsProviderCache, ILogger logger) : IGameData
+internal class GameDataProvider(IHttpRequester httpRequesterProvider, GameDataCache globalFunctionsProviderCache
+    //, ILogger<GameDataProvider> logger
+    ) : IGameData
 {
-    #region Logger
-    private readonly ILogger _logger = logger;
-    private const string NAME_THIS_CLASS = nameof(GameDataProvider);
-    private void Log(string message, string? keyLocal = null)
-    {
-        if (!keyLocal.IsEmpty())
-        {
-            message = $"{message}; {L.KEY_LOCALIZATION}:<{keyLocal}>";
-        }
-
-        _logger.LogEx(NAME_THIS_CLASS, message);
-    }
-    #endregion Logger
-
-
     /// <inheritdoc/>
     public async Task LoadGameData(CancellationToken cancellationToken)
     {

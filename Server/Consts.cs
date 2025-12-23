@@ -23,4 +23,5 @@ public static class Consts
     public const string RATE_LIMITER_POLICY_AUTH = nameof(RATE_LIMITER_POLICY_AUTH);
 
     public const string RATE_LIMITER_POLICY_COLLECTION = nameof(RATE_LIMITER_POLICY_COLLECTION);
+    public static readonly Guid GuidAdmin = Guid.Parse("113ae534-2310-40e3-a895-f3747ea976ca");
 }

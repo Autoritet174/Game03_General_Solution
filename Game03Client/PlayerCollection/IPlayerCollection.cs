@@ -9,6 +9,9 @@ public interface IPlayerCollection
 {
     Task<bool> LoadAllCollectionFromServerAsync(CancellationToken cancellationToken);
     IEnumerable<DtoHero> GetCollectionHeroesFromCache();
+    IEnumerable<DtoEquipment> GetCollectionEquipmentsFromCache();
     IEnumerable<GroupCollectionElement> GetCollectionHeroesGroupedByGroupNames();
+    IEnumerable<GroupCollectionElement> GetCollectionEquipmentesGroupByGroups();
     int GetCountHeroes();
+    int GetCountEquipments();
 }

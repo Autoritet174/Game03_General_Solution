@@ -7,10 +7,10 @@ namespace Server_DB_Postgres.Repositories;
 public class CollectionHeroRepository(DbContext_Game dbContext)
 {
 
-    /// <summary> Получить всех героев из коллекции игрока. </summary>
-    public IQueryable<Hero> GetCoolectionHeroes(Guid userId)
-    {
-        return dbContext.Heroes.AsNoTracking().Where(a => a.UserId == userId);
-    }
+    ///// <summary> Получить всех героев из коллекции игрока. </summary>
+    //public IQueryable<Hero> GetCoolectionHeroes(Guid userId)
+    //{
+    //    return dbContext.Heroes.AsNoTracking().Where(a => a.UserId == userId);
+    //}
 
 }

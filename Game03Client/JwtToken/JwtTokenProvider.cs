@@ -8,22 +8,8 @@ using L = General.LocalizationKeys;
 
 namespace Game03Client.JwtToken;
 
-internal class JwtTokenProvider(JwtTokenCache jwtTokenCache, IHttpRequester httpRequesterProvider, ILogger logger) : IJwtToken
+internal class JwtTokenProvider(JwtTokenCache jwtTokenCache, IHttpRequester httpRequesterProvider, ILogger<JwtTokenProvider> logger) : IJwtToken
 {
-    #region Logger
-    private readonly ILogger _logger = logger;
-    private const string NAME_THIS_CLASS = nameof(JwtTokenProvider);
-    private void Log(string message, string? keyLocal = null)
-    {
-        if (!keyLocal.IsEmpty())
-        {
-            message = $"{message}; {L.KEY_LOCALIZATION}:<{keyLocal}>";
-        }
-
-        _logger.LogEx(NAME_THIS_CLASS, message);
-    }
-    #endregion Logger
-
     public async Task<string?> GetTokenAsync(string jsonBody, CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
@@ -39,7 +25,7 @@ internal class JwtTokenProvider(JwtTokenCache jwtTokenCache, IHttpRequester http
 
         string? response = await httpRequesterProvider.GetResponseAsync(Url.Authentication, cancellationToken, jsonBody, false);
         if (response == null) {
-            Log("response is null", L.Error.Server.InvalidResponse);
+            logger.Log("response is null", L.Error.Server.InvalidResponse);
             return null;
         }
         JObject? jObject;
@@ -49,19 +35,19 @@ internal class JwtTokenProvider(JwtTokenCache jwtTokenCache, IHttpRequester http
         }
         catch
         {
-            Log("jObject can't be parced", L.Error.Server.InvalidResponse);
+            logger.Log("jObject can't be parced", L.Error.Server.InvalidResponse);
             return null;
         }
         if (jObject is null)
         {
-            Log("jObject is null", L.Error.Server.InvalidResponse);
+            logger.Log("jObject is null", L.Error.Server.InvalidResponse);
             return null;
         }
 
         string? token = jObject["token"]?.ToString();
         if (token.IsEmpty())
         {
-            Log("token IsEmpty");
+            logger.Log("token IsEmpty");
             return null;
         }
 

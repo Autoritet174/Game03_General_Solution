@@ -61,12 +61,12 @@ public sealed class Game03 : IAsyncDisposable
     /// <summary>
     /// Провайдер Logger.
     /// </summary>
-    public ILogger Logger { get; private set; }
+    //public ILogger<Game03> Logger { get; private set; }
 
     private Game03(ServiceProvider provider)
     {
         _provider = provider;
-        Logger = provider.GetRequiredService<ILogger>();
+        //Logger = provider.GetRequiredService<ILogger<Game03>>();
         JwtToken = provider.GetRequiredService<IJwtToken>();
         IniFile = provider.GetRequiredService<IIniFile>();
         HttpRequester = provider.GetRequiredService<IHttpRequester>();
@@ -101,7 +101,8 @@ public sealed class Game03 : IAsyncDisposable
 
         // Logger
         _ = services.AddSingleton(new LoggerOptions(loggerCallback));
-        _ = services.AddSingleton<ILogger, LoggerProvider>();
+        // Logger - регистрируем открытый generic тип
+        _ = services.AddSingleton(typeof(ILogger<>), typeof(LoggerProvider<>));
 
         // JwtToken
         _ = services.AddSingleton<JwtTokenCache>();

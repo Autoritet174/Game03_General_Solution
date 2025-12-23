@@ -16,91 +16,93 @@ using System.Collections.Concurrent;
 namespace Server_DB_Postgres;
 
 /// <summary> Контекст базы данных для работы с игровыми данными. </summary>
-public class DbContext_Game(DbContextOptions<DbContext_Game> options) : DbContext(options)
+public class DbContext_Game : DbContext
 {
-    private static readonly Guid GuidAdmin = Guid.Parse("113ae534-2310-40e3-a895-f3747ea976ca");
 
-    public static DbContextOptions<DbContext_Game> DbContextOptions { get; private set; } = null!;
-    public static NpgsqlDataSource DataSource { get; private set; } = null!;
-    public static void Init(string connectionString)
+    public DbContext_Game(DbContextOptions<DbContext_Game> options) : base(options)
     {
-        JsonSerializerSettings jsonSettings = new()
-        {
-            NullValueHandling = NullValueHandling.Ignore // Это исключит null поля из JSON
-        };
-        NpgsqlDataSourceBuilder dataSourceBuilder = new(connectionString);
-        _ = dataSourceBuilder.UseJsonNet(jsonSettings);
-        DataSource = dataSourceBuilder.Build();
-        DbContextOptionsBuilder<DbContext_Game> optionsBuilder = new();
-        DbContextOptions = optionsBuilder.UseNpgsql(DataSource).Options;
     }
 
-    /// <summary> Статический метод для проверки подключения к базе данных.
-    /// Строка подключения передается из Program.cs. </summary>
-    /// <exception cref="Exception">Генерирует исключение в случае ошибки подключения.</exception>
-    public static async Task ThrowIfFailureConnection()
-    {
-        try
-        {
-            // Создаем экземпляр DbContext, используя полученные опции
-            using DbContext_Game db = Create();
 
-            // Выполняем простое чтение для проверки соединения
-            _ = await db.Users.FirstOrDefaultAsync();
+    //public static DbContextOptions<DbContext_Game> DbContextOptions { get; private set; } = null!;
+    //public static NpgsqlDataSource DataSource { get; private set; } = null!;
+    //public static void Init(string connectionString)
+    //{
+    //    JsonSerializerSettings jsonSettings = new()
+    //    {
+    //        NullValueHandling = NullValueHandling.Ignore // Это исключит null поля из JSON
+    //    };
+    //    NpgsqlDataSourceBuilder dataSourceBuilder = new(connectionString);
+    //    _ = dataSourceBuilder.UseJsonNet(jsonSettings);
+    //    DataSource = dataSourceBuilder.Build();
+    //    DbContextOptionsBuilder<DbContext_Game> optionsBuilder = new();
+    //    DbContextOptions = optionsBuilder.UseNpgsql(DataSource).Options;
+    //}
 
-            int action = 3;
-            switch (action)
-            {
-                case 1: AddRandomHeroes(); break;
-                case 2: AddRandomEquipments(); break;
-                case 3: await Test(); break;
-                default: break;
-            }
+    ///// <summary> Статический метод для проверки подключения к базе данных. </summary>
+    //public static async Task SimpleQueryFromDb()
+    //{
+    //    try
+    //    {
+    //        // Создаем экземпляр DbContext, используя полученные опции
+    //        using DbContext_Game db = Create();
 
-        }
-        catch
-        {
-            System.Console.WriteLine($"\r\n\r\nFailureConnection in {nameof(DbContext_Game)}\r\n\r\n");
-            throw;
-        }
-    }
-    private static void AddRandomHeroes()
-    {
-        using DbContext_Game db = Create();
-        Random rnd = new();
-        List<Hero> heroes = [];
-        for (int i = 0; i < 50; i++)
-        {
-            Hero hero = new()
-            {
-                BaseHeroId = rnd.Next(1, 6),
-                UserId = GuidAdmin,
-            };
-            heroes.Add(hero);
-        }
-        db.Heroes.AddRange(heroes);
-        _ = db.SaveChanges();
-    }
-    private static void AddRandomEquipments()
-    {
-        using DbContext_Game db = Create();
-        Random rnd = new();
-        List<Equipment> equipments = [];
-        for (int i = 0; i < 50; i++)
-        {
-            Equipment equipment = new()
-            {
-                BaseEquipmentId = rnd.Next(1, 3),
-                UserId = GuidAdmin,
-            };
-            equipments.Add(equipment);
-        }
-        db.Equipments.AddRange(equipments);
-        _ = db.SaveChanges();
-    }
-    private static async Task Test()
-    {
-        using DbContext_Game db = Create();
+    //        // Выполняем простое чтение для проверки соединения
+    //        _ = await db.Users.FirstOrDefaultAsync();
+
+    //        int action = 3;
+    //        switch (action)
+    //        {
+    //            case 1: AddRandomHeroes(); break;
+    //            case 2: AddRandomEquipments(); break;
+    //            case 3: await Test(); break;
+    //            default: break;
+    //        }
+
+    //    }
+    //    catch
+    //    {
+    //        System.Console.WriteLine($"\r\n\r\nFailureConnection in {nameof(DbContext_Game)}\r\n\r\n");
+    //        throw;
+    //    }
+    //}
+    //private static void AddRandomHeroes()
+    //{
+    //    using DbContext_Game db = Create();
+    //    Random rnd = new();
+    //    List<Hero> heroes = [];
+    //    for (int i = 0; i < 50; i++)
+    //    {
+    //        Hero hero = new()
+    //        {
+    //            BaseHeroId = rnd.Next(1, 6),
+    //            UserId = GuidAdmin,
+    //        };
+    //        heroes.Add(hero);
+    //    }
+    //    db.Heroes.AddRange(heroes);
+    //    _ = db.SaveChanges();
+    //}
+    //private static void AddRandomEquipments()
+    //{
+    //    using DbContext_Game db = Create();
+    //    Random rnd = new();
+    //    List<Equipment> equipments = [];
+    //    for (int i = 0; i < 50; i++)
+    //    {
+    //        Equipment equipment = new()
+    //        {
+    //            BaseEquipmentId = rnd.Next(1, 3),
+    //            UserId = GuidAdmin,
+    //        };
+    //        equipments.Add(equipment);
+    //    }
+    //    db.Equipments.AddRange(equipments);
+    //    _ = db.SaveChanges();
+    //}
+    //private static async Task Test()
+    //{
+    //    using DbContext_Game db = Create();
         //var h1 = db.BaseHeroes.First(a => a.Id == 1);
 
         //foreach (var h in db.BaseHeroes)
@@ -129,15 +131,15 @@ public class DbContext_Game(DbContextOptions<DbContext_Game> options) : DbContex
         //h5.Health = new Dice(16, 58);
         //h5.Damage = new Dice(4, 21);
 
-        _ = db.SaveChanges();
-    }
+    //    _ = db.SaveChanges();
+    //}
 
-    /// <summary> Создаёт новый экземпляр <see cref="DbContext_Game"/> со строкой подключения по умолчанию. </summary>
-    /// <returns> Новый экземпляр <see cref="DbContext_Game"/>, сконфигурированный для работы с базой данных. </returns>
-    public static DbContext_Game Create()
-    {
-        return new(DbContextOptions);
-    }
+    ///// <summary> Создаёт новый экземпляр <see cref="DbContext_Game"/> со строкой подключения по умолчанию. </summary>
+    ///// <returns> Новый экземпляр <see cref="DbContext_Game"/>, сконфигурированный для работы с базой данных. </returns>
+    //public static DbContext_Game Create()
+    //{
+    //    return new(DbContextOptions);
+    //}
 
     #region collection
 

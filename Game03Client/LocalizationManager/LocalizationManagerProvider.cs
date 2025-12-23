@@ -12,20 +12,8 @@ namespace Game03Client.LocalizationManager;
 /// </summary>
 internal class LocalizationManagerProvider : ILocalizationManager
 {
-    #region Logger
-    private readonly ILogger _logger;
-    private const string NAME_THIS_CLASS = nameof(LocalizationManagerProvider);
-    private void Log(string message, string? keyLocal = null)
-    {
-        if (!keyLocal.IsEmpty())
-        {
-            message = $"{message}; {L.KEY_LOCALIZATION}:<{keyLocal}>";
-        }
 
-        _logger.LogEx(NAME_THIS_CLASS, message);
-    }
-    #endregion Logger
-
+    private readonly ILogger<LocalizationManagerProvider> logger;
 
     /// <summary>
     /// Опции, содержащие данные локализации в формате JSON.
@@ -38,10 +26,10 @@ internal class LocalizationManagerProvider : ILocalizationManager
     /// <param name="localizationManagerOptions">Опции локализации, содержащие JSON-строку с данными.</param>
     /// <param name="logger">Логер для вызова коллбеков в игре.</param>
     /// <exception cref="Newtonsoft.Json.JsonReaderException">Вызывается, если JSON-строка в опциях недействительна.</exception>
-    public LocalizationManagerProvider(LocalizationManagerOptions localizationManagerOptions, ILogger logger)
+    public LocalizationManagerProvider(LocalizationManagerOptions localizationManagerOptions, ILogger<LocalizationManagerProvider> logger)
     {
         _localizationManagerOptions = localizationManagerOptions;
-        _logger = logger;
+        this.logger = logger;
 
         // Очистка предыдущих данных локализации (если конструктор вызывается повторно, что маловероятно для провайдера).
         localization.Clear();

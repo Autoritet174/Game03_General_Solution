@@ -1,15 +1,36 @@
+using General;
+using System;
+using System.Diagnostics.CodeAnalysis;
+using L = General.LocalizationKeys;
+
 namespace Game03Client.Logger;
 
 
-internal class LoggerProvider(LoggerOptions loggerOptions) : ILogger
+internal class LoggerProvider<T>(LoggerOptions loggerOptions) : ILogger<T>
 {
-    public void Log(object message)
+    public void Log(object message, string? keyLocal = null)
     {
-        loggerOptions._loggerCallback?.Invoke(message);
+        if (!keyLocal.IsEmpty())
+        {
+            message = $"{message}; {L.KEY_LOCALIZATION}:<{keyLocal}>";
+        }
+        loggerOptions._loggerCallback?.Invoke($"[{typeof(T).Name}] {message}");
     }
 
-    public void LogEx(string nameClass, string message)
+    /// <summary>
+    /// Отображает сообщение об ошибке и создает новое исключение останавливая выполнение кода.
+    /// </summary>
+    /// <param name="message"></param>
+    /// <param name="keyLocal"></param>
+    /// <exception cref="Exception"></exception>
+    [DoesNotReturn]
+    public void LogAndThrow(string message, string? keyLocal = null)
     {
-        loggerOptions._loggerCallback?.Invoke($"[{nameClass}] {message}");
+        try
+        {
+            Log(message, keyLocal);
+        }
+        catch { }
+        throw new Exception(message);
     }
 }

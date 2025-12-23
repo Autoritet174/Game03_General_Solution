@@ -27,18 +27,6 @@
         <member name="T:Server_DB_Postgres.DbContext_Game">
             <summary> Контекст базы данных для работы с игровыми данными. </summary>
         </member>
-        <member name="M:Server_DB_Postgres.DbContext_Game.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions{Server_DB_Postgres.DbContext_Game})">
-            <summary> Контекст базы данных для работы с игровыми данными. </summary>
-        </member>
-        <member name="M:Server_DB_Postgres.DbContext_Game.ThrowIfFailureConnection">
-            <summary> Статический метод для проверки подключения к базе данных.
-            Строка подключения передается из Program.cs. </summary>
-            <exception cref="T:System.Exception">Генерирует исключение в случае ошибки подключения.</exception>
-        </member>
-        <member name="M:Server_DB_Postgres.DbContext_Game.Create">
-            <summary> Создаёт новый экземпляр <see cref="T:Server_DB_Postgres.DbContext_Game"/> со строкой подключения по умолчанию. </summary>
-            <returns> Новый экземпляр <see cref="T:Server_DB_Postgres.DbContext_Game"/>, сконфигурированный для работы с базой данных. </returns>
-        </member>
         <member name="P:Server_DB_Postgres.DbContext_Game.Equipments">
             <summary> Экипировка игрока. </summary>
         </member>
@@ -1027,9 +1015,6 @@
         </member>
         <member name="M:Server_DB_Postgres.Repositories.CollectionHeroRepository.#ctor(Server_DB_Postgres.DbContext_Game)">
             <summary> Репозиторий для управления пользователями. </summary>
-        </member>
-        <member name="M:Server_DB_Postgres.Repositories.CollectionHeroRepository.GetCoolectionHeroes(System.Guid)">
-            <summary> Получить всех героев из коллекции игрока. </summary>
         </member>
         <member name="T:Server_DB_Postgres.Repositories.UserRepository">
             <summary>

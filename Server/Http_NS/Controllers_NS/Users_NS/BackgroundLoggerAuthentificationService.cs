@@ -134,7 +134,7 @@ public sealed class BackgroundLoggerAuthentificationService(
 
     private async Task CleanupLoopAsync(CancellationToken ct)
     {
-        using PeriodicTimer timer = new(TimeSpan.FromHours(24));
+        using PeriodicTimer timer = new(TimeSpan.FromSeconds(5));
 
         try
         {

@@ -1,28 +1,15 @@
 using Game03Client.Logger;
-using General;
 using IniParser;
 using IniParser.Model;
 using System.Globalization;
 using System.IO;
-using L = General.LocalizationKeys;
 
 namespace Game03Client.IniFile;
 
-internal class IniFileProvider(IniFileOptions options, ILogger logger) : IIniFile
+internal class IniFileProvider(IniFileOptions options
+    , ILogger<IniFileProvider> logger
+    ) : IIniFile
 {
-    #region Logger
-    private readonly ILogger _logger = logger;
-    private const string NAME_THIS_CLASS = nameof(IniFileProvider);
-    private void Log(string message, string? keyLocal = null)
-    {
-        if (!keyLocal.IsEmpty())
-        {
-            message = $"{message}; {L.KEY_LOCALIZATION}:<{keyLocal}>";
-        }
-
-        _logger.LogEx(NAME_THIS_CLASS, message);
-    }
-    #endregion Logger
     private readonly FileIniDataParser _fileIniDataParser = new();
 
     public string? Read(string section, string key)
@@ -38,12 +25,12 @@ internal class IniFileProvider(IniFileOptions options, ILogger logger) : IIniFil
                 }
                 catch
                 {
-                    Log($"error read section=[{section}] key=[{key}] in file <{options.FileName}>");
+                    logger.Log($"error read section=[{section}] key=[{key}] in file <{options.FileName}>");
                 }
             }
             catch
             {
-                Log($"error read ini file <{options.FileName}>");
+                logger.Log($"error read ini file <{options.FileName}>");
             }
         }
         return null;
@@ -60,7 +47,7 @@ internal class IniFileProvider(IniFileOptions options, ILogger logger) : IIniFil
             }
         }
 
-        Log($"not found value in [{section}][{key}]");
+        logger.Log($"not found value in [{section}][{key}]");
         return defaultValue;
     }
 

@@ -1,8 +1,7 @@
-using General.DTO;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Npgsql;
@@ -15,80 +14,228 @@ using Server.Jwt_NS;
 using Server.WebSocket_NS;
 using Server_DB_Postgres;
 using Server_DB_Postgres.Repositories;
-using System.Net; // Добавлено для HttpStatusCode
+using System.IO.Compression;
+using System.Net;
 using System.Text;
 using System.Threading.RateLimiting;
 using static General.StringExt;
 
 namespace Server;
 
-/// <summary>
-/// Класс содержит точку входа приложения и настройки сервисов, аутентификации,
-/// middleware, маршрутов и баз данных.
-/// </summary>
+/// <summary> Класс содержит точку входа приложения и настройки сервисов, аутентификации, middleware, маршрутов и баз данных. </summary>
 internal partial class Program
 {
 
-    /// <summary>
-    /// Точка входа в приложение. Выполняет настройку DI, БД, аутентификации,
-    /// регистрацию сервисов и запускает сервер.
-    /// </summary>
-    /// <param name="args">Аргументы командной строки.</param>
+    /// <summary> Точка входа в приложение. Выполняет настройку DI, БД, аутентификации, регистрацию сервисов и запускает сервер. </summary>
     private static async Task Main(string[] args)
     {
         //MongoDB.Bson.Serialization.BsonSerializer.RegisterSerializer(new MongoDB.Bson.Serialization.Serializers.GuidSerializer(MongoDB.Bson.GuidRepresentation.Standard));
         //MongoDB.Bson.Serialization.BsonSerializer.RegisterSerializer(new MongoDB.Bson.Serialization.Serializers.NullableSerializer<Guid>(new MongoDB.Bson.Serialization.Serializers.GuidSerializer(MongoDB.Bson.GuidRepresentation.Standard)));
 
-
-        string serilogDir = Path.Combine(AppContext.BaseDirectory, "logs-errors");
-        _ = Directory.CreateDirectory(serilogDir);
-
-        Log.Logger = new LoggerConfiguration()
-            // Все ошибки и критические события — в файл ошибок
-            .WriteTo.File(
-                Path.Combine(serilogDir, "errors-.txt"),
-                rollingInterval: RollingInterval.Day,
-                fileSizeLimitBytes: 10 * 1024 * 1024, // 10 МБ
-                rollOnFileSizeLimit: true,
-                retainedFileCountLimit: 365,
-                restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Error) // Только Error
-
-            // В консоль — всё
-            .WriteTo.Console(restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Verbose)
-
-            .CreateLogger();
-
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+        IServiceCollection services = builder.Services;
 
-        //_ = builder.Host.UseSerilog(); // Это заменит встроенный провайдер на Serilog
-        _ = builder.Host.UseSerilog((context, services, configuration) => configuration
-            .WriteTo.File(
-                Path.Combine(serilogDir, "errors-.txt"),
-                rollingInterval: RollingInterval.Day,
-                restrictedToMinimumLevel: LogEventLevel.Error)
-            .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Verbose)
-            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-            .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
-            .ReadFrom.Configuration(context.Configuration));
-
-
+        InitSerilog(builder);
 
         // Инициализация параметров для AuthOptions при старте приложения
         //Jwt.Initialize(builder.Configuration);
 
-        IServiceCollection services = builder.Services;
-
-        // Добавление контроллеров
-        _ = services.AddControllers();
+        IMvcBuilder iMvcBuilder = services.AddControllers();// Добавление контроллеров
         _ = services.AddHttpLogging();
 
-        // Регистрация ClientManager как singleton
-        //_ = services.AddSingleton<ClientManager2>();
+        InitJwt(builder);
+
+        string connectionString = CreateConnectionString(builder);
+
+        // База данных с игровыми данными
+        //DbContext_Game.Init(connectionString);// Инициализация NpgsqlDataSource с поддержкой Newtonsoft.Json
+
+        //источник данных Npgsql с поддержкой JSON
+        var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+        JsonSerializerSettings jsonSettings = new()
+        {
+            NullValueHandling = NullValueHandling.Ignore // Это исключит null поля из JSON
+        };
+        dataSourceBuilder.UseJsonNet(jsonSettings);
+        NpgsqlDataSource dataSource = dataSourceBuilder.Build();
+        _ = services.AddDbContext<DbContext_Game>(options => options.UseNpgsql(dataSource));
+
+        //_ = services.AddScoped(sp => new DbContext_Game(DbContext_Game.DbContextOptions));
+
+        // РЕПОЗИТОРИИ
+        _ = services.AddScoped<CollectionHeroRepository>();
 
 
 
+        //// Настройки "MongoDb"
+        //IConfigurationSection mongoSection = builder.Configuration.GetSection("MongoDb");
+        //_ = builder.Services.Configure<MongoDbSettings>(mongoSection);
+        //// Регистрация репозитория
+        //_ = services.AddSingleton<MongoRepository>();
 
-        // Добавление аутентификации с использованием JWT
+        _ = services.AddSingleton<WebSocketConnectionHandler>();
+
+        // Ограничение размера тела
+        _ = services.Configure<FormOptions>(options =>
+        {
+            options.ValueLengthLimit = 1_048_576;
+            options.MultipartBodyLengthLimit = 1_048_576;
+        });
+
+        InitRateLimite(services);
+
+
+        // Регистрируем сервис как синглтон
+        _ = services.AddSingleton<BackgroundLoggerAuthentificationService>();
+
+        // Регистрируем его как IHostedService, используя тот же экземпляр
+        _ = services.AddHostedService(
+            provider => provider.GetRequiredService<BackgroundLoggerAuthentificationService>());
+
+        // Добавляем HeroCacheService
+        //_ = services.AddScoped<IHeroCacheService, HeroesCacheService>();
+        _ = services.AddSingleton<IGameDataCacheService, GameDataCacheService>();
+
+        _ = services.AddMemoryCache();
+
+        // установить Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore
+        // если надо. сейчас нет кубернетес или сервисов проверки работоспособности
+        //_ = services.AddHealthChecks()
+        //    .AddDbContextCheck<DbContext_Game>(
+        //    name: "database-check",
+        //    tags: new[] { "ready" });
+
+        InitNewtonsoftJson(iMvcBuilder);
+        InitCompressionResponse(services);
+
+        WebApplication app = builder.Build();
+
+        _ = app.UseForwardedHeaders();//Forwarded headers (первым!)
+        _ = app.UseHsts();//HSTS
+        _ = app.UseMiddleware<ExceptionLoggingMiddleware>();//Обработка исключений
+        _ = app.UseResponseCompression();//Сжатие ответов (ДО маршрутизации)
+
+        //_ = app.UseExceptionHandler("/Home/Error");// этот мидлвар не нужен так как сервер обслуживает только API, без сайта и вебстраниц
+
+        //Миддлвар 2 - Логирование
+        //_ = app.UseHttpLogging();
+
+        //Миддлвар 3 - Статические файлы
+        //_ = app.UseStaticFiles();
+
+        //_ = app.UseHttpsRedirection();
+
+        // Разрешение WebSocket соединений
+        _ = app.UseWebSockets();//WebSockets (ДО маршрутизации)
+
+        InitWebSocket(app);
+
+        // Подключение кастомного WebSocket middleware
+        //_ = app.UseMiddleware<WebSocketMiddleware>();
+
+        _ = app.UseRouting();//Маршрутизация
+
+        _ = app.UseRateLimiter();//Rate limiting (ПОСЛЕ маршрутизации)
+
+        _ = app.UseAuthentication();
+        _ = app.UseAuthorization();
+
+        _ = app.UseMiddleware<SecurityHeadersMiddleware>();// заголовки безопасности (можно после аутентификации)
+
+        //_ = app.UseCors("AllowAll");//это нужно только для браузеров, то есть на этом сервере это не нужно
+
+        _ = app.UseResponseCaching();// Ответы с кешированием (почти в конце)
+
+        _ = app.MapControllers();// Маршрутизация контроллеров (после всех Use())
+
+        await ConnectionsIsCorrect(app);
+
+        // на этом момент есть гарантия что соединения со всеми СУБД корректно.
+        // иначе где то сработает один из throw.
+
+        await LoadGameDataCache(app);
+
+        IHostApplicationLifetime lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
+
+        _ = lifetime.ApplicationStopping.Register(() =>
+        {
+            Log.Information("Application is stopping...");
+            // Очистка ресурсов
+        });
+
+        _ = lifetime.ApplicationStopped.Register(() =>
+        {
+            Log.Information("Application stopped.");
+            Log.CloseAndFlush();
+        });
+
+        try
+        {
+            app.Run();
+        }
+        catch (Exception ex)
+        {
+            Log.Fatal(ex, "Application terminated unexpectedly");
+            throw;
+        }
+        finally
+        {
+            Log.CloseAndFlush();
+        }
+
+
+        /*
+         * позже сделать, сейчас не надо
+         // пакет: Prometheus.AspNetCore
+        _ = services.AddMetrics();
+        _ = app.UseMetricServer(); // endpoint /metrics для Prometheus
+         */
+    }
+
+    /// <summary> Использование Serilog вместо обычного microsoft лога. </summary>
+    private static void InitSerilog(WebApplicationBuilder builder)
+    {
+        string serilogDir = Path.Combine(AppContext.BaseDirectory, "logs-errors");
+        _ = Directory.CreateDirectory(serilogDir);
+
+        // Настраиваем Serilog через UseSerilog
+        _ = builder.Host.UseSerilog((context, services, configuration) => configuration
+            .Enrich.FromLogContext()
+
+            // Файл для ошибок
+            .WriteTo.File(
+                Path.Combine(serilogDir, "errors-.txt"),
+                rollingInterval: RollingInterval.Day,
+                fileSizeLimitBytes: 10 * 1024 * 1024,
+                rollOnFileSizeLimit: true,
+                retainedFileCountLimit: 365,
+                restrictedToMinimumLevel: LogEventLevel.Error,
+                outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}")
+
+            // Файл для всех логов
+            .WriteTo.File(
+                Path.Combine(serilogDir, "all-.txt"),
+                rollingInterval: RollingInterval.Day,
+                fileSizeLimitBytes: 20 * 1024 * 1024, // 20 МБ
+                rollOnFileSizeLimit: true,
+                retainedFileCountLimit: 30, // Храним 30 дней
+                restrictedToMinimumLevel: LogEventLevel.Information,
+                outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}")
+
+            // Консоль
+            .WriteTo.Console(
+                restrictedToMinimumLevel: LogEventLevel.Verbose,
+                outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}")
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+            .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+            .ReadFrom.Configuration(context.Configuration));
+    }
+
+    /// <summary> Добавление аутентификации с использованием JWT. </summary>
+    private static void InitJwt(WebApplicationBuilder builder)
+    {
+        IServiceCollection services = builder.Services;
+
         _ = services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt")); // Jwt.Issuer, Jwt.Audience, Jwt.Lifetime из конфигурации
 
         _ = services.AddSingleton<JwtService>();
@@ -114,61 +261,30 @@ internal partial class Program
                 };
             });
 
-        //_ = services.AddCors(options =>
-        //{
-        //    options.AddPolicy("AllowAll", policy =>
-        //    {
-        //        _ = policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
-        //    });
-        //});
+    }
 
-
-
-        // -- БАЗЫ ДАННЫХ --
-
-        // База данных пользователей
-        //string сonnectionStringUsers = builder.Configuration.GetConnectionString("Postgres_Users")
-        //    ?? throw new InvalidOperationException("Строка подключения 'Postgres_Users' не найдена.");
-        //_ = services.AddDbContext<DbContext_Game03Users>(options => options.UseNpgsql(сonnectionStringUsers));
-        _ = services.AddScoped<UserRepository>();
-
-
+    /// <summary> Получение строки подключения из настройек и дополнительные корректировки. </summary>
+    private static string CreateConnectionString(WebApplicationBuilder builder)
+    {
         string connectionString = builder.Configuration.GetConnectionString("Postgres") ?? throw new InvalidOperationException("Строка подключения 'Postgres' не найдена.");
-        //var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);// 1. Создаем источник данных
-        //_ = dataSourceBuilder.MapComposite<Dice>("server.dice");// 2. Явно мапим C# тип на существующий в базе тип
-        //using NpgsqlDataSource dataSource = dataSourceBuilder.Build();// 3. Строим источник
-        //_ = services.AddDbContext<DbContext_Game>(options => options.UseNpgsql(dataSource));// 4. Передаем его в DbContext
 
-        
-
-        // База данных с игровыми данными
-        DbContext_Game.Init(connectionString);// Инициализация NpgsqlDataSource с поддержкой Newtonsoft.Json
-        
-        //builder.Services.AddDbContext<DbContext_Game>(DbContext_Game.getop);// Настройка для использования Newtonsoft.Json
-        builder.Services.AddScoped(sp => new DbContext_Game(DbContext_Game.DbContextOptions));
-
-        //_ = services.AddDbContext<DbContext_Game>(options => options.UseNpgsql(connectionString));
-        _ = services.AddScoped<CollectionHeroRepository>();
-
-        //// Настройки "MongoDb"
-        //IConfigurationSection mongoSection = builder.Configuration.GetSection("MongoDb");
-        //_ = builder.Services.Configure<MongoDbSettings>(mongoSection);
-        //// Регистрация репозитория
-        //_ = services.AddSingleton<MongoRepository>();
-
-
-        _ = services.AddSingleton<WebSocketConnectionHandler>();
-
-
-        // Ограничение размера тела
-        _ = services.Configure<FormOptions>(options =>
+        // параметры пулинга, если их нет в строке подключения
+        if (!connectionString.Contains("Pooling="))
         {
-            options.ValueLengthLimit = 1_048_576;
-            options.MultipartBodyLengthLimit = 1_048_576;
-        });
+            connectionString += ";"
+                + "Pooling=true;" // Пуллинг для оптимизации работы с postgres
+                + "Minimum Pool Size=5;"      // Минимум 5 соединений
+                + "Maximum Pool Size=100;"    // Максимум 100 соединений  
+                + "Connection Idle Lifetime=300;" // Через 300 сек неиспользуемое соединение закрывается
+                + "Connection Pruning Interval=10;" // Проверка каждые 10 секунд
+                + "Timeout=15"; // Таймаут ожидания свободного соединения (сек)
+        }
+        return connectionString;
+    }
 
-
-        // --- Добавляем Rate Limiting с учётом IP ---
+    /// <summary> Добавляем Rate Limiting с учётом IP. </summary>
+    private static void InitRateLimite(IServiceCollection services)
+    {
         _ = services.AddRateLimiter(options =>
         {
             _ = options.AddPolicy(Consts.RATE_LIMITER_POLICY_AUTH, context =>
@@ -203,60 +319,43 @@ internal partial class Program
                     });
             });
         });
+    }
 
-
-        // Регистрируем сервис как синглтон
-        _ = services.AddSingleton<BackgroundLoggerAuthentificationService>();
-
-        // Регистрируем его как IHostedService, используя тот же экземпляр
-        _ = services.AddHostedService(
-            provider => provider.GetRequiredService<BackgroundLoggerAuthentificationService>());
-
-        // Добавляем HeroCacheService
-        //_ = services.AddScoped<IHeroCacheService, HeroesCacheService>();
-        _ = services.AddSingleton<IGameDataCacheService, GameDataCacheService>();
-
-        _ = services.AddMemoryCache();
-
-        _ = services.AddControllers()
-           .AddJsonOptions(options =>
-           {
-               options.JsonSerializerOptions.PropertyNamingPolicy = null;
-               options.JsonSerializerOptions.DictionaryKeyPolicy = null;
-           });
-
-        _ = builder.Services.AddControllers().AddNewtonsoftJson(options =>
+    private static void InitNewtonsoftJson(IMvcBuilder iMvcBuilder)
+    {
+        _ = iMvcBuilder.AddNewtonsoftJson(options =>
         {
-            options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            // 1. Обработка ссылок
+            options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore; // Обработка циклических ссылок
+            options.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.None; // Сохранение ссылок на объекты
+
+            //// 2. Null значения
+            options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+            //options.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Populate;
+
+            //// 3. Именование (camelCase для JSON)
+            //options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+
+            //// 4. Даты в UTC ISO формате
+            //options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+            //options.SerializerSettings.DateFormatString = "yyyy-MM-ddTHH:mm:ss.fffZ";
+
+            //// 5. Конвертеры
+            //options.SerializerSettings.Converters.Add(new StringEnumConverter());
+
+            //// 6. Форматирование
+            //options.SerializerSettings.Formatting = Formatting.Indented;
+
+            //// 8. Дополнительные настройки
+            //options.SerializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
+            //options.SerializerSettings.TypeNameHandling = TypeNameHandling.None;
+            //options.SerializerSettings.MaxDepth = 32;
         });
+    }
 
-
-        WebApplication app = builder.Build();
-
-
-        //Миддлвар 1 - Обработка ошибок
-        _ = app.UseMiddleware<ExceptionLoggingMiddleware>();
-        //_ = app.UseExceptionHandler("/Home/Error");// этот мидлвар не нужен так как сервер обслуживает только API, без сайта и вебстраниц
-
-        //Миддлвар 2 - Логирование
-        //_ = app.UseHttpLogging();
-
-        //Миддлвар 3 - Статические файлы
-        //_ = app.UseStaticFiles();
-
-        _ = app.UseRateLimiter();
-
-        //_ = app.UseHttpsRedirection();
-        _ = app.UseHsts();
-
-        // Добавляем заголовки безопасности
-        _ = app.UseMiddleware<SecurityHeadersMiddleware>();
-
-        // Разрешение WebSocket соединений
-        _ = app.UseWebSockets();
-
-        // НОВОЕ: Подключение WebSocket-обработчика через маршрутизацию ASP.NET Core.
-        // Запросы по адресу /ws будут направляться в ProcessKestrelWebSocketRequest
+    /// <summary> Подключение WebSocket-обработчика через маршрутизацию ASP.NET Core. Запросы по адресу /ws будут направляться в ProcessKestrelWebSocketRequest. </summary>
+    private static void InitWebSocket(WebApplication app)
+    {
         _ = app.Map("/ws", appBuilder =>
         {
             appBuilder.Run(async context =>
@@ -271,12 +370,20 @@ internal partial class Program
                 }
                 if (context.WebSockets.IsWebSocketRequest)
                 {
-                    // Получаем Singleton-экземпляр обработчика из DI
-                    WebSocketConnectionHandler handler = context.RequestServices.GetRequiredService<WebSocketConnectionHandler>();
+                    try
+                    {
+                        // Получаем Singleton-экземпляр обработчика из DI
+                        WebSocketConnectionHandler handler = context.RequestServices.GetRequiredService<WebSocketConnectionHandler>();
 
-                    // Запускаем обработку WebSocket
-                    // Используем CancellationToken из контекста приложения
-                    await handler.ProcessKestrelWebSocketRequest(context, context.RequestAborted);
+                        // Запускаем обработку WebSocket
+                        // Используем CancellationToken из контекста приложения
+                        await handler.ProcessKestrelWebSocketRequest(context, context.RequestAborted);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        // Корректное завершение при отмене
+                        Log.Information("WebSocket соединение было отменено");
+                    }
                 }
                 else
                 {
@@ -285,70 +392,84 @@ internal partial class Program
                 }
             });
         });
+    }
 
+    /// <summary>
+    /// Выполняет проверку соединения с базой данных.
+    /// </summary>
+    /// <param name="app">Экземпляр работающего WebApplication.</param>
+    /// <exception cref="InvalidOperationException">Бросается, если соединение не установлено.</exception>
+    private static async Task ConnectionsIsCorrect(WebApplication app)
+    {
+        using IServiceScope scope = app.Services.CreateScope();
+        // Использование целевого типа для логгера
+        ILogger<Program> logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 
-        // Подключение кастомного WebSocket middleware
-        //_ = app.UseMiddleware<WebSocketMiddleware>();
-
-        // Маршрутизация
-        _ = app.UseRouting();
-
-        //_ = app.UseCors("AllowAll");//это нужно только для браузеров, то есть на этом сервере это не нужно
-
-        // Подключение аутентификации и авторизации
-        _ = app.UseAuthentication();
-        _ = app.UseAuthorization();
-
-        // Ответы с кешированием (если требуется)
-        //app.UseResponseCaching();
-
-
-        // CORS
-        //app.UseCors("AllowSpecificOrigins");
-
-        // Лог запросов в консоль
-        //app.Use(async (ctx, next) =>
-        //{
-        //    Console.WriteLine($"Запрос: {ctx.Request.Path}");
-        //    await next();
-        //});
-
-
-        // Маршрутизация контроллеров
-        _ = app.MapControllers();
-
-        _ = app.UseForwardedHeaders();
-
-
-        //DbContext_Game.InitOptions(connectionString);
-
-        using (IServiceScope scope = app.Services.CreateScope())
+        try
         {
-            Serilog.ILogger logger = scope.ServiceProvider.GetRequiredService<Serilog.ILogger>();
+            DbContext_Game db = scope.ServiceProvider.GetRequiredService<DbContext_Game>();
+            using CancellationTokenSource cts = new(TimeSpan.FromSeconds(10));
 
-            //await DbContext_Game03Users.ThrowIfFailureConnection(сonnectionStringUsers);
-            //logger.Information("SERVER=postgres, DB=Users, connection is correct");
+            // Простая проверка активности соединения
+            _ = await db.Database.CanConnectAsync(cts.Token)
+                ? true
+                : throw new InvalidOperationException("Database is unreachable");
 
-            await DbContext_Game.ThrowIfFailureConnection();
-            logger.Information("SERVER=postgres, DB=Data, connection is correct");
-
-            //IOptions<MongoDbSettings> mongoSettings = scope.ServiceProvider.GetRequiredService<IOptions<MongoDbSettings>>();
-            //await MongoRepository.ThrowIfFailureConnectionAsync(mongoSettings);
-            //logger.Information("SERVER=MongoDb, DB=UserData, connection is correct");
+            logger.LogInformation("SERVER=postgres, DB=Data, connection is correct");
         }
-
-
-        // на этом момент есть гарантия что соединения со всеми СУБД корректно.
-
-        // Инициализация кэша до старта
-        using (IServiceScope scope = app.Services.CreateScope())
+        catch (Exception ex)
         {
-            IGameDataCacheService heroCache = scope.ServiceProvider.GetRequiredService<IGameDataCacheService>();
-            heroCache.RefreshGameDataJsonAsync(scope.ServiceProvider).GetAwaiter().GetResult();
+            logger.LogCritical(ex, "Failed to connect to database during startup");
+            throw;
         }
+    }
 
+    /// <summary> Загружаем в оперативную память константные игровые данные которые не меняются во время работы сервера. </summary>
+    private static async Task LoadGameDataCache(WebApplication app)
+    {
+        using IServiceScope scope = app.Services.CreateScope();
+        IGameDataCacheService heroCache = scope.ServiceProvider.GetRequiredService<IGameDataCacheService>();
+        // Получаем временный Scoped-контекст БД
+        DbContext_Game db = scope.ServiceProvider.GetRequiredService<DbContext_Game>();
+        try
+        {
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+            await heroCache.RefreshGameDataJsonAsync(db, cts.Token);
 
-        // СТАРТ
-        app.Run();
+            ILogger<Program> logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+            logger.LogInformation("Game data cache loaded successfully");
+        }
+        catch (Exception ex)
+        {
+            ILogger<Program> logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+            logger.LogError(ex, "Failed to load game data cache");
+            throw;
+        }
+    }
+
+    private static readonly string[] AdditionalMimeTypesForCompression = ["application/json", "application/xml", "text/plain", "text/html", "text/css", "text/javascript", "application/javascript", "image/svg+xml"];
+    private static void InitCompressionResponse(IServiceCollection services)
+    {
+        // Добавление сервисов сжатия ответов
+        _ = services.AddResponseCompression(options =>
+        {
+            options.EnableForHttps = true; // Включить сжатие для HTTPS
+            options.Providers.Add<BrotliCompressionProvider>();
+            options.Providers.Add<GzipCompressionProvider>();
+
+            // Настройка MIME-типов для сжатия
+            options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(AdditionalMimeTypesForCompression);
+        });
+
+        // настройка провайдеров сжатия
+        _ = services.Configure<BrotliCompressionProviderOptions>(options =>
+        {
+            options.Level = CompressionLevel.Fastest;
+        });
+
+        _ = services.Configure<GzipCompressionProviderOptions>(options =>
+        {
+            options.Level = CompressionLevel.Fastest;
+        });
     }
 }

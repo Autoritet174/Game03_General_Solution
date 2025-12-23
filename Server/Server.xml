@@ -38,6 +38,9 @@
             <param name="path">Путь к значению в формате JSONPath (например: "$.user.name")</param>
             <returns>Значение как строка, если оно существует и может быть преобразовано в строку; иначе <c>null</c>.</returns>
         </member>
+        <member name="M:Server.GameDataCache.IGameDataCacheService.RefreshGameDataJsonAsync(Server_DB_Postgres.DbContext_Game,System.Threading.CancellationToken)">
+            <summary> Теперь метод принимает контекст напрямую. </summary>
+        </member>
         <member name="P:Server.GameDataCache.GameDataCacheService.GameDataJson">
             <summary> Возвращает JSON-строку с данными. </summary>
             <returns> JSON-строка со всеми константными игровыми данными необходимыми на стороне клиента. </returns>
@@ -436,17 +439,35 @@
             <returns></returns>
         </member>
         <member name="T:Server.Program">
-            <summary>
-            Класс содержит точку входа приложения и настройки сервисов, аутентификации,
-            middleware, маршрутов и баз данных.
-            </summary>
+            <summary> Класс содержит точку входа приложения и настройки сервисов, аутентификации, middleware, маршрутов и баз данных. </summary>
         </member>
         <member name="M:Server.Program.Main(System.String[])">
+            <summary> Точка входа в приложение. Выполняет настройку DI, БД, аутентификации, регистрацию сервисов и запускает сервер. </summary>
+        </member>
+        <member name="M:Server.Program.InitSerilog(Microsoft.AspNetCore.Builder.WebApplicationBuilder)">
+            <summary> Использование Serilog вместо обычного microsoft лога. </summary>
+        </member>
+        <member name="M:Server.Program.InitJwt(Microsoft.AspNetCore.Builder.WebApplicationBuilder)">
+            <summary> Добавление аутентификации с использованием JWT. </summary>
+        </member>
+        <member name="M:Server.Program.CreateConnectionString(Microsoft.AspNetCore.Builder.WebApplicationBuilder)">
+            <summary> Получение строки подключения из настройек и дополнительные корректировки. </summary>
+        </member>
+        <member name="M:Server.Program.InitRateLimite(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary> Добавляем Rate Limiting с учётом IP. </summary>
+        </member>
+        <member name="M:Server.Program.InitWebSocket(Microsoft.AspNetCore.Builder.WebApplication)">
+            <summary> Подключение WebSocket-обработчика через маршрутизацию ASP.NET Core. Запросы по адресу /ws будут направляться в ProcessKestrelWebSocketRequest. </summary>
+        </member>
+        <member name="M:Server.Program.ConnectionsIsCorrect(Microsoft.AspNetCore.Builder.WebApplication)">
             <summary>
-            Точка входа в приложение. Выполняет настройку DI, БД, аутентификации,
-            регистрацию сервисов и запускает сервер.
+            Выполняет проверку соединения с базой данных.
             </summary>
-            <param name="args">Аргументы командной строки.</param>
+            <param name="app">Экземпляр работающего WebApplication.</param>
+            <exception cref="T:System.InvalidOperationException">Бросается, если соединение не установлено.</exception>
+        </member>
+        <member name="M:Server.Program.LoadGameDataCache(Microsoft.AspNetCore.Builder.WebApplication)">
+            <summary> Загружаем в оперативную память константные игровые данные которые не меняются во время работы сервера. </summary>
         </member>
         <member name="T:Server.UserRegAuth_NS.OpenWebSocketController">
             <summary>

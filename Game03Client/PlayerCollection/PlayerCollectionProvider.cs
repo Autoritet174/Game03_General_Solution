@@ -1,49 +1,24 @@
 using Game03Client.GameData;
 using Game03Client.HttpRequester;
 using Game03Client.Logger;
-using General;
 using General.DTO.Entities;
 using General.DTO.Entities.Collection;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using L = General.LocalizationKeys;
 
 namespace Game03Client.PlayerCollection;
 
 internal class PlayerCollectionProvider(
     PlayerCollectionCache playerCollectionCache,
     GameDataCache gameDataCache,
-    IHttpRequester _httpRequester,
-    ILogger _logger
+    IHttpRequester httpRequester,
+    ILogger<PlayerCollectionProvider> logger
     ) : IPlayerCollection
 {
-    #region Logger
-    private const string NAME_THIS_CLASS = nameof(PlayerCollectionProvider);
-    private void Log(string message, string? keyLocal = null)
-    {
-        if (!keyLocal.IsEmpty())
-        {
-            message = $"{message}; {L.KEY_LOCALIZATION}:<{keyLocal}>";
-        }
-
-        _logger.LogEx(NAME_THIS_CLASS, message);
-    }
-
-    [DoesNotReturn]
-    private void LogAndThrow(string message, string? keyLocal = null) {
-        try
-        {
-            Log(message, keyLocal);
-        }
-        catch { }
-        throw new Exception(message);
-    }
-    #endregion Logger
 
     public async Task<bool> LoadAllCollectionFromServerAsync(CancellationToken cancellationToken)
     {
@@ -53,7 +28,7 @@ internal class PlayerCollectionProvider(
         }
 
         // Получить коллекцию героев игрока
-        string? response = await _httpRequester.GetResponseAsync(General.Url.Collection.All, cancellationToken);
+        string? response = await httpRequester.GetResponseAsync(General.Url.Collection.All, cancellationToken);
         if (response == null)
         {
             return false;
@@ -140,10 +115,18 @@ internal class PlayerCollectionProvider(
     {
         return playerCollectionCache.collection.DtoCollectionHeroes;
     }
+    public IEnumerable<DtoEquipment> GetCollectionEquipmentsFromCache()
+    {
+        return playerCollectionCache.collection.DtoCollectionEquipments;
+    }
 
     public int GetCountHeroes()
     {
         return playerCollectionCache.collection.DtoCollectionHeroes.Count;
+    }
+    public int GetCountEquipments()
+    {
+        return playerCollectionCache.collection.DtoCollectionEquipments.Count;
     }
 
     /// <summary>
@@ -160,7 +143,8 @@ internal class PlayerCollectionProvider(
             {
                 heroes = playerCollectionCache.collection.DtoCollectionHeroes.Where(a => a.GroupName is null or "");
             }
-            else {
+            else
+            {
                 heroes = playerCollectionCache.collection.DtoCollectionHeroes.Where(a => a.GroupName == groupName);
             }
 
@@ -170,7 +154,7 @@ internal class PlayerCollectionProvider(
                 {
                     if (a.DtoBaseHero == null)
                     {
-                        LogAndThrow("a.DtoBaseHero is null");
+                        logger.LogAndThrow("a.DtoBaseHero is null");
                     }
                     return a.DtoBaseHero.Name;
                 });
@@ -180,9 +164,9 @@ internal class PlayerCollectionProvider(
             {
                 if (hero.DtoBaseHero == null)
                 {
-                    LogAndThrow("hero.DtoBaseHero is null");
+                    logger.LogAndThrow("hero.DtoBaseHero is null");
                 }
-                collectionElements.Add(new CollectionElement(hero.Id, hero.BaseHeroId, hero.Rarity, hero.DtoBaseHero.Name, "hero"));
+                collectionElements.Add(new CollectionElement(hero.Id, hero.BaseHeroId, hero.Rarity, hero.DtoBaseHero.Name));
             }
 
             GroupCollectionElement groupCollectionElement = new(groupName, collectionElements);
@@ -210,18 +194,18 @@ internal class PlayerCollectionProvider(
                 equipments = playerCollectionCache.collection.DtoCollectionEquipments.Where(a => a.GroupName == groupName);
             }
 
-            equipments.OrderByDescending(a =>
+            equipments = equipments.OrderByDescending(a =>
                 {
                     if (a.DtoBaseEquipment == null)
                     {
-                        LogAndThrow("a.DtoBaseEquipment is null");
+                        logger.LogAndThrow("a.DtoBaseEquipment is null");
                     }
                     return a.DtoBaseEquipment.Rarity;
                 }).ThenBy(a =>
                 {
                     if (a.DtoBaseEquipment == null)
                     {
-                        LogAndThrow("a.DtoBaseEquipment is null");
+                        logger.LogAndThrow("a.DtoBaseEquipment is null");
                     }
                     return a.DtoBaseEquipment.Name;
                 });
@@ -231,9 +215,9 @@ internal class PlayerCollectionProvider(
             {
                 if (Equipment.DtoBaseEquipment == null)
                 {
-                    LogAndThrow("Equipment.DtoBaseEquipment is null");
+                    logger.LogAndThrow("Equipment.DtoBaseEquipment is null");
                 }
-                collectionElements.Add(new CollectionElement(Equipment.Id, Equipment.BaseEquipmentId, Equipment.DtoBaseEquipment.Rarity, Equipment.DtoBaseEquipment.Name, "Equipment"));
+                collectionElements.Add(new CollectionElement(Equipment.Id, Equipment.BaseEquipmentId, Equipment.DtoBaseEquipment.Rarity, Equipment.DtoBaseEquipment.Name));
             }
 
             GroupCollectionElement groupCollectionElement = new(groupName, collectionElements);

@@ -3,7 +3,6 @@ using Game03Client.InternetChecker;
 using Game03Client.JwtToken;
 using Game03Client.Logger;
 using General;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -17,36 +16,21 @@ namespace Game03Client.HttpRequester;
 
 internal class HttpRequesterProvider : IHttpRequester
 {
-    #region Logger
-    private readonly ILogger _logger;
-    private const string NAME_THIS_CLASS = nameof(HttpRequesterProvider);
-
-    private void Log(string message, string? keyLocal = null)
-    {
-        if (!keyLocal.IsEmpty())
-        {
-            message = $"{message}; {L.KEY_LOCALIZATION}:<{keyLocal}>";
-        }
-
-        _logger.LogEx(NAME_THIS_CLASS, message);
-    }
-    #endregion Logger
-
-    private readonly HttpClient _httpClient;
-    private readonly IIniFile _iniFileProvider;
+    private readonly HttpClient httpClient;
+    private readonly IIniFile iniFileProvider;
     private readonly IInternetChecker _internetCheckerProvider;
-    private readonly JwtTokenCache _tokenCache;
+    private readonly JwtTokenCache tokenCache;
+    private readonly ILogger<HttpRequesterProvider> logger;
 
-
-    public HttpRequesterProvider(IIniFile iniFileProvider, IInternetChecker internetCheckerProvider, JwtTokenCache tokenCache, ILogger logger)
+    public HttpRequesterProvider(IIniFile iniFileProvider, IInternetChecker internetCheckerProvider, JwtTokenCache tokenCache, ILogger<HttpRequesterProvider> logger)
     {
-        _iniFileProvider = iniFileProvider;
+        this.iniFileProvider = iniFileProvider;
         _internetCheckerProvider = internetCheckerProvider;
-        _tokenCache = tokenCache;
-        _logger = logger;
-        _httpClient = new();
-        double timeout = _iniFileProvider.ReadDouble("Http", "Timeout", 30d);
-        _httpClient.Timeout = TimeSpan.FromSeconds(timeout);
+        this.tokenCache = tokenCache;
+        this.logger = logger;
+        httpClient = new();
+        double timeout = this.iniFileProvider.ReadDouble("Http", "Timeout", 30d);
+        httpClient.Timeout = TimeSpan.FromSeconds(timeout);
     }
 
 
@@ -55,7 +39,7 @@ internal class HttpRequesterProvider : IHttpRequester
         if (url.IsEmpty())
         {
             string e = "url IsEmpty";
-            Log(e);
+            logger.Log(e);
             throw new Exception(e);
         }
 
@@ -63,7 +47,7 @@ internal class HttpRequesterProvider : IHttpRequester
         if (uri == null)
         {
             string e = "uri is null";
-            Log(e);
+            logger.Log(e);
             throw new Exception(e);
         }
 
@@ -82,7 +66,7 @@ internal class HttpRequesterProvider : IHttpRequester
 
             if (useJwtToken)
             {
-                string? jwtToken = _tokenCache.Token;
+                string? jwtToken = tokenCache.Token;
                 if (!jwtToken.IsEmpty())
                 {
                     // Если был передан токен то подставляем его в заголовок как авторизацию
@@ -90,11 +74,11 @@ internal class HttpRequesterProvider : IHttpRequester
                 }
             }
 
-            using HttpResponseMessage response = await _httpClient.SendAsync(request, cancellationToken);
+            using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
             string responseContent = await response.Content.ReadAsStringAsync();
             if (responseContent.IsEmpty())
             {
-                Log("responseContent IsEmpty", L.Error.Server.InvalidResponse);
+                logger.Log("responseContent IsEmpty", L.Error.Server.InvalidResponse);
                 return null;
             }
             return responseContent;
@@ -118,19 +102,19 @@ internal class HttpRequesterProvider : IHttpRequester
         }
         catch (TaskCanceledException ex) when (ex.InnerException is TimeoutException)
         {
-            Log(ex.ToString(), L.Error.Server.Timeout);
+            logger.Log(ex.ToString(), L.Error.Server.Timeout);
             return null;
         }
         catch (HttpRequestException ex) when (ex.InnerException is WebException)
         {
             bool haveInternet = await _internetCheckerProvider.CheckInternetConnectionAsync(cancellationToken);
             string key = haveInternet ? L.Error.Server.Unavailable : L.Error.Server.NoInternetConnection;
-            Log(ex.ToString(), key);
+            logger.Log(ex.ToString(), key);
             return null;
         }
         catch (Exception ex)
         {
-            Log(ex.ToString(), L.Error.Server.InvalidResponse);
+            logger.Log(ex.ToString(), L.Error.Server.InvalidResponse);
             return null;
         }
     }
