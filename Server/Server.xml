@@ -38,9 +38,6 @@
             <param name="path">Путь к значению в формате JSONPath (например: "$.user.name")</param>
             <returns>Значение как строка, если оно существует и может быть преобразовано в строку; иначе <c>null</c>.</returns>
         </member>
-        <member name="M:Server.GameDataCache.IGameDataCacheService.RefreshGameDataJsonAsync(Server_DB_Postgres.DbContext_Game,System.Threading.CancellationToken)">
-            <summary> Теперь метод принимает контекст напрямую. </summary>
-        </member>
         <member name="P:Server.GameDataCache.GameDataCacheService.GameDataJson">
             <summary> Возвращает JSON-строку с данными. </summary>
             <returns> JSON-строка со всеми константными игровыми данными необходимыми на стороне клиента. </returns>

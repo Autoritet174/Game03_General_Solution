@@ -129,25 +129,15 @@ internal class PlayerCollectionProvider(
         return playerCollectionCache.collection.DtoCollectionEquipments.Count;
     }
 
-    /// <summary>
-    /// Получить коллекцию героев сгруппированную по именам групп.
-    /// </summary>
-    /// <returns></returns>
+    /// <summary> Получить коллекцию героев сгруппированную по именам групп. </summary>
     public IEnumerable<GroupCollectionElement> GetCollectionHeroesGroupedByGroupNames()
     {
         List<GroupCollectionElement> result = [];
         foreach (string groupName in playerCollectionCache.listGroupNameHero)
         {
-            IEnumerable<DtoHero> heroes;
-            if (groupName == string.Empty)
-            {
-                heroes = playerCollectionCache.collection.DtoCollectionHeroes.Where(a => a.GroupName is null or "");
-            }
-            else
-            {
-                heroes = playerCollectionCache.collection.DtoCollectionHeroes.Where(a => a.GroupName == groupName);
-            }
-
+            List<DtoHero> c = playerCollectionCache.collection.DtoCollectionHeroes;
+            IEnumerable<DtoHero> heroes = groupName == string.Empty ? c.Where(a => a.GroupName is null or "") : c.Where(a => a.GroupName == groupName);
+            
             heroes = heroes.OrderByDescending(a => a.Rarity)
                 .ThenBy(a => a.Level)
                 .ThenBy(a =>
@@ -179,20 +169,14 @@ internal class PlayerCollectionProvider(
         return result.OrderByDescending(a => a.Priority);
     }
 
+    /// <summary> Получить коллекцию экипировки сгруппированную по именам групп. </summary>
     public IEnumerable<GroupCollectionElement> GetCollectionEquipmentesGroupByGroups()
     {
         List<GroupCollectionElement> result = [];
         foreach (string groupName in playerCollectionCache.listGroupNameEquipment)
         {
-            IEnumerable<DtoEquipment> equipments;
-            if (groupName == string.Empty)
-            {
-                equipments = playerCollectionCache.collection.DtoCollectionEquipments.Where(a => a.GroupName is null or "");
-            }
-            else
-            {
-                equipments = playerCollectionCache.collection.DtoCollectionEquipments.Where(a => a.GroupName == groupName);
-            }
+            List<DtoEquipment> c = playerCollectionCache.collection.DtoCollectionEquipments;
+            IEnumerable<DtoEquipment> equipments = groupName == string.Empty ? c.Where(a => a.GroupName is null or "") : c.Where(a => a.GroupName == groupName);
 
             equipments = equipments.OrderByDescending(a =>
                 {
