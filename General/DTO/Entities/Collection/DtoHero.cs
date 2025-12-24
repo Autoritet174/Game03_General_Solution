@@ -1,6 +1,5 @@
 using General.DTO.Entities.GameData;
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace General.DTO.Entities.Collection;
 

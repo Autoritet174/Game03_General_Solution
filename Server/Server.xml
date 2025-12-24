@@ -429,6 +429,33 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="T:Server.LoggerExtensions">
+            <summary>
+            Предоставляет методы-расширения для <see cref="T:Microsoft.Extensions.Logging.ILogger"/>, обеспечивающие безопасное и стандартизированное логирование ошибок, критических ошибок и предупреждений с поддержкой исключений.
+            </summary>
+        </member>
+        <member name="M:Server.LoggerExtensions.LError(Microsoft.Extensions.Logging.ILogger,System.Exception,System.String,System.Object[])">
+            <summary>
+            Логирует ошибку с полным стек-трейсом, но без немедленного форматирования исключения.
+            </summary>
+            <param name="logger">Логгер.</param>
+            <param name="ex">Исключение.</param>
+            <param name="message">Основное сообщение.</param>
+        </member>
+        <member name="M:Server.LoggerExtensions.LInfo(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
+            <summary>
+            Логирует информационное сообщение с использованием стандартизированного шаблона.
+            </summary>
+            <param name="logger">Логгер.</param>
+            <param name="message">Информационное сообщение.</param>
+        </member>
+        <member name="M:Server.LoggerExtensions.LWarning(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
+            <summary>
+            Логирует предупреждение с использованием стандартизированного шаблона.
+            </summary>
+            <param name="logger">Логгер.</param>
+            <param name="message">Предупреждающее сообщение.</param>
+        </member>
         <member name="T:Server.Program">
             <summary> Класс содержит точку входа приложения и настройки сервисов, аутентификации, middleware, маршрутов и баз данных. </summary>
         </member>

@@ -25,11 +25,11 @@ public class GameDataCacheService() : IGameDataCacheService
     public async Task RefreshGameDataJsonAsync(DbContext_Game db, CancellationToken cancellationToken = default)
     {
         List<DtoBaseEquipment> baseEquipments = await db.BaseEquipments.AsNoTracking().Select(static h => new DtoBaseEquipment(
-            h.Id, h.Name, h.Rarity, h.IsUnique, h.EquipmentTypeId, h.Stats)
+            h.Id, h.Name, h.Rarity, h.IsUnique, h.EquipmentTypeId, h.Health, h.Damage)
             ).ToListAsync(cancellationToken);
 
         List<DtoBaseHero> baseHeroes = await db.BaseHeroes.AsNoTracking().Select(static h => new DtoBaseHero(
-            h.Id, h.Name, h.Rarity, h.IsUnique, h.MainStat, h.Stats)
+            h.Id, h.Name, h.Rarity, h.IsUnique, h.MainStat, h.Health, h.Damage)
             ).ToListAsync(cancellationToken);
 
         List<DtoCreatureType> creatureTypes = await db.CreatureTypes.AsNoTracking().Select(static h => new DtoCreatureType(

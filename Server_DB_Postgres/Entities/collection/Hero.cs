@@ -87,12 +87,10 @@ public class Hero : IVersion, ICreatedAt, IUpdatedAt
     /// <summary> Здоровье. Первые три знака, тысячные доли от единицы видимой игроку. </summary>
     public long Health1000 { get; set; }
 
-
     // --------------Характеристики кубика ДНД----------------
+
     [Column(TypeName = "jsonb")]
     public Dice? Damage { get; set; }
-    //[Column(TypeName = "jsonb")]
-    //public Stats? Stats { get; set; }
     #endregion Характеристики
 
 

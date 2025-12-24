@@ -25,8 +25,4 @@ public class Equipment : IVersion, ICreatedAt, IUpdatedAt
     public int BaseEquipmentId { get; set; }
     [ForeignKey(nameof(BaseEquipmentId))]
     public BaseEquipment? BaseEquipment { get; set; }
-
-    public int? SmithingMaterialId { get; set; }
-    [ForeignKey(nameof(SmithingMaterialId))]
-    public SmithingMaterial? SmithingMaterial { get; set; }
 }

@@ -1,5 +1,6 @@
 using General.DTO;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using static Server_DB_Postgres.Attributes;
@@ -31,7 +32,15 @@ public class BaseEquipment
     [ForeignKey(nameof(EquipmentTypeId))]
     public EquipmentType? EquipmentTypes { get; set; }
 
-    // --------------Характеристики----------------
+    public int? SmithingMaterialId { get; set; }
+    [ForeignKey(nameof(SmithingMaterialId))]
+    public SmithingMaterial? SmithingMaterial { get; set; }
+
+    #region Характеристики
     [Column(TypeName = "jsonb")]
-    public Stats? Stats { get; set; }
+    public Dice? Health { get; set; }
+
+    [Column(TypeName = "jsonb")]
+    public Dice? Damage { get; set; }
+    #endregion Характеристики
 }

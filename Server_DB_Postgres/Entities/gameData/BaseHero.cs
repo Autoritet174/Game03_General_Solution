@@ -37,8 +37,12 @@ public class BaseHero
     //[NotMapped]
     //public IReadOnlyCollection<CreatureType> CreatureTypes => X_Hero_CreatureType?.Select(static x => x.CreatureTypes).ToList() ?? [];
 
-    // --------------Характеристики----------------
+    #region Характеристики
     [Column(TypeName = "jsonb")]
-    public Stats? Stats { get; set; }
+    public Dice? Health { get; set; }
+
+    [Column(TypeName = "jsonb")]
+    public Dice? Damage { get; set; }
+    #endregion Характеристики
 
 }
