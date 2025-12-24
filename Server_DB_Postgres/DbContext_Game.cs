@@ -1,9 +1,6 @@
-using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
-using NetTopologySuite.Index.HPRtree;
-using Newtonsoft.Json;
 using Npgsql;
 using Server_DB_Postgres.Entities.Collection;
 using Server_DB_Postgres.Entities.GameData;
@@ -16,14 +13,8 @@ using System.Collections.Concurrent;
 namespace Server_DB_Postgres;
 
 /// <summary> Контекст базы данных для работы с игровыми данными. </summary>
-public class DbContext_Game : DbContext
+public class DbContext_Game(DbContextOptions<DbContext_Game> options) : DbContext(options)
 {
-
-    public DbContext_Game(DbContextOptions<DbContext_Game> options) : base(options)
-    {
-    }
-
-
     //public static DbContextOptions<DbContext_Game> DbContextOptions { get; private set; } = null!;
     //public static NpgsqlDataSource DataSource { get; private set; } = null!;
     //public static void Init(string connectionString)
@@ -103,33 +94,33 @@ public class DbContext_Game : DbContext
     //private static async Task Test()
     //{
     //    using DbContext_Game db = Create();
-        //var h1 = db.BaseHeroes.First(a => a.Id == 1);
+    //var h1 = db.BaseHeroes.First(a => a.Id == 1);
 
-        //foreach (var h in db.BaseHeroes)
-        //{
-        //    h.Stats ??= new Stats();
-        //    h.Stats.Health = h.Health;
-        //    h.Stats.Damage = h.Damage;
-        //}
+    //foreach (var h in db.BaseHeroes)
+    //{
+    //    h.Stats ??= new Stats();
+    //    h.Stats.Health = h.Health;
+    //    h.Stats.Damage = h.Damage;
+    //}
 
-        //h1.Health = new Dice(16, 24);
-        //h1.Damage = new Dice(4, 21);
+    //h1.Health = new Dice(16, 24);
+    //h1.Damage = new Dice(4, 21);
 
-        //var h2 = db.BaseHeroes.First(a => a.Id == 2);
-        //h2.Health = new Dice(10, 28);
-        //h2.Damage = new Dice(5, 21);
+    //var h2 = db.BaseHeroes.First(a => a.Id == 2);
+    //h2.Health = new Dice(10, 28);
+    //h2.Damage = new Dice(5, 21);
 
-        //var h3 = db.BaseHeroes.First(a => a.Id == 3);
-        //h3.Health = new Dice(11, 39);
-        //h3.Damage = new Dice(3, 25);
+    //var h3 = db.BaseHeroes.First(a => a.Id == 3);
+    //h3.Health = new Dice(11, 39);
+    //h3.Damage = new Dice(3, 25);
 
-        //var h4 = db.BaseHeroes.First(a => a.Id == 4);
-        //h4.Health = new Dice(15, 21);
-        //h4.Damage = new Dice(4, 23);
+    //var h4 = db.BaseHeroes.First(a => a.Id == 4);
+    //h4.Health = new Dice(15, 21);
+    //h4.Damage = new Dice(4, 23);
 
-        //var h5 = db.BaseHeroes.First(a => a.Id == 5);
-        //h5.Health = new Dice(16, 58);
-        //h5.Damage = new Dice(4, 21);
+    //var h5 = db.BaseHeroes.First(a => a.Id == 5);
+    //h5.Health = new Dice(16, 58);
+    //h5.Damage = new Dice(4, 21);
 
     //    _ = db.SaveChanges();
     //}

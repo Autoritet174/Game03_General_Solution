@@ -10,10 +10,7 @@ using System.Text.Json.Nodes;
 
 namespace Server.Http_NS.Controllers_NS.Users_NS;
 
-/// <summary>
-/// Фоновый сервис пакетной записи логов авторизации и данных устройств
-/// с контролируемыми повторными попытками и корректной остановкой.
-/// </summary>
+/// <summary> Фоновый сервис пакетной записи логов авторизации и данных устройств с контролируемыми повторными попытками и корректной остановкой. </summary>
 public sealed class BackgroundLoggerAuthentificationService(
     ILogger<BackgroundLoggerAuthentificationService> logger,
     IServiceProvider serviceProvider) : IHostedService, IDisposable

@@ -4,6 +4,7 @@ using System.Net;
 using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server_DB_Postgres;
@@ -13,9 +14,11 @@ using Server_DB_Postgres;
 namespace Server_DB_Postgres.Migrations
 {
     [DbContext(typeof(DbContext_Game))]
-    partial class DbContext_GameModelSnapshot : ModelSnapshot
+    [Migration("20251224071911_Fix20")]
+    partial class Fix20
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,10 +47,6 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnType("character varying(255)")
                         .HasColumnName("group_name");
 
-                    b.Property<int?>("SmithingMaterialId")
-                        .HasColumnType("integer")
-                        .HasColumnName("smithing_material_id");
-
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
@@ -68,9 +67,6 @@ namespace Server_DB_Postgres.Migrations
 
                     b.HasIndex("BaseEquipmentId")
                         .HasDatabaseName("equipments__base_equipment_id__idx");
-
-                    b.HasIndex("SmithingMaterialId")
-                        .HasDatabaseName("equipments__smithing_material_id__idx");
 
                     b.HasIndex("UserId")
                         .HasDatabaseName("equipments__user_id__idx");
@@ -717,9 +713,9 @@ namespace Server_DB_Postgres.Migrations
 
             modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.X_Hero_CreatureType", b =>
                 {
-                    b.Property<int>("BaseHeroId")
+                    b.Property<int>("HeroId")
                         .HasColumnType("integer")
-                        .HasColumnName("base_hero_id")
+                        .HasColumnName("hero_id")
                         .HasColumnOrder(0);
 
                     b.Property<int>("CreatureTypeId")
@@ -727,7 +723,7 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnName("creature_type_id")
                         .HasColumnOrder(1);
 
-                    b.HasKey("BaseHeroId", "CreatureTypeId")
+                    b.HasKey("HeroId", "CreatureTypeId")
                         .HasName("x_hero_creature_type__pkey");
 
                     b.HasIndex("CreatureTypeId")
@@ -1000,11 +996,6 @@ namespace Server_DB_Postgres.Migrations
                         .IsRequired()
                         .HasConstraintName("equipments__base_equipment_id__base_equipments__fkey");
 
-                    b.HasOne("Server_DB_Postgres.Entities.GameData.SmithingMaterial", "SmithingMaterial")
-                        .WithMany()
-                        .HasForeignKey("SmithingMaterialId")
-                        .HasConstraintName("equipments__smithing_material_id__smithing_materials__fkey");
-
                     b.HasOne("Server_DB_Postgres.Entities.Users.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -1013,8 +1004,6 @@ namespace Server_DB_Postgres.Migrations
                         .HasConstraintName("equipments__user_id__users__fkey");
 
                     b.Navigation("BaseEquipment");
-
-                    b.Navigation("SmithingMaterial");
 
                     b.Navigation("User");
                 });
@@ -1274,23 +1263,23 @@ namespace Server_DB_Postgres.Migrations
 
             modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.X_Hero_CreatureType", b =>
                 {
-                    b.HasOne("Server_DB_Postgres.Entities.GameData.BaseHero", "BaseHero")
-                        .WithMany("X_Hero_CreatureType")
-                        .HasForeignKey("BaseHeroId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("x_hero_creature_type__base_hero_id__base_heroes__fkey");
-
-                    b.HasOne("Server_DB_Postgres.Entities.GameData.CreatureType", "CreatureType")
+                    b.HasOne("Server_DB_Postgres.Entities.GameData.CreatureType", "CreatureTypes")
                         .WithMany("X_Hero_CreatureType")
                         .HasForeignKey("CreatureTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("x_hero_creature_type__creature_type_id__creature_types__fkey");
 
+                    b.HasOne("Server_DB_Postgres.Entities.GameData.BaseHero", "BaseHero")
+                        .WithMany("X_Hero_CreatureType")
+                        .HasForeignKey("HeroId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("x_hero_creature_type__hero_id__base_heroes__fkey");
+
                     b.Navigation("BaseHero");
 
-                    b.Navigation("CreatureType");
+                    b.Navigation("CreatureTypes");
                 });
 
             modelBuilder.Entity("Server_DB_Postgres.Entities.Logs.UserAuthorization", b =>

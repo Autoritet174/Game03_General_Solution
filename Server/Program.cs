@@ -65,6 +65,8 @@ internal partial class Program
         // РЕПОЗИТОРИИ
         _ = services.AddScoped<CollectionHeroRepository>();
 
+        _ = services.AddSingleton<IGameDataCacheService, GameDataCacheService>();
+        _ = services.AddSingleton<ITestService, TestService>();
 
 
         //// Настройки "MongoDb"
@@ -94,7 +96,6 @@ internal partial class Program
 
         // Добавляем HeroCacheService
         //_ = services.AddScoped<IHeroCacheService, HeroesCacheService>();
-        _ = services.AddSingleton<IGameDataCacheService, GameDataCacheService>();
 
         _ = services.AddMemoryCache();
 
@@ -429,6 +430,7 @@ internal partial class Program
     {
         using IServiceScope scope = app.Services.CreateScope();
         IGameDataCacheService heroCache = scope.ServiceProvider.GetRequiredService<IGameDataCacheService>();
+        ITestService testService = scope.ServiceProvider.GetRequiredService<ITestService>();
         // Получаем временный Scoped-контекст БД
         DbContext_Game db = scope.ServiceProvider.GetRequiredService<DbContext_Game>();
         try
@@ -438,6 +440,8 @@ internal partial class Program
 
             ILogger<Program> logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
             logger.LogInformation("Game data cache loaded successfully");
+
+            await testService.Main(db, cts.Token);
         }
         catch (Exception ex)
         {

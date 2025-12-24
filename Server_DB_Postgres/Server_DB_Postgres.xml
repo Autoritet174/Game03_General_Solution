@@ -27,6 +27,9 @@
         <member name="T:Server_DB_Postgres.DbContext_Game">
             <summary> Контекст базы данных для работы с игровыми данными. </summary>
         </member>
+        <member name="M:Server_DB_Postgres.DbContext_Game.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions{Server_DB_Postgres.DbContext_Game})">
+            <summary> Контекст базы данных для работы с игровыми данными. </summary>
+        </member>
         <member name="P:Server_DB_Postgres.DbContext_Game.Equipments">
             <summary> Экипировка игрока. </summary>
         </member>
@@ -89,36 +92,6 @@
         <member name="M:Server_DB_Postgres.DbContext_Game.SaveChangesAsync(System.Threading.CancellationToken)">
             <summary> <inheritdoc/> </summary>
             <returns></returns>
-        </member>
-        <member name="T:Server_DB_Postgres.Entities.Collection.Equipment">
-            <summary> Герой в коллекции пользователя. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Equipment.Id">
-            <summary> Уникальный идентификатор. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Equipment.UserId">
-            <summary> Уникальный идентификатор владельца. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Equipment.User">
-            <summary> Сущность <see cref="T:Server_DB_Postgres.Entities.Users.User"/>. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Equipment.GroupName">
-            <summary> Имя группы. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Equipment.Version">
-            <summary> <inheritdoc/> </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Equipment.CreatedAt">
-            <summary> <inheritdoc/> </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Equipment.UpdatedAt">
-            <summary> <inheritdoc/> </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Equipment.BaseEquipmentId">
-            <summary> Идентификатор базовой версии экипировки. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Equipment.BaseEquipment">
-            <summary> Сущность <see cref="T:Server_DB_Postgres.Entities.GameData.BaseEquipment"/>. </summary>
         </member>
         <member name="T:Server_DB_Postgres.Entities.Collection.Hero">
             <summary> Герой в коллекции пользователя. </summary>
@@ -411,38 +384,19 @@
         <member name="P:Server_DB_Postgres.Entities.GameData.DamageType.X_EquipmentType_DamageType">
             <summary> Навигационное свойство к <see cref="T:Server_DB_Postgres.Entities.GameData.X_EquipmentType_DamageType"/>. </summary>
         </member>
+        <member name="P:Server_DB_Postgres.Entities.GameData.DamageType.Category">
+            <summary>
+            Категория типа урона.
+            0 - без категории.
+            1 - физический.
+            2 - магический.
+            </summary>
+        </member>
         <member name="T:Server_DB_Postgres.Entities.GameData.EquipmentType">
             <summary> Тип экипировки. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.EquipmentType.Id">
-            <summary> Уникальный идентификатор. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.EquipmentType.Name">
-            <summary> Уникальное наименование на английском. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.EquipmentType.NameRu">
-            <summary> Уникальное наименование на русском. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.EquipmentType.X_EquipmentType_DamageType">
-            <summary> Навигационное свойство к DamageTypes если экипировка наносит урон. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.EquipmentType.MassPhysical">
-            <summary> Масса предмета в граммах как если бы предмет был из железа. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.EquipmentType.MassMagical">
-            <summary> Магическая масса предмета. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.EquipmentType.SlotTypeId">
-            <summary> Идентификатор <see cref="T:Server_DB_Postgres.Entities.GameData.SlotType"/>. </summary>
-        </member>
         <member name="F:Server_DB_Postgres.Entities.GameData.EquipmentType.SlotType">
-            <summary> Тип слота экипировки. Не индекс слота а его тип, то есть Кольцо или Браслет, а не Кольцо2 или Браслет1. Сущность <see cref="T:Server_DB_Postgres.Entities.GameData.SlotType"/>. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.EquipmentType.CanCraftSmithing">
-            <summary> Можно создать через "Кузнечное дело". </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.EquipmentType.CanCraftJewelcrafting">
-            <summary> Можно создать через "Ювелирное дело". </summary>
+            <summary> Тип слота экипировки. Не индекс слота а его тип, то есть Кольцо или Браслет, а не Кольцо2 или Браслет1. </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.GameData.EquipmentType.SpendActionPoints">
             <summary> Трата очков действия за удар. </summary>
@@ -486,9 +440,6 @@
         <member name="P:Server_DB_Postgres.Entities.GameData.SlotType.EquipmentTypes">
             <summary> Навигационное свойство к <see cref="T:Server_DB_Postgres.Entities.GameData.EquipmentType"/>. </summary>
         </member>
-        <member name="T:Server_DB_Postgres.Entities.GameData.SmithingMaterial">
-            <summary> Тип существа. </summary>
-        </member>
         <member name="P:Server_DB_Postgres.Entities.GameData.SmithingMaterial.Id">
             <summary> Уникальный идентификатор. </summary>
         </member>
@@ -522,7 +473,7 @@
         <member name="T:Server_DB_Postgres.Entities.GameData.X_Hero_CreatureType">
             <summary> Таблица для связи Hero и CreatureType. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.X_Hero_CreatureType.HeroId">
+        <member name="P:Server_DB_Postgres.Entities.GameData.X_Hero_CreatureType.BaseHeroId">
             <summary> Идентификатор <see cref="T:Server_DB_Postgres.Entities.GameData.BaseHero"/>. </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.GameData.X_Hero_CreatureType.BaseHero">
@@ -531,7 +482,7 @@
         <member name="P:Server_DB_Postgres.Entities.GameData.X_Hero_CreatureType.CreatureTypeId">
             <summary> Идентификатор <see cref="T:Server_DB_Postgres.Entities.GameData.CreatureType"/>. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.X_Hero_CreatureType.CreatureTypes">
+        <member name="P:Server_DB_Postgres.Entities.GameData.X_Hero_CreatureType.CreatureType">
             <summary> Сущность <see cref="T:Server_DB_Postgres.Entities.GameData.CreatureType"/>. </summary>
         </member>
         <member name="T:Server_DB_Postgres.Entities.Logs.UserAuthorization">
@@ -935,6 +886,66 @@
             <inheritdoc />
         </member>
         <member name="M:Server_DB_Postgres.Migrations.Fix17.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Fix18">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix18.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix18.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix18.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Fix19">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix19.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix19.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix19.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Fix20">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix20.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix20.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix20.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Fix21">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix21.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix21.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix21.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Fix22">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix22.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix22.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix22.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Server_DB_Postgres.ModelBuilderExt">

@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Npgsql;
 using Server_DB_Postgres;
 using Server_DB_Postgres.Entities.GameData;
 
@@ -7,6 +9,20 @@ namespace DataBaseEditor;
 public partial class FormMain : Form
 {
     private const string CONNECTION_STRING = "Host=localhost;Port=5432;Database=Game;Username=postgres;Password=";
+
+    private static DbContext_Game GetContext()
+    {
+        var dataSourceBuilder = new NpgsqlDataSourceBuilder(CONNECTION_STRING);
+        JsonSerializerSettings jsonSettings = new()
+        {
+            NullValueHandling = NullValueHandling.Ignore // Это исключит null поля из JSON
+        };
+        _ = dataSourceBuilder.UseJsonNet(jsonSettings);
+        NpgsqlDataSource dataSource = dataSourceBuilder.Build();
+        DbContextOptionsBuilder<DbContext_Game> optionsBuilder = new();
+        return new DbContext_Game(optionsBuilder.UseNpgsql(dataSource).Options);
+    }
+
     public FormMain()
     {
         InitializeComponent();
@@ -14,7 +30,7 @@ public partial class FormMain : Form
 
     private void button_WeaponTypes_Refresh_Click(object sender, EventArgs e)
     {
-        using var db = DbContext_Game.Create();
+        using DbContext_Game db = GetContext();
         dgv_WeaponTypes.AutoGenerateColumns = false;
         //dgv_WeaponTypes.Columns[ColumnNameRu.Name].DataPropertyName = "NameRu";
         dgv_WeaponTypes.DataSource = db.EquipmentTypes.ToList();
@@ -24,7 +40,7 @@ public partial class FormMain : Form
     private void dgv_WeaponTypes_CellClick(object sender, DataGridViewCellEventArgs e)
     {
         int id = Convert.ToInt32(dgv_WeaponTypes.Rows[e.RowIndex].Cells["id"].Value);
-        using var db = DbContext_Game.Create();
+        using DbContext_Game db = GetContext();
         var damageTypes = db.DamageTypes.Where(a => a.Id <= 4).ToList();
         dgv_DamageTypes.RowCount = damageTypes.Count;
         for (int i = 0; i < damageTypes.Count; i++)
@@ -41,7 +57,7 @@ public partial class FormMain : Form
     private void button_WeaponTypes_Save_Click(object sender, EventArgs e)
     {
         int id = Convert.ToInt32(dgv_WeaponTypes.CurrentRow!.Cells["id"].Value);
-        using var db = DbContext_Game.Create();
+        using DbContext_Game db = GetContext();
         IQueryable<X_EquipmentType_DamageType> xArray = db.x_EquipmentTypes_DamageTypes.Where(a => a.EquipmentTypeId == id);
         for (int i = 0; i < dgv_DamageTypes.RowCount; i++)
         {

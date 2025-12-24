@@ -61,7 +61,7 @@ public class GameDataCacheService() : IGameDataCacheService
            ).ToListAsync(cancellationToken);
 
         List<DtoXHeroCreatureType> xHeroesCreatureTypes = await db.x_Heroes_CreatureTypes.AsNoTracking().Select(static h => new DtoXHeroCreatureType(
-            h.HeroId, h.CreatureTypeId)
+            h.BaseHeroId, h.CreatureTypeId)
            ).ToListAsync(cancellationToken);
 
 

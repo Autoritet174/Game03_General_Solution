@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using static Server_DB_Postgres.Attributes;
 
 namespace Server_DB_Postgres.Entities.GameData;
 
@@ -27,6 +28,15 @@ public class DamageType
 
     /// <summary> Навигационное свойство к <see cref="GameData.X_EquipmentType_DamageType"/>. </summary>
     public ICollection<X_EquipmentType_DamageType> X_EquipmentType_DamageType { get; set; } = [];
+
+    /// <summary>
+    /// Категория типа урона.
+    /// 0 - без категории.
+    /// 1 - физический.
+    /// 2 - магический.
+    /// </summary>
+    [HasDefaultValue(0)]
+    public int Category {get; set; }
 
     ///// <summary>// Типы оружия для этого типа урона. Вычисляемое свойство.
     ///// </summary>

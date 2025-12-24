@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Server_DB_Postgres.Entities.GameData;
 
-/// <summary> Тип существа. </summary>
 [Table("SmithingMaterials", Schema = nameof(GameData))]
 [Index(nameof(Name), IsUnique = true)]
 public class SmithingMaterial

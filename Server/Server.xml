@@ -221,16 +221,10 @@
             <returns>Количество секунд до разблокировки или 0, если блокировка завершена.</returns>
         </member>
         <member name="T:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService">
-            <summary>
-            Фоновый сервис пакетной записи логов авторизации и данных устройств
-            с контролируемыми повторными попытками и корректной остановкой.
-            </summary>
+            <summary> Фоновый сервис пакетной записи логов авторизации и данных устройств с контролируемыми повторными попытками и корректной остановкой. </summary>
         </member>
         <member name="M:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService.#ctor(Microsoft.Extensions.Logging.ILogger{Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService},System.IServiceProvider)">
-            <summary>
-            Фоновый сервис пакетной записи логов авторизации и данных устройств
-            с контролируемыми повторными попытками и корректной остановкой.
-            </summary>
+            <summary> Фоновый сервис пакетной записи логов авторизации и данных устройств с контролируемыми повторными попытками и корректной остановкой. </summary>
         </member>
         <member name="T:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService.LogEntry">
             <summary>
