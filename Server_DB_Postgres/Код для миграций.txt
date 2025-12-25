@@ -9,7 +9,7 @@ dotnet ef database update `
 --context DbContext_Game
 
 намнбкемхе дн сйюгюммни лхцпюжхх бйкчвхрекэмн, бя╗ врн онгфе бшонкмхр нрйюр б напюрел онпъдйе
-dotnet ef database update Fix8 `
+dotnet ef database update Fix23 `
 --project ".\Server_DB_Postgres\Server_DB_Postgres.csproj" `
 --startup-project ".\Server\Server.csproj" `
 --context DbContext_Game

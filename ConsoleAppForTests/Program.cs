@@ -1,5 +1,6 @@
 using Game03Client.PlayerCollection;
 using General.DTO.Entities.Collection;
+using Npgsql;
 
 namespace ConsoleAppForTests;
 
@@ -21,8 +22,20 @@ internal class Program
         //}
         //Console.ReadLine();
         //Console.WriteLine(nameof(General.Url.Collection.All));
-       
-        Start();
+        // Создайте тестовую программу
+
+        var connString = "Host=localhost;Port=5432;Database=Game;Username=postgres;Password=";
+        using var conn = new NpgsqlConnection(connString);
+        try
+        {
+            conn.Open();
+            Console.WriteLine("Подключение успешно!");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ошибка: {ex.Message}");
+        }
+        //Start();
     }
     private static void Game_OnLog(object message)
     {

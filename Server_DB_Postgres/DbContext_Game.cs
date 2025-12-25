@@ -231,6 +231,8 @@ public class DbContext_Game(DbContextOptions<DbContext_Game> options) : DbContex
         modelBuilder.AddConcurrencyTokenToVersion();
         modelBuilder.CorrectNames();
         modelBuilder.ApplyDefaultValues();
+        modelBuilder.InitSoftDeleted();
+        //modelBuilder.Entity<Equipment>().HasQueryFilter(e => e.DeletedAt == null);
     }
 
     /// <summary> <inheritdoc/> </summary>
@@ -252,8 +254,9 @@ public class DbContext_Game(DbContextOptions<DbContext_Game> options) : DbContex
     private void OnSave()
     {
         OnSaveCorrectVersion();
-        OnSaveSetTimespamp();
+        OnSaveSetTimestamp();
     }
+
 
     private static readonly ConcurrentDictionary<IEntityType, IProperty?> _versionPropertyCache = new();
     private static readonly ConcurrentDictionary<Type, bool> _interfaceCreatedAtCache = new();
@@ -281,7 +284,7 @@ public class DbContext_Game(DbContextOptions<DbContext_Game> options) : DbContex
         }
     }
 
-    private void OnSaveSetTimespamp()
+    private void OnSaveSetTimestamp()
     {
         DateTimeOffset utcNow = DateTimeOffset.UtcNow;
         IEnumerable<EntityEntry> entries = ChangeTracker.Entries().Where(e => e.State is EntityState.Added or EntityState.Modified);

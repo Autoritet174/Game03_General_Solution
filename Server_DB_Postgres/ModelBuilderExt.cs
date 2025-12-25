@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Server_DB_Postgres.Entities.Collection;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 using static General.StringExt;
@@ -53,6 +54,14 @@ public static class ModelBuilderExt
         }
     }
 
+    public static void InitSoftDeleted(this ModelBuilder modelBuilder)
+    {
+        //_ = modelBuilder.Entity<Equipment>(entity =>
+        //{
+        //    _ = entity.HasQueryFilter(e => e.DeletedAt == null);
+        //    _ = entity.HasIndex(e => e.DeletedAt).HasFilter($"{nameof(Equipment.DeletedAt).ToSnakeCase()} IS NULL");
+        //});
+    }
 
     /// <summary>
     /// Преобразует имена таблиц, столбцов, ключей и индексов модели.
@@ -104,7 +113,7 @@ public static class ModelBuilderExt
                     entity.SetSchema(newSchemaName);
                 }
             }
-            
+
         }
     }
 
