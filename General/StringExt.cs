@@ -11,6 +11,14 @@ namespace General;
 /// </summary>
 public static partial class StringExt
 {
+    /// <summary>
+    /// Заменить все символы '\' на '/'
+    /// </summary>
+    /// <param name="s"></param>
+    /// <returns></returns>
+    public static string ToDirectSlash(this string? s) {
+        return s.IsEmpty() ? string.Empty : s.Replace("\\", "/");
+    }
 
     /// <summary>
     /// Проверяет, является ли строка <see langword="null"/>, пустой (<see cref="string.Empty"/>) или содержит только пробельные символы.
