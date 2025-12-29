@@ -54,15 +54,6 @@ public static class ModelBuilderExt
         }
     }
 
-    public static void InitSoftDeleted(this ModelBuilder modelBuilder)
-    {
-        //_ = modelBuilder.Entity<Equipment>(entity =>
-        //{
-        //    _ = entity.HasQueryFilter(e => e.DeletedAt == null);
-        //    _ = entity.HasIndex(e => e.DeletedAt).HasFilter($"{nameof(Equipment.DeletedAt).ToSnakeCase()} IS NULL");
-        //});
-    }
-
     /// <summary>
     /// Преобразует имена таблиц, столбцов, ключей и индексов модели.
     /// </summary>

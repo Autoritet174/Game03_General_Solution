@@ -228,10 +228,27 @@ public class DbContext_Game(DbContextOptions<DbContext_Game> options) : DbContex
     /// <param name="modelBuilder">Построитель модели.</param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        ArgumentNullException.ThrowIfNull(modelBuilder);
+        // В базовом DbContext метод пуст, но вызов является хорошей практикой 
+        // на случай смены базового класса (например, на IdentityDbContext).
+        base.OnModelCreating(modelBuilder);
+
+        // Ваши существующие расширения
         modelBuilder.AddConcurrencyTokenToVersion();
         modelBuilder.CorrectNames();
         modelBuilder.ApplyDefaultValues();
-        modelBuilder.InitSoftDeleted();
+
+        // Глобальное отключение каскадного удаления для всех сущностей
+        var foreignKeys = modelBuilder.Model
+            .GetEntityTypes()
+            .SelectMany(static e => e.GetForeignKeys());
+
+        foreach (var foreignKey in foreignKeys)
+        {
+            // Устанавливаем Restrict, чтобы предотвратить каскадное удаление на уровне БД.
+            foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
+        }
+
         //modelBuilder.Entity<Equipment>().HasQueryFilter(e => e.DeletedAt == null);
     }
 

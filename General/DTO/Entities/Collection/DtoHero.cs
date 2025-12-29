@@ -82,40 +82,40 @@ public class DtoHero()
     public Guid? Equipment12Id { get; set; }
     public DtoEquipment? DtoEquipment12 { get; set; } = null;
 
-    public Guid? Equipment13Id { get; set; }
-    public DtoEquipment? DtoEquipment13 { get; set; } = null;
+    //public Guid? Equipment13Id { get; set; }
+    //public DtoEquipment? DtoEquipment13 { get; set; } = null;
 
-    public Guid? Equipment14Id { get; set; }
-    public DtoEquipment? DtoEquipment14 { get; set; } = null;
+    //public Guid? Equipment14Id { get; set; }
+    //public DtoEquipment? DtoEquipment14 { get; set; } = null;
 
-    public Guid? Equipment15Id { get; set; }
-    public DtoEquipment? DtoEquipment15 { get; set; } = null;
+    //public Guid? Equipment15Id { get; set; }
+    //public DtoEquipment? DtoEquipment15 { get; set; } = null;
 
-    public Guid? Equipment16Id { get; set; }
-    public DtoEquipment? DtoEquipment16 { get; set; } = null;
+    //public Guid? Equipment16Id { get; set; }
+    //public DtoEquipment? DtoEquipment16 { get; set; } = null;
 
-    public Guid? Equipment17Id { get; set; }
-    public DtoEquipment? DtoEquipment17 { get; set; } = null;
+    //public Guid? Equipment17Id { get; set; }
+    //public DtoEquipment? DtoEquipment17 { get; set; } = null;
 
-    public Guid? Equipment18Id { get; set; }
-    public DtoEquipment? DtoEquipment18 { get; set; } = null;
+    //public Guid? Equipment18Id { get; set; }
+    //public DtoEquipment? DtoEquipment18 { get; set; } = null;
 
-    public Guid? Equipment19Id { get; set; }
-    public DtoEquipment? DtoEquipment19 { get; set; } = null;
+    //public Guid? Equipment19Id { get; set; }
+    //public DtoEquipment? DtoEquipment19 { get; set; } = null;
 
-    public Guid? Equipment20Id { get; set; }
-    public DtoEquipment? DtoEquipment20 { get; set; } = null;
+    //public Guid? Equipment20Id { get; set; }
+    //public DtoEquipment? DtoEquipment20 { get; set; } = null;
 
-    public Guid? Equipment21Id { get; set; }
-    public DtoEquipment? DtoEquipment21 { get; set; } = null;
+    //public Guid? Equipment21Id { get; set; }
+    //public DtoEquipment? DtoEquipment21 { get; set; } = null;
 
-    public Guid? Equipment22Id { get; set; }
-    public DtoEquipment? DtoEquipment22 { get; set; } = null;
+    //public Guid? Equipment22Id { get; set; }
+    //public DtoEquipment? DtoEquipment22 { get; set; } = null;
 
-    public Guid? Equipment23Id { get; set; }
-    public DtoEquipment? DtoEquipment23 { get; set; } = null;
+    //public Guid? Equipment23Id { get; set; }
+    //public DtoEquipment? DtoEquipment23 { get; set; } = null;
 
-    public Guid? Equipment24Id { get; set; }
-    public DtoEquipment? DtoEquipment24 { get; set; } = null;
+    //public Guid? Equipment24Id { get; set; }
+    //public DtoEquipment? DtoEquipment24 { get; set; } = null;
     #endregion Equipment
 }

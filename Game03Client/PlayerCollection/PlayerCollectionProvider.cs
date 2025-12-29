@@ -60,18 +60,18 @@ internal class PlayerCollectionProvider(
             i.DtoEquipment10 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment10Id);
             i.DtoEquipment11 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment11Id);
             i.DtoEquipment12 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment12Id);
-            i.DtoEquipment13 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment13Id);
-            i.DtoEquipment14 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment14Id);
-            i.DtoEquipment15 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment15Id);
-            i.DtoEquipment16 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment16Id);
-            i.DtoEquipment17 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment17Id);
-            i.DtoEquipment18 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment18Id);
-            i.DtoEquipment19 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment19Id);
-            i.DtoEquipment20 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment20Id);
-            i.DtoEquipment21 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment21Id);
-            i.DtoEquipment22 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment22Id);
-            i.DtoEquipment23 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment23Id);
-            i.DtoEquipment24 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment24Id);
+            //i.DtoEquipment13 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment13Id);
+            //i.DtoEquipment14 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment14Id);
+            //i.DtoEquipment15 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment15Id);
+            //i.DtoEquipment16 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment16Id);
+            //i.DtoEquipment17 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment17Id);
+            //i.DtoEquipment18 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment18Id);
+            //i.DtoEquipment19 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment19Id);
+            //i.DtoEquipment20 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment20Id);
+            //i.DtoEquipment21 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment21Id);
+            //i.DtoEquipment22 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment22Id);
+            //i.DtoEquipment23 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment23Id);
+            //i.DtoEquipment24 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment24Id);
         }
 
         playerCollectionCache.collection = c;

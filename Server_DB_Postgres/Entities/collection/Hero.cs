@@ -177,76 +177,76 @@ public class Hero : IVersion, ICreatedAt, IUpdatedAt
     [ForeignKey(nameof(Equipment12Id))]
     public Equipment? Equipment12 { get; set; }
 
-    /// <summary> Экипировка, слот 13. </summary>
-    public Guid? Equipment13Id { get; set; }
-    /// <summary> Экипировка, слот 13. </summary>
-    [ForeignKey(nameof(Equipment13Id))]
-    public Equipment? Equipment13 { get; set; }
+    ///// <summary> Экипировка, слот 13. </summary>
+    //public Guid? Equipment13Id { get; set; }
+    ///// <summary> Экипировка, слот 13. </summary>
+    //[ForeignKey(nameof(Equipment13Id))]
+    //public Equipment? Equipment13 { get; set; }
 
-    /// <summary> Экипировка, слот 14. </summary>
-    public Guid? Equipment14Id { get; set; }
-    /// <summary> Экипировка, слот 14. </summary>
-    [ForeignKey(nameof(Equipment14Id))]
-    public Equipment? Equipment14 { get; set; }
+    ///// <summary> Экипировка, слот 14. </summary>
+    //public Guid? Equipment14Id { get; set; }
+    ///// <summary> Экипировка, слот 14. </summary>
+    //[ForeignKey(nameof(Equipment14Id))]
+    //public Equipment? Equipment14 { get; set; }
 
-    /// <summary> Экипировка, слот 15. </summary>
-    public Guid? Equipment15Id { get; set; }
-    /// <summary> Экипировка, слот 15. </summary>
-    [ForeignKey(nameof(Equipment15Id))]
-    public Equipment? Equipment15 { get; set; }
+    ///// <summary> Экипировка, слот 15. </summary>
+    //public Guid? Equipment15Id { get; set; }
+    ///// <summary> Экипировка, слот 15. </summary>
+    //[ForeignKey(nameof(Equipment15Id))]
+    //public Equipment? Equipment15 { get; set; }
 
-    /// <summary> Экипировка, слот 16. </summary>
-    public Guid? Equipment16Id { get; set; }
-    /// <summary> Экипировка, слот 16. </summary>
-    [ForeignKey(nameof(Equipment16Id))]
-    public Equipment? Equipment16 { get; set; }
+    ///// <summary> Экипировка, слот 16. </summary>
+    //public Guid? Equipment16Id { get; set; }
+    ///// <summary> Экипировка, слот 16. </summary>
+    //[ForeignKey(nameof(Equipment16Id))]
+    //public Equipment? Equipment16 { get; set; }
 
-    /// <summary> Экипировка, слот 17. </summary>
-    public Guid? Equipment17Id { get; set; }
-    /// <summary> Экипировка, слот 17. </summary>
-    [ForeignKey(nameof(Equipment17Id))]
-    public Equipment? Equipment17 { get; set; }
+    ///// <summary> Экипировка, слот 17. </summary>
+    //public Guid? Equipment17Id { get; set; }
+    ///// <summary> Экипировка, слот 17. </summary>
+    //[ForeignKey(nameof(Equipment17Id))]
+    //public Equipment? Equipment17 { get; set; }
 
-    /// <summary> Экипировка, слот 18. </summary>
-    public Guid? Equipment18Id { get; set; }
-    /// <summary> Экипировка, слот 18. </summary>
-    [ForeignKey(nameof(Equipment18Id))]
-    public Equipment? Equipment18 { get; set; }
+    ///// <summary> Экипировка, слот 18. </summary>
+    //public Guid? Equipment18Id { get; set; }
+    ///// <summary> Экипировка, слот 18. </summary>
+    //[ForeignKey(nameof(Equipment18Id))]
+    //public Equipment? Equipment18 { get; set; }
 
-    /// <summary> Экипировка, слот 19. </summary>
-    public Guid? Equipment19Id { get; set; }
-    /// <summary> Экипировка, слот 19. </summary>
-    [ForeignKey(nameof(Equipment19Id))]
-    public Equipment? Equipment19 { get; set; }
+    ///// <summary> Экипировка, слот 19. </summary>
+    //public Guid? Equipment19Id { get; set; }
+    ///// <summary> Экипировка, слот 19. </summary>
+    //[ForeignKey(nameof(Equipment19Id))]
+    //public Equipment? Equipment19 { get; set; }
 
-    /// <summary> Экипировка, слот 20. </summary>
-    public Guid? Equipment20Id { get; set; }
-    /// <summary> Экипировка, слот 20. </summary>
-    [ForeignKey(nameof(Equipment20Id))]
-    public Equipment? Equipment20 { get; set; }
+    ///// <summary> Экипировка, слот 20. </summary>
+    //public Guid? Equipment20Id { get; set; }
+    ///// <summary> Экипировка, слот 20. </summary>
+    //[ForeignKey(nameof(Equipment20Id))]
+    //public Equipment? Equipment20 { get; set; }
 
-    /// <summary> Экипировка, слот 21. </summary>
-    public Guid? Equipment21Id { get; set; }
-    /// <summary> Экипировка, слот 21. </summary>
-    [ForeignKey(nameof(Equipment21Id))]
-    public Equipment? Equipment21 { get; set; }
+    ///// <summary> Экипировка, слот 21. </summary>
+    //public Guid? Equipment21Id { get; set; }
+    ///// <summary> Экипировка, слот 21. </summary>
+    //[ForeignKey(nameof(Equipment21Id))]
+    //public Equipment? Equipment21 { get; set; }
 
-    /// <summary> Экипировка, слот 22. </summary>
-    public Guid? Equipment22Id { get; set; }
-    /// <summary> Экипировка, слот 22. </summary>
-    [ForeignKey(nameof(Equipment22Id))]
-    public Equipment? Equipment22 { get; set; }
+    ///// <summary> Экипировка, слот 22. </summary>
+    //public Guid? Equipment22Id { get; set; }
+    ///// <summary> Экипировка, слот 22. </summary>
+    //[ForeignKey(nameof(Equipment22Id))]
+    //public Equipment? Equipment22 { get; set; }
 
-    /// <summary> Экипировка, слот 23. </summary>
-    public Guid? Equipment23Id { get; set; }
-    /// <summary> Экипировка, слот 23. </summary>
-    [ForeignKey(nameof(Equipment23Id))]
-    public Equipment? Equipment23 { get; set; }
+    ///// <summary> Экипировка, слот 23. </summary>
+    //public Guid? Equipment23Id { get; set; }
+    ///// <summary> Экипировка, слот 23. </summary>
+    //[ForeignKey(nameof(Equipment23Id))]
+    //public Equipment? Equipment23 { get; set; }
 
-    /// <summary> Экипировка, слот 24. </summary>
-    public Guid? Equipment24Id { get; set; }
-    /// <summary> Экипировка, слот 24. </summary>
-    [ForeignKey(nameof(Equipment24Id))]
-    public Equipment? Equipment24 { get; set; }
+    ///// <summary> Экипировка, слот 24. </summary>
+    //public Guid? Equipment24Id { get; set; }
+    ///// <summary> Экипировка, слот 24. </summary>
+    //[ForeignKey(nameof(Equipment24Id))]
+    //public Equipment? Equipment24 { get; set; }
     #endregion Equipment
 }

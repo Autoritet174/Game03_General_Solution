@@ -1,12 +1,6 @@
-dotnet ef migrations add Fix23 `
---project ".\Server_DB_Postgres\Server_DB_Postgres.csproj" `
---startup-project ".\Server\Server.csproj" `
---context DbContext_Game
+dotnet ef migrations add Fix24 --project ".\Server_DB_Postgres\Server_DB_Postgres.csproj" --startup-project ".\Server\Server.csproj" --context DbContext_Game
 
-dotnet ef database update `
---project ".\Server_DB_Postgres\Server_DB_Postgres.csproj" `
---startup-project ".\Server\Server.csproj" `
---context DbContext_Game
+dotnet ef database update --project ".\Server_DB_Postgres\Server_DB_Postgres.csproj" --startup-project ".\Server\Server.csproj" --context DbContext_Game
 
 ÎÁÍÎÂËÅÍÈÅ ÄÎ ÓÊÀÇÀÍÍÎÉ ÌÈÃĞÀÖÈÈ ÂÊËŞ×ÈÒÅËÜÍÎ, ÂÑ¨ ×ÒÎ ÏÎÇÆÅ ÂÛÏÎËÍÈÒ ÎÒÊÀÒ Â ÎÁĞÀÒÅÌ ÏÎĞßÄÊÅ
 dotnet ef database update Fix23 `

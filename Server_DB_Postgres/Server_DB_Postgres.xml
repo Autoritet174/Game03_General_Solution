@@ -240,78 +240,6 @@
         <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment12">
             <summary> Экипировка, слот 12. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment13Id">
-            <summary> Экипировка, слот 13. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment13">
-            <summary> Экипировка, слот 13. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment14Id">
-            <summary> Экипировка, слот 14. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment14">
-            <summary> Экипировка, слот 14. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment15Id">
-            <summary> Экипировка, слот 15. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment15">
-            <summary> Экипировка, слот 15. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment16Id">
-            <summary> Экипировка, слот 16. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment16">
-            <summary> Экипировка, слот 16. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment17Id">
-            <summary> Экипировка, слот 17. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment17">
-            <summary> Экипировка, слот 17. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment18Id">
-            <summary> Экипировка, слот 18. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment18">
-            <summary> Экипировка, слот 18. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment19Id">
-            <summary> Экипировка, слот 19. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment19">
-            <summary> Экипировка, слот 19. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment20Id">
-            <summary> Экипировка, слот 20. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment20">
-            <summary> Экипировка, слот 20. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment21Id">
-            <summary> Экипировка, слот 21. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment21">
-            <summary> Экипировка, слот 21. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment22Id">
-            <summary> Экипировка, слот 22. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment22">
-            <summary> Экипировка, слот 22. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment23Id">
-            <summary> Экипировка, слот 23. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment23">
-            <summary> Экипировка, слот 23. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment24Id">
-            <summary> Экипировка, слот 24. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment24">
-            <summary> Экипировка, слот 24. </summary>
-        </member>
         <member name="T:Server_DB_Postgres.Entities.GameData.BaseEquipment">
             <summary> Экипировка. Базовые болванки. Мечи, топоры, шлемы, щиты, кольцо, браслеты, амулеты и так далее. </summary>
         </member>
@@ -958,6 +886,18 @@
             <inheritdoc />
         </member>
         <member name="M:Server_DB_Postgres.Migrations.Fix23.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Fix24">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix24.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix24.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix24.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Server_DB_Postgres.ModelBuilderExt">
