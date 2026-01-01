@@ -4,6 +4,7 @@ using System.Net;
 using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server_DB_Postgres;
@@ -13,9 +14,11 @@ using Server_DB_Postgres;
 namespace Server_DB_Postgres.Migrations
 {
     [DbContext(typeof(DbContext_Game))]
-    partial class DbContext_GameModelSnapshot : ModelSnapshot
+    [Migration("20251230112703_InitIdentity")]
+    partial class InitIdentity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -202,8 +205,8 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnName("created_at");
 
                     b.Property<string>("GroupName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("group_name");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
@@ -327,8 +330,8 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnName("experience_now");
 
                     b.Property<string>("GroupName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("group_name");
 
                     b.Property<int>("Haste")
@@ -463,8 +466,8 @@ namespace Server_DB_Postgres.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("name");
 
                     b.Property<int>("Rarity")
@@ -522,8 +525,8 @@ namespace Server_DB_Postgres.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("name");
 
                     b.Property<int>("Rarity")
@@ -551,8 +554,8 @@ namespace Server_DB_Postgres.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("name");
 
                     b.HasKey("Id")
@@ -586,13 +589,13 @@ namespace Server_DB_Postgres.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("name");
 
                     b.Property<string>("NameRu")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("name_ru");
 
                     b.HasKey("Id")
@@ -648,14 +651,14 @@ namespace Server_DB_Postgres.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("name");
 
                     b.Property<string>("NameRu")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("name_ru");
 
                     b.Property<int>("SlotTypeId")
@@ -725,13 +728,13 @@ namespace Server_DB_Postgres.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("name");
 
                     b.Property<string>("NameRu")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("name_ru");
 
                     b.HasKey("Id")
@@ -755,13 +758,13 @@ namespace Server_DB_Postgres.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("name");
 
                     b.Property<string>("NameRu")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("name_ru");
 
                     b.HasKey("Id")
@@ -834,8 +837,8 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnName("created_at");
 
                     b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("email");
 
                     b.Property<IPAddress>("Ip")
@@ -908,14 +911,14 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("access_failed_count");
 
+                    b.Property<DateTimeOffset?>("BannedUntil")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("banned_until");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("text")
                         .HasColumnName("concurrency_stamp");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -925,6 +928,10 @@ namespace Server_DB_Postgres.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean")
                         .HasColumnName("email_confirmed");
+
+                    b.Property<bool>("IsBanned")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_banned");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean")
@@ -960,30 +967,14 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnType("text")
                         .HasColumnName("security_stamp");
 
-                    b.Property<string>("TimeZone")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("time_zone");
-
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean")
                         .HasColumnName("two_factor_enabled");
-
-                    b.Property<DateTimeOffset>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)")
                         .HasColumnName("user_name");
-
-                    b.Property<long>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasDefaultValue(1L)
-                        .HasColumnName("version");
 
                     b.HasKey("Id")
                         .HasName("asp_net_users__pkey");
@@ -1010,8 +1001,8 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnName("created_at");
 
                     b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("email");
 
                     b.Property<DateTimeOffset?>("EmailVerifiedAt")
@@ -1025,13 +1016,13 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnName("is_admin");
 
                     b.Property<string>("PasswordHash")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("password_hash");
 
                     b.Property<string>("TimeZone")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("time_zone");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
@@ -1062,10 +1053,6 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<Guid>("ApplicationUserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("application_user_id");
-
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
@@ -1082,7 +1069,7 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("user_ban_reason_id");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uuid")
                         .HasColumnName("user_id");
 
@@ -1095,9 +1082,6 @@ namespace Server_DB_Postgres.Migrations
 
                     b.HasKey("Id")
                         .HasName("user_bans__pkey");
-
-                    b.HasIndex("ApplicationUserId")
-                        .HasDatabaseName("user_bans__application_user_id__idx");
 
                     b.HasIndex("UserBanReasonId")
                         .HasDatabaseName("user_bans__user_ban_reason_id__idx");
@@ -1120,23 +1104,23 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnName("created_at");
 
                     b.Property<string>("DeviceModel")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("device_model");
 
                     b.Property<string>("DeviceType")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("device_type");
 
                     b.Property<string>("DeviceUniqueIdentifier")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("device_unique_identifier");
 
                     b.Property<string>("GraphicsDeviceName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("graphics_device_name");
 
                     b.Property<int?>("GraphicsMemorySize")
@@ -1144,8 +1128,8 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnName("graphics_memory_size");
 
                     b.Property<string>("OperatingSystem")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("operating_system");
 
                     b.Property<int?>("ProcessorCount")
@@ -1153,18 +1137,18 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnName("processor_count");
 
                     b.Property<string>("ProcessorType")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("processor_type");
 
                     b.Property<string>("SystemEnvironmentUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("system_environment_user_name");
 
                     b.Property<string>("SystemInfoNpotSupport")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("system_info_npot_support");
 
                     b.Property<bool?>("SystemInfoSupportsInstancing")
@@ -1494,13 +1478,6 @@ namespace Server_DB_Postgres.Migrations
 
             modelBuilder.Entity("Server_DB_Postgres.Entities.Users.UserBan", b =>
                 {
-                    b.HasOne("Server_DB_Postgres.Entities.Users.ApplicationUser", "ApplicationUser")
-                        .WithMany("UserBans")
-                        .HasForeignKey("ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("user_bans__application_user_id__asp_net_users__fkey");
-
                     b.HasOne("Server_DB_Postgres.Entities.Server.UserBanReason", "UserBanReason")
                         .WithMany("UserBans")
                         .HasForeignKey("UserBanReasonId")
@@ -1508,13 +1485,14 @@ namespace Server_DB_Postgres.Migrations
                         .IsRequired()
                         .HasConstraintName("user_bans__user_ban_reason_id__user_ban_reasons__fkey");
 
-                    b.HasOne("Server_DB_Postgres.Entities.Users.User", null)
+                    b.HasOne("Server_DB_Postgres.Entities.Users.User", "User")
                         .WithMany("UserBans")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
                         .HasConstraintName("user_bans__user_id__users__fkey");
 
-                    b.Navigation("ApplicationUser");
+                    b.Navigation("User");
 
                     b.Navigation("UserBanReason");
                 });
@@ -1550,11 +1528,6 @@ namespace Server_DB_Postgres.Migrations
                 });
 
             modelBuilder.Entity("Server_DB_Postgres.Entities.Server.UserBanReason", b =>
-                {
-                    b.Navigation("UserBans");
-                });
-
-            modelBuilder.Entity("Server_DB_Postgres.Entities.Users.ApplicationUser", b =>
                 {
                     b.Navigation("UserBans");
                 });

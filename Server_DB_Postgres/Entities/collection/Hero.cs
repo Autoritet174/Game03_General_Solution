@@ -37,7 +37,7 @@ public class Hero : IVersion, ICreatedAt, IUpdatedAt
     public BaseHero? BaseHero { get; set; }
 
     /// <summary> Имя группы. </summary>
-    [MaxLength(255)]
+    [MaxLength(256)]
     public string? GroupName { get; set; }
 
     /// <summary> Редкость. </summary>

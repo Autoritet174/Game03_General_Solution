@@ -13,7 +13,7 @@ public class CreatureType
     public int Id { get; set; }
 
     /// <summary> Уникальное наименование на английском. </summary>
-    [MaxLength(255)]
+    [MaxLength(256)]
     public required string Name { get; set; }
 
     /// <summary> Навигационное свойство к Heroes. </summary>

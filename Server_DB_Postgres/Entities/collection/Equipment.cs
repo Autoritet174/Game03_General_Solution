@@ -15,7 +15,7 @@ public class Equipment : IVersion, ICreatedAt, IUpdatedAt
     [ForeignKey(nameof(UserId))]
     public User? User { get; set; }
 
-    [MaxLength(255)]
+    [MaxLength(256)]
     public string? GroupName { get; set; }
 
     public long Version { get; set; }

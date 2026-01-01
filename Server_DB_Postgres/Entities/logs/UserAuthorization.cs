@@ -15,7 +15,7 @@ public class UserAuthorization : IVersion, ICreatedAt
     public Guid Id { get; set; } = Guid.NewGuid();
 
     /// <summary> Email при авторизации. </summary>
-    [MaxLength(255)]
+    [MaxLength(256)]
     public string? Email { get; set; }
 
     /// <summary> Идентификатор пользователя. </summary>

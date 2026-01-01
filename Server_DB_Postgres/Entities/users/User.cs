@@ -15,18 +15,18 @@ public class User : IVersion, ICreatedAt, IUpdatedAt
     public Guid Id { get; set; } = Guid.NewGuid();
 
     /// <summary> Email адрес пользователя. Может быть null, если пользователь зарегистрирован через сторонний сервис. </summary>
-    [MaxLength(255)]
+    [MaxLength(256)]
     public string? Email { get; set; }
 
     /// <summary> Дата и время подтверждения email адреса. Null, если email еще не подтвержден. </summary>
     public DateTimeOffset? EmailVerifiedAt { get; set; }
 
     /// <summary> Хеш пароля пользователя. </summary>
-    [MaxLength(255)]
+    [MaxLength(256)]
     public string? PasswordHash { get; set; }
 
     /// <summary> Часовой пояс пользователя. </summary>
-    [MaxLength(255)]
+    [MaxLength(256)]
     public string? TimeZone { get; set; }
 
 

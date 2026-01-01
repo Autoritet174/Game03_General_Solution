@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -13,8 +15,11 @@ using System.Collections.Concurrent;
 namespace Server_DB_Postgres;
 
 /// <summary> Контекст базы данных для работы с игровыми данными. </summary>
-public class DbContext_Game(DbContextOptions<DbContext_Game> options) : DbContext(options)
+public class DbContext_Game: IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
 {
+    public DbContext_Game(DbContextOptions<DbContext_Game> options) : base(options)
+    {
+    }
     //public static DbContextOptions<DbContext_Game> DbContextOptions { get; private set; } = null!;
     //public static NpgsqlDataSource DataSource { get; private set; } = null!;
     //public static void Init(string connectionString)
@@ -192,8 +197,8 @@ public class DbContext_Game(DbContextOptions<DbContext_Game> options) : DbContex
 
     #region users
 
-    /// <summary> Пользователи. </summary>
-    public DbSet<User> Users { get; set; }
+    ///// <summary> Пользователи. </summary>
+    //public DbSet<User> Users { get; set; }
 
     /// <summary> Баны пользователей. </summary>
     public DbSet<UserBan> UserBans { get; set; }
@@ -232,6 +237,18 @@ public class DbContext_Game(DbContextOptions<DbContext_Game> options) : DbContex
         // В базовом DbContext метод пуст, но вызов является хорошей практикой 
         // на случай смены базового класса (например, на IdentityDbContext).
         base.OnModelCreating(modelBuilder);
+
+
+        modelBuilder.Ignore<Microsoft.AspNetCore.Identity.IdentityPasskeyData>();
+        // Переопределение имен таблиц Identity
+        modelBuilder.Entity<ApplicationUser>().ToTable("asp_net_users", "auth");
+        modelBuilder.Entity<IdentityRole<Guid>>().ToTable("asp_net_roles", "auth");
+        modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("asp_net_user_roles", "auth");
+        modelBuilder.Entity<IdentityUserClaim<Guid>>().ToTable("asp_net_user_claims", "auth");
+        modelBuilder.Entity<IdentityRoleClaim<Guid>>().ToTable("asp_net_role_claims", "auth");
+        modelBuilder.Entity<IdentityUserLogin<Guid>>().ToTable("asp_net_user_logins", "auth");
+        modelBuilder.Entity<IdentityUserToken<Guid>>().ToTable("asp_net_user_tokens", "auth");
+
 
         // Ваши существующие расширения
         modelBuilder.AddConcurrencyTokenToVersion();
@@ -278,6 +295,8 @@ public class DbContext_Game(DbContextOptions<DbContext_Game> options) : DbContex
     private static readonly ConcurrentDictionary<IEntityType, IProperty?> _versionPropertyCache = new();
     private static readonly ConcurrentDictionary<Type, bool> _interfaceCreatedAtCache = new();
     private static readonly ConcurrentDictionary<Type, bool> _interfaceUpdatedAtCache = new();
+
+    
 
     private void OnSaveCorrectVersion()
     {

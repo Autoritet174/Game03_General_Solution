@@ -16,7 +16,7 @@ public class UserDevice : ICreatedAt
 
     /// <summary> Получает или задаёт имя пользователя операционной системы. </summary>
     /// <value>Имя пользователя, под которым запущено приложение (например, 'JohnDoe').</value>
-    [MaxLength(255)]
+    [MaxLength(256)]
     public string? SystemEnvironmentUserName { get; set; }
 
     /// <summary> Получает или задаёт смещение локального часового пояса от UTC в минутах. </summary>
@@ -25,27 +25,27 @@ public class UserDevice : ICreatedAt
 
     /// <summary> Получает или задаёт уникальный идентификатор устройства. </summary>
     /// <value>Уникальная строка, идентифицирующая устройство (например, IMEI, UUID).</value>
-    [MaxLength(255)]
+    [MaxLength(256)]
     public string? DeviceUniqueIdentifier { get; set; }
 
     /// <summary> Получает или задаёт модель устройства. </summary>
     /// <value>Описание аппаратной модели устройства.</value>
-    [MaxLength(255)]
+    [MaxLength(256)]
     public string? DeviceModel { get; set; }
 
     /// <summary> Получает или задаёт тип устройства. </summary>
     /// <value>Категория устройства: мобильное, настольное, игровая консоль и т.д.</value>
-    [MaxLength(255)]
+    [MaxLength(256)]
     public string? DeviceType { get; set; }
 
     /// <summary> Получает или задаёт операционную систему устройства. </summary>
     /// <value>Название и версия ОС (например, 'Windows 10', 'iOS 17').</value>
-    [MaxLength(255)]
+    [MaxLength(256)]
     public string? OperatingSystem { get; set; }
 
     /// <summary> Получает или задаёт тип процессора устройства. </summary>
     /// <value>Архитектура и модель процессора (например, 'Intel Core i7', 'Apple M1').</value>
-    [MaxLength(255)]
+    [MaxLength(256)]
     public string? ProcessorType { get; set; }
 
     /// <summary> Получает или задаёт количество логических ядер процессора. </summary>
@@ -58,7 +58,7 @@ public class UserDevice : ICreatedAt
 
     /// <summary> Получает или задаёт название графического устройства. </summary>
     /// <value>Модель видеокарты или встроенного GPU.</value>
-    [MaxLength(255)]
+    [MaxLength(256)]
     public string? GraphicsDeviceName { get; set; }
 
     /// <summary> Получает или задаёт объём видеопамяти в мегабайтах. </summary>
@@ -71,6 +71,6 @@ public class UserDevice : ICreatedAt
 
     /// <summary> Получает или задаёт информацию о поддержке текстур с размерами, не являющимися степенью двойки (NPOT). </summary>
     /// <value>Строка, описывающая уровень поддержки NPOT (например, 'Full', 'Restricted', 'None').</value>
-    [MaxLength(255)]
+    [MaxLength(256)]
     public string? SystemInfoNpotSupport { get; set; }
 }

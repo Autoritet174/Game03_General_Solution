@@ -136,90 +136,6 @@
             </summary>
             <returns>JSON-ответ с полем <see cref="T:System.String"/> message, содержащее значение "Pong!".</returns>
         </member>
-        <member name="T:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController">
-            <summary>
-            Контроллер аутентификации пользователей. Обрабатывает процесс входа (логин) по email и паролю.
-            При успешной проверке возвращает JWT-токен доступа.
-            </summary>
-        </member>
-        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController.#ctor(Server.Jwt_NS.JwtService,Microsoft.Extensions.Logging.ILogger{Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController},Microsoft.Extensions.Caching.Memory.IMemoryCache,Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService,Server_DB_Postgres.DbContext_Game)">
-            <summary>
-            Контроллер аутентификации пользователей. Обрабатывает процесс входа (логин) по email и паролю.
-            При успешной проверке возвращает JWT-токен доступа.
-            </summary>
-        </member>
-        <member name="F:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController.LockoutPeriod">
-            <summary>
-            Время блокировки учётной записи при превышении допустимого количества неудачных попыток входа.
-            </summary>
-        </member>
-        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController.Main">
-            <summary>
-            Основной метод аутентификации: принимает email и пароль, проверяет учётные данные,
-            при успехе возвращает JWT-токен. Доступ разрешён без авторизации.
-            </summary>
-            <returns>JWT-токен при успешной аутентификации или соответствующий код ошибки.</returns>
-        </member>
-        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController.BadRequestEmailRateLimited(System.String)">
-            <summary>
-            Возвращает ответ с кодом 429 (Too Many Requests), если пользователь временно заблокирован из-за множества попыток входа.
-            </summary>
-            <param name="email">Email пользователя, для которого проверяется блокировка.</param>
-            <returns>Результат с кодом состояния 429 и данными о времени окончания блокировки.</returns>
-        </member>
-        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController.LoggingAuthentification(System.Boolean,System.Text.Json.Nodes.JsonObject,System.String,System.Nullable{System.Guid})">
-            <summary>
-            Асинхронно добавляет запись о попытке аутентификации в очередь фонового логгера.
-            В случае ошибки записывает предупреждение в лог.
-            </summary>
-            <param name="authorizationSuccess">Флаг успешности авторизации.</param>
-            <param name="obj">JSON-объект запроса (для аудита).</param>
-            <param name="email">Email пользователя (если известен).</param>
-            <param name="userId">Идентификатор пользователя (если известен).</param>
-        </member>
-        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController.GetClientIpAddress">
-            <summary>
-            Определяет IP-адрес клиента из HTTP-запроса.
-            </summary>
-            <returns>IP-адрес в формате <see cref="T:System.Net.IPAddress"/> или null, если не удалось определить.</returns>
-        </member>
-        <member name="T:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController.LoginAttempt">
-            <summary>
-            Запись, представляющая данные о попытке входа: количество попыток и время окончания блокировки.
-            </summary>
-        </member>
-        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController.LoginAttempt.#ctor(System.Int32,System.DateTimeOffset)">
-            <summary>
-            Запись, представляющая данные о попытке входа: количество попыток и время окончания блокировки.
-            </summary>
-        </member>
-        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController.IncrementFailedLoginAttempt(System.String)">
-            <summary>
-            Увеличивает счётчик неудачных попыток входа для указанного email.
-            Если счётчик достиг предела, пользователь будет временно заблокирован.
-            </summary>
-            <param name="email">Email пользователя.</param>
-        </member>
-        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController.ResetLoginAttempts(System.String)">
-            <summary>
-            Сбрасывает счётчик попыток входа после успешного входа.
-            </summary>
-            <param name="email">Email пользователя.</param>
-        </member>
-        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController.IsRateLimited(System.String)">
-            <summary>
-            Проверяет, превышено ли допустимое количество попыток входа для указанного email.
-            </summary>
-            <param name="email">Email пользователя.</param>
-            <returns>True, если пользователь временно заблокирован, иначе — false.</returns>
-        </member>
-        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.AuthenticationController.GetRemainingLockoutTime(System.String)">
-            <summary>
-            Определяет, сколько секунд осталось до окончания блокировки учётной записи.
-            </summary>
-            <param name="email">Email пользователя.</param>
-            <returns>Количество секунд до разблокировки или 0, если блокировка завершена.</returns>
-        </member>
         <member name="T:Server.Http_NS.Controllers_NS.Users_NS.BackgroundLoggerAuthentificationService">
             <summary> Фоновый сервис пакетной записи логов авторизации и данных устройств с контролируемыми повторными попытками и корректной остановкой. </summary>
         </member>
@@ -508,6 +424,18 @@
             Выполняет аутентификацию и возвращает JWT токен.
             </summary>
             <returns>JWT токен при успешной аутентификации или ошибка 401.</returns>
+        </member>
+        <member name="T:Server.Users.Auth.AuthenticationController">
+            <summary>
+            Контроллер аутентификации пользователей. Обрабатывает процесс входа (логин) по email и паролю.
+            При успешной проверке возвращает JWT-токен доступа.
+            </summary>
+        </member>
+        <member name="M:Server.Users.Auth.AuthenticationController.#ctor(Server.Users.Auth.AuthService)">
+            <summary>
+            Контроллер аутентификации пользователей. Обрабатывает процесс входа (логин) по email и паролю.
+            При успешной проверке возвращает JWT-токен доступа.
+            </summary>
         </member>
         <member name="T:Server.Utilities.JsonObjectExtension">
             <summary>

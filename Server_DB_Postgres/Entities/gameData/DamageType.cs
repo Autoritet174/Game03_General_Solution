@@ -14,11 +14,11 @@ public class DamageType
     public int Id { get; set; }
 
     /// <summary> Уникальное наименование на английском. </summary>
-    [MaxLength(255)]
+    [MaxLength(256)]
     public required string Name { get; set; }
 
     /// <summary> Наименование на русском. </summary>
-    [MaxLength(255)]
+    [MaxLength(256)]
     public string? NameRu { get; set; }
 
     /// <summary> Подсказка для разработчика. </summary>

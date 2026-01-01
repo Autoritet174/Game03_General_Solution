@@ -13,10 +13,10 @@ public class EquipmentType
 {
     public int Id { get; set; }
 
-    [MaxLength(255)]
+    [MaxLength(256)]
     public required string Name { get; set; }
 
-    [MaxLength(255)]
+    [MaxLength(256)]
     public required string NameRu { get; set; }
 
     public ICollection<X_EquipmentType_DamageType> X_EquipmentType_DamageType { get; set; } = [];

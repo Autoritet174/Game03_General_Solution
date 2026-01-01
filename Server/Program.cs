@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -11,8 +12,10 @@ using Server.GameDataCache;
 using Server.Http_NS.Controllers_NS.Users_NS;
 using Server.Http_NS.Middleware_NS;
 using Server.Jwt_NS;
+using Server.Users.Auth;
 using Server.WebSocket_NS;
 using Server_DB_Postgres;
+using Server_DB_Postgres.Entities.Users;
 using Server_DB_Postgres.Repositories;
 using System.IO.Compression;
 using System.Net;
@@ -99,6 +102,8 @@ internal partial class Program
 
         _ = services.AddMemoryCache();
 
+        _ = services.AddScoped<AuthService>();
+
         // установить Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore
         // если надо. сейчас нет кубернетес или сервисов проверки работоспособности
         //_ = services.AddHealthChecks()
@@ -108,6 +113,27 @@ internal partial class Program
 
         InitNewtonsoftJson(iMvcBuilder);
         InitCompressionResponse(services);
+
+        services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
+        {
+            options.User.RequireUniqueEmail = true;
+
+            options.Lockout.MaxFailedAccessAttempts = 5;
+            options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2);
+
+            options.SignIn.RequireConfirmedAccount = false;
+        })
+        .AddEntityFrameworkStores<DbContext_Game>()
+        .AddDefaultTokenProviders();
+
+        services.ConfigureApplicationCookie(options =>
+        {
+            options.Events.OnRedirectToLogin = ctx =>
+            {
+                ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                return Task.CompletedTask;
+            };
+        });
 
         WebApplication app = builder.Build();
 
@@ -258,7 +284,8 @@ internal partial class Program
                     ValidAudience = audience,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
+                    ClockSkew = TimeSpan.FromSeconds(30)
                 };
             });
 

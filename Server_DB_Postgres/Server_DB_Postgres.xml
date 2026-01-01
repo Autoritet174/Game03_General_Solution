@@ -27,9 +27,6 @@
         <member name="T:Server_DB_Postgres.DbContext_Game">
             <summary> Контекст базы данных для работы с игровыми данными. </summary>
         </member>
-        <member name="M:Server_DB_Postgres.DbContext_Game.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions{Server_DB_Postgres.DbContext_Game})">
-            <summary> Контекст базы данных для работы с игровыми данными. </summary>
-        </member>
         <member name="P:Server_DB_Postgres.DbContext_Game.Equipments">
             <summary> Экипировка игрока. </summary>
         </member>
@@ -71,9 +68,6 @@
         </member>
         <member name="P:Server_DB_Postgres.DbContext_Game.UserBanReasons">
             <summary> Причины бана пользователей. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.DbContext_Game.Users">
-            <summary> Пользователи. </summary>
         </member>
         <member name="P:Server_DB_Postgres.DbContext_Game.UserBans">
             <summary> Баны пользователей. </summary>
@@ -458,6 +452,15 @@
         <member name="P:Server_DB_Postgres.Entities.Server.UserBanReason.UserBans">
             <summary> Коллекция <see cref="T:Server_DB_Postgres.Entities.Users.UserBan"/>. </summary>
         </member>
+        <member name="P:Server_DB_Postgres.Entities.Users.ApplicationUser.CreatedAt">
+            <summary> <inheritdoc/> </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Users.ApplicationUser.UpdatedAt">
+            <summary> <inheritdoc/> </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Users.ApplicationUser.Version">
+            <summary> <inheritdoc/> </summary>
+        </member>
         <member name="T:Server_DB_Postgres.Entities.Users.User">
             <summary> Представляет пользователя системы. </summary>
         </member>
@@ -497,10 +500,10 @@
         <member name="P:Server_DB_Postgres.Entities.Users.UserBan.Id">
             <summary> Уникальный идентификатор. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserBan.UserId">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserBan.ApplicationUserId">
             <summary> Идентификатор пользователя, к которому применена блокировка. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserBan.User">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserBan.ApplicationUser">
             <summary> Навигационное свойство к <see cref="T:Server_DB_Postgres.Entities.Users.User"/>. </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.Users.UserBan.Version">
@@ -898,6 +901,30 @@
             <inheritdoc />
         </member>
         <member name="M:Server_DB_Postgres.Migrations.Fix24.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.InitIdentity">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.InitIdentity.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.InitIdentity.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.InitIdentity.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.IdentityFix1">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.IdentityFix1.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.IdentityFix1.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.IdentityFix1.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Server_DB_Postgres.ModelBuilderExt">

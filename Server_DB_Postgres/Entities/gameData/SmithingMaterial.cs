@@ -12,11 +12,11 @@ public class SmithingMaterial
     public int Id { get; set; }
 
     /// <summary> Уникальное наименование на английском. </summary>
-    [MaxLength(255)]
+    [MaxLength(256)]
     public required string Name { get; set; }
 
     /// <summary> Наименование на русском. </summary>
-    [MaxLength(255)]
+    [MaxLength(256)]
     public string? NameRu { get; set; }
 
     /// <summary> Навигационное свойство к <see cref="MaterialDamagePercent"/>. </summary>

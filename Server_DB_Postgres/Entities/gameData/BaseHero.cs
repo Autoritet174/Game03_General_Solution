@@ -16,7 +16,7 @@ public class BaseHero
     public int Id { get; set; }
 
     /// <summary> Наименование на английском языке. </summary>
-    [MaxLength(255)]
+    [MaxLength(256)]
     public required string Name { get; set; }
 
     /// <summary> Уровень редкости. </summary>
@@ -33,7 +33,7 @@ public class BaseHero
     /// <summary> Навигационное свойство к CreatureTypes. </summary>
     public ICollection<X_Hero_CreatureType> X_Hero_CreatureType { get; set; } = [];
 
-    ///// <summary>// Типы существ героя. Вычисляемое свойство. </summary>
+    ///// <summary> Типы существ героя. Вычисляемое свойство. </summary>
     //[NotMapped]
     //public IReadOnlyCollection<CreatureType> CreatureTypes => X_Hero_CreatureType?.Select(static x => x.CreatureTypes).ToList() ?? [];
 
