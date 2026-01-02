@@ -14,8 +14,8 @@ using Server_DB_Postgres;
 namespace Server_DB_Postgres.Migrations
 {
     [DbContext(typeof(DbContext_Game))]
-    [Migration("20251231063604_IdentityFix1")]
-    partial class IdentityFix1
+    [Migration("20260101132651_IdentityFix2")]
+    partial class IdentityFix2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -832,6 +832,10 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<Guid?>("ApplicationUserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("application_user_id");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
@@ -853,10 +857,6 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("user_device_id");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
                     b.Property<long>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAdd()
@@ -867,11 +867,11 @@ namespace Server_DB_Postgres.Migrations
                     b.HasKey("Id")
                         .HasName("user_authorizations__pkey");
 
+                    b.HasIndex("ApplicationUserId")
+                        .HasDatabaseName("user_authorizations__application_user_id__idx");
+
                     b.HasIndex("UserDeviceId")
                         .HasDatabaseName("user_authorizations__user_device_id__idx");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("user_authorizations__user_id__idx");
 
                     b.ToTable("user_authorizations", "logs");
                 });
@@ -1478,19 +1478,19 @@ namespace Server_DB_Postgres.Migrations
 
             modelBuilder.Entity("Server_DB_Postgres.Entities.Logs.UserAuthorization", b =>
                 {
+                    b.HasOne("Server_DB_Postgres.Entities.Users.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("user_authorizations__application_user_id__asp_net_users__fkey");
+
                     b.HasOne("Server_DB_Postgres.Entities.Users.UserDevice", "UserDevice")
                         .WithMany()
                         .HasForeignKey("UserDeviceId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("user_authorizations__user_device_id__user_devices__fkey");
 
-                    b.HasOne("Server_DB_Postgres.Entities.Users.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("user_authorizations__user_id__users__fkey");
-
-                    b.Navigation("User");
+                    b.Navigation("ApplicationUser");
 
                     b.Navigation("UserDevice");
                 });

@@ -17,27 +17,27 @@ public abstract class ControllerBaseApi : ControllerBase
     /// <summary>
     /// Возвращает ответ BadRequest (400) с ключом локализации для ошибки сервера.
     /// </summary>
-    /// <param name="KEY_LOCALIZATION">Ключ локализации, идентифицирующий конкретную ошибку.</param>
+    /// <param name="keyLocalization">Ключ локализации, идентифицирующий конкретную ошибку.</param>
     /// <returns>Ответ BadRequest с объектом, содержащим ключ локализации.</returns>
     /// <remarks>
     /// Используется для стандартизированной обработки ошибок с поддержкой локализации.
     /// </remarks>
-    protected IActionResult BadRequestWithServerError(string KEY_LOCALIZATION)
+    protected IActionResult BadRequestWithServerError(string keyLocalization)
     {
-        return BadRequest(new { KEY_LOCALIZATION });
+        return BadRequest(new { errorKey = keyLocalization });
     }
 
-    /// <summary>
-    /// Возвращает стандартный ответ BadRequest (400) для ошибки неверных учетных данных аутентификации.
-    /// </summary>
-    /// <returns>Ответ BadRequest с ключом локализации для ошибки неверных учетных данных.</returns>
-    /// <remarks>
-    /// Соответствует ключу локализации <see cref="L.Error.Server.InvalidCredentials"/>.
-    /// </remarks>
-    protected IActionResult BadRequestAuthInvalidCredentials()
-    {
-        return BadRequestWithServerError(L.Error.Server.InvalidCredentials);
-    }
+    ///// <summary>
+    ///// Возвращает стандартный ответ BadRequest (400) для ошибки неверных учетных данных аутентификации.
+    ///// </summary>
+    ///// <returns>Ответ BadRequest с ключом локализации для ошибки неверных учетных данных.</returns>
+    ///// <remarks>
+    ///// Соответствует ключу локализации <see cref="L.Error.Server.InvalidCredentials"/>.
+    ///// </remarks>
+    //protected IActionResult BadRequestAuthInvalidCredentials()
+    //{
+    //    return BadRequestWithServerError(L.Error.Server.InvalidCredentials);
+    //}
 
     /// <summary>
     /// Возвращает стандартный ответ BadRequest (400) для ошибки неверного ответа сервера.

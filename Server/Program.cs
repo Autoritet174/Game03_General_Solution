@@ -3,16 +3,18 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Npgsql;
 using Serilog;
 using Serilog.Events;
 using Server.GameDataCache;
-using Server.Http_NS.Controllers_NS.Users_NS;
 using Server.Http_NS.Middleware_NS;
 using Server.Jwt_NS;
+using Server.Users;
 using Server.Users.Auth;
+using Server.Users.Reg;
 using Server.WebSocket_NS;
 using Server_DB_Postgres;
 using Server_DB_Postgres.Entities.Users;
@@ -46,8 +48,6 @@ internal partial class Program
         IMvcBuilder iMvcBuilder = services.AddControllers();// Добавление контроллеров
         _ = services.AddHttpLogging();
 
-        InitJwt(builder);
-
         string connectionString = CreateConnectionString(builder);
 
         // База данных с игровыми данными
@@ -59,7 +59,7 @@ internal partial class Program
         {
             NullValueHandling = NullValueHandling.Ignore // Это исключит null поля из JSON
         };
-        dataSourceBuilder.UseJsonNet(jsonSettings);
+        _ = dataSourceBuilder.UseJsonNet(jsonSettings);
         NpgsqlDataSource dataSource = dataSourceBuilder.Build();
         _ = services.AddDbContext<DbContext_Game>(options => options.UseNpgsql(dataSource));
 
@@ -91,11 +91,10 @@ internal partial class Program
 
 
         // Регистрируем сервис как синглтон
-        _ = services.AddSingleton<BackgroundLoggerAuthentificationService>();
+        _ = services.AddSingleton<AuthRegLoggerBackgroundService>();
 
         // Регистрируем его как IHostedService, используя тот же экземпляр
-        _ = services.AddHostedService(
-            provider => provider.GetRequiredService<BackgroundLoggerAuthentificationService>());
+        _ = services.AddHostedService(provider => provider.GetRequiredService<AuthRegLoggerBackgroundService>());
 
         // Добавляем HeroCacheService
         //_ = services.AddScoped<IHeroCacheService, HeroesCacheService>();
@@ -103,6 +102,7 @@ internal partial class Program
         _ = services.AddMemoryCache();
 
         _ = services.AddScoped<AuthService>();
+        _ = services.AddScoped<RegService>();
 
         // установить Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore
         // если надо. сейчас нет кубернетес или сервисов проверки работоспособности
@@ -114,19 +114,33 @@ internal partial class Program
         InitNewtonsoftJson(iMvcBuilder);
         InitCompressionResponse(services);
 
-        services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
+        //_ = services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
+        //{
+        //    options.User.RequireUniqueEmail = true;
+
+        //    options.Lockout.MaxFailedAccessAttempts = 5;
+        //    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2);
+
+        //    options.SignIn.RequireConfirmedAccount = false;
+        //})
+        //.AddEntityFrameworkStores<DbContext_Game>()
+        //.AddDefaultTokenProviders();
+
+        _ = services.AddIdentityCore<User>(options =>
         {
             options.User.RequireUniqueEmail = true;
-
             options.Lockout.MaxFailedAccessAttempts = 5;
             options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2);
-
             options.SignIn.RequireConfirmedAccount = false;
         })
+        .AddSignInManager<SignInManager<User>>()  // Добавьте эту строку для регистрации SignInManager
+        .AddRoles<IdentityRole<Guid>>()  // Если используете роли; иначе удалите
         .AddEntityFrameworkStores<DbContext_Game>()
         .AddDefaultTokenProviders();
 
-        services.ConfigureApplicationCookie(options =>
+
+
+        _ = services.ConfigureApplicationCookie(options =>
         {
             options.Events.OnRedirectToLogin = ctx =>
             {
@@ -134,6 +148,7 @@ internal partial class Program
                 return Task.CompletedTask;
             };
         });
+        InitJwt(builder);
 
         WebApplication app = builder.Build();
 
@@ -263,32 +278,63 @@ internal partial class Program
     {
         IServiceCollection services = builder.Services;
 
-        _ = services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt")); // Jwt.Issuer, Jwt.Audience, Jwt.Lifetime из конфигурации
+        // Биндим опции из конфига (обязательно должен быть раздел "Jwt"!)
+        _ = services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 
+        // Регистрируем JwtService (он нужен для генерации и для секрета)
         _ = services.AddSingleton<JwtService>();
-        _ = services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
-
-        _ = services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
-            .Configure<IConfiguration, JwtService>((opts, cfg, jwtSvc) =>
+        _ = services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
             {
-                IConfigurationSection jwtSection = cfg.GetSection("Jwt");
-                string? issuer = jwtSection["Issuer"];
-                string? audience = jwtSection["Audience"];
-                string secret = jwtSvc.GetJwtSecret(); // <-- экземплярный метод
+                // Получаем уже забинденные опции
+                JwtOptions jwtOptions = builder.Configuration.GetSection("Jwt").Get<JwtOptions>()
+                    ?? throw new InvalidOperationException("Отсутствует раздел 'Jwt' в конфигурации!");
 
-                opts.TokenValidationParameters = new TokenValidationParameters
+                // Получаем секрет через тот же сервис (тот же файл!)
+                var jwtService = new JwtService(Options.Create(jwtOptions)); // или через BuildServiceProvider, если singleton уже добавлен
+                string secret = jwtService.GetJwtSecret();
+
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
-                    ValidIssuer = issuer,
-                    ValidateAudience = true,
-                    ValidAudience = audience,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
-                    ClockSkew = TimeSpan.FromSeconds(30)
-                };
-            });
+                    ValidIssuer = jwtOptions.Issuer,
 
+                    ValidateAudience = true,
+                    ValidAudience = jwtOptions.Audience,
+
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.FromMinutes(2),
+
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret))
+                };
+
+                //// Логируем ошибки валидации для отладки
+                //options.Events = new JwtBearerEvents
+                //{
+                //    OnAuthenticationFailed = context =>
+                //    {
+                //        Console.WriteLine("JWT валидация провалилась");
+                //        return Task.CompletedTask;
+                //    },
+                //    OnTokenValidated = context => {
+                //        Console.WriteLine("OnTokenValidated");
+                //        return Task.CompletedTask;
+                //    },
+                //    OnMessageReceived = context => {
+                //        Console.WriteLine("OnMessageReceived");
+                //        return Task.CompletedTask;
+                //    },
+                //    OnChallenge = context => {
+                //        Console.WriteLine("OnChallenge");
+                //        return Task.CompletedTask;
+                //    },
+                //    OnForbidden = context => {
+                //        Console.WriteLine("OnForbidden");
+                //        return Task.CompletedTask;
+                //    }
+                //};
+            });
     }
 
     /// <summary> Получение строки подключения из настройек и дополнительные корректировки. </summary>

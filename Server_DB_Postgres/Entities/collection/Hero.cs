@@ -17,7 +17,6 @@ public class Hero : IVersion, ICreatedAt, IUpdatedAt
 
     /// <summary> Уникальный идентификатор владельца. </summary>
     public Guid UserId { get; set; }
-    /// <summary> Сущность <see cref="Users.User"/>. </summary>
     [ForeignKey(nameof(UserId))]
     public User? User { get; set; }
 

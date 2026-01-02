@@ -15,128 +15,8 @@ using System.Collections.Concurrent;
 namespace Server_DB_Postgres;
 
 /// <summary> Контекст базы данных для работы с игровыми данными. </summary>
-public class DbContext_Game: IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
+public class DbContext_Game(DbContextOptions<DbContext_Game> options) : IdentityDbContext<User, IdentityRole<Guid>, Guid>(options)
 {
-    public DbContext_Game(DbContextOptions<DbContext_Game> options) : base(options)
-    {
-    }
-    //public static DbContextOptions<DbContext_Game> DbContextOptions { get; private set; } = null!;
-    //public static NpgsqlDataSource DataSource { get; private set; } = null!;
-    //public static void Init(string connectionString)
-    //{
-    //    JsonSerializerSettings jsonSettings = new()
-    //    {
-    //        NullValueHandling = NullValueHandling.Ignore // Это исключит null поля из JSON
-    //    };
-    //    NpgsqlDataSourceBuilder dataSourceBuilder = new(connectionString);
-    //    _ = dataSourceBuilder.UseJsonNet(jsonSettings);
-    //    DataSource = dataSourceBuilder.Build();
-    //    DbContextOptionsBuilder<DbContext_Game> optionsBuilder = new();
-    //    DbContextOptions = optionsBuilder.UseNpgsql(DataSource).Options;
-    //}
-
-    ///// <summary> Статический метод для проверки подключения к базе данных. </summary>
-    //public static async Task SimpleQueryFromDb()
-    //{
-    //    try
-    //    {
-    //        // Создаем экземпляр DbContext, используя полученные опции
-    //        using DbContext_Game db = Create();
-
-    //        // Выполняем простое чтение для проверки соединения
-    //        _ = await db.Users.FirstOrDefaultAsync();
-
-    //        int action = 3;
-    //        switch (action)
-    //        {
-    //            case 1: AddRandomHeroes(); break;
-    //            case 2: AddRandomEquipments(); break;
-    //            case 3: await Test(); break;
-    //            default: break;
-    //        }
-
-    //    }
-    //    catch
-    //    {
-    //        System.Console.WriteLine($"\r\n\r\nFailureConnection in {nameof(DbContext_Game)}\r\n\r\n");
-    //        throw;
-    //    }
-    //}
-    //private static void AddRandomHeroes()
-    //{
-    //    using DbContext_Game db = Create();
-    //    Random rnd = new();
-    //    List<Hero> heroes = [];
-    //    for (int i = 0; i < 50; i++)
-    //    {
-    //        Hero hero = new()
-    //        {
-    //            BaseHeroId = rnd.Next(1, 6),
-    //            UserId = GuidAdmin,
-    //        };
-    //        heroes.Add(hero);
-    //    }
-    //    db.Heroes.AddRange(heroes);
-    //    _ = db.SaveChanges();
-    //}
-    //private static void AddRandomEquipments()
-    //{
-    //    using DbContext_Game db = Create();
-    //    Random rnd = new();
-    //    List<Equipment> equipments = [];
-    //    for (int i = 0; i < 50; i++)
-    //    {
-    //        Equipment equipment = new()
-    //        {
-    //            BaseEquipmentId = rnd.Next(1, 3),
-    //            UserId = GuidAdmin,
-    //        };
-    //        equipments.Add(equipment);
-    //    }
-    //    db.Equipments.AddRange(equipments);
-    //    _ = db.SaveChanges();
-    //}
-    //private static async Task Test()
-    //{
-    //    using DbContext_Game db = Create();
-    //var h1 = db.BaseHeroes.First(a => a.Id == 1);
-
-    //foreach (var h in db.BaseHeroes)
-    //{
-    //    h.Stats ??= new Stats();
-    //    h.Stats.Health = h.Health;
-    //    h.Stats.Damage = h.Damage;
-    //}
-
-    //h1.Health = new Dice(16, 24);
-    //h1.Damage = new Dice(4, 21);
-
-    //var h2 = db.BaseHeroes.First(a => a.Id == 2);
-    //h2.Health = new Dice(10, 28);
-    //h2.Damage = new Dice(5, 21);
-
-    //var h3 = db.BaseHeroes.First(a => a.Id == 3);
-    //h3.Health = new Dice(11, 39);
-    //h3.Damage = new Dice(3, 25);
-
-    //var h4 = db.BaseHeroes.First(a => a.Id == 4);
-    //h4.Health = new Dice(15, 21);
-    //h4.Damage = new Dice(4, 23);
-
-    //var h5 = db.BaseHeroes.First(a => a.Id == 5);
-    //h5.Health = new Dice(16, 58);
-    //h5.Damage = new Dice(4, 21);
-
-    //    _ = db.SaveChanges();
-    //}
-
-    ///// <summary> Создаёт новый экземпляр <see cref="DbContext_Game"/> со строкой подключения по умолчанию. </summary>
-    ///// <returns> Новый экземпляр <see cref="DbContext_Game"/>, сконфигурированный для работы с базой данных. </returns>
-    //public static DbContext_Game Create()
-    //{
-    //    return new(DbContextOptions);
-    //}
-
     #region collection
 
     /// <summary> Экипировка игрока. </summary>
@@ -184,7 +64,7 @@ public class DbContext_Game: IdentityDbContext<ApplicationUser, IdentityRole<Gui
     #region logs
 
     /// <summary> Лог авторизации пользователей. </summary>
-    public DbSet<UserAuthorization> UserAuthorizations { get; set; }
+    public DbSet<AuthRegLog> AuthRegLogs { get; set; }
 
     #endregion logs
 
@@ -223,48 +103,50 @@ public class DbContext_Game: IdentityDbContext<ApplicationUser, IdentityRole<Gui
         }
     }
 
-    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
-    {
-        // Автоматически делаем все свойства типа Dice (или Dice?) колонками jsonb
-        //configurationBuilder.Properties<Dice>().HaveColumnType("jsonb");
-    }
-
     /// <summary> Конфигурация модели данных. </summary>
     /// <param name="modelBuilder">Построитель модели.</param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        ArgumentNullException.ThrowIfNull(modelBuilder);
-        // В базовом DbContext метод пуст, но вызов является хорошей практикой 
-        // на случай смены базового класса (например, на IdentityDbContext).
         base.OnModelCreating(modelBuilder);
 
-
-        modelBuilder.Ignore<Microsoft.AspNetCore.Identity.IdentityPasskeyData>();
+        _ = modelBuilder.Ignore<Microsoft.AspNetCore.Identity.IdentityPasskeyData>();
         // Переопределение имен таблиц Identity
-        modelBuilder.Entity<ApplicationUser>().ToTable("asp_net_users", "auth");
-        modelBuilder.Entity<IdentityRole<Guid>>().ToTable("asp_net_roles", "auth");
-        modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("asp_net_user_roles", "auth");
-        modelBuilder.Entity<IdentityUserClaim<Guid>>().ToTable("asp_net_user_claims", "auth");
-        modelBuilder.Entity<IdentityRoleClaim<Guid>>().ToTable("asp_net_role_claims", "auth");
-        modelBuilder.Entity<IdentityUserLogin<Guid>>().ToTable("asp_net_user_logins", "auth");
-        modelBuilder.Entity<IdentityUserToken<Guid>>().ToTable("asp_net_user_tokens", "auth");
+        _ = modelBuilder.Entity<User>().ToTable("identity_users", "users");
+        _ = modelBuilder.Entity<IdentityRole<Guid>>().ToTable("identity_roles", "users");
+        _ = modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("identity_user_roles", "users");
+        _ = modelBuilder.Entity<IdentityUserClaim<Guid>>().ToTable("identity_user_claims", "users");
+        _ = modelBuilder.Entity<IdentityRoleClaim<Guid>>().ToTable("identity_role_claims", "users");
+        _ = modelBuilder.Entity<IdentityUserLogin<Guid>>().ToTable("identity_user_logins", "users");
+        _ = modelBuilder.Entity<IdentityUserToken<Guid>>().ToTable("identity_user_tokens", "users");
 
-
-        // Ваши существующие расширения
         modelBuilder.AddConcurrencyTokenToVersion();
         modelBuilder.CorrectNames();
         modelBuilder.ApplyDefaultValues();
 
-        // Глобальное отключение каскадного удаления для всех сущностей
-        var foreignKeys = modelBuilder.Model
-            .GetEntityTypes()
-            .SelectMany(static e => e.GetForeignKeys());
 
-        foreach (var foreignKey in foreignKeys)
+        // Глобальное отключение каскадного удаления для всех сущностей
+        IEnumerable<IMutableForeignKey> foreignKeys = modelBuilder.Model.GetEntityTypes().SelectMany(static e => e.GetForeignKeys());
+        foreach (IMutableForeignKey? foreignKey in foreignKeys)
         {
             // Устанавливаем Restrict, чтобы предотвратить каскадное удаление на уровне БД.
             foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
         }
+
+        // Переопределение для каскадного удаления только для нужных связей
+        // Настройка для UserBan: Cascade при удалении ApplicationUser
+        modelBuilder.Entity<UserBan>()
+            .HasOne(b => b.User) // Навигационное свойство в UserBan
+            .WithMany(u => u.UserBans)      // Коллекция в ApplicationUser
+            .HasForeignKey(b => b.UserId) // FK в UserBan
+            .OnDelete(DeleteBehavior.Cascade); // Включить каскад: удалять UserBan при удалении ApplicationUser
+
+        // Настройка для UserAuthorization: Cascade при удалении ApplicationUser
+        modelBuilder.Entity<AuthRegLog>()
+            .HasOne(a => a.User) // Навигационное свойство в UserAuthorization
+            .WithMany()                     // Нет коллекции в ApplicationUser (one-to-many без обратной коллекции, если не добавлена)
+            .HasForeignKey(a => a.UserId) // FK в UserAuthorization (nullable, но Cascade все равно сработает)
+            .OnDelete(DeleteBehavior.Cascade); // Включить каскад: удалять UserAuthorization при удалении ApplicationUser
+
 
         //modelBuilder.Entity<Equipment>().HasQueryFilter(e => e.DeletedAt == null);
     }
@@ -296,7 +178,7 @@ public class DbContext_Game: IdentityDbContext<ApplicationUser, IdentityRole<Gui
     private static readonly ConcurrentDictionary<Type, bool> _interfaceCreatedAtCache = new();
     private static readonly ConcurrentDictionary<Type, bool> _interfaceUpdatedAtCache = new();
 
-    
+
 
     private void OnSaveCorrectVersion()
     {

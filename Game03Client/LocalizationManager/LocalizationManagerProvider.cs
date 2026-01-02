@@ -1,5 +1,4 @@
 using Game03Client.Logger;
-using General;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -10,15 +9,15 @@ namespace Game03Client.LocalizationManager;
 /// <summary>
 /// Реализация провайдера для управления локализацией, загружающая данные из JSON.
 /// </summary>
-internal class LocalizationManagerProvider : ILocalizationManager
+public class LocalizationManagerProvider
 {
 
-    private readonly ILogger<LocalizationManagerProvider> logger;
+    private readonly LoggerProvider<LocalizationManagerProvider> logger;
 
     /// <summary>
     /// Опции, содержащие данные локализации в формате JSON.
     /// </summary>
-    private readonly LocalizationManagerOptions _localizationManagerOptions;
+    private readonly LocalizationManagerOptions localizationManagerOptions;
 
     /// <summary>
     /// Инициализирует новый экземпляр класса <see cref="LocalizationManagerProvider"/>.
@@ -26,15 +25,15 @@ internal class LocalizationManagerProvider : ILocalizationManager
     /// <param name="localizationManagerOptions">Опции локализации, содержащие JSON-строку с данными.</param>
     /// <param name="logger">Логер для вызова коллбеков в игре.</param>
     /// <exception cref="Newtonsoft.Json.JsonReaderException">Вызывается, если JSON-строка в опциях недействительна.</exception>
-    public LocalizationManagerProvider(LocalizationManagerOptions localizationManagerOptions, ILogger<LocalizationManagerProvider> logger)
+    public LocalizationManagerProvider(LocalizationManagerOptions localizationManagerOptions, LoggerProvider<LocalizationManagerProvider> logger)
     {
-        _localizationManagerOptions = localizationManagerOptions;
+        this.localizationManagerOptions = localizationManagerOptions;
         this.logger = logger;
 
         // Очистка предыдущих данных локализации (если конструктор вызывается повторно, что маловероятно для провайдера).
         localization.Clear();
         // Разбор JSON-строки, содержащей данные локализации.
-        var obj = JObject.Parse(_localizationManagerOptions.jsonFileData.Value);
+        var obj = JObject.Parse(this.localizationManagerOptions.jsonFileData.Value);
 
         void ProcessToken(JToken token, string currentPath)
         {

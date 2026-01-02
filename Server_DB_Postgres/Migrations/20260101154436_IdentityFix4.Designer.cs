@@ -14,8 +14,8 @@ using Server_DB_Postgres;
 namespace Server_DB_Postgres.Migrations
 {
     [DbContext(typeof(DbContext_Game))]
-    [Migration("20251231063604_IdentityFix1")]
-    partial class IdentityFix1
+    [Migration("20260101154436_IdentityFix4")]
+    partial class IdentityFix4
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -825,12 +825,22 @@ namespace Server_DB_Postgres.Migrations
                     b.ToTable("x_hero_creature_type", "game_data");
                 });
 
-            modelBuilder.Entity("Server_DB_Postgres.Entities.Logs.UserAuthorization", b =>
+            modelBuilder.Entity("Server_DB_Postgres.Entities.Logs.AuthRegLog", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
+
+                    b.Property<bool>("ActionIsAuthentication")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("action_is_authentication");
+
+                    b.Property<Guid?>("ApplicationUserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("application_user_id");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -853,10 +863,6 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("user_device_id");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
                     b.Property<long>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAdd()
@@ -865,15 +871,15 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnName("version");
 
                     b.HasKey("Id")
-                        .HasName("user_authorizations__pkey");
+                        .HasName("auth_reg_logs__pkey");
+
+                    b.HasIndex("ApplicationUserId")
+                        .HasDatabaseName("auth_reg_logs__application_user_id__idx");
 
                     b.HasIndex("UserDeviceId")
-                        .HasDatabaseName("user_authorizations__user_device_id__idx");
+                        .HasDatabaseName("auth_reg_logs__user_device_id__idx");
 
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("user_authorizations__user_id__idx");
-
-                    b.ToTable("user_authorizations", "logs");
+                    b.ToTable("auth_reg_logs", "logs");
                 });
 
             modelBuilder.Entity("Server_DB_Postgres.Entities.Server.UserBanReason", b =>
@@ -1476,21 +1482,21 @@ namespace Server_DB_Postgres.Migrations
                     b.Navigation("CreatureType");
                 });
 
-            modelBuilder.Entity("Server_DB_Postgres.Entities.Logs.UserAuthorization", b =>
+            modelBuilder.Entity("Server_DB_Postgres.Entities.Logs.AuthRegLog", b =>
                 {
+                    b.HasOne("Server_DB_Postgres.Entities.Users.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("auth_reg_logs__application_user_id__asp_net_users__fkey");
+
                     b.HasOne("Server_DB_Postgres.Entities.Users.UserDevice", "UserDevice")
                         .WithMany()
                         .HasForeignKey("UserDeviceId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("user_authorizations__user_device_id__user_devices__fkey");
+                        .HasConstraintName("auth_reg_logs__user_device_id__user_devices__fkey");
 
-                    b.HasOne("Server_DB_Postgres.Entities.Users.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("user_authorizations__user_id__users__fkey");
-
-                    b.Navigation("User");
+                    b.Navigation("ApplicationUser");
 
                     b.Navigation("UserDevice");
                 });
@@ -1500,7 +1506,7 @@ namespace Server_DB_Postgres.Migrations
                     b.HasOne("Server_DB_Postgres.Entities.Users.ApplicationUser", "ApplicationUser")
                         .WithMany("UserBans")
                         .HasForeignKey("ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("user_bans__application_user_id__asp_net_users__fkey");
 

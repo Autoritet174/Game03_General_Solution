@@ -13,9 +13,9 @@ namespace Server.Http_NS.Controllers_NS.Collection_NS;
 public class CollectionController(DbContext_Game dbContext) : ControllerBaseApi
 {
     /// <summary> Получает коллекцию текущего пользователя. </summary>
-    [EnableRateLimiting(Consts.RATE_LIMITER_POLICY_COLLECTION), HttpPost(nameof(General.Url.Collection.All))]
+    [EnableRateLimiting(Consts.RATE_LIMITER_POLICY_COLLECTION), HttpPost("All")]
     public async Task<IActionResult> GetAllCollection()
-    {
+    {//"https://localhost:7227/api/Collection/All"
         Guid? userId = User.GetGuid();
         if (userId == null)
         {

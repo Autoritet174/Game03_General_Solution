@@ -27,6 +27,9 @@
         <member name="T:Server_DB_Postgres.DbContext_Game">
             <summary> Контекст базы данных для работы с игровыми данными. </summary>
         </member>
+        <member name="M:Server_DB_Postgres.DbContext_Game.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions{Server_DB_Postgres.DbContext_Game})">
+            <summary> Контекст базы данных для работы с игровыми данными. </summary>
+        </member>
         <member name="P:Server_DB_Postgres.DbContext_Game.Equipments">
             <summary> Экипировка игрока. </summary>
         </member>
@@ -63,7 +66,7 @@
         <member name="P:Server_DB_Postgres.DbContext_Game.x_EquipmentTypes_DamageTypes">
             <summary> Таблица связи многие ко мноким между WeaponTypes и DamageTypes. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.DbContext_Game.UserAuthorizations">
+        <member name="P:Server_DB_Postgres.DbContext_Game.AuthRegLogs">
             <summary> Лог авторизации пользователей. </summary>
         </member>
         <member name="P:Server_DB_Postgres.DbContext_Game.UserBanReasons">
@@ -95,9 +98,6 @@
         </member>
         <member name="P:Server_DB_Postgres.Entities.Collection.Hero.UserId">
             <summary> Уникальный идентификатор владельца. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.User">
-            <summary> Сущность <see cref="T:Server_DB_Postgres.Entities.Users.User"/>. </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Version">
             <summary> <inheritdoc/> </summary>
@@ -407,37 +407,31 @@
         <member name="P:Server_DB_Postgres.Entities.GameData.X_Hero_CreatureType.CreatureType">
             <summary> Сущность <see cref="T:Server_DB_Postgres.Entities.GameData.CreatureType"/>. </summary>
         </member>
-        <member name="T:Server_DB_Postgres.Entities.Logs.UserAuthorization">
+        <member name="T:Server_DB_Postgres.Entities.Logs.AuthRegLog">
             <summary> Лог авторизации пользователей. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Logs.UserAuthorization.Id">
+        <member name="P:Server_DB_Postgres.Entities.Logs.AuthRegLog.Id">
             <summary> Уникальный идентификатор. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Logs.UserAuthorization.Email">
+        <member name="P:Server_DB_Postgres.Entities.Logs.AuthRegLog.Email">
             <summary> Email при авторизации. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Logs.UserAuthorization.UserId">
-            <summary> Идентификатор пользователя. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Logs.UserAuthorization.User">
-            <summary> Навигационное свойство к <see cref="T:Server_DB_Postgres.Entities.Users.User"/>. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Logs.UserAuthorization.Success">
+        <member name="P:Server_DB_Postgres.Entities.Logs.AuthRegLog.Success">
             <summary> Успешность авторизации. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Logs.UserAuthorization.Version">
+        <member name="P:Server_DB_Postgres.Entities.Logs.AuthRegLog.Version">
             <summary> <inheritdoc/> </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Logs.UserAuthorization.CreatedAt">
+        <member name="P:Server_DB_Postgres.Entities.Logs.AuthRegLog.CreatedAt">
             <summary> <inheritdoc/> </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Logs.UserAuthorization.UserDeviceId">
+        <member name="P:Server_DB_Postgres.Entities.Logs.AuthRegLog.UserDeviceId">
             <summary> Идентификатор устройства пользователя. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Logs.UserAuthorization.UserDevice">
+        <member name="P:Server_DB_Postgres.Entities.Logs.AuthRegLog.UserDevice">
             <summary> Навигационное свойство к <see cref="T:Server_DB_Postgres.Entities.Users.UserDevice"/>. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Logs.UserAuthorization.Ip">
+        <member name="P:Server_DB_Postgres.Entities.Logs.AuthRegLog.Ip">
             <summary> IP-адрес устройства. </summary>
         </member>
         <member name="T:Server_DB_Postgres.Entities.Server.UserBanReason">
@@ -452,46 +446,13 @@
         <member name="P:Server_DB_Postgres.Entities.Server.UserBanReason.UserBans">
             <summary> Коллекция <see cref="T:Server_DB_Postgres.Entities.Users.UserBan"/>. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.ApplicationUser.CreatedAt">
-            <summary> <inheritdoc/> </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.ApplicationUser.UpdatedAt">
-            <summary> <inheritdoc/> </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.ApplicationUser.Version">
-            <summary> <inheritdoc/> </summary>
-        </member>
-        <member name="T:Server_DB_Postgres.Entities.Users.User">
-            <summary> Представляет пользователя системы. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.User.Id">
-            <summary> Уникальный идентификатор. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.User.Email">
-            <summary> Email адрес пользователя. Может быть null, если пользователь зарегистрирован через сторонний сервис. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.User.EmailVerifiedAt">
-            <summary> Дата и время подтверждения email адреса. Null, если email еще не подтвержден. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.User.PasswordHash">
-            <summary> Хеш пароля пользователя. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.User.TimeZone">
-            <summary> Часовой пояс пользователя. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.User.IsAdmin">
-            <summary> Флаг, указывающий, является ли пользователь администратором системы. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.User.UserBans">
-            <summary> Коллекция <see cref="T:Server_DB_Postgres.Entities.Users.UserBan"/>. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.User.Version">
-            <summary> <inheritdoc/> </summary>
-        </member>
         <member name="P:Server_DB_Postgres.Entities.Users.User.CreatedAt">
             <summary> <inheritdoc/> </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.Users.User.UpdatedAt">
+            <summary> <inheritdoc/> </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Users.User.Version">
             <summary> <inheritdoc/> </summary>
         </member>
         <member name="T:Server_DB_Postgres.Entities.Users.UserBan">
@@ -500,10 +461,10 @@
         <member name="P:Server_DB_Postgres.Entities.Users.UserBan.Id">
             <summary> Уникальный идентификатор. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserBan.ApplicationUserId">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserBan.UserId">
             <summary> Идентификатор пользователя, к которому применена блокировка. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserBan.ApplicationUser">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserBan.User">
             <summary> Навигационное свойство к <see cref="T:Server_DB_Postgres.Entities.Users.User"/>. </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.Users.UserBan.Version">
@@ -925,6 +886,66 @@
             <inheritdoc />
         </member>
         <member name="M:Server_DB_Postgres.Migrations.IdentityFix1.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.IdentityFix2">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.IdentityFix2.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.IdentityFix2.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.IdentityFix2.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.IdentityFix3">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.IdentityFix3.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.IdentityFix3.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.IdentityFix3.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.IdentityFix4">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.IdentityFix4.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.IdentityFix4.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.IdentityFix4.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.IdentityFix5">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.IdentityFix5.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.IdentityFix5.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.IdentityFix5.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.IdentityFix6">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.IdentityFix6.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.IdentityFix6.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.IdentityFix6.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Server_DB_Postgres.ModelBuilderExt">

@@ -1,6 +1,8 @@
 using Game03Client.PlayerCollection;
+using General;
 using General.DTO.Entities.Collection;
 using Npgsql;
+using System.Diagnostics;
 
 namespace ConsoleAppForTests;
 
@@ -24,18 +26,58 @@ internal class Program
         //Console.WriteLine(nameof(General.Url.Collection.All));
         // Создайте тестовую программу
 
-        var connString = "Host=localhost;Port=5432;Database=Game;Username=postgres;Password=";
-        using var conn = new NpgsqlConnection(connString);
-        try
-        {
-            conn.Open();
-            Console.WriteLine("Подключение успешно!");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Ошибка: {ex.Message}");
-        }
-        //Start();
+
+        //var connString = "Host=localhost;Port=5432;Database=Game;Username=postgres;Password=";
+        //using var conn = new NpgsqlConnection(connString);
+        //try
+        //{
+        //    conn.Open();
+        //    Console.WriteLine("Подключение успешно!");
+        //}
+        //catch (Exception ex)
+        //{
+        //    Console.WriteLine($"Ошибка: {ex.Message}");
+        //}
+        Start();
+
+        //Stopwatch sw = Stopwatch.StartNew();
+        //Random r = new();
+        //CustomRandom cr = new();
+
+        //int max = 10000;
+        //for (int i = 0; i < 100000000; i++)
+        //{
+        //    r.Next(1, 10000);
+        //}
+        //for (int i = 0; i < 100000000; i++)
+        //{
+        //    cr.NextInclusive(1, 10000);
+        //}
+
+        //for (int j = 0; j < 10; j++)
+        //{
+        //    //sw = Stopwatch.StartNew();
+        //    //for (int i = 0; i < 100000000; i++)
+        //    //{
+        //    //    r.Next(1000000, 2000000);
+        //    //}
+        //    //sw.Stop();
+        //    //Console.WriteLine($"Random {sw.ElapsedMilliseconds}"); //2201
+
+        //    sw = Stopwatch.StartNew();
+        //    int q;
+        //    for (int i = 0; i < 100000000; i++)
+        //    {
+        //        q = cr.NextInclusive(10, 20);
+        //        if (q < 10 || q > 20)
+        //        {
+        //            throw new Exception();
+        //        }
+        //    }
+        //    sw.Stop();
+        //    Console.WriteLine($"CustomRandom {sw.ElapsedMilliseconds}"); //4919
+        //}
+
     }
     private static void Game_OnLog(object message)
     {
@@ -43,6 +85,7 @@ internal class Program
     }
     private static void Start()
     {
+        string Password = Game03Client.Password.HashSha512("testPassword");
         General.StringCapsule capsule = new()
         {
             Value = File.ReadAllText(@"C:\UnityProjects\Game03_Git\Client_Game03\Assets\Resources\localization\ru\data.json"),
@@ -56,9 +99,9 @@ internal class Program
         CancellationTokenSource cancellationTokenSource = new(TimeSpan.FromSeconds(30));
 
         string json = """
-            {"Email":"SUPERADMIN@MAIL.RU","Password":"testPassword","TimeZoneInfo_Local_BaseUtcOffset_Minutes":480,"System_Environment_UserName":"AUTORITET","DeviceModel":"B550 GAMING X V2 (Gigabyte Technology Co., Ltd.)","DeviceType":"Desktop","OperatingSystem":"Windows 11  (10.0.22000) 64bit","ProcessorType":"AMD Ryzen 7 3700X 8-Core Processor ","ProcessorCount":16,"SystemMemorySize":32691,"GraphicsDeviceName":"NVIDIA GeForce RTX 4070","GraphicsMemorySize":12011,"DeviceUniqueIdentifier":"e307f13fd5fb9d8c59a3a7b4df863c02bdbb300c","SystemInfo_supportsInstancing":true,"SystemInfo_npotSupport":"Full"}
+            {"Email":"SUPERadmin@mail.RU","Password":"iluLRhHe5Gs9rzUx+rsqc6k6K+N26qJA3BFd1YGL0kpTPu7ppGqqJ8gGRRbkieYLdVM1Bud04ZeSKEKMkQrydQ==","TimeZoneInfo_Local_BaseUtcOffset_Minutes":480,"System_Environment_UserName":"AUTORITET","DeviceModel":"B550 GAMING X V2 (Gigabyte Technology Co., Ltd.)","DeviceType":"Desktop","OperatingSystem":"Windows 11  (10.0.22000) 64bit","ProcessorType":"AMD Ryzen 7 3700X 8-Core Processor ","ProcessorCount":16,"SystemMemorySize":32691,"GraphicsDeviceName":"NVIDIA GeForce RTX 4070","GraphicsMemorySize":12011,"DeviceUniqueIdentifier":"e307f13fd5fb9d8c59a3a7b4df863c02bdbb300c","SystemInfo_supportsInstancing":true,"SystemInfo_npotSupport":"Full"}
             """;
-        string? token = Game.JwtToken.GetTokenAsync(json, cancellationTokenSource.Token).Result;
+        string jwtToken = Game.JwtToken.GetTokenAsync(json, cancellationTokenSource.Token).Result ?? string.Empty;
 
 
         //Game03Client.WebSocketClient.IWebSocketClientProvider webSocketClient = Game.WebSocketClient;
@@ -70,10 +113,10 @@ internal class Program
         //}
 
         cancellationTokenSource = new(TimeSpan.FromSeconds(30));
-        Game.GameData.LoadGameData(cancellationTokenSource.Token).Wait();
+        Game.GameData.LoadGameData(cancellationTokenSource.Token, jwtToken).Wait();
 
         cancellationTokenSource = new(TimeSpan.FromSeconds(30));
-        Game.Collection.LoadAllCollectionFromServerAsync(cancellationTokenSource.Token).Wait();
+        Game.Collection.LoadAllCollectionFromServerAsync(cancellationTokenSource.Token, jwtToken).Wait();
 
         IEnumerable<DtoHero> coll = Game.Collection.GetCollectionHeroesFromCache();
         IEnumerable<GroupCollectionElement> coll1 = Game.Collection.GetCollectionHeroesGroupedByGroupNames();

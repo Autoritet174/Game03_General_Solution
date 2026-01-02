@@ -12,15 +12,17 @@ using System.Threading.Tasks;
 
 namespace Game03Client.PlayerCollection;
 
-internal class PlayerCollectionProvider(
-    PlayerCollectionCache playerCollectionCache,
-    GameDataCache gameDataCache,
-    IHttpRequester httpRequester,
-    ILogger<PlayerCollectionProvider> logger
-    ) : IPlayerCollection
+public class PlayerCollectionProvider(
+    GameDataProvider gameDataProvider,
+    HttpRequesterProvider httpRequester,
+    LoggerProvider<PlayerCollectionProvider> logger
+    )
 {
 
-    public async Task<bool> LoadAllCollectionFromServerAsync(CancellationToken cancellationToken)
+    private readonly List<string> listGroupNameHero = [];
+    private readonly List<string> listGroupNameEquipment = [];
+    private DtoContainerCollection collection = null!;
+    public async Task<bool> LoadAllCollectionFromServerAsync(CancellationToken cancellationToken, string jwtToken)
     {
         if (cancellationToken.IsCancellationRequested)
         {
@@ -28,7 +30,7 @@ internal class PlayerCollectionProvider(
         }
 
         // Получить коллекцию героев игрока
-        string? response = await httpRequester.GetResponseAsync(General.Url.Collection.All, cancellationToken);
+        string? response = await httpRequester.GetResponseAsync(General.Url.Collection.All, cancellationToken, jwtToken: jwtToken);
         if (response == null)
         {
             return false;
@@ -42,12 +44,12 @@ internal class PlayerCollectionProvider(
 
         foreach (DtoEquipment i in c.DtoCollectionEquipments)
         {
-            i.DtoBaseEquipment = gameDataCache.DtoContainer.DtoBaseEquipments.FirstOrDefault(a => a.Id == i.BaseEquipmentId);
+            i.DtoBaseEquipment = gameDataProvider.DtoContainer.DtoBaseEquipments.FirstOrDefault(a => a.Id == i.BaseEquipmentId);
         }
 
         foreach (DtoHero i in c.DtoCollectionHeroes)
         {
-            i.DtoBaseHero = gameDataCache.DtoContainer.DtoBaseHeroes.FirstOrDefault(a => a.Id == i.BaseHeroId);
+            i.DtoBaseHero = gameDataProvider.DtoContainer.DtoBaseHeroes.FirstOrDefault(a => a.Id == i.BaseHeroId);
             i.DtoEquipment1 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment1Id);
             i.DtoEquipment2 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment2Id);
             i.DtoEquipment3 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment3Id);
@@ -74,7 +76,7 @@ internal class PlayerCollectionProvider(
             //i.DtoEquipment24 = c.DtoCollectionEquipments.FirstOrDefault(a => a.Id == i.Equipment24Id);
         }
 
-        playerCollectionCache.collection = c;
+        collection = c;
 
         RefreshListGroupNameHero();
         RefreshListGroupNameEquipment();
@@ -83,10 +85,10 @@ internal class PlayerCollectionProvider(
 
     public void RefreshListGroupNameHero()
     {
-        List<string> list = playerCollectionCache.listGroupNameHero;
+        List<string> list = listGroupNameHero;
         list.Clear();
         list.Add(string.Empty); // группа по умолчанию
-        foreach (DtoHero i in playerCollectionCache.collection.DtoCollectionHeroes)
+        foreach (DtoHero i in collection.DtoCollectionHeroes)
         {
             string group_name = i.GroupName ?? string.Empty;
             if (!list.Contains(group_name))
@@ -98,10 +100,10 @@ internal class PlayerCollectionProvider(
 
     public void RefreshListGroupNameEquipment()
     {
-        List<string> list = playerCollectionCache.listGroupNameEquipment;
+        List<string> list = listGroupNameEquipment;
         list.Clear();
         list.Add(string.Empty); // группа по умолчанию
-        foreach (DtoEquipment i in playerCollectionCache.collection.DtoCollectionEquipments)
+        foreach (DtoEquipment i in collection.DtoCollectionEquipments)
         {
             string group_name = i.GroupName ?? string.Empty;
             if (!list.Contains(group_name))
@@ -113,31 +115,31 @@ internal class PlayerCollectionProvider(
 
     public IEnumerable<DtoHero> GetCollectionHeroesFromCache()
     {
-        return playerCollectionCache.collection.DtoCollectionHeroes;
+        return collection.DtoCollectionHeroes;
     }
     public IEnumerable<DtoEquipment> GetCollectionEquipmentsFromCache()
     {
-        return playerCollectionCache.collection.DtoCollectionEquipments;
+        return collection.DtoCollectionEquipments;
     }
 
     public int GetCountHeroes()
     {
-        return playerCollectionCache.collection.DtoCollectionHeroes.Count;
+        return collection.DtoCollectionHeroes.Count;
     }
     public int GetCountEquipments()
     {
-        return playerCollectionCache.collection.DtoCollectionEquipments.Count;
+        return collection.DtoCollectionEquipments.Count;
     }
 
     /// <summary> Получить коллекцию героев сгруппированную по именам групп. </summary>
     public IEnumerable<GroupCollectionElement> GetCollectionHeroesGroupedByGroupNames()
     {
         List<GroupCollectionElement> result = [];
-        foreach (string groupName in playerCollectionCache.listGroupNameHero)
+        foreach (string groupName in listGroupNameHero)
         {
-            List<DtoHero> c = playerCollectionCache.collection.DtoCollectionHeroes;
+            List<DtoHero> c = collection.DtoCollectionHeroes;
             IEnumerable<DtoHero> heroes = groupName == string.Empty ? c.Where(a => a.GroupName is null or "") : c.Where(a => a.GroupName == groupName);
-            
+
             heroes = heroes.OrderByDescending(a => a.Rarity)
                 .ThenBy(a => a.Level)
                 .ThenBy(a =>
@@ -173,9 +175,9 @@ internal class PlayerCollectionProvider(
     public IEnumerable<GroupCollectionElement> GetCollectionEquipmentesGroupByGroups()
     {
         List<GroupCollectionElement> result = [];
-        foreach (string groupName in playerCollectionCache.listGroupNameEquipment)
+        foreach (string groupName in listGroupNameEquipment)
         {
-            List<DtoEquipment> c = playerCollectionCache.collection.DtoCollectionEquipments;
+            List<DtoEquipment> c = collection.DtoCollectionEquipments;
             IEnumerable<DtoEquipment> equipments = groupName == string.Empty ? c.Where(a => a.GroupName is null or "") : c.Where(a => a.GroupName == groupName);
 
             equipments = equipments.OrderByDescending(a =>

@@ -1,6 +1,6 @@
 namespace Game03Client.IniFile;
 
-internal sealed class IniFileOptions(string fileName)
+public sealed class IniFileOptions(string fileName)
 {
     public string FileName { get; } = fileName;
 }

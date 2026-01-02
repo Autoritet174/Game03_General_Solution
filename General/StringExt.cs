@@ -12,6 +12,15 @@ namespace General;
 public static partial class StringExt
 {
     /// <summary>
+    /// Trim and ToUpperInvariant
+    /// </summary>
+    /// <param name="s"></param>
+    /// <returns></returns>
+    public static string NormalizedValueGame03(this string s) {
+        return s.Trim().ToUpperInvariant();
+    }
+
+    /// <summary>
     /// Заменить все символы '\' на '/'
     /// </summary>
     /// <param name="s"></param>

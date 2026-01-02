@@ -6,7 +6,7 @@ using L = General.LocalizationKeys;
 namespace Game03Client.Logger;
 
 
-internal class LoggerProvider<T>(LoggerOptions loggerOptions) : ILogger<T>
+public class LoggerProvider<T>(LoggerOptions loggerOptions)
 {
     public void Log(object message, string? keyLocal = null)
     {

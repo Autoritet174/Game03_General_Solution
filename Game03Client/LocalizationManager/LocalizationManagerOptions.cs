@@ -7,7 +7,7 @@ namespace Game03Client.LocalizationManager;
 /// </summary>
 /// <param name="jsonFileData">Капсула, содержащая строку с данными локализации в формате JSON.</param>
 /// <param name="language">Язык, для которого предназначены данные локализации.</param>
-internal class LocalizationManagerOptions(StringCapsule jsonFileData, GameLanguage language)
+public class LocalizationManagerOptions(StringCapsule jsonFileData, GameLanguage language)
 {
     /// <summary>
     /// Данные локализации в формате JSON, обернутые в <see cref="StringCapsule"/>.

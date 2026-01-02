@@ -1,14 +1,15 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Server.GameDataCache;
+using Server.Http_NS.Controllers_NS;
 
-namespace Server.Http_NS.Controllers_NS;
+namespace Server.GameData;
 
 /// <summary>
 /// Контроллер с общими методами.
 /// </summary>
 /// <param name="heroCache"></param>
-[Route("api/[controller]/[action]")]
-public class GeneralController(IGameDataCacheService heroCache) : ControllerBaseApi
+public class GameDataController(IGameDataCacheService heroCache) : ControllerBaseApi
 {
     private static ContentResult? result = null;
     private static readonly Lock locker = new();
@@ -16,7 +17,7 @@ public class GeneralController(IGameDataCacheService heroCache) : ControllerBase
 
     /// <summary> Возвращает в ответе список всех константных игровых данных нужных на клиенте игры. </summary>
     [HttpPost]
-    public IActionResult GameData()
+    public IActionResult Main()
     {
         if (result == null)
         {

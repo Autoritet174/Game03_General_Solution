@@ -14,27 +14,24 @@ using L = General.LocalizationKeys;
 
 namespace Game03Client.HttpRequester;
 
-internal class HttpRequesterProvider : IHttpRequester
+public class HttpRequesterProvider
 {
-    private readonly HttpClient httpClient;
-    private readonly IIniFile iniFileProvider;
-    private readonly IInternetChecker _internetCheckerProvider;
-    private readonly JwtTokenCache tokenCache;
-    private readonly ILogger<HttpRequesterProvider> logger;
+    private static readonly HttpClient httpClient = new();
+    private readonly IniFileProvider iniFileProvider;
+    private readonly InternetCheckerProvider _internetCheckerProvider;
+    private readonly LoggerProvider<HttpRequesterProvider> logger;
 
-    public HttpRequesterProvider(IIniFile iniFileProvider, IInternetChecker internetCheckerProvider, JwtTokenCache tokenCache, ILogger<HttpRequesterProvider> logger)
+    public HttpRequesterProvider(IniFileProvider iniFileProvider, InternetCheckerProvider internetCheckerProvider, LoggerProvider<HttpRequesterProvider> logger)
     {
         this.iniFileProvider = iniFileProvider;
         _internetCheckerProvider = internetCheckerProvider;
-        this.tokenCache = tokenCache;
         this.logger = logger;
-        httpClient = new();
         double timeout = this.iniFileProvider.ReadDouble("Http", "Timeout", 30d);
         httpClient.Timeout = TimeSpan.FromSeconds(timeout);
     }
 
 
-    public async Task<string?> GetResponseAsync(string url, CancellationToken cancellationToken, string? jsonBody = null, bool useJwtToken = true)
+    public async Task<string?> GetResponseAsync(string url, CancellationToken cancellationToken, string? jsonBody = null, string? jwtToken = null)
     {
         if (url.IsEmpty())
         {
@@ -64,21 +61,18 @@ internal class HttpRequesterProvider : IHttpRequester
                 request.Content = new StringContent(jsonBody, Encoding.UTF8, G.APPLICATION_JSON);
             }
 
-            if (useJwtToken)
+            if (!jwtToken.IsEmpty())
             {
-                string? jwtToken = tokenCache.Token;
-                if (!jwtToken.IsEmpty())
-                {
-                    // Если был передан токен то подставляем его в заголовок как авторизацию
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwtToken);
-                }
+                // Если был передан токен то подставляем его в заголовок как авторизацию
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwtToken);
             }
+            
 
             using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
             string responseContent = await response.Content.ReadAsStringAsync();
             if (responseContent.IsEmpty())
             {
-                logger.Log("responseContent IsEmpty", L.Error.Server.InvalidResponse);
+                logger.Log($"responseContent IsEmpty, StatusCode={response.StatusCode}", L.Error.Server.InvalidResponse);
                 return null;
             }
             return responseContent;

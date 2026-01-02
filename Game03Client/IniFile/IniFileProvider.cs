@@ -6,9 +6,9 @@ using System.IO;
 
 namespace Game03Client.IniFile;
 
-internal class IniFileProvider(IniFileOptions options
-    , ILogger<IniFileProvider> logger
-    ) : IIniFile
+public class IniFileProvider(IniFileOptions options
+    , LoggerProvider<IniFileProvider> logger
+    )
 {
     private readonly FileIniDataParser _fileIniDataParser = new();
 

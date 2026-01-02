@@ -16,19 +16,21 @@ namespace Game03Client.GameData;
 /// Реализация <see cref="IGameData"/>, предоставляющая функциональность для
 /// загрузки и доступа к глобальным игровым данным, таким как список героев.
 /// </summary>
-internal class GameDataProvider(IHttpRequester httpRequesterProvider, GameDataCache globalFunctionsProviderCache
+public class GameDataProvider(HttpRequesterProvider httpRequesterProvider
     //, ILogger<GameDataProvider> logger
-    ) : IGameData
+    )
 {
+    public DtoContainerGameData DtoContainer = null!;
+
     /// <inheritdoc/>
-    public async Task LoadGameData(CancellationToken cancellationToken)
+    public async Task LoadGameData(CancellationToken cancellationToken, string jwtToken)
     {
         if (cancellationToken.IsCancellationRequested)
         {
             return;
         }
 
-        string? response = await httpRequesterProvider.GetResponseAsync(Url.General.GameData, cancellationToken);
+        string? response = await httpRequesterProvider.GetResponseAsync(Url.GameData, cancellationToken, jwtToken: jwtToken);
         if (response == null)
         {
             return;
@@ -53,7 +55,7 @@ internal class GameDataProvider(IHttpRequester httpRequesterProvider, GameDataCa
             i.DtoSmithingMaterial = c.DtoSmithingMaterials.FirstOrDefault(a => a.Id == i.DtoSmithingMaterialId);
             i.DtoDamageType = c.DtoDamageTypes.FirstOrDefault(a => a.Id == i.DtoDamageTypeId);
         }
-        globalFunctionsProviderCache.DtoContainer = c;
+        DtoContainer = c;
 
 
 
@@ -84,8 +86,5 @@ internal class GameDataProvider(IHttpRequester httpRequesterProvider, GameDataCa
 
         //globalFunctionsProviderCache.BaseHeroes = allHeroes.AsEnumerable();
     }
-    public DtoContainerGameData GetDtoContainer()
-    {
-        return globalFunctionsProviderCache.DtoContainer;
-    }
+    
 }

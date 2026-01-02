@@ -13,10 +13,10 @@ public class UserBan : IVersion, ICreatedAt, IUpdatedAt
 
 
     /// <summary> Идентификатор пользователя, к которому применена блокировка. </summary>
-    public required Guid ApplicationUserId { get; set; }
+    public required Guid UserId { get; set; }
     /// <summary> Навигационное свойство к <see cref="Users.User"/>. </summary>
-    [ForeignKey(nameof(ApplicationUserId))]
-    public ApplicationUser? ApplicationUser { get; set; }
+    [ForeignKey(nameof(UserId))]
+    public User? User { get; set; }
 
 
     /// <summary> <inheritdoc/> </summary>

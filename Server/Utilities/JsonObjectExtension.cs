@@ -59,7 +59,7 @@ public static class JsonObjectExtension
     /// </summary>
     /// <param name="obj">Объект JSON, из которого извлекается значение.</param>
     /// <param name="key">Ключ для поиска (без учёта регистра).</param>
-    /// <param name="removeAfterSuccessGetting">Если <c>true</c>, поле будет удалено из объекта после извлечения.</param>
+    /// <param name="removeAfterSuccessGetting">Если <c>true</c>, поле будет удалено из объекта после успешного извлечения.</param>
     /// <returns>Строковое значение или пустая строка, если ключ не найден или значение null.</returns>
     public static string GetString(this JsonObject obj, string key, bool removeAfterSuccessGetting = false)
     {

@@ -8,8 +8,9 @@ using L = General.LocalizationKeys;
 
 namespace Game03Client.JwtToken;
 
-internal class JwtTokenProvider(JwtTokenCache jwtTokenCache, IHttpRequester httpRequesterProvider, ILogger<JwtTokenProvider> logger) : IJwtToken
+public class JwtTokenProvider(HttpRequesterProvider httpRequester, LoggerProvider<JwtTokenProvider> logger)
 {
+    public string? token = null;
     public async Task<string?> GetTokenAsync(string jsonBody, CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
@@ -18,13 +19,14 @@ internal class JwtTokenProvider(JwtTokenCache jwtTokenCache, IHttpRequester http
         }
 
         // Если есть токен — возвращаем сразу
-        if (!jwtTokenCache.Token.IsEmpty())
+        if (!this.token.IsEmpty())
         {
-            return jwtTokenCache.Token;
+            return this.token;
         }
 
-        string? response = await httpRequesterProvider.GetResponseAsync(Url.Authentication, cancellationToken, jsonBody, false);
-        if (response == null) {
+        string? response = await httpRequester.GetResponseAsync(Url.Auth, cancellationToken, jsonBody);
+        if (response == null)
+        {
             logger.Log("response is null", L.Error.Server.InvalidResponse);
             return null;
         }
@@ -51,17 +53,8 @@ internal class JwtTokenProvider(JwtTokenCache jwtTokenCache, IHttpRequester http
             return null;
         }
 
-        jwtTokenCache.Token = token;
+        this.token = token;
         return token;
     }
 
-    public string? GetTokenIfExists()
-    {
-        return jwtTokenCache.Token.IsEmpty() ? null : jwtTokenCache.Token;
-    }
-
-    public void DeleteToken()
-    {
-        jwtTokenCache.Token = null;
-    }
 }

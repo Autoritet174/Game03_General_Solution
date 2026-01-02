@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Game03Client.WebSocketClient;
 
-internal class WebSocketClientProvider(IJwtToken jwtTokenProvider) : IWebSocketClient
+public class WebSocketClientProvider(JwtTokenProvider jwtToken) 
 {
     private const string SERVER_URL = "wss://localhost:7227/ws/";
     private ClientWebSocket _webSocket = new();
@@ -25,16 +25,14 @@ internal class WebSocketClientProvider(IJwtToken jwtTokenProvider) : IWebSocketC
             return;
         }
 
-        string? jwtToken = jwtTokenProvider.GetTokenIfExists();
-
         try
         {
             Connected = false;
             _webSocket = new();
-            if (!jwtToken.IsEmpty())
+            if (!jwtToken.token.IsEmpty())
             {
                 // Добавляем JWT токен в заголовки, если он предоставлен
-                _webSocket.Options.SetRequestHeader("Authorization", $"Bearer {jwtToken}");
+                _webSocket.Options.SetRequestHeader("Authorization", $"Bearer {jwtToken.token}");
             }
             await _webSocket.ConnectAsync(_serverUri, cancellationToken);
         }

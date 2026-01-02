@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+
 namespace General;
 
 /// <summary>
@@ -88,6 +90,8 @@ public static class LocalizationKeys
             public const string NoInternetConnection = $"{_Server}{nameof(NoInternetConnection)}";
             public const string OpeningWebSocketFailed = $"{_Server}{nameof(OpeningWebSocketFailed)}";
             public const string LoadingCollectionFailed = $"{_Server}{nameof(LoadingCollectionFailed)}";
+            public const string UserAlreadyExists = $"{_Server}{nameof(UserAlreadyExists)}";
+            public const string Required2FA = $"{_Server}{nameof(Required2FA)}";
         }
 
         /// <summary>

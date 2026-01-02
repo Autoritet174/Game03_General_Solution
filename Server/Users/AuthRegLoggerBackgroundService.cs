@@ -7,26 +7,28 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json.Nodes;
+using General;
 
-namespace Server.Http_NS.Controllers_NS.Users_NS;
+namespace Server.Users;
 
-/// <summary> Фоновый сервис пакетной записи логов авторизации и данных устройств с контролируемыми повторными попытками и корректной остановкой. </summary>
-public sealed class BackgroundLoggerAuthentificationService(
-    ILogger<BackgroundLoggerAuthentificationService> logger,
+/// <summary> Фоновый сервис пакетной записи логов авторизации/регистрации и данных устройств с контролируемыми повторными попытками и корректной остановкой. </summary>
+public sealed class AuthRegLoggerBackgroundService(
+    ILogger<AuthRegLoggerBackgroundService> logger,
     IServiceProvider serviceProvider) : IHostedService, IDisposable
 {
     /// <summary>
     /// Лог авторизации с поддержкой повторной обработки и кэшированными данными устройства.
     /// </summary>
     private sealed record LogEntry(
-        bool AuthorizationSuccess,
+        bool Success,
         JsonObject Obj,
         string? Email,
         Guid? UserId,
         IPAddress? Ip,
         int RetryCount,
         DateTimeOffset NextRetryAt,
-        DeviceParsedData? CachedDeviceData);
+        DeviceParsedData? CachedDeviceData
+        ,bool ActionIsAuthentication);
 
     /// <summary>
     /// Распарсенные данные устройства.
@@ -47,7 +49,7 @@ public sealed class BackgroundLoggerAuthentificationService(
         string? SystemInfoNpotSupport,
         int? TimeZoneMinutes);
 
-    private readonly ILogger<BackgroundLoggerAuthentificationService> _logger = logger;
+    private readonly ILogger<AuthRegLoggerBackgroundService> _logger = logger;
     private readonly IServiceProvider _serviceProvider = serviceProvider;
 
     private readonly ConcurrentQueue<LogEntry> _queue = new();
@@ -66,18 +68,19 @@ public sealed class BackgroundLoggerAuthentificationService(
     /// <summary>
     /// Добавляет лог в очередь с предварительным вычислением данных устройства.
     /// </summary>
-    /// <param name="authorizationSuccess">Успешность авторизации.</param>
+    /// <param name="success">Успешность.</param>
     /// <param name="obj">JSON объект с данными устройства.</param>
     /// <param name="email">Email пользователя.</param>
     /// <param name="userId">ID пользователя.</param>
     /// <param name="ip">IP-адрес запроса.</param>
     /// <exception cref="ArgumentNullException">Бросается, если obj равен null.</exception>
     public void EnqueueLog(
-        bool authorizationSuccess,
+        bool success,
         JsonObject obj,
         string? email,
         Guid? userId,
-        IPAddress? ip)
+        IPAddress? ip,
+        bool actionIsAuthentication)
     {
         ArgumentNullException.ThrowIfNull(obj);
 
@@ -90,14 +93,14 @@ public sealed class BackgroundLoggerAuthentificationService(
         DeviceParsedData? deviceData = ParseAndComputeId(obj);
 
         _queue.Enqueue(new LogEntry(
-            authorizationSuccess,
+            success,
             obj,
             email,
             userId,
             ip,
             RetryCount: 0,
             NextRetryAt: DateTimeOffset.UtcNow,
-            CachedDeviceData: deviceData));
+            CachedDeviceData: deviceData, actionIsAuthentication));
     }
 
     /// <inheritdoc />
@@ -259,14 +262,15 @@ public sealed class BackgroundLoggerAuthentificationService(
 
             foreach (LogEntry item in batch)
             {
-                _ = db.UserAuthorizations.Add(new Server_DB_Postgres.Entities.Logs.UserAuthorization
+                _ = db.AuthRegLogs.Add(new Server_DB_Postgres.Entities.Logs.AuthRegLog
                 {
                     Email = item.Email,
-                    Success = item.AuthorizationSuccess,
+                    Success = item.Success,
                     UserId = item.UserId,
                     UserDeviceId = item.CachedDeviceData?.Id,
                     CreatedAt = DateTimeOffset.UtcNow,
-                    Ip = item.Ip
+                    Ip = item.Ip,
+                    ActionIsAuthentication = item.ActionIsAuthentication
                 });
             }
 
@@ -294,7 +298,7 @@ public sealed class BackgroundLoggerAuthentificationService(
         try
         {
             DateTimeOffset cutoff = DateTimeOffset.UtcNow.AddMonths(-24);
-            int deleted = await db.UserAuthorizations
+            int deleted = await db.AuthRegLogs
                 .Where(a => a.CreatedAt < cutoff)
                 .ExecuteDeleteAsync(ct);
 
@@ -353,7 +357,7 @@ public sealed class BackgroundLoggerAuthentificationService(
           .Append(SPLIT)
           .Append(data.SystemInfoNpotSupport ?? "");
 
-        byte[] hash = SHA256.HashData(Encoding.UTF8.GetBytes(sb.ToString().ToLowerInvariant()));
+        byte[] hash = SHA256.HashData(Encoding.UTF8.GetBytes(sb.ToString().NormalizedValueGame03()));
         byte[] guidBytes = new byte[16];
         Array.Copy(hash, guidBytes, 16);
 

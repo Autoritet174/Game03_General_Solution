@@ -26,37 +26,37 @@ public sealed class Game03 : IAsyncDisposable
     /// <summary>
     /// Провайдер JwtToken.
     /// </summary>
-    public IJwtToken JwtToken { get; private set; }
+    public JwtTokenProvider JwtToken { get; private set; }
 
     /// <summary>
     /// Провайдер IniFile.
     /// </summary>
-    public IIniFile IniFile { get; private set; }
+    public IniFileProvider IniFile { get; private set; }
 
     /// <summary>
     /// Провайдер HttpRequester.
     /// </summary>
-    public IHttpRequester HttpRequester { get; private set; }
+    public HttpRequesterProvider HttpRequester { get; private set; }
 
     /// <summary>
     /// Провайдер LocalizationManager.
     /// </summary>
-    public ILocalizationManager LocalizationManager { get; private set; }
+    public LocalizationManagerProvider LocalizationManager { get; private set; }
 
     /// <summary>
     /// Провайдер LocalizationManager.
     /// </summary>
-    public IWebSocketClient WebSocketClient { get; private set; }
+    public WebSocketClientProvider WebSocketClient { get; private set; }
 
     /// <summary>
     /// Провайдер GameData.
     /// </summary>
-    public IGameData GameData { get; private set; }
+    public GameDataProvider GameData { get; private set; }
 
     /// <summary>
     /// Провайдер Collection.
     /// </summary>
-    public IPlayerCollection Collection { get; private set; }
+    public PlayerCollectionProvider Collection { get; private set; }
 
     /// <summary>
     /// Провайдер Logger.
@@ -67,13 +67,13 @@ public sealed class Game03 : IAsyncDisposable
     {
         _provider = provider;
         //Logger = provider.GetRequiredService<ILogger<Game03>>();
-        JwtToken = provider.GetRequiredService<IJwtToken>();
-        IniFile = provider.GetRequiredService<IIniFile>();
-        HttpRequester = provider.GetRequiredService<IHttpRequester>();
-        LocalizationManager = provider.GetRequiredService<ILocalizationManager>();
-        WebSocketClient = provider.GetRequiredService<IWebSocketClient>();
-        GameData = provider.GetRequiredService<IGameData>();
-        Collection = provider.GetRequiredService<IPlayerCollection>();
+        JwtToken = provider.GetRequiredService<JwtTokenProvider>();
+        IniFile = provider.GetRequiredService<IniFileProvider>();
+        HttpRequester = provider.GetRequiredService<HttpRequesterProvider>();
+        LocalizationManager = provider.GetRequiredService<LocalizationManagerProvider>();
+        WebSocketClient = provider.GetRequiredService<WebSocketClientProvider>();
+        GameData = provider.GetRequiredService<GameDataProvider>();
+        Collection = provider.GetRequiredService<PlayerCollectionProvider>();
     }
 
     /// <summary>
@@ -99,39 +99,29 @@ public sealed class Game03 : IAsyncDisposable
     {
         ServiceCollection services = new();
 
-        // Logger
         _ = services.AddSingleton(new LoggerOptions(loggerCallback));
         // Logger - регистрируем открытый generic тип
-        _ = services.AddSingleton(typeof(ILogger<>), typeof(LoggerProvider<>));
+        _ = services.AddSingleton(typeof(LoggerProvider<>));
 
-        // JwtToken
-        _ = services.AddSingleton<JwtTokenCache>();
-        _ = services.AddSingleton<IJwtToken, JwtTokenProvider>();
+        _ = services.AddSingleton<JwtTokenProvider>();
 
         // IniFile
         _ = services.AddSingleton(new IniFileOptions(iniFileFullPath));
-        _ = services.AddSingleton<IIniFile, IniFileProvider>();
+        _ = services.AddSingleton<IniFileProvider>();
 
-        // InternetCheckerProvider
-        _ = services.AddSingleton<IInternetChecker, InternetCheckerProvider>();
+        _ = services.AddSingleton<InternetCheckerProvider>();
 
-        // HttpRequesterProvider
-        _ = services.AddSingleton<IHttpRequester, HttpRequesterProvider>();
+        _ = services.AddSingleton<HttpRequesterProvider>();
 
-        // LocalizationManagerProvider
         _ = services.AddSingleton(new LocalizationManagerOptions(stringCapsuleJsonFileData, languageGame));
-        _ = services.AddSingleton<ILocalizationManager, LocalizationManagerProvider>();
+        _ = services.AddSingleton<LocalizationManagerProvider>();
 
-        // WebSocketClientProvider
-        _ = services.AddSingleton<IWebSocketClient, WebSocketClientProvider>();
+        _ = services.AddSingleton<WebSocketClientProvider>();
 
-        // GlobalFunctions
-        _ = services.AddSingleton<GameDataCache>();
-        _ = services.AddSingleton<IGameData, GameDataProvider>();
+        _ = services.AddSingleton<GameDataProvider>();
 
         // Collection
-        _ = services.AddSingleton<PlayerCollectionCache>();
-        _ = services.AddSingleton<IPlayerCollection, PlayerCollectionProvider>();
+        _ = services.AddSingleton<PlayerCollectionProvider>();
 
 
         configure?.Invoke(services); // опциональные переопределения

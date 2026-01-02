@@ -12,7 +12,7 @@ namespace Server.Jwt_NS;
 /// </summary>
 public class JwtService
 {
-
+    //JwtService.ValidateToken
     private readonly JwtOptions _options;
     private readonly JwtSecurityTokenHandler _handler = new();
     private readonly SigningCredentials _signingCredentials;
@@ -100,8 +100,8 @@ public class JwtService
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret))
         };
-
-        return _handler.ValidateToken(token, parameters, out _);
+        var claims = _handler.ValidateToken(token, parameters, out _);
+        return claims;
     }
 
 
