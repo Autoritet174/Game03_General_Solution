@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -80,6 +81,40 @@ public class PlayerCollectionProvider(
 
         RefreshListGroupNameHero();
         RefreshListGroupNameEquipment();
+
+        // Сортировка героев по редкости, уровню и имени
+        c.DtoCollectionHeroes = [.. c.DtoCollectionHeroes
+            .OrderByDescending(a => a.Rarity)
+            .ThenBy(a => a.Level)
+            .ThenBy(a =>
+            {
+                if (a.DtoBaseHero == null)
+                {
+                    logger.LogAndThrow("a.DtoBaseHero is null");
+                }
+                return a.DtoBaseHero.Name;
+            })];
+
+        // Сортировка экипировки по редкости и имени
+
+        c.DtoCollectionEquipments = [.. c.DtoCollectionEquipments
+            .OrderByDescending(a =>
+            {
+                if (a.DtoBaseEquipment == null)
+                {
+                    logger.LogAndThrow("a.DtoBaseEquipment is null");
+                }
+                return a.DtoBaseEquipment.Rarity;
+            })
+            .ThenBy(a =>
+            {
+                if (a.DtoBaseEquipment == null)
+                {
+                    logger.LogAndThrow("a.DtoBaseEquipment is null");
+                }
+                return a.DtoBaseEquipment.Name;
+            })];
+
         return true;
     }
 
@@ -87,7 +122,7 @@ public class PlayerCollectionProvider(
     {
         List<string> list = listGroupNameHero;
         list.Clear();
-        list.Add(string.Empty); // группа по умолчанию
+        list.Add(string.Empty);
         foreach (DtoHero i in collection.DtoCollectionHeroes)
         {
             string group_name = i.GroupName ?? string.Empty;
@@ -102,7 +137,7 @@ public class PlayerCollectionProvider(
     {
         List<string> list = listGroupNameEquipment;
         list.Clear();
-        list.Add(string.Empty); // группа по умолчанию
+        list.Add(string.Empty);
         foreach (DtoEquipment i in collection.DtoCollectionEquipments)
         {
             string group_name = i.GroupName ?? string.Empty;
@@ -131,26 +166,21 @@ public class PlayerCollectionProvider(
         return collection.DtoCollectionEquipments.Count;
     }
 
+    public const int PAGE_SIZE = 100;
+
     /// <summary> Получить коллекцию героев сгруппированную по именам групп. </summary>
-    public IEnumerable<GroupCollectionElement> GetCollectionHeroesGroupedByGroupNames()
+    public IEnumerable<GroupCollectionElement> GetCollectionHeroesGroupedByGroupNames(int page)
     {
         List<GroupCollectionElement> result = [];
+        List<DtoHero> c = collection.DtoCollectionHeroes;
+        if (page > 0)
+        {
+            c = [.. c.Skip((page - 1) * PAGE_SIZE).Take(PAGE_SIZE)];
+        }
+
         foreach (string groupName in listGroupNameHero)
         {
-            List<DtoHero> c = collection.DtoCollectionHeroes;
             IEnumerable<DtoHero> heroes = groupName == string.Empty ? c.Where(a => a.GroupName is null or "") : c.Where(a => a.GroupName == groupName);
-
-            heroes = heroes.OrderByDescending(a => a.Rarity)
-                .ThenBy(a => a.Level)
-                .ThenBy(a =>
-                {
-                    if (a.DtoBaseHero == null)
-                    {
-                        logger.LogAndThrow("a.DtoBaseHero is null");
-                    }
-                    return a.DtoBaseHero.Name;
-                });
-
             List<CollectionElement> collectionElements = [];
             foreach (DtoHero hero in heroes)
             {
@@ -172,30 +202,17 @@ public class PlayerCollectionProvider(
     }
 
     /// <summary> Получить коллекцию экипировки сгруппированную по именам групп. </summary>
-    public IEnumerable<GroupCollectionElement> GetCollectionEquipmentesGroupByGroups()
+    public IEnumerable<GroupCollectionElement> GetCollectionEquipmentesGroupByGroups(int page)
     {
         List<GroupCollectionElement> result = [];
+        List<DtoEquipment> c = collection.DtoCollectionEquipments;
+        if (page > 0)
+        {
+            c = [.. c.Skip((page - 1) * PAGE_SIZE).Take(PAGE_SIZE)];
+        }
         foreach (string groupName in listGroupNameEquipment)
         {
-            List<DtoEquipment> c = collection.DtoCollectionEquipments;
             IEnumerable<DtoEquipment> equipments = groupName == string.Empty ? c.Where(a => a.GroupName is null or "") : c.Where(a => a.GroupName == groupName);
-
-            equipments = equipments.OrderByDescending(a =>
-                {
-                    if (a.DtoBaseEquipment == null)
-                    {
-                        logger.LogAndThrow("a.DtoBaseEquipment is null");
-                    }
-                    return a.DtoBaseEquipment.Rarity;
-                }).ThenBy(a =>
-                {
-                    if (a.DtoBaseEquipment == null)
-                    {
-                        logger.LogAndThrow("a.DtoBaseEquipment is null");
-                    }
-                    return a.DtoBaseEquipment.Name;
-                });
-
             List<CollectionElement> collectionElements = [];
             foreach (DtoEquipment equipment in equipments)
             {

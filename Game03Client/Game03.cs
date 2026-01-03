@@ -92,14 +92,15 @@ public sealed class Game03 : IAsyncDisposable
     /// <param name="iniFileFullPath"></param>
     /// <param name="stringCapsuleJsonFileData"></param>
     /// <param name="languageGame"></param>
-    /// <param name="loggerCallback"></param>
+    /// <param name="loggerCallbackError"></param>
+    /// <param name="loggerCallbackInfo"></param>
     /// <param name="configure"></param>
     /// <returns></returns>
-    public static Game03 Create(string iniFileFullPath, StringCapsule stringCapsuleJsonFileData, GameLanguage languageGame, LoggerCallback loggerCallback, Action<IServiceCollection>? configure = null)
+    public static Game03 Create(string iniFileFullPath, StringCapsule stringCapsuleJsonFileData, GameLanguage languageGame, LoggerCallbackError loggerCallbackError, LoggerCallbackInfo loggerCallbackInfo, Action<IServiceCollection>? configure = null)
     {
         ServiceCollection services = new();
 
-        _ = services.AddSingleton(new LoggerOptions(loggerCallback));
+        _ = services.AddSingleton(new LoggerOptions(loggerCallbackError, loggerCallbackInfo));
         // Logger - регистрируем открытый generic тип
         _ = services.AddSingleton(typeof(LoggerProvider<>));
 

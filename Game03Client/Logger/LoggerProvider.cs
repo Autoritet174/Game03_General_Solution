@@ -8,13 +8,21 @@ namespace Game03Client.Logger;
 
 public class LoggerProvider<T>(LoggerOptions loggerOptions)
 {
-    public void Log(object message, string? keyLocal = null)
+    public void LogError(object message, string? keyLocal = null)
     {
         if (!keyLocal.IsEmpty())
         {
             message = $"{message}; {L.KEY_LOCALIZATION}:<{keyLocal}>";
         }
-        loggerOptions._loggerCallback?.Invoke($"[{typeof(T).Name}] {message}");
+        loggerOptions._loggerCallbackError?.Invoke($"[{typeof(T).Name}] {message}");
+    }
+    public void LogInfo(object message, string? keyLocal = null)
+    {
+        if (!keyLocal.IsEmpty())
+        {
+            message = $"{message}; {L.KEY_LOCALIZATION}:<{keyLocal}>";
+        }
+        loggerOptions._loggerCallbackInfo?.Invoke($"[{typeof(T).Name}] {message}");
     }
 
     /// <summary>
@@ -28,7 +36,7 @@ public class LoggerProvider<T>(LoggerOptions loggerOptions)
     {
         try
         {
-            Log(message, keyLocal);
+            LogError(message, keyLocal);
         }
         catch { }
         throw new Exception(message);

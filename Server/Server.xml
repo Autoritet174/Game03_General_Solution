@@ -283,33 +283,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="T:Server.LoggerExtensions">
-            <summary>
-            Предоставляет методы-расширения для <see cref="T:Microsoft.Extensions.Logging.ILogger"/>, обеспечивающие безопасное и стандартизированное логирование ошибок, критических ошибок и предупреждений с поддержкой исключений.
-            </summary>
-        </member>
-        <member name="M:Server.LoggerExtensions.LError(Microsoft.Extensions.Logging.ILogger,System.Exception,System.String,System.Object[])">
-            <summary>
-            Логирует ошибку с полным стек-трейсом, но без немедленного форматирования исключения.
-            </summary>
-            <param name="logger">Логгер.</param>
-            <param name="ex">Исключение.</param>
-            <param name="message">Основное сообщение.</param>
-        </member>
-        <member name="M:Server.LoggerExtensions.LInfo(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
-            <summary>
-            Логирует информационное сообщение с использованием стандартизированного шаблона.
-            </summary>
-            <param name="logger">Логгер.</param>
-            <param name="message">Информационное сообщение.</param>
-        </member>
-        <member name="M:Server.LoggerExtensions.LWarning(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
-            <summary>
-            Логирует предупреждение с использованием стандартизированного шаблона.
-            </summary>
-            <param name="logger">Логгер.</param>
-            <param name="message">Предупреждающее сообщение.</param>
-        </member>
         <member name="T:Server.Program">
             <summary> Класс содержит точку входа приложения и настройки сервисов, аутентификации, middleware, маршрутов и баз данных. </summary>
         </member>
@@ -398,6 +371,7 @@
             <param name="email">Email пользователя.</param>
             <param name="userId">ID пользователя.</param>
             <param name="ip">IP-адрес запроса.</param>
+            <param name="actionIsAuthentication">Действие это аутентификация.</param>
             <exception cref="T:System.ArgumentNullException">Бросается, если obj равен null.</exception>
         </member>
         <member name="M:Server.Users.AuthRegLoggerBackgroundService.StartAsync(System.Threading.CancellationToken)">
@@ -607,7 +581,7 @@
             Обрабатывает прием и отправку сообщений, аутентификацию и управление жизненным циклом подключения.
             </summary>
         </member>
-        <member name="M:Server.WebSocket_NS.WebSocketConnection.#ctor(System.Net.WebSockets.WebSocket,Microsoft.Extensions.Logging.ILogger{Server.WebSocket_NS.WebSocketConnection},Microsoft.Extensions.Configuration.IConfiguration,Server.WebSocket_NS.WebSocketConnectionHandler,Server.Jwt_NS.JwtService)">
+        <member name="M:Server.WebSocket_NS.WebSocketConnection.#ctor(System.Net.WebSockets.WebSocket,Microsoft.Extensions.Logging.ILogger{Server.WebSocket_NS.WebSocketConnection},Microsoft.Extensions.Configuration.IConfiguration,Server.WebSocket_NS.WebSocketConnectionHandler,System.IServiceProvider,System.Guid)">
             <summary>
             Представляет одно WebSocket подключение клиента.
             Обрабатывает прием и отправку сообщений, аутентификацию и управление жизненным циклом подключения.
@@ -618,34 +592,9 @@
             Уникальный идентификатор подключения.
             </summary>
         </member>
-        <member name="F:Server.WebSocket_NS.WebSocketConnection._webSocket">
-            <summary>
-            WebSocket клиента для обмена сообщениями.
-            </summary>
-        </member>
-        <member name="F:Server.WebSocket_NS.WebSocketConnection._logger">
-            <summary>
-            Логгер для записи событий подключения.
-            </summary>
-        </member>
         <member name="F:Server.WebSocket_NS.WebSocketConnection._receiveBufferSize">
             <summary>
             Размер буфера для приема сообщений из конфигурации.
-            </summary>
-        </member>
-        <member name="F:Server.WebSocket_NS.WebSocketConnection._webSocketServer">
-            <summary>
-            Обработчик WebSocket соединений для управления подключениями.
-            </summary>
-        </member>
-        <member name="F:Server.WebSocket_NS.WebSocketConnection._jwtService">
-            <summary>
-            Сервис для работы с JWT токенами аутентификации.
-            </summary>
-        </member>
-        <member name="F:Server.WebSocket_NS.WebSocketConnection._isAuthenticated">
-            <summary>
-            Флаг, указывающий на аутентификацию клиента.
             </summary>
         </member>
         <member name="M:Server.WebSocket_NS.WebSocketConnection.HandleAsync(System.Threading.CancellationToken)">
@@ -707,7 +656,6 @@
             <param name="logger">Сервис логирования для записи информации и ошибок.</param>
             <param name="serviceProvider">Поставщик зависимостей для разрешения сервисов.</param>
             <param name="configuration">Конфигурация приложения.</param>
-            <param name="mongoRepository">Репозиторий для работы с MongoDB.</param>
             <param name="jwtService">JWT Сервис</param>
         </member>
         <member name="M:Server.WebSocket_NS.WebSocketConnectionHandler.ProcessKestrelWebSocketRequest(Microsoft.AspNetCore.Http.HttpContext,System.Threading.CancellationToken)">

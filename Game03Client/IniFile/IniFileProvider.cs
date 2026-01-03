@@ -25,12 +25,12 @@ public class IniFileProvider(IniFileOptions options
                 }
                 catch
                 {
-                    logger.Log($"error read section=[{section}] key=[{key}] in file <{options.FileName}>");
+                    logger.LogError($"error read section=[{section}] key=[{key}] in file <{options.FileName}>");
                 }
             }
             catch
             {
-                logger.Log($"error read ini file <{options.FileName}>");
+                logger.LogError($"error read ini file <{options.FileName}>");
             }
         }
         return null;
@@ -47,7 +47,7 @@ public class IniFileProvider(IniFileOptions options
             }
         }
 
-        logger.Log($"not found value in [{section}][{key}]");
+        logger.LogError($"not found value in [{section}][{key}]");
         return defaultValue;
     }
 

@@ -73,6 +73,7 @@ public sealed class AuthRegLoggerBackgroundService(
     /// <param name="email">Email пользователя.</param>
     /// <param name="userId">ID пользователя.</param>
     /// <param name="ip">IP-адрес запроса.</param>
+    /// <param name="actionIsAuthentication">Действие это аутентификация.</param>
     /// <exception cref="ArgumentNullException">Бросается, если obj равен null.</exception>
     public void EnqueueLog(
         bool success,

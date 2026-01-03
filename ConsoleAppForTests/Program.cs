@@ -9,8 +9,13 @@ namespace ConsoleAppForTests;
 internal class Program
 {
 
-    private static void Main()
+    private static async Task Main()
     {
+        List<int> list = new() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        foreach (var item in list.Take(2).Skip(3))
+        {
+            Console.WriteLine(item);
+        }
 
         //for (int i = 0; i < 50; i++)
         //{
@@ -38,7 +43,16 @@ internal class Program
         //{
         //    Console.WriteLine($"Ошибка: {ex.Message}");
         //}
-        Start();
+
+        //ThreadPool.SetMinThreads(200, 200);
+        //for (int i = 0; i < 33; i++)
+        //{
+        //    _ = Task.Run(()=> {
+        //        Start();
+        //    });
+        //}
+        
+
 
         //Stopwatch sw = Stopwatch.StartNew();
         //Random r = new();
@@ -77,13 +91,13 @@ internal class Program
         //    sw.Stop();
         //    Console.WriteLine($"CustomRandom {sw.ElapsedMilliseconds}"); //4919
         //}
-
+        _ = Console.ReadLine();
     }
     private static void Game_OnLog(object message)
     {
         Console.WriteLine("[Library: Game03Client] " + message);
     }
-    private static void Start()
+    private static async Task Start()
     {
         string Password = Game03Client.Password.HashSha512("testPassword");
         General.StringCapsule capsule = new()
@@ -93,7 +107,7 @@ internal class Program
 
         var Game = Game03Client.Game03.Create(
             iniFileFullPath: Path.Combine(@"c:\UnityProjects\Game03_Git\Client_Game03\Assets", @"GameData\Config\Main.ini"),
-            stringCapsuleJsonFileData: capsule, languageGame: Game03Client.GameLanguage.Ru, loggerCallback: Game_OnLog);
+            stringCapsuleJsonFileData: capsule, languageGame: Game03Client.GameLanguage.Ru, loggerCallbackError: Game_OnLog,Game_OnLog);
 
 
         CancellationTokenSource cancellationTokenSource = new(TimeSpan.FromSeconds(30));
@@ -104,27 +118,33 @@ internal class Program
         string jwtToken = Game.JwtToken.GetTokenAsync(json, cancellationTokenSource.Token).Result ?? string.Empty;
 
 
-        //Game03Client.WebSocketClient.IWebSocketClientProvider webSocketClient = Game.WebSocketClient;
+        Game03Client.WebSocketClient.WebSocketClientProvider webSocketClient = Game.WebSocketClient;
+        cancellationTokenSource = new(TimeSpan.FromSeconds(30));
+        await webSocketClient.ConnectAsync(cancellationTokenSource.Token);
+        if (webSocketClient.Connected)
+        {
+            var t = Environment.TickCount.ToString();
+            while (true)
+            {
+                await webSocketClient.SendMessageAsync(t);
+            }
+        }
+        
+     
+
         //cancellationTokenSource = new(TimeSpan.FromSeconds(30));
-        //webSocketClient.ConnectAsync(cancellationTokenSource.Token).Wait();
-        //if (!webSocketClient.Connected)
-        //{
+        //Game.GameData.LoadGameData(cancellationTokenSource.Token, jwtToken).Wait();
 
-        //}
+        //cancellationTokenSource = new(TimeSpan.FromSeconds(30));
+        //Game.Collection.LoadAllCollectionFromServerAsync(cancellationTokenSource.Token, jwtToken).Wait();
 
-        cancellationTokenSource = new(TimeSpan.FromSeconds(30));
-        Game.GameData.LoadGameData(cancellationTokenSource.Token, jwtToken).Wait();
+        //IEnumerable<DtoHero> coll = Game.Collection.GetCollectionHeroesFromCache();
+        //IEnumerable<GroupCollectionElement> coll1 = Game.Collection.GetCollectionHeroesGroupedByGroupNames(1);
+        //Console.WriteLine(coll.Count());
 
-        cancellationTokenSource = new(TimeSpan.FromSeconds(30));
-        Game.Collection.LoadAllCollectionFromServerAsync(cancellationTokenSource.Token, jwtToken).Wait();
-
-        IEnumerable<DtoHero> coll = Game.Collection.GetCollectionHeroesFromCache();
-        IEnumerable<GroupCollectionElement> coll1 = Game.Collection.GetCollectionHeroesGroupedByGroupNames();
-        Console.WriteLine(coll.Count());
-
-        //Console.ReadLine();
-        //webSocketClient.DisconnectAsync().Wait();
-        _ = Console.ReadLine();
+        ////Console.ReadLine();
+        ////webSocketClient.DisconnectAsync().Wait();
+       
     }
 
 

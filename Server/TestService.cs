@@ -34,11 +34,11 @@ public class TestService : ITestService
         //    }, cancellationToken);
         //}
 
-        //db.Heroes.RemoveRange(db.Heroes.ToArray());
+        //int v = db.Heroes.ExecuteDelete();
         //_ = await db.SaveChangesAsync(cancellationToken);
 
         //var list = db.BaseHeroes.ToList();
-        //for (int i = 0; i < 1000; i++)
+        //for (int i = 0; i < 222; i++)
         //{
         //    var BaseHeroes = list[rand.Next(list.Count)];
 

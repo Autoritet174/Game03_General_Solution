@@ -36,7 +36,7 @@ public class HttpRequesterProvider
         if (url.IsEmpty())
         {
             string e = "url IsEmpty";
-            logger.Log(e);
+            logger.LogError(e);
             throw new Exception(e);
         }
 
@@ -44,7 +44,7 @@ public class HttpRequesterProvider
         if (uri == null)
         {
             string e = "uri is null";
-            logger.Log(e);
+            logger.LogError(e);
             throw new Exception(e);
         }
 
@@ -72,7 +72,7 @@ public class HttpRequesterProvider
             string responseContent = await response.Content.ReadAsStringAsync();
             if (responseContent.IsEmpty())
             {
-                logger.Log($"responseContent IsEmpty, StatusCode={response.StatusCode}", L.Error.Server.InvalidResponse);
+                logger.LogError($"responseContent IsEmpty, StatusCode={response.StatusCode}", L.Error.Server.InvalidResponse);
                 return null;
             }
             return responseContent;
@@ -96,19 +96,19 @@ public class HttpRequesterProvider
         }
         catch (TaskCanceledException ex) when (ex.InnerException is TimeoutException)
         {
-            logger.Log(ex.ToString(), L.Error.Server.Timeout);
+            logger.LogError(ex.ToString(), L.Error.Server.Timeout);
             return null;
         }
         catch (HttpRequestException ex) when (ex.InnerException is WebException)
         {
             bool haveInternet = await _internetCheckerProvider.CheckInternetConnectionAsync(cancellationToken);
             string key = haveInternet ? L.Error.Server.Unavailable : L.Error.Server.NoInternetConnection;
-            logger.Log(ex.ToString(), key);
+            logger.LogError(ex.ToString(), key);
             return null;
         }
         catch (Exception ex)
         {
-            logger.Log(ex.ToString(), L.Error.Server.InvalidResponse);
+            logger.LogError(ex.ToString(), L.Error.Server.InvalidResponse);
             return null;
         }
     }

@@ -27,7 +27,7 @@ public class JwtTokenProvider(HttpRequesterProvider httpRequester, LoggerProvide
         string? response = await httpRequester.GetResponseAsync(Url.Auth, cancellationToken, jsonBody);
         if (response == null)
         {
-            logger.Log("response is null", L.Error.Server.InvalidResponse);
+            logger.LogError("response is null", L.Error.Server.InvalidResponse);
             return null;
         }
         JObject? jObject;
@@ -37,19 +37,19 @@ public class JwtTokenProvider(HttpRequesterProvider httpRequester, LoggerProvide
         }
         catch
         {
-            logger.Log("jObject can't be parced", L.Error.Server.InvalidResponse);
+            logger.LogError("jObject can't be parced", L.Error.Server.InvalidResponse);
             return null;
         }
         if (jObject is null)
         {
-            logger.Log("jObject is null", L.Error.Server.InvalidResponse);
+            logger.LogError("jObject is null", L.Error.Server.InvalidResponse);
             return null;
         }
 
         string? token = jObject["token"]?.ToString();
         if (token.IsEmpty())
         {
-            logger.Log("token IsEmpty");
+            logger.LogError("token IsEmpty");
             return null;
         }
 

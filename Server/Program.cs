@@ -34,6 +34,7 @@ internal partial class Program
     /// <summary> Точка входа в приложение. Выполняет настройку DI, БД, аутентификации, регистрацию сервисов и запускает сервер. </summary>
     private static async Task Main(string[] args)
     {
+        ThreadPool.SetMinThreads(200, 200);
         //MongoDB.Bson.Serialization.BsonSerializer.RegisterSerializer(new MongoDB.Bson.Serialization.Serializers.GuidSerializer(MongoDB.Bson.GuidRepresentation.Standard));
         //MongoDB.Bson.Serialization.BsonSerializer.RegisterSerializer(new MongoDB.Bson.Serialization.Serializers.NullableSerializer<Guid>(new MongoDB.Bson.Serialization.Serializers.GuidSerializer(MongoDB.Bson.GuidRepresentation.Standard)));
 
@@ -149,6 +150,12 @@ internal partial class Program
             };
         });
         InitJwt(builder);
+
+        builder.WebHost.ConfigureKestrel(options =>
+        {
+            options.Limits.MaxConcurrentConnections = null; // unlimited
+            options.Limits.MaxConcurrentUpgradedConnections = null; // unlimited для WebSockets
+        });
 
         WebApplication app = builder.Build();
 

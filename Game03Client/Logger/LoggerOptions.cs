@@ -1,8 +1,10 @@
 namespace Game03Client.Logger;
 
-public delegate void LoggerCallback(object message);
+public delegate void LoggerCallbackError(object message);
+public delegate void LoggerCallbackInfo(object message);
 
-public class LoggerOptions(LoggerCallback loggerCallback)
+public class LoggerOptions(LoggerCallbackError loggerCallbackError, LoggerCallbackInfo loggerCallbackInfo)
 {
-    public LoggerCallback _loggerCallback = loggerCallback;
+    public LoggerCallbackError _loggerCallbackError = loggerCallbackError;
+    public LoggerCallbackInfo _loggerCallbackInfo = loggerCallbackInfo;
 }

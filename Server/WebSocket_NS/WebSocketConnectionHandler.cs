@@ -1,7 +1,10 @@
+using Microsoft.IdentityModel.Tokens;
+using RTools_NTS.Util;
 using Server.Jwt_NS;
 using System.Collections.Concurrent;
-using System.Net.WebSockets;
 using System.Net; // Добавлено для HttpStatusCode
+using System.Net.WebSockets;
+using System.Security.Claims;
 
 namespace Server.WebSocket_NS;
 
@@ -9,7 +12,7 @@ namespace Server.WebSocket_NS;
 /// Обработчик подключений WebSocket. Работает как Singleton-сервис и интегрирован 
 /// в пайплайн ASP.NET Core Middleware через app.Map().
 /// </summary>
-public class WebSocketConnectionHandler // УДАЛЕНО: : BackgroundService
+public class WebSocketConnectionHandler
 {
     private readonly ILogger<WebSocketConnectionHandler> _logger;
     private readonly IServiceProvider _serviceProvider;
@@ -26,7 +29,6 @@ public class WebSocketConnectionHandler // УДАЛЕНО: : BackgroundService
     /// <param name="logger">Сервис логирования для записи информации и ошибок.</param>
     /// <param name="serviceProvider">Поставщик зависимостей для разрешения сервисов.</param>
     /// <param name="configuration">Конфигурация приложения.</param>
-    /// <param name="mongoRepository">Репозиторий для работы с MongoDB.</param>
     /// <param name="jwtService">JWT Сервис</param>
     public WebSocketConnectionHandler(ILogger<WebSocketConnectionHandler> logger, IServiceProvider serviceProvider, IConfiguration configuration, JwtService jwtService)
     {
@@ -78,7 +80,78 @@ public class WebSocketConnectionHandler // УДАЛЕНО: : BackgroundService
         if (!context.WebSockets.IsWebSocketRequest)
         {
             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            await context.Response.WriteAsync("Запрос должен быть WebSocket-запросом.");
+            await context.Response.WriteAsync("Запрос должен быть WebSocket-запросом.", cancellationToken: stoppingToken);
+            return;
+        }
+
+
+
+        string? token = null;
+
+        // 1. Пытаемся из Authorization: Bearer <token>
+        if (context.Request.Headers.TryGetValue("Authorization", out var authHeader) &&
+            authHeader.Count > 0 &&
+            authHeader[0]?.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase) == true)
+        {
+            token = authHeader[0]!["Bearer ".Length..].Trim();
+        }
+
+        // 2. Если не найден в заголовке — из query string (для совместимости с клиентами, где header не поддерживается)
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            token = context.Request.Query["token"].FirstOrDefault()
+                    ?? context.Request.Query["access_token"].FirstOrDefault();
+        }
+
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            await context.Response.WriteAsync("Missing authentication token", cancellationToken: stoppingToken);
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            await context.Response.WriteAsync("Missing authentication token", cancellationToken: stoppingToken);
+            return;
+        }
+
+        Guid? userId = null;
+        try
+        {
+            ClaimsPrincipal claims = _jwtService.ValidateToken(token);
+            userId = claims.GetGuid(); // Метод расширения из ClaimsExtensions.cs
+
+            if (!userId.HasValue)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                await context.Response.WriteAsync("Invalid user ID in token", cancellationToken: stoppingToken);
+                return;
+            }
+
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Pre-authenticated WebSocket connection for user {UserId}", userId.Value);
+            }
+        }
+        catch (SecurityTokenException ex)
+        {
+            if (_logger.IsEnabled(LogLevel.Warning))
+            {
+                _logger.LogWarning(ex, "Invalid JWT token in WebSocket upgrade request");
+            }
+            context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            await context.Response.WriteAsync("Invalid token", cancellationToken: stoppingToken);
+            return;
+        }
+        catch (Exception ex)
+        {
+            if (_logger.IsEnabled(LogLevel.Error))
+            {
+                _logger.LogError(ex, "Error validating token in WebSocket upgrade");
+            }
+            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             return;
         }
 
@@ -90,7 +163,7 @@ public class WebSocketConnectionHandler // УДАЛЕНО: : BackgroundService
             ILogger<WebSocketConnection> clientLogger = scope.ServiceProvider.GetRequiredService<ILogger<WebSocketConnection>>();
 
             // Создание и инициализация нового WebSocketConnection
-            WebSocketConnection webSocketConnection = new(webSocket, clientLogger, _configuration, this, _jwtService);
+            WebSocketConnection webSocketConnection = new(webSocket, clientLogger, _configuration, this, _serviceProvider, userId.Value);
 
             _ = _activeConnections.TryAdd(webSocketConnection.Id, DateTime.UtcNow);
             Console.WriteLine($"Активных подключений: {_activeConnections.Count}");
