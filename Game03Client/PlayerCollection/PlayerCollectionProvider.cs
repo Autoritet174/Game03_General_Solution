@@ -188,7 +188,7 @@ public class PlayerCollectionProvider(
                 {
                     logger.LogAndThrow("hero.DtoBaseHero is null");
                 }
-                collectionElements.Add(new CollectionElement(hero.Id, hero.BaseHeroId, hero.Rarity, hero.DtoBaseHero.Name, hero.DtoBaseHero.IsUnique));
+                collectionElements.Add(new CollectionElement(hero.Id, hero.BaseHeroId, hero.Rarity, hero.DtoBaseHero.Name, hero.DtoBaseHero.IsUnique, TypeCollectionElement.Hero));
             }
 
             GroupCollectionElement groupCollectionElement = new(groupName, collectionElements);
@@ -220,7 +220,7 @@ public class PlayerCollectionProvider(
                 {
                     logger.LogAndThrow("Equipment.DtoBaseEquipment is null");
                 }
-                collectionElements.Add(new CollectionElement(equipment.Id, equipment.BaseEquipmentId, equipment.DtoBaseEquipment.Rarity, equipment.DtoBaseEquipment.Name, equipment.DtoBaseEquipment.IsUnique));
+                collectionElements.Add(new CollectionElement(equipment.Id, equipment.BaseEquipmentId, equipment.DtoBaseEquipment.Rarity, equipment.DtoBaseEquipment.Name, equipment.DtoBaseEquipment.IsUnique, TypeCollectionElement.Equipment));
             }
 
             GroupCollectionElement groupCollectionElement = new(groupName, collectionElements);

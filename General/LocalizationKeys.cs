@@ -33,6 +33,7 @@ public static class LocalizationKeys
             public const string ExitGame = $"{_Button}{nameof(ExitGame)}";
             public const string Heroes = $"{_Button}{nameof(Heroes)}";
             public const string Equipment = $"{_Button}{nameof(Equipment)}";
+            public const string ChangingEquipment = $"{_Button}{nameof(ChangingEquipment)}";
             public const string Item = $"{_Button}{nameof(Item)}";
         }
 
