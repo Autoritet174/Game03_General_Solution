@@ -1,4 +1,3 @@
-using Server.Jwt_NS;
 using System.Buffers;
 using System.Net.WebSockets;
 using System.Text;
@@ -43,15 +42,35 @@ public class WebSocketConnection(WebSocket webSocket, ILogger<WebSocketConnectio
             // Отправляем приветственное сообщение
             await SendMessageSafeAsync($"Добро пожаловать! Ваш userId: {userId}", cancellationToken);
 
-            while (webSocket.State == WebSocketState.Open && !cancellationToken.IsCancellationRequested)
+            // Основной цикл чтения
+            while (webSocket.State is WebSocketState.Open or WebSocketState.CloseReceived)
             {
-                // Ожидаем сообщение от клиента
-                WebSocketReceiveResult result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), cancellationToken);
+                WebSocketReceiveResult result;
+                try
+                {
+                    // Используем ArraySegment для работы с буфером из пула
+                    result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), cancellationToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+
 
                 // Обрабатываем запрос на закрытие соединения
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
                     await CloseSocketAsync(WebSocketCloseStatus.NormalClosure, "Закрытие по инициативе клиента", cancellationToken);
+                    break;
+                }
+                if (result.MessageType == WebSocketMessageType.Close)
+                {
+                    if (logger.IsEnabled(LogLevel.Information))
+                    {
+                        logger.LogInformation("Клиент {ClientId} инициировал закрытие: {Status}", userId, result.CloseStatus);
+                    }
+
+                    await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Подтверждение закрытия", CancellationToken.None);
                     break;
                 }
 
@@ -196,11 +215,15 @@ public class WebSocketConnection(WebSocket webSocket, ILogger<WebSocketConnectio
     /// <returns>Задача, представляющая асинхронное закрытие соединения.</returns>
     private async Task CloseSocketAsync(WebSocketCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken)
     {
-        if (webSocket.State == WebSocketState.Open)
+        if (webSocket.State is WebSocketState.Open or WebSocketState.CloseReceived)
         {
             try
             {
-                await webSocket.CloseAsync(closeStatus, statusDescription, cancellationToken);
+                await webSocket.CloseOutputAsync(closeStatus, statusDescription, cancellationToken);
+                if (logger.IsEnabled(LogLevel.Information))
+                {
+                    logger.LogInformation("Отключение клиента {ClientId}", Id);
+                }
             }
             catch (Exception ex) when (IsExpectedDisconnectException(ex))
             {

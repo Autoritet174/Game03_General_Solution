@@ -4,6 +4,7 @@ using System.Net;
 using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server_DB_Postgres;
@@ -13,9 +14,11 @@ using Server_DB_Postgres;
 namespace Server_DB_Postgres.Migrations
 {
     [DbContext(typeof(DbContext_Game))]
-    partial class DbContext_GameModelSnapshot : ModelSnapshot
+    [Migration("20260106110903_EquipmentFix2")]
+    partial class EquipmentFix2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -866,34 +869,6 @@ namespace Server_DB_Postgres.Migrations
                     b.ToTable("user_ban_reasons", "server");
                 });
 
-            modelBuilder.Entity("Server_DB_Postgres.Entities.Users.RefreshToken", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<DateTime>("ExpiredDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("expired_date");
-
-                    b.Property<string>("Token")
-                        .HasColumnType("text")
-                        .HasColumnName("token");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id")
-                        .HasName("refresh_tokens__pkey");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("refresh_tokens__user_id__idx");
-
-                    b.ToTable("refresh_tokens", "users");
-                });
-
             modelBuilder.Entity("Server_DB_Postgres.Entities.Users.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1355,18 +1330,6 @@ namespace Server_DB_Postgres.Migrations
                     b.Navigation("User");
 
                     b.Navigation("UserDevice");
-                });
-
-            modelBuilder.Entity("Server_DB_Postgres.Entities.Users.RefreshToken", b =>
-                {
-                    b.HasOne("Server_DB_Postgres.Entities.Users.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("refresh_tokens__user_id__identity_users__fkey");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Server_DB_Postgres.Entities.Users.UserBan", b =>

@@ -1,3 +1,4 @@
+using EasyRefreshToken.EFCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
@@ -9,12 +10,12 @@ using Newtonsoft.Json;
 using Npgsql;
 using Serilog;
 using Serilog.Events;
-using Server.GameDataCache;
+using Server.GameData;
 using Server.Http_NS.Middleware_NS;
 using Server.Jwt_NS;
 using Server.Users;
-using Server.Users.Auth;
-using Server.Users.Reg;
+using Server.Users.Authentication;
+using Server.Users.Registration;
 using Server.WebSocket_NS;
 using Server_DB_Postgres;
 using Server_DB_Postgres.Entities.Users;
@@ -66,6 +67,7 @@ internal partial class Program
 
         //_ = services.AddScoped(sp => new DbContext_Game(DbContext_Game.DbContextOptions));
 
+
         // РЕПОЗИТОРИИ
         _ = services.AddScoped<CollectionHeroRepository>();
 
@@ -103,7 +105,17 @@ internal partial class Program
         _ = services.AddMemoryCache();
 
         _ = services.AddScoped<AuthService>();
-        _ = services.AddScoped<RegService>();
+        _ = services.AddScoped<RegistrationService>();
+
+
+        services.AddEFCoreRefreshToken<DbContext_Game, RefreshToken, User, Guid>(options =>
+        {
+            options.TokenExpiredDays = 30; // Lifetime refresh-токена в днях
+            //options.MaxNumberOfActiveDevices = 10; // Макс. активных устройств/сессий на пользователя (опционально, отключить: 0 или null)
+            options.PreventingLoginWhenAccessToMaxNumberOfActiveDevices = true; // Если превышен лимит — старые токены отзываются автоматически
+                                                                                // Другие опции по необходимости (см. ниже)
+        });
+
 
         // установить Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore
         // если надо. сейчас нет кубернетес или сервисов проверки работоспособности
@@ -284,64 +296,58 @@ internal partial class Program
     private static void InitJwt(WebApplicationBuilder builder)
     {
         IServiceCollection services = builder.Services;
-
-        // Биндим опции из конфига (обязательно должен быть раздел "Jwt"!)
         _ = services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
-
-        // Регистрируем JwtService (он нужен для генерации и для секрета)
         _ = services.AddSingleton<JwtService>();
         _ = services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
-            {
-                // Получаем уже забинденные опции
-                JwtOptions jwtOptions = builder.Configuration.GetSection("Jwt").Get<JwtOptions>()
-                    ?? throw new InvalidOperationException("Отсутствует раздел 'Jwt' в конфигурации!");
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, _ => { }); // Пустая конфигурация, чтобы зарегистрировать схему
 
-                // Получаем секрет через тот же сервис (тот же файл!)
-                var jwtService = new JwtService(Options.Create(jwtOptions)); // или через BuildServiceProvider, если singleton уже добавлен
-                string secret = jwtService.GetJwtSecret();
-
-                options.TokenValidationParameters = new TokenValidationParameters
+        // Добавляем пост-конфигурацию с использованием DI
+        _ = services.AddSingleton<IPostConfigureOptions<JwtBearerOptions>>(sp =>
+            new PostConfigureOptions<JwtBearerOptions>(
+                JwtBearerDefaults.AuthenticationScheme,
+                options =>
                 {
-                    ValidateIssuer = true,
-                    ValidIssuer = jwtOptions.Issuer,
+                    JwtOptions jwtOptions = sp.GetRequiredService<IOptions<JwtOptions>>().Value;
+                    JwtService jwtService = sp.GetRequiredService<JwtService>();
 
-                    ValidateAudience = true,
-                    ValidAudience = jwtOptions.Audience,
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = jwtOptions.Issuer,
+                        ValidateAudience = true,
+                        ValidAudience = jwtOptions.Audience,
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.FromMinutes(2),
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = jwtService.IssuerSigningKey
+                    };
 
-                    ValidateLifetime = true,
-                    ClockSkew = TimeSpan.FromMinutes(2),
-
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret))
-                };
-
-                //// Логируем ошибки валидации для отладки
-                //options.Events = new JwtBearerEvents
-                //{
-                //    OnAuthenticationFailed = context =>
-                //    {
-                //        Console.WriteLine("JWT валидация провалилась");
-                //        return Task.CompletedTask;
-                //    },
-                //    OnTokenValidated = context => {
-                //        Console.WriteLine("OnTokenValidated");
-                //        return Task.CompletedTask;
-                //    },
-                //    OnMessageReceived = context => {
-                //        Console.WriteLine("OnMessageReceived");
-                //        return Task.CompletedTask;
-                //    },
-                //    OnChallenge = context => {
-                //        Console.WriteLine("OnChallenge");
-                //        return Task.CompletedTask;
-                //    },
-                //    OnForbidden = context => {
-                //        Console.WriteLine("OnForbidden");
-                //        return Task.CompletedTask;
-                //    }
-                //};
-            });
+                    //// Логируем ошибки валидации для отладки
+                    //options.Events = new JwtBearerEvents
+                    //{
+                    //    OnAuthenticationFailed = context =>
+                    //    {
+                    //        Console.WriteLine("JWT валидация провалилась");
+                    //        return Task.CompletedTask;
+                    //    },
+                    //    OnTokenValidated = context => {
+                    //        Console.WriteLine("OnTokenValidated");
+                    //        return Task.CompletedTask;
+                    //    },
+                    //    OnMessageReceived = context => {
+                    //        Console.WriteLine("OnMessageReceived");
+                    //        return Task.CompletedTask;
+                    //    },
+                    //    OnChallenge = context => {
+                    //        Console.WriteLine("OnChallenge");
+                    //        return Task.CompletedTask;
+                    //    },
+                    //    OnForbidden = context => {
+                    //        Console.WriteLine("OnForbidden");
+                    //        return Task.CompletedTask;
+                    //    }
+                    //};
+                }));
     }
 
     /// <summary> Получение строки подключения из настройек и дополнительные корректировки. </summary>
@@ -373,7 +379,7 @@ internal partial class Program
                 string? ipAddress = context.Connection.RemoteIpAddress?.ToString();
 
                 // Если не удалось определить (например, в тестах) — используем "unknown"
-                string clientKey = ipAddress.IsEmpty() ? "unknown" : ipAddress;
+                string clientKey = string.IsNullOrWhiteSpace(ipAddress) ? "unknown" : ipAddress;
 
                 // Создаём "токен бакет" на основе IP
                 return RateLimitPartition.GetFixedWindowLimiter(
@@ -389,7 +395,7 @@ internal partial class Program
             _ = options.AddPolicy(Consts.RATE_LIMITER_POLICY_COLLECTION, context =>
             {
                 string? ipAddress = context.Connection.RemoteIpAddress?.ToString();
-                string clientKey = ipAddress.IsEmpty() ? "unknown" : ipAddress;
+                string clientKey = string.IsNullOrWhiteSpace(ipAddress) ? "unknown" : ipAddress;
                 return RateLimitPartition.GetFixedWindowLimiter(
                     partitionKey: clientKey,
                     factory: _ => new FixedWindowRateLimiterOptions

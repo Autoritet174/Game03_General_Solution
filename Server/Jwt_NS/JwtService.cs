@@ -12,12 +12,12 @@ namespace Server.Jwt_NS;
 /// </summary>
 public class JwtService
 {
-    //JwtService.ValidateToken
     private readonly JwtOptions _options;
     private readonly JwtSecurityTokenHandler _handler = new();
     private readonly SigningCredentials _signingCredentials;
+    private readonly TimeSpan ClockSkew = TimeSpan.FromMinutes(2);
 
-    private string secretKey = "";
+    public SecurityKey IssuerSigningKey { get; private set; }
 
     /// <summary>
     /// Создаёт экземпляр <see cref="JwtService"/>, валидируя наличие и размер секретного ключа.
@@ -29,16 +29,17 @@ public class JwtService
     {
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
 
-        string secret = GetJwtSecret();
+        string secret = File.ReadAllText(@"C:\UnityProjects\Game03_Security\jwt_secret_key.txt");
 
         if (Encoding.UTF8.GetByteCount(secret) < 32)
         {
             throw new ArgumentException("JWT secret key must be at least 32 bytes.", secret);
         }
 
-        _signingCredentials = new SigningCredentials(
-            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
-            SecurityAlgorithms.HmacSha256);
+        byte[] keyBytes = Encoding.UTF8.GetBytes(secret);
+
+        IssuerSigningKey = new SymmetricSecurityKey(keyBytes);
+        _signingCredentials = new SigningCredentials(IssuerSigningKey, SecurityAlgorithms.HmacSha256);
     }
 
     /// <summary>
@@ -85,10 +86,10 @@ public class JwtService
     {
         if (string.IsNullOrWhiteSpace(token))
         {
-            throw new ArgumentException("Token is empty.", nameof(token));
+            throw new ArgumentNullException(nameof(token));
         }
 
-        string secret = GetJwtSecret();
+
         TokenValidationParameters parameters = new()
         {
             ValidateIssuer = true,
@@ -96,26 +97,11 @@ public class JwtService
             ValidateAudience = true,
             ValidAudience = _options.Audience,
             ValidateLifetime = true,
-            ClockSkew = TimeSpan.FromMinutes(2),
+            ClockSkew = ClockSkew,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret))
+            IssuerSigningKey = IssuerSigningKey
         };
-        var claims = _handler.ValidateToken(token, parameters, out _);
-        return claims;
-    }
 
-
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
-    public string GetJwtSecret()
-    {
-        if (string.IsNullOrEmpty(secretKey))
-        {
-            secretKey = File.ReadAllText(@"C:\UnityProjects\Game03_Security\jwt_secret_key.txt");
-        }
-        return secretKey;
+        return _handler.ValidateToken(token, parameters, out _);
     }
 }

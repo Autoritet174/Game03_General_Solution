@@ -54,7 +54,7 @@
         <member name="P:Server_DB_Postgres.DbContext_Game.MaterialDamagePercents">
             <summary> Дополнительный процентный урон от материала. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.DbContext_Game.SlotTypes">
+        <member name="P:Server_DB_Postgres.DbContext_Game.Slots">
             <summary> Типы слотов экипировки. </summary>
         </member>
         <member name="P:Server_DB_Postgres.DbContext_Game.SmithingMaterials">
@@ -72,12 +72,6 @@
         <member name="P:Server_DB_Postgres.DbContext_Game.UserBanReasons">
             <summary> Причины бана пользователей. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.DbContext_Game.UserBans">
-            <summary> Баны пользователей. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.DbContext_Game.UserDevices">
-            <summary> Устройства пользователей. </summary>
-        </member>
         <member name="M:Server_DB_Postgres.DbContext_Game.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <summary> Конфигурация модели данных. </summary>
             <param name="modelBuilder">Построитель модели.</param>
@@ -89,6 +83,16 @@
         <member name="M:Server_DB_Postgres.DbContext_Game.SaveChangesAsync(System.Threading.CancellationToken)">
             <summary> <inheritdoc/> </summary>
             <returns></returns>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Collection.Equipment.SlotId">
+            <summary>
+            Слот в который эпипирован предмет.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Collection.Equipment.HeroId">
+            <summary>
+            Герой на которого экипирован предмет.
+            </summary>
         </member>
         <member name="T:Server_DB_Postgres.Entities.Collection.Hero">
             <summary> Герой в коллекции пользователя. </summary>
@@ -161,78 +165,6 @@
         </member>
         <member name="P:Server_DB_Postgres.Entities.Collection.Hero.ResistDamageMagical">
             <summary> Сопротивление магическому урону. Выражается числом которое преобразовывается в проценты. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment1Id">
-            <summary> Экипировка, слот 1. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment1">
-            <summary> Экипировка, слот 1. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment2Id">
-            <summary> Экипировка, слот 2. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment2">
-            <summary> Экипировка, слот 2. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment3Id">
-            <summary> Экипировка, слот 3. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment3">
-            <summary> Экипировка, слот 3. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment4Id">
-            <summary> Экипировка, слот 4. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment4">
-            <summary> Экипировка, слот 4. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment5Id">
-            <summary> Экипировка, слот 5. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment5">
-            <summary> Экипировка, слот 5. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment6Id">
-            <summary> Экипировка, слот 6. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment6">
-            <summary> Экипировка, слот 6. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment7Id">
-            <summary> Экипировка, слот 7. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment7">
-            <summary> Экипировка, слот 7. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment8Id">
-            <summary> Экипировка, слот 8. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment8">
-            <summary> Экипировка, слот 8. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment9Id">
-            <summary> Экипировка, слот 9. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment9">
-            <summary> Экипировка, слот 9. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment10Id">
-            <summary> Экипировка, слот 10. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment10">
-            <summary> Экипировка, слот 10. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment11Id">
-            <summary> Экипировка, слот 11. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment11">
-            <summary> Экипировка, слот 11. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment12Id">
-            <summary> Экипировка, слот 12. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Equipment12">
-            <summary> Экипировка, слот 12. </summary>
         </member>
         <member name="T:Server_DB_Postgres.Entities.GameData.BaseEquipment">
             <summary> Экипировка. Базовые болванки. Мечи, топоры, шлемы, щиты, кольцо, браслеты, амулеты и так далее. </summary>
@@ -346,6 +278,12 @@
         </member>
         <member name="P:Server_DB_Postgres.Entities.GameData.MaterialDamagePercent.Percent">
             <summary> Усиление урона оружия в процентах сделанного из этого материала. </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.GameData.Slot.Id">
+            <summary> Уникальный идентификатор. </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.GameData.Slot.Name">
+            <summary> Уникальное наименование на английском. </summary>
         </member>
         <member name="T:Server_DB_Postgres.Entities.GameData.SlotType">
             <summary> Тип слота экипировки. </summary>
@@ -946,6 +884,42 @@
             <inheritdoc />
         </member>
         <member name="M:Server_DB_Postgres.Migrations.IdentityFix6.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.EquipmentFix1">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.EquipmentFix1.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.EquipmentFix1.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.EquipmentFix1.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.EquipmentFix2">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.EquipmentFix2.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.EquipmentFix2.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.EquipmentFix2.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.RefreshTokenInit">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.RefreshTokenInit.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.RefreshTokenInit.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.RefreshTokenInit.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Server_DB_Postgres.ModelBuilderExt">

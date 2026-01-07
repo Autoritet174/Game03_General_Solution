@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Net.Mail;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -16,7 +15,8 @@ public static partial class StringExt
     /// </summary>
     /// <param name="s"></param>
     /// <returns></returns>
-    public static string NormalizedValueGame03(this string s) {
+    public static string NormalizedValueGame03(this string s)
+    {
         return s.Trim().ToUpperInvariant();
     }
 
@@ -25,23 +25,11 @@ public static partial class StringExt
     /// </summary>
     /// <param name="s"></param>
     /// <returns></returns>
-    public static string ToDirectSlash(this string? s) {
-        return s.IsEmpty() ? string.Empty : s.Replace("\\", "/");
+    public static string ToDirectSlash(this string? s)
+    {
+        return string.IsNullOrWhiteSpace(s) ? string.Empty : s.Replace("\\", "/");
     }
 
-    /// <summary>
-    /// Проверяет, является ли строка <see langword="null"/>, пустой (<see cref="string.Empty"/>) или содержит только пробельные символы.
-    /// Является оберткой для <see cref="string.IsNullOrWhiteSpace(string?)"/>.
-    /// </summary>
-    /// <param name="s">Строка для проверки.</param>
-    /// <returns>
-    /// <see langword="true"/>, если строка является <see langword="null"/>, пустой или состоит только из пробельных символов;
-    /// в противном случае — <see langword="false"/>.
-    /// </returns>
-    public static bool IsEmpty([NotNullWhen(false)] this string? s)
-    {
-        return string.IsNullOrWhiteSpace(s);
-    }
 
     /// <summary>
     /// Преобразует первый символ строки в верхний регистр, оставляя остальные символы без изменений.
@@ -53,12 +41,12 @@ public static partial class StringExt
     /// </returns>
     public static string ToUpper1Char(this string s)
     {
-        // Проверка входных данных: string s должен быть не null, иначе IsEmpty() вызовет исключение при доступе к методу.
+        // Проверка входных данных: string s должен быть не null, иначе string.IsNullOrWhiteSpace() вызовет исключение при доступе к методу.
         // Однако в контексте методов расширения string s не будет null, если он вызывается через s.ToUpper1Char().
-        // Проверка IsEmpty() обрабатывает случай, когда строка пустая или состоит из пробелов.
+        // Проверка string.IsNullOrWhiteSpace() обрабатывает случай, когда строка пустая или состоит из пробелов.
         return s is null
             ? throw new ArgumentNullException(nameof(s), "Строка не может быть null.")
-            : s.IsEmpty() ? s : $"{s[..1].ToUpperInvariant()}{s[1..]}";
+            : string.IsNullOrWhiteSpace(s) ? s : $"{s[..1].ToUpperInvariant()}{s[1..]}";
     }
 
     /// <summary>
@@ -72,7 +60,7 @@ public static partial class StringExt
     /// </returns>
     public static bool IsEmail(this string s)
     {
-        if (s is null || s.IsEmpty())
+        if (string.IsNullOrWhiteSpace(s))
         {
             return false;
         }
@@ -93,7 +81,8 @@ public static partial class StringExt
     /// Регулярное выражение для преобразования строки в snake_case.
     /// Ищет заглавные буквы, которые следуют после строчных букв.
     /// </summary>
-    private static readonly Regex SnakeCaseRegex = new("(?<=[a-z])([A-Z])", RegexOptions.Compiled);
+    private static readonly Regex SnakeCaseRegex = new(@"(?<=[a-z0-9])([A-Z])", RegexOptions.Compiled);
+    //private static readonly Regex SnakeCaseRegex = new("(?<=[a-z])([A-Z])", RegexOptions.Compiled);
 
     /// <summary>
     /// Регулярное выражение для разделения строк на слова при преобразовании в PascalCase/camelCase.

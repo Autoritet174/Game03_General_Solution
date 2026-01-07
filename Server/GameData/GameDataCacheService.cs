@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Server_DB_Postgres;
 
-namespace Server.GameDataCache;
+namespace Server.GameData;
 
 public interface IGameDataCacheService
 {
@@ -13,8 +13,6 @@ public interface IGameDataCacheService
 }
 public class GameDataCacheService() : IGameDataCacheService
 {
-    //private readonly ILogger<GameDataCacheService> _logger = logger;
-
     /// <summary> Возвращает JSON-строку с данными. </summary>
     /// <returns> JSON-строка со всеми константными игровыми данными необходимыми на стороне клиента. </returns>
     /// <exception cref="InvalidOperationException">
@@ -52,6 +50,10 @@ public class GameDataCacheService() : IGameDataCacheService
             h.Id, h.Name)
            ).ToListAsync(cancellationToken);
 
+        List<DtoSlot> slots = await db.Slots.AsNoTracking().Select(static h => new DtoSlot(
+            h.Id, h.Name, h.SlotTypeId)
+           ).ToListAsync(cancellationToken);
+
         List<DtoSmithingMaterial> smithingMaterials = await db.SmithingMaterials.AsNoTracking().Select(static h => new DtoSmithingMaterial(
             h.Id, h.Name)
            ).ToListAsync(cancellationToken);
@@ -65,21 +67,9 @@ public class GameDataCacheService() : IGameDataCacheService
            ).ToListAsync(cancellationToken);
 
 
-        DtoContainerGameData container = new()
-        {
-            DtoBaseEquipments = baseEquipments,
-            DtoBaseHeroes = baseHeroes,
-            DtoCreatureTypes = creatureTypes,
-            DtoDamageTypes = damageTypes,
-            DtoEquipmentTypes = equipmentType,
-            DtoMaterialDamagePercents = materialDamagePercents,
-            DtoSlotTypes = slotTypes,
-            DtoSmithingMaterials = smithingMaterials,
-            DtoXEquipmentTypesDamageTypes = xEquipmentTypesDamageTypes,
-            DtoXHeroesCreatureTypes = xHeroesCreatureTypes
-        };
+        DtoContainerGameData container = new(baseEquipments, baseHeroes, creatureTypes, damageTypes, equipmentType, materialDamagePercents, slotTypes, smithingMaterials, xEquipmentTypesDamageTypes, xHeroesCreatureTypes, slots);
 
-        GameDataJson = JsonConvert.SerializeObject(container, General.G.JsonSerializerSettings);
+        GameDataJson = JsonConvert.SerializeObject(container, General.GlobalHelper.JsonSerializerSettings);
     }
 
 }

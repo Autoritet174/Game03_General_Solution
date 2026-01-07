@@ -133,7 +133,7 @@ public class LocalizationManagerProvider
                     // Вычисление оставшихся секунд.
                     long secondsRemaining = (long)(dtUnbanUtc - DateTime.UtcNow).TotalSeconds;
                     // Замена плейсхолдера {timeRemaining} на строку оставшегося времени или "0".
-                    textError = textError.Replace(L.TIME_REMAINING, secondsRemaining > 0 ? General.G.SecondsToTimeStr(secondsRemaining) : "0");
+                    textError = textError.Replace(L.TIME_REMAINING, secondsRemaining > 0 ? General.GlobalHelper.SecondsToTimeStr(secondsRemaining) : "0");
                 }
                 catch
                 {
@@ -153,7 +153,7 @@ public class LocalizationManagerProvider
             if (secondsRemainingString != string.Empty && long.TryParse(secondsRemainingString, out long secondsRemaining) && secondsRemaining > 0)
             {
                 // Замена плейсхолдера {timeRemaining} на строку оставшегося времени.
-                textError = textError.Replace(L.TIME_REMAINING, General.G.SecondsToTimeStr(secondsRemaining));
+                textError = textError.Replace(L.TIME_REMAINING, General.GlobalHelper.SecondsToTimeStr(secondsRemaining));
             }
         }
 

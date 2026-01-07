@@ -30,10 +30,10 @@ public class WebSocketClientProvider(JwtTokenProvider jwtToken, LoggerProvider<W
         {
             Connected = false;
             _webSocket = new();
-            if (!jwtToken.token.IsEmpty())
+            if (!string.IsNullOrWhiteSpace(jwtToken.AccessToken))
             {
                 // Добавляем JWT токен в заголовки, если он предоставлен
-                _webSocket.Options.SetRequestHeader("Authorization", $"Bearer {jwtToken.token}");
+                _webSocket.Options.SetRequestHeader("Authorization", $"Bearer {jwtToken.AccessToken}");
             }
             await _webSocket.ConnectAsync(_serverUri, cancellationToken);
         }
@@ -169,49 +169,25 @@ public class WebSocketClientProvider(JwtTokenProvider jwtToken, LoggerProvider<W
 
         onMessagesSent?.Invoke(0); // Завершение
     }
-
+    /// <summary>
+    /// Корректно отключает клиента от сервера.
+    /// </summary>
+    /// <returns>Задача асинхронного отключения.</returns>
     public async Task DisconnectAsync()
     {
         try
         {
-            _isReceiving = false; // Останавливаем приём сообщений
-            _cancellationTokenSource.Cancel(); // Отменяем операции отправки
+            _isReceiving = false;
 
-            if (_webSocket.State == WebSocketState.Open)
+            if (_webSocket.State == WebSocketState.Open || _webSocket.State == WebSocketState.CloseReceived)
             {
-                // Отправляем фрейм закрытия с типом Close
-                await _webSocket.CloseOutputAsync(
+                // CloseAsync отправляет фрейм закрытия и ждет подтверждения от сервера.
+                // Это корректный способ завершить соединение, который сервер поймет как CloseMessageType.
+                using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+                await _webSocket.CloseAsync(
                     WebSocketCloseStatus.NormalClosure,
                     "Закрытие клиентом",
-                    CancellationToken.None
-                );
-
-                // Опционально: Ждём подтверждения от сервера (до 5 сек)
-                CancellationTokenSource timeoutCts = new(TimeSpan.FromSeconds(5));
-                byte[] buffer = new byte[1024];
-                while (_webSocket.State != WebSocketState.Closed && !timeoutCts.IsCancellationRequested)
-                {
-                    try
-                    {
-                        WebSocketReceiveResult result = await _webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), timeoutCts.Token);
-                        if (result.MessageType == WebSocketMessageType.Close)
-                        {
-                            // Сервер подтвердил закрытие
-                            await _webSocket.CloseAsync(
-                                result.CloseStatus ?? WebSocketCloseStatus.NormalClosure,
-                                result.CloseStatusDescription ?? "Подтверждение закрытия",
-                                CancellationToken.None
-                            );
-                            break;
-                        }
-                    }
-                    catch (OperationCanceledException) { } // Таймаут
-                    catch (WebSocketException ex)
-                    {
-                        logger.LogError($"Ошибка при ожидании закрытия: {ex.Message}");
-                        break;
-                    }
-                }
+                    timeoutCts.Token);
             }
         }
         catch (Exception ex)
@@ -221,8 +197,64 @@ public class WebSocketClientProvider(JwtTokenProvider jwtToken, LoggerProvider<W
         finally
         {
             _webSocket.Dispose();
+            _cancellationTokenSource.Cancel();
+            Connected = false;
             logger.LogInfo("Соединение закрыто");
         }
     }
+    //public async Task DisconnectAsync()
+    //{
+    //    try
+    //    {
+    //        _isReceiving = false; // Останавливаем приём сообщений
+    //        _cancellationTokenSource.Cancel(); // Отменяем операции отправки
+
+    //        if (_webSocket.State == WebSocketState.Open)
+    //        {
+    //            // Отправляем фрейм закрытия с типом Close
+    //            await _webSocket.CloseOutputAsync(
+    //                WebSocketCloseStatus.NormalClosure,
+    //                "Закрытие клиентом",
+    //                CancellationToken.None
+    //            );
+
+    //            // Опционально: Ждём подтверждения от сервера (до 5 сек)
+    //            CancellationTokenSource timeoutCts = new(TimeSpan.FromSeconds(5));
+    //            byte[] buffer = new byte[1024];
+    //            while (_webSocket.State != WebSocketState.Closed && !timeoutCts.IsCancellationRequested)
+    //            {
+    //                try
+    //                {
+    //                    WebSocketReceiveResult result = await _webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), timeoutCts.Token);
+    //                    if (result.MessageType == WebSocketMessageType.Close)
+    //                    {
+    //                        // Сервер подтвердил закрытие
+    //                        await _webSocket.CloseAsync(
+    //                            result.CloseStatus ?? WebSocketCloseStatus.NormalClosure,
+    //                            result.CloseStatusDescription ?? "Подтверждение закрытия",
+    //                            CancellationToken.None
+    //                        );
+    //                        break;
+    //                    }
+    //                }
+    //                catch (OperationCanceledException) { } // Таймаут
+    //                catch (WebSocketException ex)
+    //                {
+    //                    logger.LogError($"Ошибка при ожидании закрытия: {ex.Message}");
+    //                    break;
+    //                }
+    //            }
+    //        }
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        logger.LogError($"Ошибка при отключении: {ex.Message}");
+    //    }
+    //    finally
+    //    {
+    //        _webSocket.Dispose();
+    //        logger.LogInfo("Соединение закрыто");
+    //    }
+    //}
 
 }

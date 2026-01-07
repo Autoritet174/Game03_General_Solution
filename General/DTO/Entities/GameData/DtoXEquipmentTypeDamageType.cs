@@ -1,12 +1,12 @@
 namespace General.DTO.Entities.GameData;
 
-public class DtoXEquipmentTypeDamageType(int dtoEquipmentTypeId, int dtoDamageTypeId, int damageCoef)
+public class DtoXEquipmentTypeDamageType(int equipmentTypeId, int damageTypeId, int damageCoef)
 {
-    public int DtoEquipmentTypeId { get;  } = dtoEquipmentTypeId;
-    public DtoEquipmentType? DtoEquipmentType { get; set; } = null;
+    public int EquipmentTypeId { get; } = equipmentTypeId;
+    public DtoEquipmentType? EquipmentType { get; } = null;
 
-    public int DtoDamageTypeId { get; } = dtoDamageTypeId;
-    public DtoDamageType? DtoDamageType { get; set; } = null;
+    public int DamageTypeId { get; } = damageTypeId;
+    public DtoDamageType? DamageType { get; } = null;
 
     public int DamageCoef { get; } = damageCoef;
 }

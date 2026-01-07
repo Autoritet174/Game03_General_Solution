@@ -6,17 +6,29 @@ namespace General.DTO.Entities;
 /// <summary>
 /// Data Transfer Object. Корневой контейнер для данных.
 /// </summary>
-public class DtoContainerGameData()
+public class DtoContainerGameData(
+    List<DtoBaseEquipment> baseEquipments,
+    List<DtoBaseHero> baseHeroes,
+    List<DtoCreatureType> creatureTypes,
+    List<DtoDamageType> damageTypes,
+    List<DtoEquipmentType> equipmentTypes,
+    List<DtoMaterialDamagePercent> materialDamagePercents,
+    List<DtoSlotType> slotTypes,
+    List<DtoSmithingMaterial> smithingMaterials,
+    List<DtoXEquipmentTypeDamageType> xEquipmentTypesDamageTypes,
+    List<DtoXHeroCreatureType> xHeroesCreatureTypes,
+    List<DtoSlot> slots)
 {
-    public List<DtoBaseEquipment> DtoBaseEquipments { get; set; } = [];
-    public List<DtoBaseHero> DtoBaseHeroes { get; set; } = [];
-    public List<DtoCreatureType> DtoCreatureTypes { get; set; } = [];
-    public List<DtoDamageType> DtoDamageTypes { get; set; } = [];
-    public List<DtoEquipmentType> DtoEquipmentTypes { get; set; } = [];
-    public List<DtoMaterialDamagePercent> DtoMaterialDamagePercents { get; set; } = [];
-    public List<DtoSlotType> DtoSlotTypes { get; set; } = [];
-    public List<DtoSmithingMaterial> DtoSmithingMaterials { get; set; } = [];
-    public List<DtoXEquipmentTypeDamageType> DtoXEquipmentTypesDamageTypes { get; set; } = [];
-    public List<DtoXHeroCreatureType> DtoXHeroesCreatureTypes { get; set; } = [];
+    public IEnumerable<DtoBaseEquipment> BaseEquipments { get; } = baseEquipments;
+    public IEnumerable<DtoBaseHero> BaseHeroes { get; } = baseHeroes;
+    public IEnumerable<DtoCreatureType> CreatureTypes { get; } = creatureTypes;
+    public IEnumerable<DtoDamageType> DamageTypes { get; } = damageTypes;
+    public IEnumerable<DtoEquipmentType> EquipmentTypes { get; } = equipmentTypes;
+    public IEnumerable<DtoMaterialDamagePercent> MaterialDamagePercents { get; } = materialDamagePercents;
+    public IEnumerable<DtoSlotType> SlotTypes { get; } = slotTypes;
+    public IEnumerable<DtoSmithingMaterial> SmithingMaterials { get; } = smithingMaterials;
+    public IEnumerable<DtoXEquipmentTypeDamageType> XEquipmentTypesDamageTypes { get; } = xEquipmentTypesDamageTypes;
+    public IEnumerable<DtoXHeroCreatureType> XHeroesCreatureTypes { get; } = xHeroesCreatureTypes;
+    public IEnumerable<DtoSlot> Slots { get; } = slots;
 
 }

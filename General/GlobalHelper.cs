@@ -8,10 +8,10 @@ namespace General;
 /// Глобальный статический класс, содержащий константы и вспомогательные функции,
 /// которые должны быть легко доступны из любого места приложения.
 /// </summary>
-public static class G
+public static class GlobalHelper
 {
     public static JsonSerializerSettings JsonSerializerSettings;
-    static G() {
+    static GlobalHelper() {
         JsonSerializerSettings = new JsonSerializerSettings
         {
             // Использование CamelCase для всех полей, если атрибуты не заданы явно

@@ -1,6 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Server.GameDataCache;
 using Server.Http_NS.Controllers_NS;
 
 namespace Server.GameData;
@@ -23,7 +21,7 @@ public class GameDataController(IGameDataCacheService heroCache) : ControllerBas
         {
             lock (locker)
             {
-                result ??= Content(_heroCache.GameDataJson, "application/json");
+                result ??= Content(_heroCache.GameDataJson, General.GlobalHelper.APPLICATION_JSON);
             }
         }
 

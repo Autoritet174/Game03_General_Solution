@@ -117,7 +117,7 @@ public class WebSocketConnectionHandler
             return;
         }
 
-        Guid? userId = null;
+        Guid? userId;
         try
         {
             ClaimsPrincipal claims = _jwtService.ValidateToken(token);

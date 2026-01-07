@@ -35,6 +35,9 @@ public static class LocalizationKeys
             public const string Equipment = $"{_Button}{nameof(Equipment)}";
             public const string ChangingEquipment = $"{_Button}{nameof(ChangingEquipment)}";
             public const string Item = $"{_Button}{nameof(Item)}";
+            public const string TakeOn = $"{_Button}{nameof(TakeOn)}";
+            public const string TakeOff = $"{_Button}{nameof(TakeOff)}";
+            public const string Sell = $"{_Button}{nameof(Sell)}";
         }
 
         /// <summary>
@@ -93,6 +96,7 @@ public static class LocalizationKeys
             public const string LoadingCollectionFailed = $"{_Server}{nameof(LoadingCollectionFailed)}";
             public const string UserAlreadyExists = $"{_Server}{nameof(UserAlreadyExists)}";
             public const string Required2FA = $"{_Server}{nameof(Required2FA)}";
+            public const string RefreshTokenErrorCreating = $"{_Server}{nameof(RefreshTokenErrorCreating)}";
         }
 
         /// <summary>

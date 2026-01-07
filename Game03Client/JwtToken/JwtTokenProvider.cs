@@ -10,25 +10,26 @@ namespace Game03Client.JwtToken;
 
 public class JwtTokenProvider(HttpRequesterProvider httpRequester, LoggerProvider<JwtTokenProvider> logger)
 {
-    public string? token = null;
-    public async Task<string?> GetTokenAsync(string jsonBody, CancellationToken cancellationToken)
+    public string? AccessToken { get; private set; } = null;
+    public string? RefreshToken { get; private set; } = null;
+    public async Task RefreshTokensAsync(string jsonBody, CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
         {
-            return null;
+            return;
         }
 
         // Если есть токен — возвращаем сразу
-        if (!this.token.IsEmpty())
+        if (!string.IsNullOrWhiteSpace(AccessToken) && !string.IsNullOrWhiteSpace(RefreshToken))
         {
-            return this.token;
+            return;
         }
 
         string? response = await httpRequester.GetResponseAsync(Url.Auth, cancellationToken, jsonBody);
         if (response == null)
         {
-            logger.LogError("response is null", L.Error.Server.InvalidResponse);
-            return null;
+            logger.LogAndThrow("response is null", L.Error.Server.InvalidResponse);
+            return;
         }
         JObject? jObject;
         try
@@ -37,23 +38,24 @@ public class JwtTokenProvider(HttpRequesterProvider httpRequester, LoggerProvide
         }
         catch
         {
-            logger.LogError("jObject can't be parced", L.Error.Server.InvalidResponse);
-            return null;
+            logger.LogAndThrow("jObject can't be parced", L.Error.Server.InvalidResponse);
+            return;
         }
         if (jObject is null)
         {
-            logger.LogError("jObject is null", L.Error.Server.InvalidResponse);
-            return null;
+            logger.LogAndThrow("jObject is null", L.Error.Server.InvalidResponse);
+            return;
         }
 
-        string? token = jObject["token"]?.ToString();
-        if (token.IsEmpty())
+        string? accessToken = jObject["accessToken"]?.ToString();
+        string? refresh_token = jObject["refreshToken"]?.ToString();
+        if (string.IsNullOrWhiteSpace(accessToken))
         {
-            logger.LogError("token IsEmpty");
-            return null;
+            logger.LogAndThrow("accessToken IsEmpty");
+            //return null;
         }
 
-        this.token = token;
+        this.AccessToken = accessToken;
         return token;
     }
 

@@ -277,12 +277,6 @@
             <exception cref="T:System.ArgumentException">Если токен пустой.</exception>
             <exception cref="T:Microsoft.IdentityModel.Tokens.SecurityTokenException">Если токен не прошёл проверку.</exception>
         </member>
-        <member name="M:Server.Jwt_NS.JwtService.GetJwtSecret">
-            <summary>
-            
-            </summary>
-            <returns></returns>
-        </member>
         <member name="T:Server.Program">
             <summary> Класс содержит точку входа приложения и настройки сервисов, аутентификации, middleware, маршрутов и баз данных. </summary>
         </member>
@@ -400,13 +394,6 @@
             JWT-токен.
             </summary>
         </member>
-        <member name="M:Server.Users.AuthRegResponse.SuccessResponse(System.String)">
-            <summary>
-            Создает результат Success с токеном.
-            </summary>
-            <param name="token">JWT-токен доступа.</param>
-            <returns>Результат успеха.</returns>
-        </member>
         <member name="M:Server.Users.AuthRegResponse.UserAlreadyExists">
             <summary>
             Результат, если пользователь уже существует.
@@ -456,7 +443,7 @@
             Сервис для обработки регистрации пользователей.
             </summary>
         </member>
-        <member name="M:Server.Users.Reg.RegService.#ctor(Microsoft.AspNetCore.Identity.UserManager{Server_DB_Postgres.Entities.Users.User},Microsoft.AspNetCore.Identity.SignInManager{Server_DB_Postgres.Entities.Users.User},Server.Jwt_NS.JwtService,Microsoft.Extensions.Caching.Memory.IMemoryCache,Server.Users.AuthRegLoggerBackgroundService)">
+        <member name="M:Server.Users.Reg.RegService.#ctor(Microsoft.AspNetCore.Identity.UserManager{Server_DB_Postgres.Entities.Users.User},Microsoft.AspNetCore.Identity.SignInManager{Server_DB_Postgres.Entities.Users.User},Server.Jwt_NS.JwtService,Microsoft.Extensions.Caching.Memory.IMemoryCache,Server.Users.AuthRegLoggerBackgroundService,EasyRefreshToken.ITokenService{System.Guid})">
             <summary>
             Сервис для обработки регистрации пользователей.
             </summary>

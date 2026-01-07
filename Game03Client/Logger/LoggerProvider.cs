@@ -10,7 +10,7 @@ public class LoggerProvider<T>(LoggerOptions loggerOptions)
 {
     public void LogError(object message, string? keyLocal = null)
     {
-        if (!keyLocal.IsEmpty())
+        if (!string.IsNullOrWhiteSpace(keyLocal))
         {
             message = $"{message}; {L.KEY_LOCALIZATION}:<{keyLocal}>";
         }
@@ -18,7 +18,7 @@ public class LoggerProvider<T>(LoggerOptions loggerOptions)
     }
     public void LogInfo(object message, string? keyLocal = null)
     {
-        if (!keyLocal.IsEmpty())
+        if (!string.IsNullOrWhiteSpace(keyLocal))
         {
             message = $"{message}; {L.KEY_LOCALIZATION}:<{keyLocal}>";
         }

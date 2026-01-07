@@ -33,7 +33,7 @@ public class HttpRequesterProvider
 
     public async Task<string?> GetResponseAsync(string url, CancellationToken cancellationToken, string? jsonBody = null, string? jwtToken = null)
     {
-        if (url.IsEmpty())
+        if (string.IsNullOrWhiteSpace(url))
         {
             string e = "url IsEmpty";
             logger.LogError(e);
@@ -58,10 +58,10 @@ public class HttpRequesterProvider
             using HttpRequestMessage request = new(HttpMethod.Post, uri);
             if (jsonBody != null)
             {
-                request.Content = new StringContent(jsonBody, Encoding.UTF8, G.APPLICATION_JSON);
+                request.Content = new StringContent(jsonBody, Encoding.UTF8, GlobalHelper.APPLICATION_JSON);
             }
 
-            if (!jwtToken.IsEmpty())
+            if (!string.IsNullOrWhiteSpace(jwtToken))
             {
                 // Если был передан токен то подставляем его в заголовок как авторизацию
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwtToken);
@@ -70,7 +70,7 @@ public class HttpRequesterProvider
 
             using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
             string responseContent = await response.Content.ReadAsStringAsync();
-            if (responseContent.IsEmpty())
+            if (string.IsNullOrWhiteSpace(responseContent))
             {
                 logger.LogError($"responseContent IsEmpty, StatusCode={response.StatusCode}", L.Error.Server.InvalidResponse);
                 return null;

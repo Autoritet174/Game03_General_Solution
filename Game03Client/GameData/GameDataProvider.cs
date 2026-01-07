@@ -1,5 +1,4 @@
 using Game03Client.HttpRequester;
-using Game03Client.Logger;
 using General;
 using General.DTO.Entities;
 using General.DTO.Entities.GameData;
@@ -8,21 +7,15 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using L = General.LocalizationKeys;
 
 namespace Game03Client.GameData;
 
-/// <summary>
-/// Реализация <see cref="IGameData"/>, предоставляющая функциональность для
-/// загрузки и доступа к глобальным игровым данным, таким как список героев.
-/// </summary>
 public class GameDataProvider(HttpRequesterProvider httpRequesterProvider
     //, ILogger<GameDataProvider> logger
     )
 {
-    public DtoContainerGameData DtoContainer = null!;
+    public DtoContainerGameData Container = null!;
 
-    /// <inheritdoc/>
     public async Task LoadGameData(CancellationToken cancellationToken, string jwtToken)
     {
         if (cancellationToken.IsCancellationRequested)
@@ -30,61 +23,29 @@ public class GameDataProvider(HttpRequesterProvider httpRequesterProvider
             return;
         }
 
-        string? response = await httpRequesterProvider.GetResponseAsync(Url.GameData, cancellationToken, jwtToken: jwtToken);
-        if (response == null)
+        string response = await httpRequesterProvider.GetResponseAsync(Url.GameData, cancellationToken, jwtToken: jwtToken) ?? throw new Exception();
+        DtoContainerGameData c = JsonConvert.DeserializeObject<DtoContainerGameData>(response) ?? throw new Exception();
+
+        foreach (DtoBaseEquipment i in c.BaseEquipments)
         {
-            return;
+            i.EquipmentType = c.EquipmentTypes.FirstOrDefault(a => a.Id == i.EquipmentTypeId);
         }
-        DtoContainerGameData? dto_container = JsonConvert.DeserializeObject<DtoContainerGameData>(response);
-        if (dto_container == null)
+
+        foreach (DtoEquipmentType i in c.EquipmentTypes)
         {
-            return;
+            i.SlotType = c.SlotTypes.FirstOrDefault(a => a.Id == i.SlotTypeId);
         }
-        DtoContainerGameData c = dto_container;
-
-        foreach (DtoBaseEquipment i in c.DtoBaseEquipments)
+        foreach (DtoMaterialDamagePercent i in c.MaterialDamagePercents)
         {
-            i.DtoEquipmentType = c.DtoEquipmentTypes.FirstOrDefault(a => a.Id == i.DtoEquipmentTypeId);
+            i.SmithingMaterial = c.SmithingMaterials.FirstOrDefault(a => a.Id == i.SmithingMaterialId);
+            i.DamageType = c.DamageTypes.FirstOrDefault(a => a.Id == i.DamageTypeId);
         }
-        foreach (DtoEquipmentType i in c.DtoEquipmentTypes)
+        foreach (DtoSlot i in c.Slots)
         {
-            i.DtoSlotType = c.DtoSlotTypes.FirstOrDefault(a => a.Id == i.DtoSlotTypeId);
+            i.SlotType = c.SlotTypes.FirstOrDefault(a => a.Id == i.SlotTypeId);
         }
-        foreach (DtoMaterialDamagePercent i in c.DtoMaterialDamagePercents)
-        {
-            i.DtoSmithingMaterial = c.DtoSmithingMaterials.FirstOrDefault(a => a.Id == i.DtoSmithingMaterialId);
-            i.DtoDamageType = c.DtoDamageTypes.FirstOrDefault(a => a.Id == i.DtoDamageTypeId);
-        }
-        DtoContainer = c;
 
-
-
-
-        //JToken? heroesToken = jObject["heroes"];
-        //if (heroesToken is not JArray heroesArray)
-        //{
-        //    Log("heroesToken is not JArray heroesArray");
-        //    return;
-        //}
-
-        //List<DtoBaseHero> allHeroes = [];
-        //foreach (JObject heroObj in heroesArray.Cast<JObject>())
-        //{
-        //    JToken? t_id = heroObj["id"];
-        //    int id = t_id != null ? (int)t_id : 0;
-        //    string? name = heroObj["name"]?.ToString();
-        //    if (name == null)
-        //    {
-        //        Log("name == null");
-        //        continue;
-        //    }
-        //    float baseHealth = (float)Convert.ToDouble(heroObj["baseHealth"]);
-        //    float baseAttack = (float)Convert.ToDouble(heroObj["baseAttack"]);
-        //    int rarity = Convert.ToInt32(heroObj["rarity"]);
-        //    allHeroes.Add(new DtoBaseHero(id, name, rarity,false, 0, null));
-        //}
-
-        //globalFunctionsProviderCache.BaseHeroes = allHeroes.AsEnumerable();
+        Container = c;
     }
-    
+
 }

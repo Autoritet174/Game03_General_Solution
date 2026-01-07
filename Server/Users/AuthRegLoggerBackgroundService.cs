@@ -1,53 +1,30 @@
+using General;
+using General.DTO.RestRequest;
 using Microsoft.EntityFrameworkCore;
-using Server.Utilities;
 using Server_DB_Postgres;
 using Server_DB_Postgres.Entities.Users;
 using System.Collections.Concurrent;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json.Nodes;
-using General;
 
 namespace Server.Users;
 
 /// <summary> Фоновый сервис пакетной записи логов авторизации/регистрации и данных устройств с контролируемыми повторными попытками и корректной остановкой. </summary>
-public sealed class AuthRegLoggerBackgroundService(
-    ILogger<AuthRegLoggerBackgroundService> logger,
-    IServiceProvider serviceProvider) : IHostedService, IDisposable
+public sealed class AuthRegLoggerBackgroundService(ILogger<AuthRegLoggerBackgroundService> logger, IServiceProvider serviceProvider) : IHostedService, IDisposable
 {
     /// <summary>
     /// Лог авторизации с поддержкой повторной обработки и кэшированными данными устройства.
     /// </summary>
     private sealed record LogEntry(
         bool Success,
-        JsonObject Obj,
-        string? Email,
+        DtoRequestAuthReg dto,
         Guid? UserId,
         IPAddress? Ip,
         int RetryCount,
         DateTimeOffset NextRetryAt,
-        DeviceParsedData? CachedDeviceData
-        ,bool ActionIsAuthentication);
-
-    /// <summary>
-    /// Распарсенные данные устройства.
-    /// </summary>
-    private sealed record DeviceParsedData(
-        Guid Id,
-        string? DeviceModel,
-        string? DeviceType,
-        string? OperatingSystem,
-        string? ProcessorType,
-        int? ProcessorCount,
-        int? SystemMemorySize,
-        string? GraphicsDeviceName,
-        string? DeviceUniqueIdentifier,
-        int? GraphicsMemorySize,
-        string? SystemEnvironmentUserName,
-        bool? SystemInfoSupportsInstancing,
-        string? SystemInfoNpotSupport,
-        int? TimeZoneMinutes);
+        bool ActionIsAuthentication,
+        Guid UserDeviceId);
 
     private readonly ILogger<AuthRegLoggerBackgroundService> _logger = logger;
     private readonly IServiceProvider _serviceProvider = serviceProvider;
@@ -68,40 +45,24 @@ public sealed class AuthRegLoggerBackgroundService(
     /// <summary>
     /// Добавляет лог в очередь с предварительным вычислением данных устройства.
     /// </summary>
-    /// <param name="success">Успешность.</param>
-    /// <param name="obj">JSON объект с данными устройства.</param>
-    /// <param name="email">Email пользователя.</param>
-    /// <param name="userId">ID пользователя.</param>
-    /// <param name="ip">IP-адрес запроса.</param>
-    /// <param name="actionIsAuthentication">Действие это аутентификация.</param>
     /// <exception cref="ArgumentNullException">Бросается, если obj равен null.</exception>
-    public void EnqueueLog(
-        bool success,
-        JsonObject obj,
-        string? email,
-        Guid? userId,
-        IPAddress? ip,
-        bool actionIsAuthentication)
+    public void EnqueueLog(bool success, DtoRequestAuthReg dto, Guid? userId, IPAddress? ip, bool actionIsAuthentication)
     {
-        ArgumentNullException.ThrowIfNull(obj);
-
         if (_queue.Count >= MAX_QUEUE_SIZE)
         {
             _logger.LogWarning("Очередь логов переполнена. Запись отброшена.");
             return;
         }
 
-        DeviceParsedData? deviceData = ParseAndComputeId(obj);
-
         _queue.Enqueue(new LogEntry(
             success,
-            obj,
-            email,
+            dto,
             userId,
             ip,
             RetryCount: 0,
             NextRetryAt: DateTimeOffset.UtcNow,
-            CachedDeviceData: deviceData, actionIsAuthentication));
+            actionIsAuthentication,
+            ComputeId(dto)));
     }
 
     /// <inheritdoc />
@@ -235,28 +196,42 @@ public sealed class AuthRegLoggerBackgroundService(
 
         try
         {
-            HashSet<Guid> addedInBatch = [];
+            List<UserDevice> uniqueDevices = [.. batch
+                .Where(l => l.UserDeviceId != Guid.Empty)
+                .DistinctBy(l => l.UserDeviceId)
+                .Select(item => new UserDevice
+                {
+                    Id = item.UserDeviceId,
+                    DeviceModel = item.dto.DeviceModel,
+                    DeviceType = item.dto.DeviceType,
+                    OperatingSystem = item.dto.OperatingSystem,
+                    ProcessorType = item.dto.ProcessorType,
+                    ProcessorCount = item.dto.ProcessorCount,
+                    SystemMemorySize = item.dto.SystemMemorySize,
+                    GraphicsDeviceName = item.dto.GraphicsDeviceName,
+                    DeviceUniqueIdentifier = item.dto.DeviceUniqueIdentifier,
+                    GraphicsMemorySize = item.dto.GraphicsMemorySize,
+                    SystemEnvironmentUserName = item.dto.System_Environment_UserName,
+                    SystemInfoSupportsInstancing = item.dto.SystemInfo_supportsInstancing,
+                    SystemInfoNpotSupport = item.dto.SystemInfo_npotSupport,
+                    TimeZoneMinutes = item.dto.TimeZoneInfo_Local_BaseUtcOffset_Minutes
+                })];
 
-            var uniqueDevices = batch
-                .Where(l => l.CachedDeviceData != null)
-                .Select(l => l.CachedDeviceData!)
-                .Where(d => addedInBatch.Add(d.Id))
-                .ToList();
 
             if (uniqueDevices.Count > 0)
             {
-                var deviceIds = uniqueDevices.Select(d => d.Id).ToList();
+                List<Guid> deviceIds = [.. uniqueDevices.Select(d => d.Id)];
 
                 HashSet<Guid> existingIds = await db.UserDevices
                     .Where(d => deviceIds.Contains(d.Id))
                     .Select(d => d.Id)
                     .ToHashSetAsync(ct);
 
-                foreach (DeviceParsedData device in uniqueDevices)
+                foreach (UserDevice device in uniqueDevices)
                 {
                     if (!existingIds.Contains(device.Id))
                     {
-                        _ = db.UserDevices.Add(MapToEntity(device));
+                        _ = db.UserDevices.Add(device);
                     }
                 }
             }
@@ -265,10 +240,10 @@ public sealed class AuthRegLoggerBackgroundService(
             {
                 _ = db.AuthRegLogs.Add(new Server_DB_Postgres.Entities.Logs.AuthRegLog
                 {
-                    Email = item.Email,
+                    Email = item.dto.Email,
                     Success = item.Success,
                     UserId = item.UserId,
-                    UserDeviceId = item.CachedDeviceData?.Id,
+                    UserDeviceId = item.UserDeviceId,
                     CreatedAt = DateTimeOffset.UtcNow,
                     Ip = item.Ip,
                     ActionIsAuthentication = item.ActionIsAuthentication
@@ -317,48 +292,31 @@ public sealed class AuthRegLoggerBackgroundService(
         }
     }
 
-    private static DeviceParsedData? ParseAndComputeId(JsonObject obj)
+    private static Guid ComputeId(DtoRequestAuthReg dto)
     {
-        string? uid = obj.GetStringN("deviceUniqueIdentifier");
-        if (string.IsNullOrWhiteSpace(uid))
+        if (string.IsNullOrWhiteSpace(dto.DeviceUniqueIdentifier))
         {
-            return null;
+            return Guid.Empty;
         }
 
-        var data = new DeviceParsedData(
-            Guid.Empty,
-            obj.GetStringN("deviceModel", 255),
-            obj.GetStringN("deviceType", 255),
-            obj.GetStringN("operatingSystem", 255),
-            obj.GetStringN("processorType", 255),
-            obj.GetIntegerN("processorCount"),
-            obj.GetIntegerN("systemMemorySize"),
-            obj.GetStringN("graphicsDeviceName", 255),
-            uid,
-            obj.GetIntegerN("graphicsMemorySize"),
-            obj.GetStringN("system_Environment_UserName", 255),
-            obj.GetBoolN("systemInfo_supportsInstancing"),
-            obj.GetStringN("systemInfo_npotSupport", 255),
-            obj.GetIntegerN("timeZoneInfo_Local_BaseUtcOffset_Minutes"));
-
         StringBuilder sb = new();
-        _ = sb.Append(data.SystemEnvironmentUserName ?? "").Append(SPLIT)
-          .Append(data.TimeZoneMinutes ?? 0).Append(SPLIT)
-          .Append(data.DeviceUniqueIdentifier).Append(SPLIT)
-          .Append(data.DeviceModel ?? "").Append(SPLIT)
-          .Append(data.DeviceType ?? "").Append(SPLIT)
-          .Append(data.OperatingSystem ?? "").Append(SPLIT)
-          .Append(data.ProcessorType ?? "").Append(SPLIT)
-          .Append(data.ProcessorCount ?? 0).Append(SPLIT)
-          .Append(data.SystemMemorySize ?? 0).Append(SPLIT)
-          .Append(data.GraphicsDeviceName ?? "").Append(SPLIT)
-          .Append(data.GraphicsMemorySize ?? 0).Append(SPLIT)
-          .Append(data.SystemInfoSupportsInstancing == true ? "[true]" :
-                  data.SystemInfoSupportsInstancing == false ? "[false]" : "[null]")
+        _ = sb.Append(dto.System_Environment_UserName ?? "").Append(SPLIT)
+          .Append(dto.TimeZoneInfo_Local_BaseUtcOffset_Minutes).Append(SPLIT)
+          .Append(dto.DeviceUniqueIdentifier).Append(SPLIT)
+          .Append(dto.DeviceModel ?? "").Append(SPLIT)
+          .Append(dto.DeviceType ?? "").Append(SPLIT)
+          .Append(dto.OperatingSystem ?? "").Append(SPLIT)
+          .Append(dto.ProcessorType ?? "").Append(SPLIT)
+          .Append(dto.ProcessorCount).Append(SPLIT)
+          .Append(dto.SystemMemorySize).Append(SPLIT)
+          .Append(dto.GraphicsDeviceName ?? "").Append(SPLIT)
+          .Append(dto.GraphicsMemorySize).Append(SPLIT)
+          .Append(dto.SystemInfo_supportsInstancing == true ? "[true]" :
+                  dto.SystemInfo_supportsInstancing == false ? "[false]" : "[null]")
           .Append(SPLIT)
-          .Append(data.SystemInfoNpotSupport ?? "");
+          .Append(dto.SystemInfo_npotSupport ?? "");
 
-        byte[] hash = SHA256.HashData(Encoding.UTF8.GetBytes(sb.ToString().NormalizedValueGame03()));
+        byte[] hash = SHA256.HashData(Encoding.UTF8.GetBytes(sb.ToString().Trim().ToUpperInvariant()));
         byte[] guidBytes = new byte[16];
         Array.Copy(hash, guidBytes, 16);
 
@@ -366,28 +324,7 @@ public sealed class AuthRegLoggerBackgroundService(
         guidBytes[6] = (byte)((guidBytes[6] & 0x0F) | 0x50);
         guidBytes[8] = (byte)((guidBytes[8] & 0x3F) | 0x80);
 
-        return data with { Id = new Guid(guidBytes) };
-    }
-
-    private static UserDevice MapToEntity(DeviceParsedData d)
-    {
-        return new()
-        {
-            Id = d.Id,
-            DeviceModel = d.DeviceModel,
-            DeviceType = d.DeviceType,
-            OperatingSystem = d.OperatingSystem,
-            ProcessorType = d.ProcessorType,
-            ProcessorCount = d.ProcessorCount,
-            SystemMemorySize = d.SystemMemorySize,
-            GraphicsDeviceName = d.GraphicsDeviceName,
-            DeviceUniqueIdentifier = d.DeviceUniqueIdentifier,
-            GraphicsMemorySize = d.GraphicsMemorySize,
-            SystemEnvironmentUserName = d.SystemEnvironmentUserName,
-            SystemInfoSupportsInstancing = d.SystemInfoSupportsInstancing,
-            SystemInfoNpotSupport = d.SystemInfoNpotSupport,
-            TimeZoneMinutes = d.TimeZoneMinutes
-        };
+        return new Guid(guidBytes);
     }
 
     /// <inheritdoc />

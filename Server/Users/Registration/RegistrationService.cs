@@ -1,41 +1,32 @@
+using EasyRefreshToken;
 using General;
+using General.DTO.RestRequest;
+using General.DTO.RestResponse;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using Serilog;
 using Server.Jwt_NS;
 using Server_DB_Postgres.Entities.Users;
 using System.Net;
-using System.Text.Json.Nodes;
 
-namespace Server.Users.Reg;
+namespace Server.Users.Registration;
 
 /// <summary>
 /// Сервис для обработки регистрации пользователей.
 /// </summary>
-public sealed class RegService(
+public sealed class RegistrationService(
     UserManager<User> userManager,
     SignInManager<User> signInManager,
     JwtService jwt,
     IMemoryCache cache,
-    AuthRegLoggerBackgroundService backgroundLoggerAuthentificationService)
+    AuthRegLoggerBackgroundService backgroundLoggerAuthentificationService,
+    ITokenService<Guid> tokenService, 
+    ILogger<RegistrationService> logger)
 {
     private static readonly Random _Random = new(); // Генератор случайных задержек для защиты от timing-атак
     private static readonly TimeSpan _LockoutPeriod = TimeSpan.FromMinutes(2); // Период блокировки при неудачных попытках
 
-    /// <summary>
-    /// Асинхронный метод регистрации пользователя.
-    /// </summary>
-    /// <param name="email">Email пользователя.</param>
-    /// <param name="password">Пароль пользователя.</param>
-    /// <param name="requestJson">JSON запроса для логирования.</param>
-    /// <param name="ip">IP-адрес клиента.</param>
-    /// <returns>Результат регистрации.</returns>
-    public async Task<AuthRegResponse> RegisterAsync(
-        string email,
-        string password,
-        JsonObject requestJson,
-        IPAddress? ip)
+    public async Task<DtoResponseAuthReg> RegisterAsync(DtoRequestAuthReg dto, IPAddress? ip)
     {
         // Инициализация времени для задержек
         DateTimeOffset now = DateTimeOffset.UtcNow;
@@ -43,11 +34,12 @@ public sealed class RegService(
 
         Guid? userId = null; // ID пользователя для логирования
         bool success = false;
-
+        string? email = dto.Email;
+        string? password = dto.Password;
         try
         {
             // Проверка входных данных
-            if (email.IsEmpty() || password.IsEmpty())
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
             {
                 return AuthRegResponse.InvalidCredentials();
             }
@@ -90,12 +82,21 @@ public sealed class RegService(
             // Проверка на необходимость 2FA
             if (signInResult.RequiresTwoFactor)
             {
-                return AuthRegResponse.RequiresTwoFactor(user.Id);
+                return AuthRegResponse.RequiresTwoFactor();
             }
 
             success = true;
             ResetAttempts(email); // Сброс попыток при успехе
-            return AuthRegResponse.SuccessResponse(jwt.GenerateToken(user.Id)); // Генерация JWT-токена
+
+
+            string accessToken = jwt.GenerateToken(user.Id);
+            TokenResult tokenResult = await tokenService.OnLoginAsync(user.Id);
+            if (!tokenResult.IsSucceeded)
+            {
+                return AuthRegResponse.RefreshTokenErrorCreating();
+            }
+            // 
+            return AuthRegResponse.Success(accessToken, tokenResult.Token);
         }
         catch
         {
@@ -105,7 +106,7 @@ public sealed class RegService(
         {
             try
             {
-                backgroundLoggerAuthentificationService.EnqueueLog(success, requestJson, email, userId, ip, false);
+                backgroundLoggerAuthentificationService.EnqueueLog(success, dto, userId, ip, false);
                 if (!success)
                 {
                     RegisterFail(email);
@@ -114,7 +115,10 @@ public sealed class RegService(
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Error in finally block during registration for email {Email}", email);
+                if (logger.IsEnabled(LogLevel.Error))
+                {
+                    logger.LogError(ex, "Error in finally block during registration for email {Email}", email);
+                }
             }
         }
     }
@@ -137,10 +141,7 @@ public sealed class RegService(
     /// Регистрация неудачной попытки.
     /// </summary>
     /// <param name="email">Email пользователя.</param>
-    private void RegisterFail(string email)
-    {
-        IncrementFailedRegisterAttempt(email);
-    }
+    private void RegisterFail(string email) => IncrementFailedRegisterAttempt(email);
 
     /// <summary>
     /// Запись для попыток.
@@ -153,7 +154,7 @@ public sealed class RegService(
     /// <param name="email">Email пользователя.</param>
     private void IncrementFailedRegisterAttempt(string email)
     {
-        if (email.IsEmpty())
+        if (string.IsNullOrWhiteSpace(email))
         {
             return;
         }
@@ -181,7 +182,7 @@ public sealed class RegService(
     /// <param name="email">Email пользователя.</param>
     private void ResetAttempts(string email)
     {
-        if (!email.IsEmpty())
+        if (!string.IsNullOrWhiteSpace(email))
         {
             cache.Remove($"register-attempts:{email.NormalizedValueGame03()}");
         }
@@ -192,14 +193,10 @@ public sealed class RegService(
     /// </summary>
     /// <param name="email">Email пользователя.</param>
     /// <returns>Оставшееся время в секундах.</returns>
-    private long GetRemainingLockoutTime(string email)
-    {
-        // Проверка наличия в кэше
-        return cache.TryGetValue(
+    private long GetRemainingLockoutTime(string email) => cache.TryGetValue(
             $"register-attempts:{email.NormalizedValueGame03()}",
             out Attempt? attempt)
             && attempt!.ExpiresAt > DateTimeOffset.UtcNow
             ? (long)Math.Ceiling((attempt.ExpiresAt - DateTimeOffset.UtcNow).TotalSeconds)
             : 0;
-    }
 }

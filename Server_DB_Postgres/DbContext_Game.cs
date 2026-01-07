@@ -11,6 +11,7 @@ using Server_DB_Postgres.Entities.Server;
 using Server_DB_Postgres.Entities.Users;
 using Server_DB_Postgres.Interfaces;
 using System.Collections.Concurrent;
+using static General.StringExt;
 
 namespace Server_DB_Postgres;
 
@@ -48,6 +49,7 @@ public class DbContext_Game(DbContextOptions<DbContext_Game> options) : Identity
     public DbSet<MaterialDamagePercent> MaterialDamagePercents { get; set; }
 
     /// <summary> Типы слотов экипировки. </summary>
+    public DbSet<Slot> Slots { get; set; }
     public DbSet<SlotType> SlotTypes { get; set; }
 
     /// <summary> Материалы для кузнечного дела. </summary>
@@ -76,16 +78,9 @@ public class DbContext_Game(DbContextOptions<DbContext_Game> options) : Identity
     #endregion server
 
     #region users
-
-    ///// <summary> Пользователи. </summary>
-    //public DbSet<User> Users { get; set; }
-
-    /// <summary> Баны пользователей. </summary>
     public DbSet<UserBan> UserBans { get; set; }
-
-    /// <summary> Устройства пользователей. </summary>
     public DbSet<UserDevice> UserDevices { get; set; }
-
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
     #endregion users
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -108,6 +103,18 @@ public class DbContext_Game(DbContextOptions<DbContext_Game> options) : Identity
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        // Кастомные ограничения
+        //_ = modelBuilder.Entity<BaseEquipment>(static entity =>
+        //{
+        //    string s1 = nameof(BaseEquipment.SlotType1Id).ToSnakeCase();
+        //    string s2 = nameof(BaseEquipment.SlotType2Id).ToSnakeCase();
+        //    _ = entity.ToTable(t => t.HasCheckConstraint("CK_BaseEquipment_SlotTypes_Different".ToSnakeCase(), $"""
+        //        "{s2}" IS NULL OR "{s2}" <> "{s1}"
+        //        """));
+        //});
+
+
 
         _ = modelBuilder.Ignore<Microsoft.AspNetCore.Identity.IdentityPasskeyData>();
         // Переопределение имен таблиц Identity
@@ -134,14 +141,14 @@ public class DbContext_Game(DbContextOptions<DbContext_Game> options) : Identity
 
         // Переопределение для каскадного удаления только для нужных связей
         // Настройка для UserBan: Cascade при удалении ApplicationUser
-        modelBuilder.Entity<UserBan>()
+        _ = modelBuilder.Entity<UserBan>()
             .HasOne(b => b.User) // Навигационное свойство в UserBan
             .WithMany(u => u.UserBans)      // Коллекция в ApplicationUser
             .HasForeignKey(b => b.UserId) // FK в UserBan
             .OnDelete(DeleteBehavior.Cascade); // Включить каскад: удалять UserBan при удалении ApplicationUser
 
         // Настройка для UserAuthorization: Cascade при удалении ApplicationUser
-        modelBuilder.Entity<AuthRegLog>()
+        _ = modelBuilder.Entity<AuthRegLog>()
             .HasOne(a => a.User) // Навигационное свойство в UserAuthorization
             .WithMany()                     // Нет коллекции в ApplicationUser (one-to-many без обратной коллекции, если не добавлена)
             .HasForeignKey(a => a.UserId) // FK в UserAuthorization (nullable, но Cascade все равно сработает)
@@ -149,6 +156,8 @@ public class DbContext_Game(DbContextOptions<DbContext_Game> options) : Identity
 
 
         //modelBuilder.Entity<Equipment>().HasQueryFilter(e => e.DeletedAt == null);
+
+        
     }
 
     /// <summary> <inheritdoc/> </summary>

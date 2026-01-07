@@ -7,6 +7,9 @@ root = true  # Указывает, что это корневой файл ко�
 csharp_style_namespace_declarations = file_scoped:suggestion
 dotnet_diagnostic.CS1591.severity = none
 
+# Предпочитать тело выражения для методов
+csharp_style_expression_bodied_methods = true:suggestion
+
 # Общие настройки
 charset = utf-8  # Использовать кодировку UTF-8
 end_of_line = crlf  # Использовать символы конца строки CRLF (Windows)
