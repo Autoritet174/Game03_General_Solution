@@ -1,41 +1,26 @@
-using Game03Client.Logger;
+using General;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using L = General.LocalizationKeys;
 
-namespace Game03Client.LocalizationManager;
+namespace Game03Client;
+
+//using LOGGER = LOGGER<LocalizationManagerProvider>;
 
 /// <summary>
 /// Реализация провайдера для управления локализацией, загружающая данные из JSON.
 /// </summary>
-public class LocalizationManagerProvider
+public static class LocalizationManager
 {
-
-    private readonly LoggerProvider<LocalizationManagerProvider> logger;
-
-    /// <summary>
-    /// Опции, содержащие данные локализации в формате JSON.
-    /// </summary>
-    private readonly LocalizationManagerOptions localizationManagerOptions;
-
-    /// <summary>
-    /// Инициализирует новый экземпляр класса <see cref="LocalizationManagerProvider"/>.
-    /// </summary>
-    /// <param name="localizationManagerOptions">Опции локализации, содержащие JSON-строку с данными.</param>
-    /// <param name="logger">Логер для вызова коллбеков в игре.</param>
-    /// <exception cref="Newtonsoft.Json.JsonReaderException">Вызывается, если JSON-строка в опциях недействительна.</exception>
-    public LocalizationManagerProvider(LocalizationManagerOptions localizationManagerOptions, LoggerProvider<LocalizationManagerProvider> logger)
+    public static void Init(StringCapsule jsonFileData)
     {
-        this.localizationManagerOptions = localizationManagerOptions;
-        this.logger = logger;
-
         // Очистка предыдущих данных локализации (если конструктор вызывается повторно, что маловероятно для провайдера).
         localization.Clear();
         // Разбор JSON-строки, содержащей данные локализации.
-        var obj = JObject.Parse(this.localizationManagerOptions.jsonFileData.Value);
+        var obj = JObject.Parse(jsonFileData.Value);
 
-        void ProcessToken(JToken token, string currentPath)
+        static void ProcessToken(JToken token, string currentPath)
         {
             //Рекурсивный обход токенов JToken для построения плоского словаря локализации.
             switch (token.Type)
@@ -80,18 +65,16 @@ public class LocalizationManagerProvider
     /// <summary>
     /// Словарь, хранящий ключи локализации (путь в JSON) и соответствующие им строковые значения.
     /// </summary>
-    private readonly Dictionary<string, string> localization = [];
+    private static readonly Dictionary<string, string> localization = [];
 
     /// <summary>
     /// Получает локализованное строковое значение по ключу.
     /// </summary>
     /// <param name="key">Ключ локализации (например, "UI.Menu.StartGame").</param>
     /// <returns>Локализованная строка, или сам ключ, если значение не найдено.</returns>
-    public string GetValue(string key)
-    {
+    public static string GetValue(string key) =>
         // Попытка получить значение по ключу. Если ключ не найден, возвращается сам ключ.
-        return localization.TryGetValue(key, out string value) ? value : key;
-    }
+        localization.TryGetValue(key, out string value) ? value : key;
 
 
     /// <summary>
@@ -99,7 +82,7 @@ public class LocalizationManagerProvider
     /// </summary>
     /// <param name="jObject">Объект JSON, содержащий ключ ошибки ("keyError") и дополнительные данные.</param>
     /// <returns>Локализованная строка ошибки с подставленными данными, или пустая строка, если <paramref name="jObject"/> равен null.</returns>
-    public string GetTextByJObject(JObject jObject)
+    public static string GetTextByJObject(JObject jObject)
     {
         // Проверка на null
         if (jObject == null)

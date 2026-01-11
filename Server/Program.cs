@@ -105,7 +105,7 @@ internal partial class Program
         _ = services.AddMemoryCache();
 
         _ = services.AddScoped<AuthService>();
-        _ = services.AddScoped<RegistrationService>();
+        _ = services.AddScoped<RegService>();
 
 
         services.AddEFCoreRefreshToken<DbContext_Game, RefreshToken, User, Guid>(options =>
@@ -317,7 +317,7 @@ internal partial class Program
                         ValidateAudience = true,
                         ValidAudience = jwtOptions.Audience,
                         ValidateLifetime = true,
-                        ClockSkew = TimeSpan.FromMinutes(2),
+                        ClockSkew = JwtService.ClockSkew,
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = jwtService.IssuerSigningKey
                     };
@@ -372,6 +372,7 @@ internal partial class Program
     /// <summary> Добавляем Rate Limiting с учётом IP. </summary>
     private static void InitRateLimite(IServiceCollection services)
     {
+        _ = 0;
         _ = services.AddRateLimiter(options =>
         {
             _ = options.AddPolicy(Consts.RATE_LIMITER_POLICY_AUTH, context =>
@@ -387,7 +388,7 @@ internal partial class Program
                     factory: _ => new FixedWindowRateLimiterOptions
                     {
                         Window = TimeSpan.FromMinutes(1),
-                        PermitLimit = 5,
+                        PermitLimit = 5,// Максимум 5 попыток в минуту на IP
                         QueueLimit = 0
                     });
             });
@@ -410,6 +411,7 @@ internal partial class Program
 
     private static void InitNewtonsoftJson(IMvcBuilder iMvcBuilder)
     {
+        _ = 0;
         _ = iMvcBuilder.AddNewtonsoftJson(options =>
         {
             // 1. Обработка ссылок
@@ -443,6 +445,8 @@ internal partial class Program
     /// <summary> Подключение WebSocket-обработчика через маршрутизацию ASP.NET Core. Запросы по адресу /ws будут направляться в ProcessKestrelWebSocketRequest. </summary>
     private static void InitWebSocket(WebApplication app)
     {
+        _ = 0;
+        // Маршрут для WebSocket соединений
         _ = app.Map("/ws", appBuilder =>
         {
             appBuilder.Run(async context =>

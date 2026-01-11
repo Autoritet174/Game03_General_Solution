@@ -13,7 +13,7 @@ namespace Server.Users.Registration;
 /// Контроллер регистрации пользователей. Обрабатывает процесс регистрации по email и паролю.
 /// При успешной регистрации возвращает JWT-токен доступа.
 /// </summary>
-public class RegistrationController(RegistrationService _regService) : ControllerBaseApi
+public class RegController(RegService _regService) : ControllerBaseApi
 {
     [AllowAnonymous, HttpPost]
     public async Task<IActionResult> Register([FromBody] DtoRequestAuthReg dtoRequest)

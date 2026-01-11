@@ -1,4 +1,3 @@
-using General;
 using General.DTO.RestRequest;
 using Microsoft.EntityFrameworkCore;
 using Server_DB_Postgres;
@@ -300,21 +299,32 @@ public sealed class AuthRegLoggerBackgroundService(ILogger<AuthRegLoggerBackgrou
         }
 
         StringBuilder sb = new();
-        _ = sb.Append(dto.System_Environment_UserName ?? "").Append(SPLIT)
-          .Append(dto.TimeZoneInfo_Local_BaseUtcOffset_Minutes).Append(SPLIT)
-          .Append(dto.DeviceUniqueIdentifier).Append(SPLIT)
-          .Append(dto.DeviceModel ?? "").Append(SPLIT)
-          .Append(dto.DeviceType ?? "").Append(SPLIT)
-          .Append(dto.OperatingSystem ?? "").Append(SPLIT)
-          .Append(dto.ProcessorType ?? "").Append(SPLIT)
-          .Append(dto.ProcessorCount).Append(SPLIT)
-          .Append(dto.SystemMemorySize).Append(SPLIT)
-          .Append(dto.GraphicsDeviceName ?? "").Append(SPLIT)
-          .Append(dto.GraphicsMemorySize).Append(SPLIT)
-          .Append(dto.SystemInfo_supportsInstancing == true ? "[true]" :
-                  dto.SystemInfo_supportsInstancing == false ? "[false]" : "[null]")
-          .Append(SPLIT)
-          .Append(dto.SystemInfo_npotSupport ?? "");
+        _ = sb
+            .Append(dto.System_Environment_UserName.Trim().ToUpperInvariant() ?? "")
+            .Append(SPLIT)
+            .Append(dto.TimeZoneInfo_Local_BaseUtcOffset_Minutes)
+            .Append(SPLIT)
+            .Append(dto.DeviceUniqueIdentifier)
+            .Append(SPLIT)
+            .Append(dto.DeviceModel.Trim().ToUpperInvariant() ?? "")
+            .Append(SPLIT)
+            .Append(dto.DeviceType.Trim().ToUpperInvariant() ?? "")
+            .Append(SPLIT)
+            .Append(dto.OperatingSystem.Trim().ToUpperInvariant() ?? "")
+            .Append(SPLIT)
+            .Append(dto.ProcessorType.Trim().ToUpperInvariant() ?? "")
+            .Append(SPLIT)
+            .Append(dto.ProcessorCount)
+            .Append(SPLIT)
+            .Append(dto.SystemMemorySize)
+            .Append(SPLIT)
+            .Append(dto.GraphicsDeviceName.Trim().ToUpperInvariant() ?? "")
+            .Append(SPLIT)
+            .Append(dto.GraphicsMemorySize)
+            .Append(SPLIT)
+            .Append(dto.SystemInfo_supportsInstancing == true ? "[TRUE]" : dto.SystemInfo_supportsInstancing == false ? "[FALSE]" : "[NULL]")
+            .Append(SPLIT)
+            .Append(dto.SystemInfo_npotSupport.Trim().ToUpperInvariant() ?? "");
 
         byte[] hash = SHA256.HashData(Encoding.UTF8.GetBytes(sb.ToString().Trim().ToUpperInvariant()));
         byte[] guidBytes = new byte[16];

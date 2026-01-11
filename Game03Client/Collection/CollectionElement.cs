@@ -1,6 +1,6 @@
 using System;
 
-namespace Game03Client.PlayerCollection;
+namespace Game03Client.Collection;
 
 public enum TypeCollectionElement { Hero, Equipment}
 public class CollectionElement(Guid id, int baseId, int rarity, string name, bool isUnique, TypeCollectionElement typeCollectionElement)

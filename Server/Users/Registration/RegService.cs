@@ -14,14 +14,14 @@ namespace Server.Users.Registration;
 /// <summary>
 /// Сервис для обработки регистрации пользователей.
 /// </summary>
-public sealed class RegistrationService(
+public sealed class RegService(
     UserManager<User> userManager,
     SignInManager<User> signInManager,
     JwtService jwt,
     IMemoryCache cache,
     AuthRegLoggerBackgroundService backgroundLoggerAuthentificationService,
     ITokenService<Guid> tokenService, 
-    ILogger<RegistrationService> logger)
+    ILogger<RegService> logger)
 {
     private static readonly Random _Random = new(); // Генератор случайных задержек для защиты от timing-атак
     private static readonly TimeSpan _LockoutPeriod = TimeSpan.FromMinutes(2); // Период блокировки при неудачных попытках

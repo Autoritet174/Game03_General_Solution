@@ -1,4 +1,3 @@
-using Game03Client.HttpRequester;
 using General;
 using General.DTO.Entities;
 using General.DTO.Entities.GameData;
@@ -8,22 +7,20 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Game03Client.GameData;
+namespace Game03Client;
 
-public class GameDataProvider(HttpRequesterProvider httpRequesterProvider
-    //, ILogger<GameDataProvider> logger
-    )
+public static class GameData
 {
-    public DtoContainerGameData Container = null!;
+    public static DtoContainerGameData Container = null!;
 
-    public async Task LoadGameData(CancellationToken cancellationToken, string jwtToken)
+    public static async Task LoadGameDataAsync(string jwtToken, CancellationToken cancellationToken = default)
     {
         if (cancellationToken.IsCancellationRequested)
         {
             return;
         }
 
-        string response = await httpRequesterProvider.GetResponseAsync(Url.GameData, cancellationToken, jwtToken: jwtToken) ?? throw new Exception();
+        string response = await HttpRequester.GetResponseAsync(Url.GameData, null, cancellationToken) ?? throw new Exception();
         DtoContainerGameData c = JsonConvert.DeserializeObject<DtoContainerGameData>(response) ?? throw new Exception();
 
         foreach (DtoBaseEquipment i in c.BaseEquipments)

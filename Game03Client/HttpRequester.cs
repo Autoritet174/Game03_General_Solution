@@ -1,7 +1,3 @@
-using Game03Client.IniFile;
-using Game03Client.InternetChecker;
-using Game03Client.JwtToken;
-using Game03Client.Logger;
 using General;
 using System;
 using System.Net;
@@ -12,40 +8,36 @@ using System.Threading;
 using System.Threading.Tasks;
 using L = General.LocalizationKeys;
 
-namespace Game03Client.HttpRequester;
 
-public class HttpRequesterProvider
+namespace Game03Client;
+
+using LOGGER = LOGGER<HttpRequester>;
+
+public class HttpRequester
 {
     private static readonly HttpClient httpClient = new();
-    private readonly IniFileProvider iniFileProvider;
-    private readonly InternetCheckerProvider _internetCheckerProvider;
-    private readonly LoggerProvider<HttpRequesterProvider> logger;
 
-    public HttpRequesterProvider(IniFileProvider iniFileProvider, InternetCheckerProvider internetCheckerProvider, LoggerProvider<HttpRequesterProvider> logger)
-    {
-        this.iniFileProvider = iniFileProvider;
-        _internetCheckerProvider = internetCheckerProvider;
-        this.logger = logger;
-        double timeout = this.iniFileProvider.ReadDouble("Http", "Timeout", 30d);
+    public static void Init() {
+        double timeout = IniFile.ReadDouble("Http", "Timeout", 30d);
         httpClient.Timeout = TimeSpan.FromSeconds(timeout);
     }
 
 
-    public async Task<string?> GetResponseAsync(string url, CancellationToken cancellationToken, string? jsonBody = null, string? jwtToken = null)
+    public static async Task<string?> GetResponseAsync(string url, string? jsonBody = null, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(url))
         {
             string e = "url IsEmpty";
-            logger.LogError(e);
-            throw new Exception(e);
+            LOGGER.LogError(e);
+            throw new Exception();
         }
 
         Uri uri = new(url);
         if (uri == null)
         {
             string e = "uri is null";
-            logger.LogError(e);
-            throw new Exception(e);
+            LOGGER.LogError(e);
+            throw new Exception();
         }
 
         if (cancellationToken.IsCancellationRequested)
@@ -60,20 +52,20 @@ public class HttpRequesterProvider
             {
                 request.Content = new StringContent(jsonBody, Encoding.UTF8, GlobalHelper.APPLICATION_JSON);
             }
-
-            if (!string.IsNullOrWhiteSpace(jwtToken))
+            string? accessToken = Auth.Dto?.AccessToken;
+            if (!string.IsNullOrWhiteSpace(accessToken))
             {
                 // Если был передан токен то подставляем его в заголовок как авторизацию
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwtToken);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             }
-            
+
 
             using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
             string responseContent = await response.Content.ReadAsStringAsync();
             if (string.IsNullOrWhiteSpace(responseContent))
             {
-                logger.LogError($"responseContent IsEmpty, StatusCode={response.StatusCode}", L.Error.Server.InvalidResponse);
-                return null;
+                LOGGER.LogError($"responseContent IsEmpty, StatusCode={response.StatusCode}", L.Error.Server.InvalidResponse);
+                throw new Exception();
             }
             return responseContent;
 
@@ -96,19 +88,19 @@ public class HttpRequesterProvider
         }
         catch (TaskCanceledException ex) when (ex.InnerException is TimeoutException)
         {
-            logger.LogError(ex.ToString(), L.Error.Server.Timeout);
+            LOGGER.LogError(ex.ToString(), L.Error.Server.Timeout);
             return null;
         }
         catch (HttpRequestException ex) when (ex.InnerException is WebException)
         {
-            bool haveInternet = await _internetCheckerProvider.CheckInternetConnectionAsync(cancellationToken);
+            bool haveInternet = await InternetChecker.CheckInternetConnectionAsync(cancellationToken);
             string key = haveInternet ? L.Error.Server.Unavailable : L.Error.Server.NoInternetConnection;
-            logger.LogError(ex.ToString(), key);
+            LOGGER.LogError(ex.ToString(), key);
             return null;
         }
         catch (Exception ex)
         {
-            logger.LogError(ex.ToString(), L.Error.Server.InvalidResponse);
+            LOGGER.LogError(ex.ToString(), L.Error.Server.InvalidResponse);
             return null;
         }
     }

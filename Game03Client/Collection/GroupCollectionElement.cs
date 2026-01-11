@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Game03Client.PlayerCollection;
+namespace Game03Client.Collection;
 
 /// <summary>
 /// Группа элемента коллекции.

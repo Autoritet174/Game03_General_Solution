@@ -1,6 +1,3 @@
-using Game03Client.GameData;
-using Game03Client.HttpRequester;
-using Game03Client.Logger;
 using General.DTO.Entities;
 using General.DTO.Entities.Collection;
 using General.DTO.Entities.GameData;
@@ -11,19 +8,17 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Game03Client.PlayerCollection;
+using LOGGER = Game03Client.LOGGER<Game03Client.Collection.CollectionProvider>;
 
-public class PlayerCollectionProvider(
-    GameDataProvider gameDataProvider,
-    HttpRequesterProvider httpRequester,
-    LoggerProvider<PlayerCollectionProvider> logger
-    )
+namespace Game03Client.Collection;
+
+public class CollectionProvider
 {
 
-    private readonly List<string> listGroupNameHero = [];
-    private readonly List<string> listGroupNameEquipment = [];
-    private DtoContainerCollection collection = null!;
-    public async Task<bool> LoadAllCollectionFromServerAsync(CancellationToken cancellationToken, string jwtToken)
+    private static readonly List<string> listGroupNameHero = [];
+    private static readonly List<string> listGroupNameEquipment = [];
+    private static DtoContainerCollection collection = null!;
+    public static async Task<bool> LoadAllCollectionFromServerAsync(string accessToken, CancellationToken cancellationToken = default)
     {
         if (cancellationToken.IsCancellationRequested)
         {
@@ -31,22 +26,22 @@ public class PlayerCollectionProvider(
         }
 
         // Получить коллекцию героев игрока
-        string? response = await httpRequester.GetResponseAsync(General.Url.Collection.All, cancellationToken, jwtToken: jwtToken) ?? throw new ArgumentNullException();
+        string? response = await HttpRequester.GetResponseAsync(General.Url.Collection.All, null, cancellationToken) ?? throw new ArgumentNullException();
         DtoContainerCollection c = JsonConvert.DeserializeObject<DtoContainerCollection>(response) ?? throw new ArgumentNullException();
 
-        IEnumerable<DtoBaseEquipment> baseEquipments = gameDataProvider.Container.BaseEquipments;
+        IEnumerable<DtoBaseEquipment> baseEquipments = GameData.Container.BaseEquipments;
         foreach (DtoEquipment i in c.CollectionEquipments)
         {
             i.BaseEquipment = baseEquipments.FirstOrDefault(a => a.Id == i.BaseEquipmentId);
         }
 
-        IEnumerable<DtoBaseHero> baseHeroes = gameDataProvider.Container.BaseHeroes;
+        IEnumerable<DtoBaseHero> baseHeroes = GameData.Container.BaseHeroes;
         foreach (DtoHero i in c.CollectionHeroes)
         {
             i.BaseHero = baseHeroes.FirstOrDefault(a => a.Id == i.BaseHeroId);
         }
 
-        IEnumerable<DtoSlot> slots = gameDataProvider.Container.Slots;
+        IEnumerable<DtoSlot> slots = GameData.Container.Slots;
         foreach (DtoEquipment i in c.CollectionEquipments)
         {
             i.Slot = slots.FirstOrDefault(a => a.Id == i.SlotId);
@@ -67,7 +62,8 @@ public class PlayerCollectionProvider(
             {
                 if (a.BaseHero == null)
                 {
-                    logger.LogAndThrow("a.DtoBaseHero is null");
+                    LOGGER.LogError("a.DtoBaseHero is null");
+                    throw new Exception();
                 }
                 return a.BaseHero.Name;
             })];
@@ -79,7 +75,8 @@ public class PlayerCollectionProvider(
             {
                 if (a.BaseEquipment == null)
                 {
-                    logger.LogAndThrow("a.DtoBaseEquipment is null");
+                    LOGGER.LogError("a.DtoBaseEquipment is null");
+            throw new Exception();
                 }
                 return a.BaseEquipment.Rarity;
             })
@@ -87,7 +84,8 @@ public class PlayerCollectionProvider(
             {
                 if (a.BaseEquipment == null)
                 {
-                    logger.LogAndThrow("a.DtoBaseEquipment is null");
+                    LOGGER.LogError("a.DtoBaseEquipment is null");
+                    throw new Exception();
                 }
                 return a.BaseEquipment.Name;
             })];
@@ -95,7 +93,7 @@ public class PlayerCollectionProvider(
         return true;
     }
 
-    public void RefreshListGroupNameHero()
+    public static void RefreshListGroupNameHero()
     {
         List<string> list = listGroupNameHero;
         list.Clear();
@@ -110,7 +108,7 @@ public class PlayerCollectionProvider(
         }
     }
 
-    public void RefreshListGroupNameEquipment()
+    public static void RefreshListGroupNameEquipment()
     {
         List<string> list = listGroupNameEquipment;
         list.Clear();
@@ -125,28 +123,16 @@ public class PlayerCollectionProvider(
         }
     }
 
-    public IEnumerable<DtoHero> GetCollectionHeroesFromCache()
-    {
-        return collection.CollectionHeroes;
-    }
-    public IEnumerable<DtoEquipment> GetCollectionEquipmentsFromCache()
-    {
-        return collection.CollectionEquipments;
-    }
+    public static IEnumerable<DtoHero> GetCollectionHeroesFromCache() => collection.CollectionHeroes;
+    public static IEnumerable<DtoEquipment> GetCollectionEquipmentsFromCache() => collection.CollectionEquipments;
 
-    public int GetCountHeroes()
-    {
-        return collection.CollectionHeroes.Count();
-    }
-    public int GetCountEquipments()
-    {
-        return collection.CollectionEquipments.Count();
-    }
+    public static int GetCountHeroes() => collection.CollectionHeroes.Count();
+    public static int GetCountEquipments() => collection.CollectionEquipments.Count();
 
     public const int PAGE_SIZE = 100;
 
     /// <summary> Получить коллекцию героев сгруппированную по именам групп. </summary>
-    public IEnumerable<GroupCollectionElement> GetCollectionHeroesGroupedByGroupNames(int page)
+    public static IEnumerable<GroupCollectionElement> GetCollectionHeroesGroupedByGroupNames(int page)
     {
         List<GroupCollectionElement> result = [];
         IEnumerable<DtoHero> c = collection.CollectionHeroes;
@@ -163,7 +149,8 @@ public class PlayerCollectionProvider(
             {
                 if (hero.BaseHero == null)
                 {
-                    logger.LogAndThrow("hero.DtoBaseHero is null");
+                    LOGGER.LogError("hero.DtoBaseHero is null");
+                    throw new Exception();
                 }
                 collectionElements.Add(new CollectionElement(hero.Id, hero.BaseHeroId, hero.Rarity, hero.BaseHero.Name, hero.BaseHero.IsUnique, TypeCollectionElement.Hero));
             }
@@ -179,7 +166,7 @@ public class PlayerCollectionProvider(
     }
 
     /// <summary> Получить коллекцию экипировки сгруппированную по именам групп. </summary>
-    public IEnumerable<GroupCollectionElement> GetCollectionEquipmentesGroupByGroups(int page)
+    public static IEnumerable<GroupCollectionElement> GetCollectionEquipmentesGroupByGroups(int page)
     {
         List<GroupCollectionElement> result = [];
         IEnumerable<DtoEquipment> c = collection.CollectionEquipments;
@@ -195,7 +182,8 @@ public class PlayerCollectionProvider(
             {
                 if (equipment.BaseEquipment == null)
                 {
-                    logger.LogAndThrow("Equipment.DtoBaseEquipment is null");
+                    LOGGER.LogError("Equipment.DtoBaseEquipment is null");
+                    throw new Exception();
                 }
                 collectionElements.Add(new CollectionElement(equipment.Id, equipment.BaseEquipmentId, equipment.BaseEquipment.Rarity, equipment.BaseEquipment.Name, equipment.BaseEquipment.IsUnique, TypeCollectionElement.Equipment));
             }

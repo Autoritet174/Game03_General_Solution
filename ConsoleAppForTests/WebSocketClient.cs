@@ -1,14 +1,14 @@
+using Newtonsoft.Json;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
-using Newtonsoft.Json;
 
 public class WebSocketClient
 {
-    private ClientWebSocket _webSocket;
-    private Uri _serverUri;
-    private CancellationTokenSource _cts;
+    private readonly ClientWebSocket _webSocket;
+    private readonly Uri _serverUri;
+    private readonly CancellationTokenSource _cts;
     private bool _isReceiving = false;
 
     public WebSocketClient(string serverUrl)
@@ -18,7 +18,7 @@ public class WebSocketClient
         _cts = new CancellationTokenSource();
     }
 
-    public async Task ConnectAsync()
+    public async Task ConnectAsync(CancellationToken cancellationToken = default)
     {
         bool connected = false;
 
@@ -27,12 +27,12 @@ public class WebSocketClient
             try
             {
                 //Console.WriteLine($"Подключение к {_serverUri}...");
-                await _webSocket.ConnectAsync(_serverUri, CancellationToken.None);
+                await _webSocket.ConnectAsync(_serverUri, cancellationToken);
                 //Console.WriteLine("Подключение установлено!");
 
                 // Запускаем прием сообщений без привязки к _cts.Token
                 _isReceiving = true;
-                _ = Task.Run(ReceiveMessagesAsync);
+                _ = Task.Run(ReceiveMessagesAsync, cancellationToken);
                 connected = true;
             }
             catch (Exception ex)
@@ -40,7 +40,8 @@ public class WebSocketClient
                 Console.WriteLine($"Ошибка подключения: {ex.Message}");
                 throw;
             }
-            if (connected) { 
+            if (connected)
+            {
                 break;
             }
         }
@@ -48,7 +49,7 @@ public class WebSocketClient
 
     private async Task ReceiveMessagesAsync()
     {
-        var buffer = new byte[4096];
+        byte[] buffer = new byte[4096];
 
         try
         {
@@ -65,7 +66,7 @@ public class WebSocketClient
                     break;
                 }
 
-                var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
                 //Console.WriteLine($"Получено: {message}");
             }
         }
@@ -92,7 +93,7 @@ public class WebSocketClient
 
         try
         {
-            var buffer = Encoding.UTF8.GetBytes(message);
+            byte[] buffer = Encoding.UTF8.GetBytes(message);
             await _webSocket.SendAsync(
                 new ArraySegment<byte>(buffer),
                 WebSocketMessageType.Text,
@@ -111,19 +112,14 @@ public class WebSocketClient
         }
     }
 
-    public JsonSerializerOptions GetOptions()
+    public JsonSerializerOptions GetOptions() => new()
     {
-        return new JsonSerializerOptions
-        {
-            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-            WriteIndented = true
-        };
-    }
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+        WriteIndented = true
+    };
 
-    public async Task StartSendingMessages(JsonSerializerOptions options, Action<int> onMessagesSent = null)
+    public async Task StartSendingMessages(JsonSerializerOptions options, Action<int>? onMessagesSent = null)
     {
-        int messageCount = 0;
-
         while (!_cts.Token.IsCancellationRequested && _webSocket.State == WebSocketState.Open)
         {
             //for (int i = 0; i < 1; i++)
@@ -132,14 +128,15 @@ public class WebSocketClient
             //    await SendMessageAsync(message);
             //}
             string com = Console.ReadLine();
-            Random r = new Random();
+            var r = new Random();
             if (com == "1")
             {
 
                 var data = new
                 {
                     command = "AddItem",
-                    item = new {
+                    item = new
+                    {
                         damage = r.Next(1, 10),
                         health = r.Next(10, 20),
                         location = Guid.NewGuid()
@@ -152,7 +149,7 @@ public class WebSocketClient
                 await SendMessageAsync(json);
 
             }
-            
+
 
             // Сообщаем о количестве отправленных сообщений
             onMessagesSent?.Invoke(100);

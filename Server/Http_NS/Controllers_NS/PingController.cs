@@ -12,10 +12,6 @@ public class PingController : ControllerBase
     /// Возвращает сообщение "Pong!" для подтверждения доступности сервера.
     /// </summary>
     /// <returns>JSON-ответ с полем <see cref="string"/> message, содержащее значение "Pong!".</returns>
-    [HttpGet("api/[controller]")]
-    [AllowAnonymous]
-    public IActionResult Get()
-    {
-        return Ok(new { message = "pong" });
-    }
+    [HttpGet("api/[controller]"), AllowAnonymous]
+    public IActionResult Get() => Ok(new { message = "pong" });
 }

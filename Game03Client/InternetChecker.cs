@@ -3,9 +3,11 @@ using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Game03Client.InternetChecker;
+namespace Game03Client;
 
-public class InternetCheckerProvider
+//using LOGGER = LOGGER<InternetCheckerProvider>;
+
+public static class InternetChecker
 {
     /// <summary>
     /// Асинхронно проверяет наличие интернет-соединения, пингуя известные DNS-сервера.
@@ -15,7 +17,7 @@ public class InternetCheckerProvider
     /// "2606:4700::64" - IPv6 адрес Cloudflare DNS.
     /// </remarks>
     /// <returns>true, если соединение успешно установлено, иначе false.</returns>
-    public async Task<bool> CheckInternetConnectionAsync(CancellationToken cancellationToken)
+    public static async Task<bool> CheckInternetConnectionAsync(CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
         {
@@ -40,7 +42,7 @@ public class InternetCheckerProvider
         return false; // если обе проверки завершились неудачно
     }
 
-    private async Task<PingReply?> SendPingAsync(string host)
+    private static async Task<PingReply?> SendPingAsync(string host)
     {
         using Ping ping = new();
         try

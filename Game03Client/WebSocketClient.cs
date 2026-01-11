@@ -1,6 +1,3 @@
-using Game03Client.JwtToken;
-using Game03Client.Logger;
-using General;
 using Newtonsoft.Json;
 using System;
 using System.Net.WebSockets;
@@ -8,18 +5,20 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Game03Client.WebSocketClient;
+using LOGGER = Game03Client.LOGGER<Game03Client.WebSocketClient>;
 
-public class WebSocketClientProvider(JwtTokenProvider jwtToken, LoggerProvider<WebSocketClientProvider> logger) 
+namespace Game03Client;
+
+public class WebSocketClient
 {
     private const string SERVER_URL = "wss://localhost:7227/ws/";
-    private ClientWebSocket _webSocket = new();
-    private readonly Uri _serverUri = new(SERVER_URL);
-    private bool _isReceiving = false;
-    public bool Connected { get; private set; } = false;
-    private readonly CancellationTokenSource _cancellationTokenSource = new();
+    private static ClientWebSocket _webSocket = new();
+    private static readonly Uri _serverUri = new(SERVER_URL);
+    private static bool _isReceiving = false;
+    public static bool Connected { get; private set; } = false;
+    private static readonly CancellationTokenSource _cancellationTokenSource = new();
 
-    public async Task ConnectAsync(CancellationToken cancellationToken)
+    public static async Task ConnectAsync(CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
         {
@@ -30,10 +29,12 @@ public class WebSocketClientProvider(JwtTokenProvider jwtToken, LoggerProvider<W
         {
             Connected = false;
             _webSocket = new();
-            if (!string.IsNullOrWhiteSpace(jwtToken.AccessToken))
+            string? accessToken = Auth.Dto?.AccessToken;
+
+            if (!string.IsNullOrWhiteSpace(accessToken))
             {
                 // Добавляем JWT токен в заголовки, если он предоставлен
-                _webSocket.Options.SetRequestHeader("Authorization", $"Bearer {jwtToken.AccessToken}");
+                _webSocket.Options.SetRequestHeader("Authorization", $"Bearer {accessToken}");
             }
             await _webSocket.ConnectAsync(_serverUri, cancellationToken);
         }
@@ -51,7 +52,7 @@ public class WebSocketClientProvider(JwtTokenProvider jwtToken, LoggerProvider<W
     /// Приём сообщений от сервера.
     /// </summary>
     /// <returns></returns>
-    private async Task ReceiveMessagesAsync()
+    private static async Task ReceiveMessagesAsync()
     {
         byte[] buffer = new byte[4096];
 
@@ -70,20 +71,20 @@ public class WebSocketClientProvider(JwtTokenProvider jwtToken, LoggerProvider<W
                 }
 
                 string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                logger.LogInfo($"Получено от сервера: {message}");
+                LOGGER.LogInfo($"Получено от сервера: {message}");
                 //ProcessReceivedMessage(message);
             }
         }
         catch (WebSocketException ex) when (ex.WebSocketErrorCode == WebSocketError.ConnectionClosedPrematurely)
         {
-            logger.LogError("Соединение закрыто сервером");
+            LOGGER.LogError("Соединение закрыто сервером");
             //OnAuthenticationResult?.Invoke(false, "Соединение закрыто сервером");
         }
         catch (Exception ex)
         {
             if (_isReceiving) // Логируем только если не было запланированного отключения
             {
-                logger.LogError($"Ошибка приема: {ex.Message}");
+                LOGGER.LogError($"Ошибка приема: {ex.Message}");
                 //OnAuthenticationResult?.Invoke(false, $"Ошибка приема: {ex.Message}");
             }
         }
@@ -95,11 +96,11 @@ public class WebSocketClientProvider(JwtTokenProvider jwtToken, LoggerProvider<W
     /// </summary>
     /// <param name="message"></param>
     /// <returns></returns>
-    public async Task SendMessageAsync(string message)
+    public static async Task SendMessageAsync(string message)
     {
         if (_webSocket.State != WebSocketState.Open)
         {
-            logger.LogError("WebSocket не подключен");
+            LOGGER.LogError("WebSocket не подключен");
             return;
         }
 
@@ -116,15 +117,15 @@ public class WebSocketClientProvider(JwtTokenProvider jwtToken, LoggerProvider<W
         }
         catch (OperationCanceledException)
         {
-            logger.LogError("Отправка отменена");
+            LOGGER.LogError("Отправка отменена");
         }
         catch (Exception ex)
         {
-            logger.LogError($"Ошибка отправки: {ex.Message}");
+            LOGGER.LogError($"Ошибка отправки: {ex.Message}");
         }
     }
 
-    public async Task StartSendingMessages(Action<int>? onMessagesSent = null)
+    public static async Task StartSendingMessages(Action<int>? onMessagesSent = null)
     {
         while (!_cancellationTokenSource.Token.IsCancellationRequested && _webSocket.State == WebSocketState.Open)
         {
@@ -150,7 +151,7 @@ public class WebSocketClientProvider(JwtTokenProvider jwtToken, LoggerProvider<W
                 };
 
                 string json = JsonConvert.SerializeObject(data, Formatting.Indented);
-                logger.LogError(json);
+                LOGGER.LogError(json);
                 await SendMessageAsync(json);
 
             }
@@ -173,13 +174,13 @@ public class WebSocketClientProvider(JwtTokenProvider jwtToken, LoggerProvider<W
     /// Корректно отключает клиента от сервера.
     /// </summary>
     /// <returns>Задача асинхронного отключения.</returns>
-    public async Task DisconnectAsync()
+    public static async Task DisconnectAsync()
     {
         try
         {
             _isReceiving = false;
 
-            if (_webSocket.State == WebSocketState.Open || _webSocket.State == WebSocketState.CloseReceived)
+            if (_webSocket.State is WebSocketState.Open or WebSocketState.CloseReceived)
             {
                 // CloseAsync отправляет фрейм закрытия и ждет подтверждения от сервера.
                 // Это корректный способ завершить соединение, который сервер поймет как CloseMessageType.
@@ -192,14 +193,14 @@ public class WebSocketClientProvider(JwtTokenProvider jwtToken, LoggerProvider<W
         }
         catch (Exception ex)
         {
-            logger.LogError($"Ошибка при отключении: {ex.Message}");
+            LOGGER.LogError($"Ошибка при отключении: {ex.Message}");
         }
         finally
         {
             _webSocket.Dispose();
             _cancellationTokenSource.Cancel();
             Connected = false;
-            logger.LogInfo("Соединение закрыто");
+            LOGGER.LogInfo("Соединение закрыто");
         }
     }
     //public async Task DisconnectAsync()
@@ -240,7 +241,7 @@ public class WebSocketClientProvider(JwtTokenProvider jwtToken, LoggerProvider<W
     //                catch (OperationCanceledException) { } // Таймаут
     //                catch (WebSocketException ex)
     //                {
-    //                    logger.LogError($"Ошибка при ожидании закрытия: {ex.Message}");
+    //                    LOGGER.LogError($"Ошибка при ожидании закрытия: {ex.Message}");
     //                    break;
     //                }
     //            }
@@ -248,12 +249,12 @@ public class WebSocketClientProvider(JwtTokenProvider jwtToken, LoggerProvider<W
     //    }
     //    catch (Exception ex)
     //    {
-    //        logger.LogError($"Ошибка при отключении: {ex.Message}");
+    //        LOGGER.LogError($"Ошибка при отключении: {ex.Message}");
     //    }
     //    finally
     //    {
     //        _webSocket.Dispose();
-    //        logger.LogInfo("Соединение закрыто");
+    //        LOGGER.LogInfo("Соединение закрыто");
     //    }
     //}
 

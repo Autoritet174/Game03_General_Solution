@@ -38,7 +38,7 @@
             <param name="path">Путь к значению в формате JSONPath (например: "$.user.name")</param>
             <returns>Значение как строка, если оно существует и может быть преобразовано в строку; иначе <c>null</c>.</returns>
         </member>
-        <member name="P:Server.GameDataCache.GameDataCacheService.GameDataJson">
+        <member name="P:Server.GameData.GameDataCacheService.GameDataJson">
             <summary> Возвращает JSON-строку с данными. </summary>
             <returns> JSON-строка со всеми константными игровыми данными необходимыми на стороне клиента. </returns>
             <exception cref="T:System.InvalidOperationException">
@@ -51,7 +51,7 @@
             </summary>
             <param name="heroCache"></param>
         </member>
-        <member name="M:Server.GameData.GameDataController.#ctor(Server.GameDataCache.IGameDataCacheService)">
+        <member name="M:Server.GameData.GameDataController.#ctor(Server.GameData.IGameDataCacheService)">
             <summary>
             Контроллер с общими методами.
             </summary>
@@ -330,6 +330,18 @@
             </summary>
             <returns>JWT токен при успешной аутентификации или ошибка 401.</returns>
         </member>
+        <member name="T:Server.Users.Authentication.AuthController">
+            <summary>
+            Контроллер аутентификации пользователей. Обрабатывает процесс входа (логин) по email и паролю.
+            При успешной проверке возвращает JWT-токен доступа.
+            </summary>
+        </member>
+        <member name="M:Server.Users.Authentication.AuthController.#ctor(Server.Users.Authentication.AuthService)">
+            <summary>
+            Контроллер аутентификации пользователей. Обрабатывает процесс входа (логин) по email и паролю.
+            При успешной проверке возвращает JWT-токен доступа.
+            </summary>
+        </member>
         <member name="T:Server.Users.AuthRegLoggerBackgroundService">
             <summary> Фоновый сервис пакетной записи логов авторизации/регистрации и данных устройств с контролируемыми повторными попытками и корректной остановкой. </summary>
         </member>
@@ -341,31 +353,15 @@
             Лог авторизации с поддержкой повторной обработки и кэшированными данными устройства.
             </summary>
         </member>
-        <member name="M:Server.Users.AuthRegLoggerBackgroundService.LogEntry.#ctor(System.Boolean,System.Text.Json.Nodes.JsonObject,System.String,System.Nullable{System.Guid},System.Net.IPAddress,System.Int32,System.DateTimeOffset,Server.Users.AuthRegLoggerBackgroundService.DeviceParsedData,System.Boolean)">
+        <member name="M:Server.Users.AuthRegLoggerBackgroundService.LogEntry.#ctor(System.Boolean,General.DTO.RestRequest.DtoRequestAuthReg,System.Nullable{System.Guid},System.Net.IPAddress,System.Int32,System.DateTimeOffset,System.Boolean,System.Guid)">
             <summary>
             Лог авторизации с поддержкой повторной обработки и кэшированными данными устройства.
             </summary>
         </member>
-        <member name="T:Server.Users.AuthRegLoggerBackgroundService.DeviceParsedData">
-            <summary>
-            Распарсенные данные устройства.
-            </summary>
-        </member>
-        <member name="M:Server.Users.AuthRegLoggerBackgroundService.DeviceParsedData.#ctor(System.Guid,System.String,System.String,System.String,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.String,System.String,System.Nullable{System.Int32},System.String,System.Nullable{System.Boolean},System.String,System.Nullable{System.Int32})">
-            <summary>
-            Распарсенные данные устройства.
-            </summary>
-        </member>
-        <member name="M:Server.Users.AuthRegLoggerBackgroundService.EnqueueLog(System.Boolean,System.Text.Json.Nodes.JsonObject,System.String,System.Nullable{System.Guid},System.Net.IPAddress,System.Boolean)">
+        <member name="M:Server.Users.AuthRegLoggerBackgroundService.EnqueueLog(System.Boolean,General.DTO.RestRequest.DtoRequestAuthReg,System.Nullable{System.Guid},System.Net.IPAddress,System.Boolean)">
             <summary>
             Добавляет лог в очередь с предварительным вычислением данных устройства.
             </summary>
-            <param name="success">Успешность.</param>
-            <param name="obj">JSON объект с данными устройства.</param>
-            <param name="email">Email пользователя.</param>
-            <param name="userId">ID пользователя.</param>
-            <param name="ip">IP-адрес запроса.</param>
-            <param name="actionIsAuthentication">Действие это аутентификация.</param>
             <exception cref="T:System.ArgumentNullException">Бросается, если obj равен null.</exception>
         </member>
         <member name="M:Server.Users.AuthRegLoggerBackgroundService.StartAsync(System.Threading.CancellationToken)">
@@ -384,115 +380,63 @@
         <member name="M:Server.Users.AuthRegLoggerBackgroundService.Dispose">
             <inheritdoc />
         </member>
-        <member name="T:Server.Users.AuthRegResponse">
-            <summary>
-            Класс для представления результатов пользователя.
-            </summary>
-        </member>
-        <member name="P:Server.Users.AuthRegResponse.Token">
-            <summary>
-            JWT-токен.
-            </summary>
-        </member>
-        <member name="M:Server.Users.AuthRegResponse.UserAlreadyExists">
-            <summary>
-            Результат, если пользователь уже существует.
-            </summary>
-            <returns>Результат ошибки.</returns>
-        </member>
-        <member name="M:Server.Users.AuthRegResponse.Banned(System.Nullable{System.DateTimeOffset})">
-            <summary>
-            Результат для забаненного аккаунта.
-            </summary>
-            <param name="until">Дата окончания бана (null для перманентного).</param>
-            <returns>Результат ошибки с дополнительными данными.</returns>
-        </member>
-        <member name="M:Server.Users.AuthRegResponse.RequiresTwoFactor(System.Guid)">
-            <summary>
-            Результат, требующий двухфакторной аутентификации.
-            </summary>
-            <param name="userId">ID пользователя.</param>
-            <returns>Результат ошибки с дополнительными данными.</returns>
-        </member>
-        <member name="T:Server.Users.Auth.AuthController">
-            <summary>
-            Контроллер аутентификации пользователей. Обрабатывает процесс входа (логин) по email и паролю.
-            При успешной проверке возвращает JWT-токен доступа.
-            </summary>
-        </member>
-        <member name="M:Server.Users.Auth.AuthController.#ctor(Server.Users.Auth.AuthService)">
-            <summary>
-            Контроллер аутентификации пользователей. Обрабатывает процесс входа (логин) по email и паролю.
-            При успешной проверке возвращает JWT-токен доступа.
-            </summary>
-        </member>
-        <member name="T:Server.Users.Reg.RegController">
+        <member name="T:Server.Users.Registration.RegController">
             <summary>
             Контроллер регистрации пользователей. Обрабатывает процесс регистрации по email и паролю.
             При успешной регистрации возвращает JWT-токен доступа.
             </summary>
         </member>
-        <member name="M:Server.Users.Reg.RegController.#ctor(Server.Users.Reg.RegService)">
+        <member name="M:Server.Users.Registration.RegController.#ctor(Server.Users.Registration.RegService)">
             <summary>
             Контроллер регистрации пользователей. Обрабатывает процесс регистрации по email и паролю.
             При успешной регистрации возвращает JWT-токен доступа.
             </summary>
         </member>
-        <member name="T:Server.Users.Reg.RegService">
+        <member name="T:Server.Users.Registration.RegService">
             <summary>
             Сервис для обработки регистрации пользователей.
             </summary>
         </member>
-        <member name="M:Server.Users.Reg.RegService.#ctor(Microsoft.AspNetCore.Identity.UserManager{Server_DB_Postgres.Entities.Users.User},Microsoft.AspNetCore.Identity.SignInManager{Server_DB_Postgres.Entities.Users.User},Server.Jwt_NS.JwtService,Microsoft.Extensions.Caching.Memory.IMemoryCache,Server.Users.AuthRegLoggerBackgroundService,EasyRefreshToken.ITokenService{System.Guid})">
+        <member name="M:Server.Users.Registration.RegService.#ctor(Microsoft.AspNetCore.Identity.UserManager{Server_DB_Postgres.Entities.Users.User},Microsoft.AspNetCore.Identity.SignInManager{Server_DB_Postgres.Entities.Users.User},Server.Jwt_NS.JwtService,Microsoft.Extensions.Caching.Memory.IMemoryCache,Server.Users.AuthRegLoggerBackgroundService,EasyRefreshToken.ITokenService{System.Guid},Microsoft.Extensions.Logging.ILogger{Server.Users.Registration.RegService})">
             <summary>
             Сервис для обработки регистрации пользователей.
             </summary>
         </member>
-        <member name="M:Server.Users.Reg.RegService.RegisterAsync(System.String,System.String,System.Text.Json.Nodes.JsonObject,System.Net.IPAddress)">
-            <summary>
-            Асинхронный метод регистрации пользователя.
-            </summary>
-            <param name="email">Email пользователя.</param>
-            <param name="password">Пароль пользователя.</param>
-            <param name="requestJson">JSON запроса для логирования.</param>
-            <param name="ip">IP-адрес клиента.</param>
-            <returns>Результат регистрации.</returns>
-        </member>
-        <member name="M:Server.Users.Reg.RegService.Delay(System.DateTimeOffset)">
+        <member name="M:Server.Users.Registration.RegService.Delay(System.DateTimeOffset)">
             <summary>
             Метод для выполнения задержки.
             </summary>
             <param name="end">Время окончания задержки.</param>
         </member>
-        <member name="M:Server.Users.Reg.RegService.RegisterFail(System.String)">
+        <member name="M:Server.Users.Registration.RegService.RegisterFail(System.String)">
             <summary>
             Регистрация неудачной попытки.
             </summary>
             <param name="email">Email пользователя.</param>
         </member>
-        <member name="T:Server.Users.Reg.RegService.Attempt">
+        <member name="T:Server.Users.Registration.RegService.Attempt">
             <summary>
             Запись для попыток.
             </summary>
         </member>
-        <member name="M:Server.Users.Reg.RegService.Attempt.#ctor(System.Int32,System.DateTimeOffset)">
+        <member name="M:Server.Users.Registration.RegService.Attempt.#ctor(System.Int32,System.DateTimeOffset)">
             <summary>
             Запись для попыток.
             </summary>
         </member>
-        <member name="M:Server.Users.Reg.RegService.IncrementFailedRegisterAttempt(System.String)">
+        <member name="M:Server.Users.Registration.RegService.IncrementFailedRegisterAttempt(System.String)">
             <summary>
             Увеличение счетчика неудачных попыток.
             </summary>
             <param name="email">Email пользователя.</param>
         </member>
-        <member name="M:Server.Users.Reg.RegService.ResetAttempts(System.String)">
+        <member name="M:Server.Users.Registration.RegService.ResetAttempts(System.String)">
             <summary>
             Сброс попыток для email.
             </summary>
             <param name="email">Email пользователя.</param>
         </member>
-        <member name="M:Server.Users.Reg.RegService.GetRemainingLockoutTime(System.String)">
+        <member name="M:Server.Users.Registration.RegService.GetRemainingLockoutTime(System.String)">
             <summary>
             Получение оставшегося времени блокировки.
             </summary>
