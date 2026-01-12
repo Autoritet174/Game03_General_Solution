@@ -262,7 +262,7 @@
         </member>
         <member name="M:Server.Jwt_NS.JwtService.GenerateToken(System.Guid,System.Collections.Generic.IEnumerable{System.Security.Claims.Claim})">
             <summary>
-            Генерирует JWT-токен для указанного пользователя.
+            Генерирует JWT-токен для указанного пользователя. Timestamp использует long числа и защищён от юникс проблемы 2038 года, будет работать примерно до 292_271_025_015 года.
             </summary>
             <param name="userId">Идентификатор пользователя (claim <c>sub</c>).</param>
             <param name="additionalClaims">Необязательные дополнительные claims.</param>
@@ -397,7 +397,7 @@
             Сервис для обработки регистрации пользователей.
             </summary>
         </member>
-        <member name="M:Server.Users.Registration.RegService.#ctor(Microsoft.AspNetCore.Identity.UserManager{Server_DB_Postgres.Entities.Users.User},Microsoft.AspNetCore.Identity.SignInManager{Server_DB_Postgres.Entities.Users.User},Server.Jwt_NS.JwtService,Microsoft.Extensions.Caching.Memory.IMemoryCache,Server.Users.AuthRegLoggerBackgroundService,EasyRefreshToken.ITokenService{System.Guid},Microsoft.Extensions.Logging.ILogger{Server.Users.Registration.RegService})">
+        <member name="M:Server.Users.Registration.RegService.#ctor(Microsoft.AspNetCore.Identity.UserManager{Server_DB_Postgres.Entities.Users.User},Microsoft.AspNetCore.Identity.SignInManager{Server_DB_Postgres.Entities.Users.User},Server.Jwt_NS.JwtService,Microsoft.Extensions.Caching.Memory.IMemoryCache,Server.Users.AuthRegLoggerBackgroundService,Microsoft.Extensions.Logging.ILogger{Server.Users.Registration.RegService})">
             <summary>
             Сервис для обработки регистрации пользователей.
             </summary>

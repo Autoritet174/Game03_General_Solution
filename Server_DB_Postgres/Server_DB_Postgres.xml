@@ -484,6 +484,11 @@
             <summary> Получает или задаёт информацию о поддержке текстур с размерами, не являющимися степенью двойки (NPOT). </summary>
             <value>Строка, описывающая уровень поддержки NPOT (например, 'Full', 'Restricted', 'None').</value>
         </member>
+        <member name="P:Server_DB_Postgres.Entities.Users.UserSession.InactivatedAt">
+            <summary>
+            Когда сессия была фактически завершена (для истории)
+            </summary>
+        </member>
         <member name="T:Server_DB_Postgres.Interfaces.ICreatedAt">
             <summary> Интерфейс для времени создания. </summary>
         </member>
@@ -920,6 +925,30 @@
             <inheritdoc />
         </member>
         <member name="M:Server_DB_Postgres.Migrations.RefreshTokenInit.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.EasyRefreshTokenRemove">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.EasyRefreshTokenRemove.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.EasyRefreshTokenRemove.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.EasyRefreshTokenRemove.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.UserSessionInit">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.UserSessionInit.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.UserSessionInit.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.UserSessionInit.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Server_DB_Postgres.ModelBuilderExt">

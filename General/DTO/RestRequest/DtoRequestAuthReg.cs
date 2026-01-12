@@ -25,8 +25,6 @@ namespace General.DTO.RestRequest;
 /// <param name="deviceUniqueIdentifier">Уникальный идентификатор устройства, используемый для привязки сессии.</param>
 /// <param name="systemInfo_supportsInstancing">Указывает, поддерживает ли графическая система инстансинг (отрисовку множественных копий объектов за один вызов).</param>
 /// <param name="systemInfo_npotSupport">Указывает, поддерживает ли графическая карта текстуры с размерами, не являющимися степенью двойки (NPOT).</param>
-/// <param name="accessToken"></param>
-/// <param name="refreshToken"></param>
 public class DtoRequestAuthReg(
     string email,
     string password,

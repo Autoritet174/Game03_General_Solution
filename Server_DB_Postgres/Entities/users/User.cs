@@ -1,4 +1,3 @@
-using EasyRefreshToken;
 using Microsoft.AspNetCore.Identity;
 using Server_DB_Postgres.Interfaces;
 using System.ComponentModel.DataAnnotations;
@@ -6,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Server_DB_Postgres.Entities.Users;
 
-public class User : IdentityUser<Guid>, IVersion, ICreatedAt, IUpdatedAt, IUser<Guid>
+public class User : IdentityUser<Guid>, IVersion, ICreatedAt, IUpdatedAt
 {
     [MaxLength(256)]
     public string? TimeZone { get; set; }

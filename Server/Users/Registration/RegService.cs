@@ -1,4 +1,3 @@
-using EasyRefreshToken;
 using General;
 using General.DTO.RestRequest;
 using General.DTO.RestResponse;
@@ -20,7 +19,6 @@ public sealed class RegService(
     JwtService jwt,
     IMemoryCache cache,
     AuthRegLoggerBackgroundService backgroundLoggerAuthentificationService,
-    ITokenService<Guid> tokenService, 
     ILogger<RegService> logger)
 {
     private static readonly Random _Random = new(); // Генератор случайных задержек для защиты от timing-атак
@@ -90,13 +88,9 @@ public sealed class RegService(
 
 
             string accessToken = jwt.GenerateToken(user.Id);
-            TokenResult tokenResult = await tokenService.OnLoginAsync(user.Id);
-            if (!tokenResult.IsSucceeded)
-            {
-                return AuthRegResponse.RefreshTokenErrorCreating();
-            }
+            
             // 
-            return AuthRegResponse.Success(accessToken, tokenResult.Token);
+            return AuthRegResponse.Success(accessToken, "временная заглушка для рефреш токена");
         }
         catch
         {

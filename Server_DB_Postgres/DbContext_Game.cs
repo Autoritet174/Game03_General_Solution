@@ -21,66 +21,66 @@ public class DbContext_Game(DbContextOptions<DbContext_Game> options) : Identity
     #region collection
 
     /// <summary> Экипировка игрока. </summary>
-    public DbSet<Equipment> Equipments { get; set; }
+    public required DbSet<Equipment> Equipments { get; set; }
 
     /// <summary> Герои игрока. </summary>
-    public DbSet<Hero> Heroes { get; set; }
+    public required DbSet<Hero> Heroes { get; set; }
 
     #endregion  collection
 
     #region gameData
 
     /// <summary> Экипировка, болванки. </summary>
-    public DbSet<BaseEquipment> BaseEquipments { get; set; }
+    public required DbSet<BaseEquipment> BaseEquipments { get; set; }
 
     /// <summary> Данные героев. </summary>
-    public DbSet<BaseHero> BaseHeroes { get; set; }
+    public required DbSet<BaseHero> BaseHeroes { get; set; }
 
     /// <summary> Типы существ. </summary>
-    public DbSet<CreatureType> CreatureTypes { get; set; }
+    public required DbSet<CreatureType> CreatureTypes { get; set; }
 
     /// <summary> Типы урона. </summary>
-    public DbSet<DamageType> DamageTypes { get; set; }
+    public required DbSet<DamageType> DamageTypes { get; set; }
 
     /// <summary> Типы экипировки. </summary>
-    public DbSet<EquipmentType> EquipmentTypes { get; set; }
+    public required DbSet<EquipmentType> EquipmentTypes { get; set; }
 
     /// <summary> Дополнительный процентный урон от материала. </summary>
-    public DbSet<MaterialDamagePercent> MaterialDamagePercents { get; set; }
+    public required DbSet<MaterialDamagePercent> MaterialDamagePercents { get; set; }
 
     /// <summary> Типы слотов экипировки. </summary>
-    public DbSet<Slot> Slots { get; set; }
-    public DbSet<SlotType> SlotTypes { get; set; }
+    public required DbSet<Slot> Slots { get; set; }
+    public required DbSet<SlotType> SlotTypes { get; set; }
 
     /// <summary> Материалы для кузнечного дела. </summary>
-    public DbSet<SmithingMaterial> SmithingMaterials { get; set; }
+    public required DbSet<SmithingMaterial> SmithingMaterials { get; set; }
 
     /// <summary> Таблица связи многие ко мноким между Heroes и CreatureTypes. </summary>
-    public DbSet<X_Hero_CreatureType> x_Heroes_CreatureTypes { get; set; }
+    public required DbSet<X_Hero_CreatureType> x_Heroes_CreatureTypes { get; set; }
 
     /// <summary> Таблица связи многие ко мноким между WeaponTypes и DamageTypes. </summary>
-    public DbSet<X_EquipmentType_DamageType> x_EquipmentTypes_DamageTypes { get; set; }
+    public required DbSet<X_EquipmentType_DamageType> x_EquipmentTypes_DamageTypes { get; set; }
 
     #endregion gameData
 
     #region logs
 
     /// <summary> Лог авторизации пользователей. </summary>
-    public DbSet<AuthRegLog> AuthRegLogs { get; set; }
+    public required DbSet<AuthRegLog> AuthRegLogs { get; set; }
 
     #endregion logs
 
     #region server
 
     /// <summary> Причины бана пользователей. </summary>
-    public DbSet<UserBanReason> UserBanReasons { get; set; }
+    public required DbSet<UserBanReason> UserBanReasons { get; set; }
 
     #endregion server
 
     #region users
-    public DbSet<UserBan> UserBans { get; set; }
-    public DbSet<UserDevice> UserDevices { get; set; }
-    public DbSet<RefreshToken> RefreshTokens { get; set; }
+    public required DbSet<UserBan> UserBans { get; set; }
+    public required DbSet<UserDevice> UserDevices { get; set; }
+    public required DbSet<UserSession> UserSessions { get; set; }
     #endregion users
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -154,10 +154,15 @@ public class DbContext_Game(DbContextOptions<DbContext_Game> options) : Identity
             .HasForeignKey(a => a.UserId) // FK в UserAuthorization (nullable, но Cascade все равно сработает)
             .OnDelete(DeleteBehavior.Cascade); // Включить каскад: удалять UserAuthorization при удалении ApplicationUser
 
-
+        _ = modelBuilder.Entity<UserSession>()
+            .HasIndex(s => s.TokenHash)
+            .IsUnique()
+            .HasFilter($"""
+            {nameof(UserSession.IsUsed).ToSnakeCase()} = false AND {nameof(UserSession.IsRevoked).ToSnakeCase()} = false
+            """);
         //modelBuilder.Entity<Equipment>().HasQueryFilter(e => e.DeletedAt == null);
 
-        
+
     }
 
     /// <summary> <inheritdoc/> </summary>

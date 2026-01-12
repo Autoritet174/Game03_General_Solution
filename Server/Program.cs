@@ -1,4 +1,3 @@
-using EasyRefreshToken.EFCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
@@ -108,13 +107,6 @@ internal partial class Program
         _ = services.AddScoped<RegService>();
 
 
-        services.AddEFCoreRefreshToken<DbContext_Game, RefreshToken, User, Guid>(options =>
-        {
-            options.TokenExpiredDays = 30; // Lifetime refresh-токена в днях
-            //options.MaxNumberOfActiveDevices = 10; // Макс. активных устройств/сессий на пользователя (опционально, отключить: 0 или null)
-            options.PreventingLoginWhenAccessToMaxNumberOfActiveDevices = true; // Если превышен лимит — старые токены отзываются автоматически
-                                                                                // Другие опции по необходимости (см. ниже)
-        });
 
 
         // установить Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore

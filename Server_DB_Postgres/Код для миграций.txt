@@ -1,4 +1,4 @@
-dotnet ef migrations add RefreshTokenInit  --project ".\Server_DB_Postgres\Server_DB_Postgres.csproj" --startup-project ".\Server\Server.csproj" --context DbContext_Game
+dotnet ef migrations add UserSessionInit  --project ".\Server_DB_Postgres\Server_DB_Postgres.csproj" --startup-project ".\Server\Server.csproj" --context DbContext_Game
 
 dotnet ef database update --project ".\Server_DB_Postgres\Server_DB_Postgres.csproj" --startup-project ".\Server\Server.csproj" --context DbContext_Game
 

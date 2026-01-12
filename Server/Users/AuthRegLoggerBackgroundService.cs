@@ -291,7 +291,7 @@ public sealed class AuthRegLoggerBackgroundService(ILogger<AuthRegLoggerBackgrou
         }
     }
 
-    private static Guid ComputeId(DtoRequestAuthReg dto)
+    public static Guid ComputeId(DtoRequestAuthReg dto)
     {
         if (string.IsNullOrWhiteSpace(dto.DeviceUniqueIdentifier))
         {

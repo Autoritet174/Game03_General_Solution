@@ -126,7 +126,6 @@
   <ItemGroup>
     <ProjectReference Include="..\General\General.csproj" />
     <ProjectReference Include="..\Server_DB_Postgres\Server_DB_Postgres.csproj" />
-    <PackageReference Include="EasyRefreshToken.EFCore" Version="10.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.0.1" />

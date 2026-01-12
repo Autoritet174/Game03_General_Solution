@@ -4,6 +4,7 @@ using System.Net;
 using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server_DB_Postgres;
@@ -13,9 +14,11 @@ using Server_DB_Postgres;
 namespace Server_DB_Postgres.Migrations
 {
     [DbContext(typeof(DbContext_Game))]
-    partial class DbContext_GameModelSnapshot : ModelSnapshot
+    [Migration("20260112031013_EasyRefreshTokenRemove")]
+    partial class EasyRefreshTokenRemove
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1088,60 +1091,6 @@ namespace Server_DB_Postgres.Migrations
                         .HasName("user_devices__pkey");
 
                     b.ToTable("user_devices", "users");
-                });
-
-            modelBuilder.Entity("Server_DB_Postgres.Entities.Users.UserSession", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<DateTimeOffset>("ExpiresAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("expires_at");
-
-                    b.Property<DateTimeOffset?>("InactivatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("inactivated_at");
-
-                    b.Property<string>("InactivationReason")
-                        .HasColumnType("text")
-                        .HasColumnName("inactivation_reason");
-
-                    b.Property<bool>("IsRevoked")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_revoked");
-
-                    b.Property<bool>("IsUsed")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_used");
-
-                    b.Property<byte[]>("TokenHash")
-                        .IsRequired()
-                        .HasColumnType("bytea")
-                        .HasColumnName("token_hash");
-
-                    b.Property<DateTimeOffset>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id")
-                        .HasName("user_sessions__pkey");
-
-                    b.HasIndex("TokenHash")
-                        .IsUnique()
-                        .HasFilter("is_used = false AND is_revoked = false");
-
-                    b.ToTable("user_sessions", "users");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
