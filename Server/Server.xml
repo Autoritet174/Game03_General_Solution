@@ -342,6 +342,44 @@
             При успешной проверке возвращает JWT-токен доступа.
             </summary>
         </member>
+        <member name="F:Server.Users.Authentication.AuthService._RefreshTokenLifeTime">
+            <summary>
+            СРОК ЖИЗНИ REFRESH ТОКЕНА (НАПРИМЕР, 14 ДНЕЙ)
+            </summary>
+        </member>
+        <member name="M:Server.Users.Authentication.SessionService.CreateSessionAsync(System.Guid,General.DTO.RestRequest.DtoRequestAuthReg)">
+            <summary>
+            СОЗДАЕТ НОВУЮ СЕССИЮ И ВОЗВРАЩАЕТ REFRESH TOKEN В BASE64.
+            </summary>
+        </member>
+        <member name="M:Server.Users.Authentication.SessionService.RefreshSessionAsync(System.String)">
+            <summary>
+            ОБНОВЛЯЕТ СУЩЕСТВУЮЩУЮ СЕССИЮ (ROTATION + REUSE DETECTION).
+            </summary>
+        </member>
+        <member name="M:Server.Users.Authentication.SessionService.LogoutAsync(System.String)">
+            <summary>
+            ЗАВЕРШАЕТ КОНКРЕТНУЮ СЕССИЮ ПОЛЬЗОВАТЕЛЯ.
+            </summary>
+            <param name="refreshTokenBase64">ТОКЕН, КОТОРЫЙ НУЖНО АННУЛИРОВАТЬ.</param>
+        </member>
+        <member name="M:Server.Users.Authentication.SessionService.RevokeAllSessionsAsync(System.Guid,System.String)">
+            <summary>
+            ПРИНУДИТЕЛЬНО ЗАВЕРШАЕТ ВСЕ СЕССИИ ПОЛЬЗОВАТЕЛЯ (НАПРИМЕР, ПРИ СМЕНЕ ПАРОЛЯ).
+            </summary>
+        </member>
+        <member name="M:Server.Users.Authentication.TokenController.Refresh(System.String)">
+            <summary>
+            ЭНДПОИНТ ДЛЯ ОБНОВЛЕНИЯ ТОКЕНОВ. 
+            ДОСТУПЕН БЕЗ [Authorize], ТАК КАК ACCESS TOKEN УЖЕ МОЖЕТ БЫТЬ ПРОСРОЧЕН.
+            </summary>
+        </member>
+        <member name="M:Server.Users.Authentication.TokenController.Logout(General.DTO.RestRequest.DtoRequestLogout)">
+            <summary>
+            ВЫХОД ИЗ СИСТЕМЫ.
+            ПРИНИМАЕТ REFRESH TOKEN В ТЕЛЕ ЗАПРОСА, ЧТОБЫ ЗНАТЬ, КАКУЮ ИМЕННО СЕССИЮ ЗАКРЫТЬ.
+            </summary>
+        </member>
         <member name="T:Server.Users.AuthRegLoggerBackgroundService">
             <summary> Фоновый сервис пакетной записи логов авторизации/регистрации и данных устройств с контролируемыми повторными попытками и корректной остановкой. </summary>
         </member>

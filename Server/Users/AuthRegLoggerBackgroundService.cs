@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Server_DB_Postgres;
 using Server_DB_Postgres.Entities.Users;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
@@ -39,7 +40,6 @@ public sealed class AuthRegLoggerBackgroundService(ILogger<AuthRegLoggerBackgrou
     private const int MAX_QUEUE_SIZE = 10_000;
     private const int BATCH_SIZE = 100;
     private const int MAX_RETRIES = 3;
-    private static readonly char SPLIT = '|';
 
     /// <summary>
     /// Добавляет лог в очередь с предварительным вычислением данных устройства.
@@ -61,7 +61,7 @@ public sealed class AuthRegLoggerBackgroundService(ILogger<AuthRegLoggerBackgrou
             RetryCount: 0,
             NextRetryAt: DateTimeOffset.UtcNow,
             actionIsAuthentication,
-            ComputeId(dto)));
+            UserDeviceHelper.ComputeId(dto)));
     }
 
     /// <inheritdoc />
@@ -195,27 +195,20 @@ public sealed class AuthRegLoggerBackgroundService(ILogger<AuthRegLoggerBackgrou
 
         try
         {
-            List<UserDevice> uniqueDevices = [.. batch
-                .Where(l => l.UserDeviceId != Guid.Empty)
+            List<Guid> uniqueDevicesId = [.. batch.Where(l => l.UserDeviceId != Guid.Empty)
                 .DistinctBy(l => l.UserDeviceId)
-                .Select(item => new UserDevice
+                .Select(a=>a.UserDeviceId)];
+            for (int i = uniqueDevicesId.Count - 1; i >= 0; i--) {
+                if (db.UserDevices.Any(a=>a.Id == uniqueDevicesId[i]))
                 {
-                    Id = item.UserDeviceId,
-                    DeviceModel = item.dto.DeviceModel,
-                    DeviceType = item.dto.DeviceType,
-                    OperatingSystem = item.dto.OperatingSystem,
-                    ProcessorType = item.dto.ProcessorType,
-                    ProcessorCount = item.dto.ProcessorCount,
-                    SystemMemorySize = item.dto.SystemMemorySize,
-                    GraphicsDeviceName = item.dto.GraphicsDeviceName,
-                    DeviceUniqueIdentifier = item.dto.DeviceUniqueIdentifier,
-                    GraphicsMemorySize = item.dto.GraphicsMemorySize,
-                    SystemEnvironmentUserName = item.dto.System_Environment_UserName,
-                    SystemInfoSupportsInstancing = item.dto.SystemInfo_supportsInstancing,
-                    SystemInfoNpotSupport = item.dto.SystemInfo_npotSupport,
-                    TimeZoneMinutes = item.dto.TimeZoneInfo_Local_BaseUtcOffset_Minutes
-                })];
+                    uniqueDevicesId.RemoveAt(i);
+                }
+            }
 
+            List<UserDevice> uniqueDevices = [.. batch
+                .Where(l => l.UserDeviceId != Guid.Empty && uniqueDevicesId.Any(a=>a == l.UserDeviceId))
+                .DistinctBy(l => l.UserDeviceId)
+                .Select(item => UserDeviceHelper.DtoToUserDevice(item.dto, item.UserDeviceId))];
 
             if (uniqueDevices.Count > 0)
             {
@@ -289,52 +282,6 @@ public sealed class AuthRegLoggerBackgroundService(ILogger<AuthRegLoggerBackgrou
         {
             _logger.LogError(ex, "Ошибка при очистке старых логов.");
         }
-    }
-
-    public static Guid ComputeId(DtoRequestAuthReg dto)
-    {
-        if (string.IsNullOrWhiteSpace(dto.DeviceUniqueIdentifier))
-        {
-            return Guid.Empty;
-        }
-
-        StringBuilder sb = new();
-        _ = sb
-            .Append(dto.System_Environment_UserName.Trim().ToUpperInvariant() ?? "")
-            .Append(SPLIT)
-            .Append(dto.TimeZoneInfo_Local_BaseUtcOffset_Minutes)
-            .Append(SPLIT)
-            .Append(dto.DeviceUniqueIdentifier)
-            .Append(SPLIT)
-            .Append(dto.DeviceModel.Trim().ToUpperInvariant() ?? "")
-            .Append(SPLIT)
-            .Append(dto.DeviceType.Trim().ToUpperInvariant() ?? "")
-            .Append(SPLIT)
-            .Append(dto.OperatingSystem.Trim().ToUpperInvariant() ?? "")
-            .Append(SPLIT)
-            .Append(dto.ProcessorType.Trim().ToUpperInvariant() ?? "")
-            .Append(SPLIT)
-            .Append(dto.ProcessorCount)
-            .Append(SPLIT)
-            .Append(dto.SystemMemorySize)
-            .Append(SPLIT)
-            .Append(dto.GraphicsDeviceName.Trim().ToUpperInvariant() ?? "")
-            .Append(SPLIT)
-            .Append(dto.GraphicsMemorySize)
-            .Append(SPLIT)
-            .Append(dto.SystemInfo_supportsInstancing == true ? "[TRUE]" : dto.SystemInfo_supportsInstancing == false ? "[FALSE]" : "[NULL]")
-            .Append(SPLIT)
-            .Append(dto.SystemInfo_npotSupport.Trim().ToUpperInvariant() ?? "");
-
-        byte[] hash = SHA256.HashData(Encoding.UTF8.GetBytes(sb.ToString().Trim().ToUpperInvariant()));
-        byte[] guidBytes = new byte[16];
-        Array.Copy(hash, guidBytes, 16);
-
-        // UUID v5 (Fingerprint): Version 5 (0x50), Variant RFC 4122 (0x80)
-        guidBytes[6] = (byte)((guidBytes[6] & 0x0F) | 0x50);
-        guidBytes[8] = (byte)((guidBytes[8] & 0x3F) | 0x80);
-
-        return new Guid(guidBytes);
     }
 
     /// <inheritdoc />

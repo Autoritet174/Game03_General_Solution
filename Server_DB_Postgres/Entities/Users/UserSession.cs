@@ -28,7 +28,7 @@ public class UserSession : ICreatedAt, IUpdatedAt
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
 
-    public int UserDeviceId { get; set; }
+    public Guid UserDeviceId { get; set; }
     [ForeignKey(nameof(UserDeviceId))]
     public UserDevice? UserDevice { get; set; }
 }

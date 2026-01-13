@@ -15,7 +15,7 @@ public sealed class SessionService(DbContext_Game dbContext, ILogger<SessionServ
     /// <summary>
     /// СОЗДАЕТ НОВУЮ СЕССИЮ И ВОЗВРАЩАЕТ REFRESH TOKEN В BASE64.
     /// </summary>
-    public async Task<string> CreateSessionAsync(Guid userId, DtoRequestAuthReg dto)
+    public async Task<string> CreateSessionAsync(Guid userId, DtoRequestAuthReg? dto)
     {
         byte[] tokenBytes = RandomNumberGenerator.GetBytes(TokenSize);
 
@@ -26,8 +26,8 @@ public sealed class SessionService(DbContext_Game dbContext, ILogger<SessionServ
             TokenHash = tokenBytes,
             ExpiresAt = DateTimeOffset.UtcNow.Add(RefreshTokenLifeTime),
             IsUsed = false,
-            IsRevoked = false
-            // ПОЛЕ DeviceId СТОИТ ДОБАВИТЬ В UserSession.cs ДЛЯ ПРИВЯЗКИ
+            IsRevoked = false,
+            UserDeviceId = await GetOrAddDeviceId(dto)
         };
 
         _ = dbContext.UserSessions.Add(session);
@@ -111,7 +111,7 @@ public sealed class SessionService(DbContext_Game dbContext, ILogger<SessionServ
     /// </summary>
     public async Task RevokeAllSessionsAsync(Guid userId, string reason = "MANUAL_REVOCATION")
     {
-        await dbContext.UserSessions
+        _ = await dbContext.UserSessions
             .Where(s => s.UserId == userId && !s.IsRevoked)
             .ExecuteUpdateAsync(set => set
                 .SetProperty(s => s.IsRevoked, true)
@@ -121,6 +121,17 @@ public sealed class SessionService(DbContext_Game dbContext, ILogger<SessionServ
         {
             logger.LogInformation("ВСЕ СЕССИИ ПОЛЬЗОВАТЕЛЯ {UserId} ОТОЗВАНЫ. ПРИЧИНА: {Reason}", userId, reason);
         }
-        
+
+    }
+
+    private async Task<Guid> GetOrAddDeviceId(DtoRequestAuthReg dto)
+    {
+        Guid id = UserDeviceHelper.ComputeId(dto);
+        if (!dbContext.UserDevices.Any(a => a.Id == id))
+        {
+            _ = dbContext.UserDevices.Add(UserDeviceHelper.DtoToUserDevice(dto, id));
+            _ = await dbContext.SaveChangesAsync();
+        }
+        return id;
     }
 }

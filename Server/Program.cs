@@ -21,9 +21,7 @@ using Server_DB_Postgres.Entities.Users;
 using Server_DB_Postgres.Repositories;
 using System.IO.Compression;
 using System.Net;
-using System.Text;
 using System.Threading.RateLimiting;
-using static General.StringExt;
 
 namespace Server;
 
@@ -105,6 +103,7 @@ internal partial class Program
 
         _ = services.AddScoped<AuthService>();
         _ = services.AddScoped<RegService>();
+        _ = services.AddScoped<SessionService>();
 
 
 
@@ -365,9 +364,9 @@ internal partial class Program
     private static void InitRateLimite(IServiceCollection services)
     {
         _ = 0;
-        _ = services.AddRateLimiter(options =>
+        _ = services.AddRateLimiter(static options =>
         {
-            _ = options.AddPolicy(Consts.RATE_LIMITER_POLICY_AUTH, context =>
+            _ = options.AddPolicy(Consts.RATE_LIMITER_POLICY_AUTH, static context =>
             {
                 string? ipAddress = context.Connection.RemoteIpAddress?.ToString();
 
@@ -377,7 +376,7 @@ internal partial class Program
                 // Создаём "токен бакет" на основе IP
                 return RateLimitPartition.GetFixedWindowLimiter(
                     partitionKey: clientKey,
-                    factory: _ => new FixedWindowRateLimiterOptions
+                    factory: static _ => new FixedWindowRateLimiterOptions
                     {
                         Window = TimeSpan.FromMinutes(1),
                         PermitLimit = 5,// Максимум 5 попыток в минуту на IP
@@ -385,13 +384,13 @@ internal partial class Program
                     });
             });
 
-            _ = options.AddPolicy(Consts.RATE_LIMITER_POLICY_COLLECTION, context =>
+            _ = options.AddPolicy(Consts.RATE_LIMITER_POLICY_COLLECTION, static context =>
             {
                 string? ipAddress = context.Connection.RemoteIpAddress?.ToString();
                 string clientKey = string.IsNullOrWhiteSpace(ipAddress) ? "unknown" : ipAddress;
                 return RateLimitPartition.GetFixedWindowLimiter(
                     partitionKey: clientKey,
-                    factory: _ => new FixedWindowRateLimiterOptions
+                    factory: static _ => new FixedWindowRateLimiterOptions
                     {
                         Window = TimeSpan.FromSeconds(10),
                         PermitLimit = 1,
@@ -404,7 +403,7 @@ internal partial class Program
     private static void InitNewtonsoftJson(IMvcBuilder iMvcBuilder)
     {
         _ = 0;
-        _ = iMvcBuilder.AddNewtonsoftJson(options =>
+        _ = iMvcBuilder.AddNewtonsoftJson(static options =>
         {
             // 1. Обработка ссылок
             options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore; // Обработка циклических ссылок
@@ -439,9 +438,9 @@ internal partial class Program
     {
         _ = 0;
         // Маршрут для WebSocket соединений
-        _ = app.Map("/ws", appBuilder =>
+        _ = app.Map("/ws", static appBuilder =>
         {
-            appBuilder.Run(async context =>
+            appBuilder.Run(static async context =>
             {
                 // НОВОЕ: Проверка, что это GET-запрос. 
                 // WebSocket-хендшейк всегда использует метод GET.
@@ -537,7 +536,7 @@ internal partial class Program
     private static void InitCompressionResponse(IServiceCollection services)
     {
         // Добавление сервисов сжатия ответов
-        _ = services.AddResponseCompression(options =>
+        _ = services.AddResponseCompression(static options =>
         {
             options.EnableForHttps = true; // Включить сжатие для HTTPS
             options.Providers.Add<BrotliCompressionProvider>();
@@ -548,12 +547,12 @@ internal partial class Program
         });
 
         // настройка провайдеров сжатия
-        _ = services.Configure<BrotliCompressionProviderOptions>(options =>
+        _ = services.Configure<BrotliCompressionProviderOptions>(static options =>
         {
             options.Level = CompressionLevel.Fastest;
         });
 
-        _ = services.Configure<GzipCompressionProviderOptions>(options =>
+        _ = services.Configure<GzipCompressionProviderOptions>(static options =>
         {
             options.Level = CompressionLevel.Fastest;
         });
