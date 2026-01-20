@@ -10,6 +10,7 @@ namespace Server.Users.Authentication;
 public sealed class SessionService(DbContext_Game dbContext, ILogger<SessionService> logger)
 {
     private const int TokenSize = 32;
+
     private static readonly TimeSpan RefreshTokenLifeTime = TimeSpan.FromDays(14);
 
     /// <summary>
