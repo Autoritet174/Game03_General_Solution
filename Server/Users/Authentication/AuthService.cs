@@ -25,10 +25,6 @@ public sealed class AuthService(
     private static readonly Random _Random = new();
     private static readonly TimeSpan _LockoutPeriod = TimeSpan.FromMinutes(2);
 
-    /// <summary>
-    /// СРОК ЖИЗНИ REFRESH ТОКЕНА (НАПРИМЕР, 14 ДНЕЙ)
-    /// </summary>
-    private static readonly TimeSpan _RefreshTokenLifeTime = TimeSpan.FromDays(14);
     public async Task<DtoResponseAuthReg> LoginAsync(
         DtoRequestAuthReg dto,
         IPAddress? ip)

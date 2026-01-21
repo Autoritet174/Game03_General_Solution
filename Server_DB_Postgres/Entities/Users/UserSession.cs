@@ -9,9 +9,19 @@ public class UserSession : ICreatedAt, IUpdatedAt
     public Guid Id { get; set; }
     public Guid UserId { get; set; }
 
+    /// <summary>
+    /// Токен сессии. Имеет индекс уникальности для живых токенов.
+    /// </summary>
     public required byte[] TokenHash { get; set; }
 
+    /// <summary>
+    /// Токен использован.
+    /// </summary>
     public bool IsUsed { get; set; }
+
+    /// <summary>
+    /// Токен анулирован.
+    /// </summary>
     public bool IsRevoked { get; set; }
 
     /// <summary>

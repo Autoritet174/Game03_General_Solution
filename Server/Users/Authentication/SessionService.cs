@@ -9,7 +9,7 @@ namespace Server.Users.Authentication;
 
 public sealed class SessionService(DbContext_Game dbContext, ILogger<SessionService> logger)
 {
-    private const int TokenSize = 32;
+    private const int TOKEN_SIZE = 32;
 
     private static readonly TimeSpan RefreshTokenLifeTime = TimeSpan.FromDays(14);
 
@@ -18,7 +18,7 @@ public sealed class SessionService(DbContext_Game dbContext, ILogger<SessionServ
     /// </summary>
     public async Task<string> CreateSessionAsync(Guid userId, DtoRequestAuthReg? dto)
     {
-        byte[] tokenBytes = RandomNumberGenerator.GetBytes(TokenSize);
+        byte[] tokenBytes = RandomNumberGenerator.GetBytes(TOKEN_SIZE);
 
         var session = new UserSession
         {
@@ -40,30 +40,34 @@ public sealed class SessionService(DbContext_Game dbContext, ILogger<SessionServ
     /// <summary>
     /// ОБНОВЛЯЕТ СУЩЕСТВУЮЩУЮ СЕССИЮ (ROTATION + REUSE DETECTION).
     /// </summary>
-    public async Task<(Guid UserId, string NewRefreshToken)> RefreshSessionAsync(string oldTokenBase64)
+    public async Task<(Guid? UserId, string? NewRefreshToken)> RefreshSessionAsync(string oldTokenBase64)
     {
         byte[] providedHash = Convert.FromBase64String(oldTokenBase64);
 
-        UserSession? session = await dbContext.UserSessions.FirstOrDefaultAsync(s => s.TokenHash == providedHash) ?? throw new SecurityException("Invalid token.");
+        UserSession? session = await dbContext.UserSessions.FirstOrDefaultAsync(s => s.TokenHash == providedHash);
+        if (session == null)
+        {
+            return (null, null);
+        }
 
-        // 2. REUSE DETECTION (GOOGLE/STEAM STYLE)
         if (session.IsUsed || session.IsRevoked)
         {
             await RevokeAllUserSessionsAsync(session.UserId, "POTENTIAL_REUSE_ATTEMPT");
-            if (logger.IsEnabled(LogLevel.Critical))
-            {
-                logger.LogCritical("ОБНАРУЖЕНА ПОПЫТКА ПОВТОРНОГО ИСПОЛЬЗОВАНИЯ ТОКЕНА! USER: {Id}", session.UserId);
-            }
-            throw new SecurityException("Token compromise detected.");
+            //if (logger.IsEnabled(LogLevel.Critical))
+            //{
+            //    logger.LogCritical("ОБНАРУЖЕНА ПОПЫТКА ПОВТОРНОГО ИСПОЛЬЗОВАНИЯ ТОКЕНА! USER: {Id}", session.UserId);
+            //}
+            //throw new SecurityException("Token compromise detected.");
+            return (null, null);
         }
 
-        // 3. ПРОВЕРКА СРОКА
+        // проверка срока
         if (session.ExpiresAt < DateTimeOffset.UtcNow)
         {
-            throw new SecurityException("Token expired.");
+            return (null, null); // Token expired
         }
 
-        // 4. ДЕАКТИВАЦИЯ СТАРОГО ТОКЕНА
+        // деактивация старого токена
         session.IsUsed = true;
         session.InactivatedAt = DateTimeOffset.UtcNow;
         session.InactivationReason = "ROTATION";
@@ -72,6 +76,11 @@ public sealed class SessionService(DbContext_Game dbContext, ILogger<SessionServ
         string newRefreshToken = await CreateSessionAsync(session.UserId, null);
 
         return (session.UserId, newRefreshToken);
+    }
+
+    private static (Guid UserId, string NewRefreshToken) ReturnEmptyAndDisconnectWebSocket() {
+        _ = 0; // тут дописать код для дисконнекта веб сокета
+        return (Guid.Empty, string.Empty);
     }
 
     private async Task RevokeAllUserSessionsAsync(Guid userId, string reason) => await dbContext.UserSessions
