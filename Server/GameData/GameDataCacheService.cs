@@ -9,7 +9,7 @@ namespace Server.GameData;
 public interface IGameDataCacheService
 {
     string GameDataJson { get; }
-    Task RefreshGameDataJsonAsync(DbContext_Game db, CancellationToken cancellationToken = default);
+    Task RefreshGameDataJsonAsync(DbContextGame db, CancellationToken cancellationToken = default);
 }
 public class GameDataCacheService() : IGameDataCacheService
 {
@@ -20,7 +20,7 @@ public class GameDataCacheService() : IGameDataCacheService
     /// </exception>
     public string GameDataJson { get => field ?? throw new InvalidOperationException("Кэш не инициализирован. Вызовите InitializeAsync перед использованием."); private set; }
 
-    public async Task RefreshGameDataJsonAsync(DbContext_Game db, CancellationToken cancellationToken = default)
+    public async Task RefreshGameDataJsonAsync(DbContextGame db, CancellationToken cancellationToken = default)
     {
         List<DtoBaseEquipment> baseEquipments = await db.BaseEquipments.AsNoTracking().Select(static h => new DtoBaseEquipment(
             h.Id, h.Name, h.Rarity, h.IsUnique, h.EquipmentTypeId, h.Health, h.Damage)

@@ -17,7 +17,7 @@ public sealed class AuthService(
     SignInManager<User> signInManager,
     JwtService jwt,
     IMemoryCache cache,
-    DbContext_Game dbContext,
+    DbContextGame dbContext,
     AuthRegLoggerBackgroundService backgroundLoggerAuthentificationService,
     SessionService sessionService,
     ILogger<AuthService> logger)

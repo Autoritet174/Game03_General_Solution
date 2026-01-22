@@ -13,7 +13,7 @@ using Server_DB_Postgres;
 
 namespace Server_DB_Postgres.Migrations
 {
-    [DbContext(typeof(DbContext_Game))]
+    [DbContext(typeof(DbContextGame))]
     [Migration("20260102073949_IdentityFix5")]
     partial class IdentityFix5
     {

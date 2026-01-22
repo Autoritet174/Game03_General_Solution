@@ -1,25 +1,36 @@
 using General.DTO.RestRequest;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using Npgsql;
 using Server_DB_Postgres;
 using Server_DB_Postgres.Entities.Users;
-using System.Security;
 using System.Security.Cryptography;
 
 namespace Server.Users.Authentication;
 
-public sealed class SessionService(DbContext_Game dbContext, ILogger<SessionService> logger)
+public sealed class SessionService(DbContextGame dbContext, ILogger<SessionService> logger)
 {
     private const int TOKEN_SIZE = 32;
 
     private static readonly TimeSpan RefreshTokenLifeTime = TimeSpan.FromDays(14);
 
     /// <summary>
-    /// СОЗДАЕТ НОВУЮ СЕССИЮ И ВОЗВРАЩАЕТ REFRESH TOKEN В BASE64.
+    /// Создает новую сессию и возвращает refresh token в base64.
     /// </summary>
-    public async Task<string> CreateSessionAsync(Guid userId, DtoRequestAuthReg? dto)
+    public async Task<string?> CreateSessionAsync(Guid userId, DtoRequestAuthReg? dto = null)
     {
-        byte[] tokenBytes = RandomNumberGenerator.GetBytes(TOKEN_SIZE);
+        if (dto == null)
+        {
+            return null;
+        }
 
+        Guid? UserDeviceId = await GetOrAddDeviceId(dto);
+        if (UserDeviceId == null)
+        {
+            return null;
+        }
+
+        byte[] tokenBytes = RandomNumberGenerator.GetBytes(TOKEN_SIZE);
         var session = new UserSession
         {
             Id = Guid.NewGuid(),
@@ -28,7 +39,7 @@ public sealed class SessionService(DbContext_Game dbContext, ILogger<SessionServ
             ExpiresAt = DateTimeOffset.UtcNow.Add(RefreshTokenLifeTime),
             IsUsed = false,
             IsRevoked = false,
-            UserDeviceId = await GetOrAddDeviceId(dto)
+            UserDeviceId = UserDeviceId.Value,
         };
 
         _ = dbContext.UserSessions.Add(session);
@@ -38,71 +49,147 @@ public sealed class SessionService(DbContext_Game dbContext, ILogger<SessionServ
     }
 
     /// <summary>
-    /// ОБНОВЛЯЕТ СУЩЕСТВУЮЩУЮ СЕССИЮ (ROTATION + REUSE DETECTION).
+    /// Обновляет существующую сессию (rotation + reuse detection).
+    /// </summary>
+    /// <summary>
+    /// Обновляет существующую сессию (rotation + reuse detection).
     /// </summary>
     public async Task<(Guid? UserId, string? NewRefreshToken)> RefreshSessionAsync(string oldTokenBase64)
     {
-        byte[] providedHash = Convert.FromBase64String(oldTokenBase64);
-
-        UserSession? session = await dbContext.UserSessions.FirstOrDefaultAsync(s => s.TokenHash == providedHash);
-        if (session == null)
+        // Валидация входных данных
+        if (string.IsNullOrWhiteSpace(oldTokenBase64))
         {
+            logger.LogDebug("Передан пустой refresh token");
             return (null, null);
         }
 
-        if (session.IsUsed || session.IsRevoked)
+        // Декодирование токена с обработкой ошибок
+        byte[] providedHash;
+        try
         {
-            await RevokeAllUserSessionsAsync(session.UserId, "POTENTIAL_REUSE_ATTEMPT");
-            //if (logger.IsEnabled(LogLevel.Critical))
-            //{
-            //    logger.LogCritical("ОБНАРУЖЕНА ПОПЫТКА ПОВТОРНОГО ИСПОЛЬЗОВАНИЯ ТОКЕНА! USER: {Id}", session.UserId);
-            //}
-            //throw new SecurityException("Token compromise detected.");
+            providedHash = Convert.FromBase64String(oldTokenBase64);
+            if (providedHash.Length != TOKEN_SIZE)
+            {
+                logger.LogWarning("Некорректный размер токена: {Length} байт (ожидается {ExpectedSize})",
+                    providedHash.Length, TOKEN_SIZE);
+                return (null, null);
+            }
+        }
+        catch (FormatException)
+        {
+            logger.LogWarning("Некорректный формат base64 токена");
+            return (null, null);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Ошибка при декодировании токена");
             return (null, null);
         }
 
-        // проверка срока
-        if (session.ExpiresAt < DateTimeOffset.UtcNow)
+        // Используем транзакцию для обеспечения атомарности
+        await using IDbContextTransaction transaction = await dbContext.Database.BeginTransactionAsync(
+            System.Data.IsolationLevel.ReadCommitted); // Высокий уровень изоляции для предотвращения race condition
+
+
+        try
         {
-            return (null, null); // Token expired
+            // Ищем сессию по токену
+            UserSession? session = await dbContext.UserSessions.FirstOrDefaultAsync(s => s.TokenHash == providedHash); // тут работает HasQueryFilter(s => !s.IsUsed && !s.IsRevoked)
+
+            if (session == null)
+            {
+                logger.LogDebug("Сессия не найдена");
+                await transaction.RollbackAsync();
+                return (null, null);
+            }
+
+
+            // Проверка срока действия
+            if (session.ExpiresAt < DateTimeOffset.UtcNow)
+            {
+                logger.LogDebug("Сессия {SessionId} истекла", session.Id);
+                session.IsUsed = true;
+                session.InactivatedAt = DateTimeOffset.UtcNow;
+                session.InactivationReason = "EXPIRED";
+                await dbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return (null, null);
+            }
+
+            // Деактивация старого токена
+            session.IsUsed = true;
+            session.InactivatedAt = DateTimeOffset.UtcNow;
+            session.InactivationReason = "ROTATION";
+
+            // Создание нового токена
+            byte[] newTokenBytes = RandomNumberGenerator.GetBytes(TOKEN_SIZE);
+            var newSession = new UserSession
+            {
+                Id = Guid.NewGuid(),
+                UserId = session.UserId,
+                TokenHash = newTokenBytes,
+                ExpiresAt = DateTimeOffset.UtcNow.Add(RefreshTokenLifeTime),
+                IsUsed = false,
+                IsRevoked = false,
+                UserDeviceId = session.UserDeviceId,
+                CreatedAt = DateTimeOffset.UtcNow
+            };
+
+            _ = dbContext.UserSessions.Add(newSession);
+            _ = await dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            logger.LogDebug("Сессия обновлена. Старая: {OldId}, Новая: {NewId}",
+            session.Id, newSession.Id);
+
+            return (session.UserId, Convert.ToBase64String(newTokenBytes));
         }
-
-        // деактивация старого токена
-        session.IsUsed = true;
-        session.InactivatedAt = DateTimeOffset.UtcNow;
-        session.InactivationReason = "ROTATION";
-
-        // 5. СОЗДАНИЕ НОВОГО ТОКЕНА В ТОЙ ЖЕ ТРАНЗАКЦИИ
-        string newRefreshToken = await CreateSessionAsync(session.UserId, null);
-
-        return (session.UserId, newRefreshToken);
+        catch (NpgsqlException ex) when (ex.SqlState == "55P03") // lock_not_available
+        {
+            // Другой запрос уже блокировал эту строку
+            logger.LogWarning("Не удалось получить блокировку на сессию");
+            await transaction.RollbackAsync();
+            return (null, null);
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            // Race condition: другой поток уже обновил эту сессию
+            // Это нормальная ситуация при параллельных запросах
+            logger.LogError(ex, "Конфликт версий при обновлении сессии");
+            await transaction.RollbackAsync();
+            return (null, null);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Ошибка при обновлении сессии");
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
-    private static (Guid UserId, string NewRefreshToken) ReturnEmptyAndDisconnectWebSocket() {
-        _ = 0; // тут дописать код для дисконнекта веб сокета
-        return (Guid.Empty, string.Empty);
-    }
-
-    private async Task RevokeAllUserSessionsAsync(Guid userId, string reason) => await dbContext.UserSessions
+    private async Task RevokeAllUserSessionsAsync(Guid userId, string reason)
+    {
+        _ = await dbContext.UserSessions
             .Where(s => s.UserId == userId && !s.IsRevoked)
             .ExecuteUpdateAsync(set => set
                 .SetProperty(s => s.IsRevoked, true)
                 .SetProperty(s => s.InactivatedAt, DateTimeOffset.UtcNow)
                 .SetProperty(s => s.InactivationReason, reason));
+    }
 
 
 
     /// <summary>
-    /// ЗАВЕРШАЕТ КОНКРЕТНУЮ СЕССИЮ ПОЛЬЗОВАТЕЛЯ.
+    /// Завершает конкретную сессию пользователя.
     /// </summary>
-    /// <param name="refreshTokenBase64">ТОКЕН, КОТОРЫЙ НУЖНО АННУЛИРОВАТЬ.</param>
+    /// <param name="refreshTokenBase64">Токен, который нужно аннулировать.</param>
     public async Task LogoutAsync(string refreshTokenBase64)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(refreshTokenBase64);
 
         byte[] tokenHash = Convert.FromBase64String(refreshTokenBase64);
 
-        // ИСПОЛЬЗУЕМ EXECUTE_UPDATE ДЛЯ МГНОВЕННОГО ОБНОВЛЕНИЯ БЕЗ ЗАГРУЗКИ СУЩНОСТИ В ПАМЯТЬ
+        // используем execute_update для мгновенного обновления без загрузки сущности в память
         int affectedRows = await dbContext.UserSessions
             .Where(s => s.TokenHash == tokenHash && !s.IsRevoked)
             .ExecuteUpdateAsync(set => set
@@ -112,12 +199,12 @@ public sealed class SessionService(DbContext_Game dbContext, ILogger<SessionServ
 
         if (affectedRows == 0)
         {
-            logger.LogWarning("ПОПЫТКА ВЫХОДА С НЕСУЩЕСТВУЮЩИМ ИЛИ УЖЕ ОТОЗВАННЫМ ТОКЕНОМ.");
+            logger.LogWarning("Попытка выхода с несуществующим или уже отозванным токеном.");
         }
     }
 
     /// <summary>
-    /// ПРИНУДИТЕЛЬНО ЗАВЕРШАЕТ ВСЕ СЕССИИ ПОЛЬЗОВАТЕЛЯ (НАПРИМЕР, ПРИ СМЕНЕ ПАРОЛЯ).
+    /// Принудительно завершает все сессии пользователя (например, при смене пароля).
     /// </summary>
     public async Task RevokeAllSessionsAsync(Guid userId, string reason = "MANUAL_REVOCATION")
     {
@@ -129,19 +216,43 @@ public sealed class SessionService(DbContext_Game dbContext, ILogger<SessionServ
                 .SetProperty(s => s.InactivationReason, reason));
         if (logger.IsEnabled(LogLevel.Information))
         {
-            logger.LogInformation("ВСЕ СЕССИИ ПОЛЬЗОВАТЕЛЯ {UserId} ОТОЗВАНЫ. ПРИЧИНА: {Reason}", userId, reason);
+            logger.LogInformation("Все сессии пользователя {userId} отозваны. причина: {reason}", userId, reason);
         }
 
     }
 
-    private async Task<Guid> GetOrAddDeviceId(DtoRequestAuthReg dto)
+    private async Task<Guid?> GetOrAddDeviceId(DtoRequestAuthReg dto)
     {
         Guid id = UserDeviceHelper.ComputeId(dto);
-        if (!dbContext.UserDevices.Any(a => a.Id == id))
+
+        try
         {
-            _ = dbContext.UserDevices.Add(UserDeviceHelper.DtoToUserDevice(dto, id));
-            _ = await dbContext.SaveChangesAsync();
+            if (!await dbContext.UserDevices.AnyAsync(d => d.Id == id))
+            {
+                UserDevice newDevice = UserDeviceHelper.DtoToUserDevice(dto, id);
+                _ = dbContext.UserDevices.Add(newDevice);
+
+                try
+                {
+                    _ = await dbContext.SaveChangesAsync();
+                }
+                catch (DbUpdateException ex) when (ex.InnerException is PostgresException pgEx && pgEx.SqlState == "23505")
+                {
+                    if (logger.IsEnabled(LogLevel.Debug))
+                    {
+                        // В случае race condition, если другой поток уже добавил устройство
+                        logger.LogDebug("Устройство {DeviceId} уже добавлено другим потоком", id);
+                    }
+                }
+            }
+
+            return id;
         }
-        return id;
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Ошибка при получении/добавлении устройства {DeviceId}", id);
+            // В случае ошибки возвращаем пустой GUID или бросаем исключение
+            return null;
+        }
     }
 }

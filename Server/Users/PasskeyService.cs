@@ -12,7 +12,7 @@ namespace Server.Users.Authentication;
 /// </summary>
 public sealed class PasskeyService(
     IFido2 fido2,
-    DbContext_Game dbContext,
+    DbContextGame dbContext,
     ILogger<PasskeyService> logger)
 {
     /// <summary>

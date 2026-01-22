@@ -9,11 +9,11 @@ namespace Server;
 
 public interface ITestService
 {
-    Task Main(DbContext_Game db, CancellationToken cancellationToken = default);
+    Task Main(DbContextGame db, CancellationToken cancellationToken = default);
 }
 public class TestService : ITestService
 {
-    public async Task Main(DbContext_Game db, CancellationToken cancellationToken = default)
+    public async Task Main(DbContextGame db, CancellationToken cancellationToken = default)
     {
         //019b7d31-93fd-703f-a582-c82e6bd40036
         var userId = Guid.Parse("019b7d31-93fd-703f-a582-c82e6bd40036");

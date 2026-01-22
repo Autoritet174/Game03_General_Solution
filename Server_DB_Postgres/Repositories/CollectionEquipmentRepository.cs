@@ -4,7 +4,7 @@ using Server_DB_Postgres.Entities.Collection;
 namespace Server_DB_Postgres.Repositories;
 
 /// <summary> Репозиторий для управления пользователями. </summary>
-public class CollectionEquipmentRepository(DbContext_Game dbContext)
+public class CollectionEquipmentRepository(DbContextGame dbContext)
 {
     /// <summary> Получить всю экипировку из коллекции игрока. </summary>
     public IQueryable<Equipment> GetCoolectionEquipments(Guid userId)

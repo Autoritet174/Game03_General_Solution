@@ -10,7 +10,7 @@ using Server_DB_Postgres;
 namespace Server.Http_NS.Controllers_NS.Collection_NS;
 
 /// <summary> Контроллер для управления коллекциями пользователя. </summary>
-public class CollectionController(DbContext_Game dbContext) : ControllerBaseApi
+public class CollectionController(DbContextGame dbContext) : ControllerBaseApi
 {
     /// <summary> Получает коллекцию текущего пользователя. </summary>
     [EnableRateLimiting(Consts.RATE_LIMITER_POLICY_COLLECTION), HttpPost("All")]

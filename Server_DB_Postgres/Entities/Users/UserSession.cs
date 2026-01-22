@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Server_DB_Postgres.Entities.Users;
 
 [Table("UserSessions", Schema = nameof(Users))]
-public class UserSession : ICreatedAt, IUpdatedAt
+public class UserSession : ICreatedAt, IUpdatedAt, IVersion
 {
     public Guid Id { get; set; }
     public Guid UserId { get; set; }
@@ -41,4 +41,5 @@ public class UserSession : ICreatedAt, IUpdatedAt
     public Guid UserDeviceId { get; set; }
     [ForeignKey(nameof(UserDeviceId))]
     public UserDevice? UserDevice { get; set; }
+    public long Version { get; set; }
 }

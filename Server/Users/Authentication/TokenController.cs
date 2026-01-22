@@ -10,8 +10,8 @@ namespace Server.Users.Authentication;
 public sealed class TokenController(SessionService sessionService, JwtService jwtService) : ControllerBaseApi
 {
     /// <summary>
-    /// ЭНДПОИНТ ДЛЯ ОБНОВЛЕНИЯ ТОКЕНОВ. 
-    /// ДОСТУПЕН БЕЗ [Authorize], ТАК КАК ACCESS TOKEN УЖЕ МОЖЕТ БЫТЬ ПРОСРОЧЕН.
+    /// Эндпоинт для обновления токенов. 
+    /// Доступен без [authorize], так как access token уже может быть просрочен.
     /// </summary>
     [HttpPost("refresh"), AllowAnonymous]
     public async Task<IActionResult> Refresh([FromBody] string refreshToken)
@@ -33,8 +33,8 @@ public sealed class TokenController(SessionService sessionService, JwtService jw
     }
 
     /// <summary>
-    /// ВЫХОД ИЗ СИСТЕМЫ.
-    /// ПРИНИМАЕТ REFRESH TOKEN В ТЕЛЕ ЗАПРОСА, ЧТОБЫ ЗНАТЬ, КАКУЮ ИМЕННО СЕССИЮ ЗАКРЫТЬ.
+    /// Выход из системы.
+    /// Принимает refresh token в теле запроса, чтобы знать, какую именно сессию закрыть.
     /// </summary>
     [HttpPost("logout"), Authorize]
     public async Task<IActionResult> Logout([FromBody] DtoRequestLogout request)

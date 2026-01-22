@@ -14,7 +14,7 @@ namespace Server_DB_Postgres.Repositories;
 /// <exception cref="ArgumentNullException">
 /// Выбрасывается, если <paramref name="dbContext"/> равен null.
 /// </exception>
-public class UserRepository(DbContext_Game dbContext)
+public class UserRepository(DbContextGame dbContext)
 {
     
 }

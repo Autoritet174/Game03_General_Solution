@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Npgsql;
+using Server_DB_Postgres.Entities;
 using Server_DB_Postgres.Entities.Collection;
 using Server_DB_Postgres.Entities.GameData;
 using Server_DB_Postgres.Entities.Logs;
@@ -11,12 +12,11 @@ using Server_DB_Postgres.Entities.Server;
 using Server_DB_Postgres.Entities.Users;
 using Server_DB_Postgres.Interfaces;
 using System.Collections.Concurrent;
-using static General.StringExt;
 
 namespace Server_DB_Postgres;
 
 /// <summary> Контекст базы данных для работы с игровыми данными. </summary>
-public class DbContext_Game(DbContextOptions<DbContext_Game> options) : IdentityDbContext<User, IdentityRole<Guid>, Guid>(options)
+public class DbContextGame(DbContextOptions<DbContextGame> options) : IdentityDbContext<User, IdentityRole<Guid>, Guid>(options)
 {
     #region collection
 
@@ -140,30 +140,9 @@ public class DbContext_Game(DbContextOptions<DbContext_Game> options) : Identity
             foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
         }
 
-        // Переопределение для каскадного удаления только для нужных связей
-        // Настройка для UserBan: Cascade при удалении ApplicationUser
-        _ = modelBuilder.Entity<UserBan>()
-            .HasOne(b => b.User) // Навигационное свойство в UserBan
-            .WithMany(u => u.UserBans)      // Коллекция в ApplicationUser
-            .HasForeignKey(b => b.UserId) // FK в UserBan
-            .OnDelete(DeleteBehavior.Cascade); // Включить каскад: удалять UserBan при удалении ApplicationUser
+        DbContextGameConfig.ConfigureAll(modelBuilder);
 
-        // Настройка для UserAuthorization: Cascade при удалении ApplicationUser
-        _ = modelBuilder.Entity<AuthRegLog>()
-            .HasOne(a => a.User) // Навигационное свойство в UserAuthorization
-            .WithMany()                     // Нет коллекции в ApplicationUser (one-to-many без обратной коллекции, если не добавлена)
-            .HasForeignKey(a => a.UserId) // FK в UserAuthorization (nullable, но Cascade все равно сработает)
-            .OnDelete(DeleteBehavior.Cascade); // Включить каскад: удалять UserAuthorization при удалении ApplicationUser
-
-        _ = modelBuilder.Entity<UserSession>()
-            .HasIndex(s => s.TokenHash)
-            .IsUnique()
-            .HasFilter($"""
-            {nameof(UserSession.IsUsed).ToSnakeCase()} = false AND {nameof(UserSession.IsRevoked).ToSnakeCase()} = false
-            """);
         //modelBuilder.Entity<Equipment>().HasQueryFilter(e => e.DeletedAt == null);
-
-
     }
 
     /// <summary> <inheritdoc/> </summary>

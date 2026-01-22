@@ -38,4 +38,7 @@ public sealed class UserPasskey : ICreatedAt, IUpdatedAt
 
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
+
+    /// <summary> <inheritdoc/> </summary>
+    public long Version { get; set; }
 }

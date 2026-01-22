@@ -60,7 +60,7 @@ internal partial class Program
         };
         _ = dataSourceBuilder.UseJsonNet(jsonSettings);
         NpgsqlDataSource dataSource = dataSourceBuilder.Build();
-        _ = services.AddDbContext<DbContext_Game>(options => options.UseNpgsql(dataSource));
+        _ = services.AddDbContext<DbContextGame>(options => options.UseNpgsql(dataSource));
 
         //_ = services.AddScoped(sp => new DbContext_Game(DbContext_Game.DbContextOptions));
 
@@ -139,7 +139,7 @@ internal partial class Program
         })
         .AddSignInManager<SignInManager<User>>()  // Добавьте эту строку для регистрации SignInManager
         .AddRoles<IdentityRole<Guid>>()  // Если используете роли; иначе удалите
-        .AddEntityFrameworkStores<DbContext_Game>()
+        .AddEntityFrameworkStores<DbContextGame>()
         .AddDefaultTokenProviders();
 
         _ = services.AddFido2(options =>
@@ -499,7 +499,7 @@ internal partial class Program
 
         try
         {
-            DbContext_Game db = scope.ServiceProvider.GetRequiredService<DbContext_Game>();
+            DbContextGame db = scope.ServiceProvider.GetRequiredService<DbContextGame>();
             using CancellationTokenSource cts = new(TimeSpan.FromSeconds(10));
 
             // Простая проверка активности соединения
@@ -523,7 +523,7 @@ internal partial class Program
         IGameDataCacheService heroCache = scope.ServiceProvider.GetRequiredService<IGameDataCacheService>();
         ITestService testService = scope.ServiceProvider.GetRequiredService<ITestService>();
         // Получаем временный Scoped-контекст БД
-        DbContext_Game db = scope.ServiceProvider.GetRequiredService<DbContext_Game>();
+        DbContextGame db = scope.ServiceProvider.GetRequiredService<DbContextGame>();
         try
         {
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));

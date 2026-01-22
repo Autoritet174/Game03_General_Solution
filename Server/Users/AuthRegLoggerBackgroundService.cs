@@ -191,7 +191,7 @@ public sealed class AuthRegLoggerBackgroundService(ILogger<AuthRegLoggerBackgrou
     private async Task<bool> WriteBatchToDatabaseAsync(List<LogEntry> batch, CancellationToken ct)
     {
         using IServiceScope scope = _serviceProvider.CreateScope();
-        DbContext_Game db = scope.ServiceProvider.GetRequiredService<DbContext_Game>();
+        DbContextGame db = scope.ServiceProvider.GetRequiredService<DbContextGame>();
 
         try
         {
@@ -261,7 +261,7 @@ public sealed class AuthRegLoggerBackgroundService(ILogger<AuthRegLoggerBackgrou
         ct.ThrowIfCancellationRequested();
 
         using IServiceScope scope = _serviceProvider.CreateScope();
-        DbContext_Game db = scope.ServiceProvider.GetRequiredService<DbContext_Game>();
+        DbContextGame db = scope.ServiceProvider.GetRequiredService<DbContextGame>();
 
         try
         {
