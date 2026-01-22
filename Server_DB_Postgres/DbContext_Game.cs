@@ -81,6 +81,7 @@ public class DbContext_Game(DbContextOptions<DbContext_Game> options) : Identity
     public required DbSet<UserBan> UserBans { get; set; }
     public required DbSet<UserDevice> UserDevices { get; set; }
     public required DbSet<UserSession> UserSessions { get; set; }
+    public required DbSet<UserPasskey> UserPasskeys { get; set; }
     #endregion users
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

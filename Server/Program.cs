@@ -142,6 +142,16 @@ internal partial class Program
         .AddEntityFrameworkStores<DbContext_Game>()
         .AddDefaultTokenProviders();
 
+        _ = services.AddFido2(options =>
+        {
+            options.ServerDomain = "your-game-domain.com";
+            options.ServerName = "Your Game Name";
+            options.Origins = new HashSet<string>
+            {
+                "https://your-game-domain.com"
+            };
+        });
+
 
 
         _ = services.ConfigureApplicationCookie(options =>

@@ -85,6 +85,7 @@ public static class LocalizationKeys
             private const string _Server = $"{_Error}{nameof(Server)}.";
 
             public const string Timeout = $"{_Server}{nameof(Timeout)}";
+            public const string InvalidRequest = $"{_Server}{nameof(InvalidRequest)}";
             public const string InvalidResponse = $"{_Server}{nameof(InvalidResponse)}";
             public const string InvalidCredentials = $"{_Server}{nameof(InvalidCredentials)}";
             public const string TooManyRequests = $"{_Server}{nameof(TooManyRequests)}";

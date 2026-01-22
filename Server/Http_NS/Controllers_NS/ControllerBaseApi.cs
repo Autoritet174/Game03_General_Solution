@@ -22,10 +22,7 @@ public abstract class ControllerBaseApi : ControllerBase
     /// <remarks>
     /// Используется для стандартизированной обработки ошибок с поддержкой локализации.
     /// </remarks>
-    protected IActionResult BadRequestWithServerError(string keyLocalization)
-    {
-        return BadRequest(new { errorKey = keyLocalization });
-    }
+    protected IActionResult BadRequestWithServerError(string keyLocalization) => BadRequest(new { errorKey = keyLocalization });
 
     ///// <summary>
     ///// Возвращает стандартный ответ BadRequest (400) для ошибки неверных учетных данных аутентификации.
@@ -46,8 +43,11 @@ public abstract class ControllerBaseApi : ControllerBase
     /// <remarks>
     /// Соответствует ключу локализации <see cref="L.Error.Server.InvalidResponse"/>.
     /// </remarks>
-    protected IActionResult BadRequestInvalidResponse()
-    {
-        return BadRequestWithServerError(L.Error.Server.InvalidResponse);
-    }
+    protected IActionResult BadRequestInvalidResponse() => BadRequestWithServerError(L.Error.Server.InvalidResponse);
+
+    /// <summary>
+    /// Входные данные были неверны.
+    /// </summary>
+    /// <returns></returns>
+    protected IActionResult BadRequestInvalidRequest() => BadRequestWithServerError(L.Error.Server.InvalidRequest);
 }

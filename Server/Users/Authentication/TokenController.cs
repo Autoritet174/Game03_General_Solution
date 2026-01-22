@@ -18,9 +18,11 @@ public sealed class TokenController(SessionService sessionService, JwtService jw
     {
         try
         {
-            (Guid userId, string? newRefreshToken) = await sessionService.RefreshSessionAsync(refreshToken);
-
-            string newAccessToken = jwtService.GenerateToken(userId);
+            (Guid? userId, string? newRefreshToken) = await sessionService.RefreshSessionAsync(refreshToken);
+            if (userId == null || string.IsNullOrWhiteSpace(newRefreshToken)) {
+                return Unauthorized(AuthRegResponse.InvalidCredentials());
+            }
+            string newAccessToken = jwtService.GenerateToken(userId.Value);
 
             return Ok(AuthRegResponse.Success(newAccessToken, newRefreshToken));
         }

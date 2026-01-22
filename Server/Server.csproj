@@ -126,6 +126,7 @@
   <ItemGroup>
     <ProjectReference Include="..\General\General.csproj" />
     <ProjectReference Include="..\Server_DB_Postgres\Server_DB_Postgres.csproj" />
+    <PackageReference Include="Fido2.AspNet" Version="4.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.0.1" />
