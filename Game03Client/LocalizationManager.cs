@@ -116,7 +116,7 @@ public static class LocalizationManager
                     // Вычисление оставшихся секунд.
                     long secondsRemaining = (long)(dtUnbanUtc - DateTime.UtcNow).TotalSeconds;
                     // Замена плейсхолдера {timeRemaining} на строку оставшегося времени или "0".
-                    textError = textError.Replace(L.TIME_REMAINING, secondsRemaining > 0 ? General.GlobalHelper.SecondsToTimeStr(secondsRemaining) : "0");
+                    textError = textError.Replace(L.TIME_REMAINING,General.GlobalHelper.SecondsToTimeStr(secondsRemaining));
                 }
                 catch
                 {
@@ -133,7 +133,7 @@ public static class LocalizationManager
             string secondsRemainingString = (jObject[L.SECONDS_REMAINING]?.ToString() ?? string.Empty).Trim();
 
             // Если строка не пуста, является числом, и число больше 0.
-            if (secondsRemainingString != string.Empty && long.TryParse(secondsRemainingString, out long secondsRemaining) && secondsRemaining > 0)
+            if (secondsRemainingString != string.Empty && long.TryParse(secondsRemainingString, out long secondsRemaining))
             {
                 // Замена плейсхолдера {timeRemaining} на строку оставшегося времени.
                 textError = textError.Replace(L.TIME_REMAINING, General.GlobalHelper.SecondsToTimeStr(secondsRemaining));

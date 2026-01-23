@@ -26,7 +26,7 @@ public class CollectionProvider
         }
 
         // Получить коллекцию героев игрока
-        string? response = await HttpRequester.GetResponseAsync(General.Url.Collection.All, null, cancellationToken) ?? throw new ArgumentNullException();
+        string? response = await HttpRequester.GetResponseAsync(General.Url.Collection.ALL, null, cancellationToken) ?? throw new ArgumentNullException();
         DtoContainerCollection c = JsonConvert.DeserializeObject<DtoContainerCollection>(response) ?? throw new ArgumentNullException();
 
         IEnumerable<DtoBaseEquipment> baseEquipments = GameData.Container.BaseEquipments;

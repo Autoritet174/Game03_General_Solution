@@ -83,33 +83,7 @@ public sealed class AuthService(
             }
 
 
-
-            //else if (!string.IsNullOrWhiteSpace(dto.RefreshToken))
-            //{
-            //    // Аутентификация по RefreshToken
-            //    RefreshToken? refreshTokens = dbContext.RefreshTokens.AsNoTracking().FirstOrDefault(a => a.Token == dto.RefreshToken);
-            //    if (refreshTokens == null)
-            //    {
-            //        return AuthRegResponse.InvalidCredentials();
-            //    }
-            //    if (refreshTokens.ExpiredDate < DateTime.UtcNow)
-            //    {
-            //        return AuthRegResponse.InvalidCredentials();
-            //    }
-
-            //    userId = refreshTokens.UserId;
-            //    user = dbContext.Users.AsNoTracking().FirstOrDefault(a => a.Id == userId);
-            //    if (user == null)
-            //    {
-            //        if (logger.IsEnabled(LogLevel.Warning))
-            //        {
-            //            logger.LogWarning("Пользователь [{userId}] не был найдет, возможно пользователь это злоумышленник пытающийся подделать RefreshToken.", userId);
-            //        }
-            //        return AuthRegResponse.InvalidCredentials();
-            //    }
-            //}
-
-            // 3. Уровень: Бизнес-валидация (Баны)
+            // Баны
             if (await IsUserBannedAsync(userId.Value, now))
             {
                 return await GetBanResponseAsync(userId.Value, now);
@@ -125,7 +99,6 @@ public sealed class AuthService(
 
             string accessToken = jwt.GenerateToken(userId.Value);
 
-            // ВЫЗЫВАЕМ НОВЫЙ СЕРВИС ДЛЯ СОЗДАНИЯ СЕССИИ
             string refreshToken = await sessionService.CreateSessionAsync(user.Id, dto);
             return AuthRegResponse.Success(accessToken, refreshToken);
         }

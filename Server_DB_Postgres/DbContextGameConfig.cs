@@ -38,7 +38,7 @@ public class DbContextGameConfig
         _ = builder.HasQueryFilter(s => !s.IsUsed && !s.IsRevoked);// Глобальный фильтр для выборок - только живые токены
 
         // Уникальный индекс на живые токены (неиспользованные и неаннулированные)
-        _ = builder.HasIndex(s => s.TokenHash).IsUnique().HasFilter($"""
+        _ = builder.HasIndex(s => s.RefreshTokenHash).IsUnique().HasFilter($"""
             {nameof(UserSession.IsUsed).ToSnakeCase()} = false AND {nameof(UserSession.IsRevoked).ToSnakeCase()} = false
             """);
     }

@@ -128,7 +128,6 @@ public class DbContextGame(DbContextOptions<DbContextGame> options) : IdentityDb
         _ = modelBuilder.Entity<IdentityUserToken<Guid>>().ToTable("identity_user_tokens", "users");
 
         modelBuilder.AddConcurrencyTokenToVersion();
-        modelBuilder.CorrectNames();
         modelBuilder.ApplyDefaultValues();
 
 
@@ -141,6 +140,7 @@ public class DbContextGame(DbContextOptions<DbContextGame> options) : IdentityDb
         }
 
         DbContextGameConfig.ConfigureAll(modelBuilder);
+        modelBuilder.CorrectNames();
 
         //modelBuilder.Entity<Equipment>().HasQueryFilter(e => e.DeletedAt == null);
     }

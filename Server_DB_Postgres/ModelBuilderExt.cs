@@ -60,6 +60,49 @@ public static class ModelBuilderExt
     /// <param name="modelBuilder">Экземпляр ModelBuilder.</param>
     public static void CorrectNames(this ModelBuilder modelBuilder)
     {
+/*
+Основные суффиксы объектов БД:
+1. Ограничения (Constraints)
+_pkey - первичный ключ (primary key constraint)
+_key - уникальное ограничение (unique constraint)
+_fkey или _fk - внешний ключ (foreign key constraint)
+_check - check-ограничение
+_excl - exclusion constraint
+
+2. Индексы
+_idx - обычный B-tree индекс
+_gin_idx - GIN индекс
+_gist_idx - GiST индекс
+_brin_idx - BRIN индекс
+_spgist_idx - SP-GiST индекс
+_hash_idx - hash индекс
+_btree_idx - явное указание B-tree
+
+3. Последовательности (Sequences)
+_seq - sequence (автоинкремент)
+_id_seq - часто для полей ID
+
+4. Представления (Views)
+_vw или _view - представление
+_mv - материализованное представление
+
+5. Функции и процедуры
+_fn или _func - функция
+_proc или _sp - хранимая процедура
+_trigger или _tg - триггерная функция
+
+6. Триггеры
+_trigger или _tg - триггер
+
+7. Типы данных
+_type - пользовательский тип (composite type)
+_enum - перечисление (enum type)
+_range - range type
+
+8. Другие объекты
+_rule - правило (rule)
+_domain - домен (domain constraint)
+*/
         foreach (IMutableEntityType entity in modelBuilder.Model.GetEntityTypes())
         {
             if (entity.GetTableName() is string tableName)

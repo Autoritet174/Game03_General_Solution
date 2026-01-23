@@ -1,15 +1,16 @@
-dotnet ef migrations add UserSessionFix1  --project ".\Server_DB_Postgres\Server_DB_Postgres.csproj" --startup-project ".\Server\Server.csproj" --context DbContext_Game
+dotnet ef migrations add UserSessionFix2  --project ".\Server_DB_Postgres\Server_DB_Postgres.csproj" --startup-project ".\Server\Server.csproj" --context DbContextGame
 
-dotnet ef database update --project ".\Server_DB_Postgres\Server_DB_Postgres.csproj" --startup-project ".\Server\Server.csproj" --context DbContext_Game
+dotnet ef database update --project ".\Server_DB_Postgres\Server_DB_Postgres.csproj" --startup-project ".\Server\Server.csproj" --context DbContextGame
 
 ÓÄÀËÅÍÈÅ ÏÎÑËÅÄÍÅÃÎ ÔÀÉËÀ ÌÈÃĞÀÖÈÈ
-dotnet ef migrations remove --project ".\Server_DB_Postgres\Server_DB_Postgres.csproj" --startup-project ".\Server\Server.csproj" --context DbContext_Game
+dotnet ef migrations remove --project ".\Server_DB_Postgres\Server_DB_Postgres.csproj" --startup-project ".\Server\Server.csproj" --context DbContextGame
 
 ÎÁÍÎÂËÅÍÈÅ ÄÎ ÓÊÀÇÀÍÍÎÉ ÌÈÃĞÀÖÈÈ ÂÊËŞ×ÈÒÅËÜÍÎ, ÂÑ¨ ×ÒÎ ÏÎÇÆÅ ÂÛÏÎËÍÈÒ ÎÒÊÀÒ Â ÎÁĞÀÒÅÌ ÏÎĞßÄÊÅ
-dotnet ef database update EquipmentFix1 --project ".\Server_DB_Postgres\Server_DB_Postgres.csproj" --startup-project ".\Server\Server.csproj" --context DbContext_Game
+dotnet ef database update EquipmentFix1 --project ".\Server_DB_Postgres\Server_DB_Postgres.csproj" --startup-project ".\Server\Server.csproj" --context DbContextGame
 
 
 dotnet build .\Server\Server.csproj
 dotnet run --project .\Server\Server.csproj
 
+ÎÁÍÎÂËÅÍÈÅ ÃËÎÁÀËÜÍÎÃÎ EF
 dotnet tool update --global dotnet-ef

@@ -13,11 +13,21 @@ namespace Server.Users.Authentication;
 /// </summary>
 public class AuthController(AuthService _authService) : ControllerBaseApi
 {
-    [AllowAnonymous, HttpPost]
+    [AllowAnonymous, HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] DtoRequestAuthReg dtoRequest)
     {
+        if (dtoRequest == null)
+        {
+            return BadRequest("request is empty");
+        }
         DtoResponseAuthReg dtoResult = await _authService.LoginAsync(dtoRequest, HttpContext.Connection.RemoteIpAddress);
         string jsonResult = JsonConvert.SerializeObject(dtoResult, General.GlobalHelper.JsonSerializerSettings);
         return dtoResult.ErrorKey == null ? Ok(jsonResult) : BadRequest(jsonResult);
+    }
+
+    [HttpGet("validate")]
+    public IActionResult Validate()
+    {
+        return Ok();
     }
 }

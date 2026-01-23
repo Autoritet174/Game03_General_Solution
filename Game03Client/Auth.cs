@@ -32,4 +32,5 @@ public class Auth
         Dto = JsonConvert.DeserializeObject<DtoResponseAuthReg>(response) ?? throw new Exception();
     }
 
+    public static string? AccessToken => Dto?.AccessToken;
 }

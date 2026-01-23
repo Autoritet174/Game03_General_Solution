@@ -89,7 +89,11 @@ internal class Program
         //}
         _ = Console.ReadLine();
     }
-    private static void Game_OnLog(object message) => Console.WriteLine("[Library: Game03Client] " + message);
+    private static void Game_OnLog(object message)
+    {
+        Console.WriteLine("[Library: Game03Client] " + message);
+    }
+
     private static async Task Start()
     {
         string Password = Game03Client.Password.HashSha512("testPassword");

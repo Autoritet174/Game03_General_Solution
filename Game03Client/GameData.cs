@@ -20,7 +20,7 @@ public static class GameData
             return;
         }
 
-        string response = await HttpRequester.GetResponseAsync(Url.GameData, null, cancellationToken) ?? throw new Exception();
+        string response = await HttpRequester.GetResponseAsync(Url.GAME_DATA, null, cancellationToken) ?? throw new Exception();
         DtoContainerGameData c = JsonConvert.DeserializeObject<DtoContainerGameData>(response) ?? throw new Exception();
 
         foreach (DtoBaseEquipment i in c.BaseEquipments)

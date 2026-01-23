@@ -74,7 +74,7 @@
         <member name="T:Server.Http_NS.Controllers_NS.Collection_NS.CollectionController">
             <summary> Контроллер для управления коллекциями пользователя. </summary>
         </member>
-        <member name="M:Server.Http_NS.Controllers_NS.Collection_NS.CollectionController.#ctor(Server_DB_Postgres.DbContext_Game)">
+        <member name="M:Server.Http_NS.Controllers_NS.Collection_NS.CollectionController.#ctor(Server_DB_Postgres.DbContextGame)">
             <summary> Контроллер для управления коллекциями пользователя. </summary>
         </member>
         <member name="M:Server.Http_NS.Controllers_NS.Collection_NS.CollectionController.GetAllCollection">
@@ -104,6 +104,12 @@
             <remarks>
             Соответствует ключу локализации <see cref="F:General.LocalizationKeys.Error.Server.InvalidResponse"/>.
             </remarks>
+        </member>
+        <member name="M:Server.Http_NS.Controllers_NS.ControllerBaseApi.BadRequestInvalidRequest">
+            <summary>
+            Входные данные были неверны.
+            </summary>
+            <returns></returns>
         </member>
         <member name="T:Server.Http_NS.Controllers_NS.Http_Tests.TestController">
             <summary>
@@ -342,42 +348,54 @@
             При успешной проверке возвращает JWT-токен доступа.
             </summary>
         </member>
-        <member name="F:Server.Users.Authentication.AuthService._RefreshTokenLifeTime">
+        <member name="M:Server.Users.Authentication.SessionService.RevokeAllUserSessionsAsync(System.Guid,System.String)">
             <summary>
-            СРОК ЖИЗНИ REFRESH ТОКЕНА (НАПРИМЕР, 14 ДНЕЙ)
+            Полностью разлогинить пользователя, например при смене пароля или выдаче бана.
             </summary>
-        </member>
-        <member name="M:Server.Users.Authentication.SessionService.CreateSessionAsync(System.Guid,General.DTO.RestRequest.DtoRequestAuthReg)">
-            <summary>
-            СОЗДАЕТ НОВУЮ СЕССИЮ И ВОЗВРАЩАЕТ REFRESH TOKEN В BASE64.
-            </summary>
-        </member>
-        <member name="M:Server.Users.Authentication.SessionService.RefreshSessionAsync(System.String)">
-            <summary>
-            ОБНОВЛЯЕТ СУЩЕСТВУЮЩУЮ СЕССИЮ (ROTATION + REUSE DETECTION).
-            </summary>
-        </member>
-        <member name="M:Server.Users.Authentication.SessionService.LogoutAsync(System.String)">
-            <summary>
-            ЗАВЕРШАЕТ КОНКРЕТНУЮ СЕССИЮ ПОЛЬЗОВАТЕЛЯ.
-            </summary>
-            <param name="refreshTokenBase64">ТОКЕН, КОТОРЫЙ НУЖНО АННУЛИРОВАТЬ.</param>
-        </member>
-        <member name="M:Server.Users.Authentication.SessionService.RevokeAllSessionsAsync(System.Guid,System.String)">
-            <summary>
-            ПРИНУДИТЕЛЬНО ЗАВЕРШАЕТ ВСЕ СЕССИИ ПОЛЬЗОВАТЕЛЯ (НАПРИМЕР, ПРИ СМЕНЕ ПАРОЛЯ).
-            </summary>
+            <param name="userId"></param>
+            <param name="reason"></param>
+            <returns></returns>
         </member>
         <member name="M:Server.Users.Authentication.TokenController.Refresh(System.String)">
             <summary>
-            ЭНДПОИНТ ДЛЯ ОБНОВЛЕНИЯ ТОКЕНОВ. 
-            ДОСТУПЕН БЕЗ [Authorize], ТАК КАК ACCESS TOKEN УЖЕ МОЖЕТ БЫТЬ ПРОСРОЧЕН.
+            Эндпоинт для обновления токенов. 
+            Доступен без [authorize], так как access token уже может быть просрочен.
             </summary>
         </member>
         <member name="M:Server.Users.Authentication.TokenController.Logout(General.DTO.RestRequest.DtoRequestLogout)">
             <summary>
-            ВЫХОД ИЗ СИСТЕМЫ.
-            ПРИНИМАЕТ REFRESH TOKEN В ТЕЛЕ ЗАПРОСА, ЧТОБЫ ЗНАТЬ, КАКУЮ ИМЕННО СЕССИЮ ЗАКРЫТЬ.
+            Выход из системы.
+            Принимает refresh token в теле запроса, чтобы знать, какую именно сессию закрыть.
+            </summary>
+        </member>
+        <member name="T:Server.Users.Authentication.PasskeyService">
+            <summary>
+            Сервис для управления ключами доступа (Passkeys).
+            </summary>
+        </member>
+        <member name="M:Server.Users.Authentication.PasskeyService.#ctor(Fido2NetLib.IFido2,Server_DB_Postgres.DbContextGame,Microsoft.Extensions.Logging.ILogger{Server.Users.Authentication.PasskeyService})">
+            <summary>
+            Сервис для управления ключами доступа (Passkeys).
+            </summary>
+        </member>
+        <member name="M:Server.Users.Authentication.PasskeyService.GetRegistrationOptionsAsync(System.Guid,System.String)">
+            <summary>
+            Генерирует параметры регистрации нового ключа.
+            </summary>
+        </member>
+        <member name="M:Server.Users.Authentication.PasskeyService.ConfirmRegistrationAsync(Fido2NetLib.AuthenticatorAttestationRawResponse,Fido2NetLib.CredentialCreateOptions,System.Guid)">
+            <summary>
+            Подтверждает регистрацию и сохраняет ключ.
+            </summary>
+        </member>
+        <member name="M:Server.Users.Authentication.PasskeyService.GetLoginOptionsAsync(System.Nullable{System.Guid})">
+            <summary>
+            Генерирует параметры для входа. Исправлено на GetAssertionOptionsParams.
+            </summary>
+        </member>
+        <member name="M:Server.Users.Authentication.PasskeyService.ConfirmLoginAsync(Fido2NetLib.AuthenticatorAssertionRawResponse,Fido2NetLib.AssertionOptions)">
+            <summary>
+            Проверяет подпись при входе.
             </summary>
         </member>
         <member name="T:Server.Users.AuthRegLoggerBackgroundService">
@@ -417,6 +435,64 @@
         </member>
         <member name="M:Server.Users.AuthRegLoggerBackgroundService.Dispose">
             <inheritdoc />
+        </member>
+        <member name="T:Server.Users.PasskeyController">
+            <summary>
+            Контроллер для управления процессами регистрации и аутентификации через Passkeys.
+            </summary>
+        </member>
+        <member name="M:Server.Users.PasskeyController.#ctor(Server.Users.Authentication.PasskeyService,Microsoft.Extensions.Caching.Memory.IMemoryCache,Microsoft.Extensions.Logging.ILogger{Server.Users.PasskeyController})">
+            <summary>
+            Контроллер для управления процессами регистрации и аутентификации через Passkeys.
+            </summary>
+        </member>
+        <member name="F:Server.Users.PasskeyController.IsEnabled">
+            <summary>
+            Флаг доступности функционала Passkey.
+            </summary>
+        </member>
+        <member name="M:Server.Users.PasskeyController.GetRegisterOptions(System.Guid,System.String)">
+            <summary>
+            Получает параметры для создания нового ключа доступа.
+            </summary>
+            <param name="userId">Идентификатор пользователя.</param>
+            <param name="email">Электронная почта пользователя.</param>
+        </member>
+        <member name="M:Server.Users.PasskeyController.ConfirmRegister(Server.Users.DtoRegisterConfirm)">
+            <summary>
+            Подтверждает регистрацию ключа после взаимодействия пользователя с устройством.
+            </summary>
+        </member>
+        <member name="M:Server.Users.PasskeyController.GetLoginOptions(System.Nullable{System.Guid})">
+            <summary>
+            Получает параметры для выполнения входа (assertion).
+            </summary>
+            <param name="userId">Необязательный ID пользователя для фильтрации ключей.</param>
+        </member>
+        <member name="M:Server.Users.PasskeyController.ConfirmLogin(Server.Users.DtoLoginConfirm)">
+            <summary>
+            Проверяет подпись ключа и завершает процесс входа.
+            </summary>
+        </member>
+        <member name="T:Server.Users.DtoRegisterConfirm">
+            <summary>
+            Данные для завершения регистрации ключа.
+            </summary>
+        </member>
+        <member name="M:Server.Users.DtoRegisterConfirm.#ctor(System.Guid,Fido2NetLib.AuthenticatorAttestationRawResponse)">
+            <summary>
+            Данные для завершения регистрации ключа.
+            </summary>
+        </member>
+        <member name="T:Server.Users.DtoLoginConfirm">
+            <summary>
+            Данные для завершения входа по ключу.
+            </summary>
+        </member>
+        <member name="M:Server.Users.DtoLoginConfirm.#ctor(System.String,Fido2NetLib.AuthenticatorAssertionRawResponse)">
+            <summary>
+            Данные для завершения входа по ключу.
+            </summary>
         </member>
         <member name="T:Server.Users.Registration.RegController">
             <summary>
