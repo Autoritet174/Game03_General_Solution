@@ -25,6 +25,7 @@ namespace General.DTO.RestRequest;
 /// <param name="deviceUniqueIdentifier">Уникальный идентификатор устройства, используемый для привязки сессии.</param>
 /// <param name="systemInfo_supportsInstancing">Указывает, поддерживает ли графическая система инстансинг (отрисовку множественных копий объектов за один вызов).</param>
 /// <param name="systemInfo_npotSupport">Указывает, поддерживает ли графическая карта текстуры с размерами, не являющимися степенью двойки (NPOT).</param>
+/// <param name="refreshToken"></param>
 public class DtoRequestAuthReg(
     string email,
     string password,
@@ -40,7 +41,8 @@ public class DtoRequestAuthReg(
     string graphicsDeviceName,
     int graphicsMemorySize,
     bool systemInfo_supportsInstancing,
-    string systemInfo_npotSupport)
+    string systemInfo_npotSupport,
+    string refreshToken)
 {
 
     /// <summary>
@@ -132,4 +134,6 @@ public class DtoRequestAuthReg(
     /// </summary>
     /// <value>Строка, описывающая уровень поддержки NPOT (например, 'Full', 'Restricted', 'None').</value>
     public string SystemInfo_npotSupport { get; } = systemInfo_npotSupport;
+
+    public string SessionToken { get; } = refreshToken;
 }

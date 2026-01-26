@@ -115,6 +115,7 @@ internal class Program
             password: "iluLRhHe5Gs9rzUx+rsqc6k6K+N26qJA3BFd1YGL0kpTPu7ppGqqJ8gGRRbkieYLdVM1Bud04ZeSKEKMkQrydQ==",
             timeZoneInfo_Local_BaseUtcOffset_Minutes: 480,
             system_Environment_UserName: "AUTORITET",
+            deviceUniqueIdentifier: "e307f13fd5fb9d8c59a3a7b4df863c02bdbb300c",
             deviceModel: "B550 GAMING X V2 (Gigabyte Technology Co., Ltd.)",
             deviceType: "Desktop",
             operatingSystem: "Windows 11  (10.0.22000) 64bit",
@@ -123,10 +124,9 @@ internal class Program
             systemMemorySize: 32691,
             graphicsDeviceName: "NVIDIA GeForce RTX 4070",
             graphicsMemorySize: 12011,
-            deviceUniqueIdentifier: "e307f13fd5fb9d8c59a3a7b4df863c02bdbb300c",
             systemInfo_supportsInstancing: true,
-            systemInfo_npotSupport: "Full"
-            ), cancellationTokenSource.Token).Wait();
+            systemInfo_npotSupport: "Full",
+            ""), cancellationTokenSource.Token).Wait();
         //string accessToken = Auth.Dto?.AccessToken ?? string.Empty;
 
 

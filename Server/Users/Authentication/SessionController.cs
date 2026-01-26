@@ -7,19 +7,20 @@ using System.Security;
 
 namespace Server.Users.Authentication;
 
-public sealed class TokenController(SessionService sessionService, JwtService jwtService) : ControllerBaseApi
+public sealed class SessionController(SessionService sessionService, JwtService jwtService) : ControllerBaseApi
 {
     /// <summary>
     /// Эндпоинт для обновления токенов. 
     /// Доступен без [authorize], так как access token уже может быть просрочен.
     /// </summary>
     [HttpPost("refresh"), AllowAnonymous]
-    public async Task<IActionResult> Refresh([FromBody] string refreshToken)
+    public async Task<IActionResult> Refresh([FromBody] DtoRequestAuthReg dto)
     {
         try
         {
-            (Guid? userId, string? newRefreshToken) = await sessionService.RefreshSessionAsync(refreshToken);
-            if (userId == null || string.IsNullOrWhiteSpace(newRefreshToken)) {
+            (Guid? userId, string? newRefreshToken) = await sessionService.RefreshSessionAsync(dto);
+            if (userId == null || string.IsNullOrWhiteSpace(newRefreshToken))
+            {
                 return Unauthorized(AuthRegResponse.InvalidCredentials());
             }
             string newAccessToken = jwtService.GenerateToken(userId.Value);

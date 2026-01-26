@@ -1,3 +1,4 @@
+using Server_DB_Postgres.Entities.Server;
 using Server_DB_Postgres.Interfaces;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -12,7 +13,7 @@ public class UserSession : ICreatedAt, IUpdatedAt, IVersion
     /// <summary>
     /// Токен сессии. Имеет индекс уникальности для живых токенов.
     /// </summary>
-    public required byte[] RefreshTokenHash { get; set; }
+    public required byte[] SessionTokenHash { get; set; }
 
     /// <summary>
     /// Токен использован.
@@ -32,7 +33,9 @@ public class UserSession : ICreatedAt, IUpdatedAt, IVersion
     /// <summary>
     /// Причина деактивации (например: "Rotation", "Logout", "SystemLock")
     /// </summary>
-    public string? InactivationReason { get; set; }
+    public int UserSessionInactivationReasonId { get; set; }
+    [ForeignKey(nameof(UserSessionInactivationReasonId))]
+    public UserSessionInactivationReason? UserSessionInactivationReason { get; set; }
 
     public DateTimeOffset ExpiresAt { get; set; }
     public DateTimeOffset CreatedAt { get; set; }

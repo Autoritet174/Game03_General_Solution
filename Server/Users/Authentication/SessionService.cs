@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Npgsql;
 using Server_DB_Postgres;
+using Server_DB_Postgres.Entities.Server;
 using Server_DB_Postgres.Entities.Users;
 using System.Security.Cryptography;
 
@@ -43,6 +44,16 @@ public sealed partial class SessionService(DbContextGame dbContext, ILogger<Sess
 
     [LoggerMessage(
         Level = LogLevel.Debug,
+        Message = "LogSessionUserDeviceIdEmpty")]
+    private partial void LogSessionUserDeviceIdEmpty();
+
+    [LoggerMessage(
+        Level = LogLevel.Debug,
+        Message = "Предыдущий userDeviceId=[{prev}] не совпадает с новым [{now}]")]
+    private partial void LogSessionUserDeviceIdOther(Guid prev, Guid now);
+
+    [LoggerMessage(
+        Level = LogLevel.Debug,
         Message = "Сессия обновлена. Старая: {oldSessionId}, Новая: {newSessionId}")]
     private partial void LogSessionRefreshed(Guid oldSessionId, Guid newSessionId);
 
@@ -60,13 +71,14 @@ public sealed partial class SessionService(DbContextGame dbContext, ILogger<Sess
         Level = LogLevel.Warning,
         Message = "Попытка выхода с несуществующим или уже отозванным токеном")]
     private partial void LogInvalidLogout();
+
     [LoggerMessage(Level = LogLevel.Warning)]
     private partial void LogExceptionLogout(Exception ex);
 
     [LoggerMessage(
         Level = LogLevel.Information,
         Message = "Все сессии пользователя {userId} отозваны. Причина: {reason}")]
-    private partial void LogAllSessionsRevoked(Guid userId, string reason);
+    private partial void LogAllSessionsRevoked(Guid userId, InactivationReason reason);
 
     [LoggerMessage(
         Level = LogLevel.Debug,
@@ -94,7 +106,7 @@ public sealed partial class SessionService(DbContextGame dbContext, ILogger<Sess
         {
             Id = Guid.NewGuid(),
             UserId = userId,
-            RefreshTokenHash = SHA256.HashData(refreshToken),
+            SessionTokenHash = SHA256.HashData(refreshToken),
             ExpiresAt = DateTimeOffset.UtcNow.Add(RefreshTokenLifeTime),
             IsUsed = false,
             IsRevoked = false,
@@ -107,24 +119,25 @@ public sealed partial class SessionService(DbContextGame dbContext, ILogger<Sess
         return Convert.ToBase64String(refreshToken);
     }
 
-    public async Task<(Guid? UserId, string? NewRefreshToken)> RefreshSessionAsync(string refreshTokenBase64)
+    public async Task<(Guid? UserId, string? NewRefreshToken)> RefreshSessionAsync(DtoRequestAuthReg dto)
     {
+        string refreshTokenBase64 = dto.SessionToken;
         if (string.IsNullOrWhiteSpace(refreshTokenBase64))
         {
             LogEmptyToken();
             return (null, null);
         }
 
-        byte[] providedRefreshTokenHash;
+        byte[] providedSessionTokenHash;
         try
         {
-            byte[] providedRefreshToken = Convert.FromBase64String(refreshTokenBase64);
-            if (providedRefreshToken.Length != TOKEN_SIZE)
+            byte[] providedSessionToken = Convert.FromBase64String(refreshTokenBase64);
+            if (providedSessionToken.Length != TOKEN_SIZE)
             {
-                LogInvalidTokenSize(providedRefreshToken.Length, TOKEN_SIZE);
+                LogInvalidTokenSize(providedSessionToken.Length, TOKEN_SIZE);
                 return (null, null);
             }
-            providedRefreshTokenHash = SHA256.HashData(providedRefreshToken);
+            providedSessionTokenHash = SHA256.HashData(providedSessionToken);
         }
         catch (FormatException)
         {
@@ -144,7 +157,7 @@ public sealed partial class SessionService(DbContextGame dbContext, ILogger<Sess
         {
             UserSession? session = await dbContext.UserSessions
                 .FirstOrDefaultAsync(s =>
-                s.RefreshTokenHash == providedRefreshTokenHash
+                s.SessionTokenHash == providedSessionTokenHash
                 && s.ExpiresAt > DateTimeOffset.UtcNow);
 
             if (session == null)
@@ -159,22 +172,36 @@ public sealed partial class SessionService(DbContextGame dbContext, ILogger<Sess
                 LogSessionExpired(session.Id);
                 session.IsUsed = true;
                 session.InactivatedAt = DateTimeOffset.UtcNow;
-                session.InactivationReason = "EXPIRED";
+                session.UserSessionInactivationReasonId = await dbContext.GetInactivationReasonIdByCode(InactivationReason.EXPIRED);
                 _ = await dbContext.SaveChangesAsync();
                 await transaction.CommitAsync();
                 return (null, null);
             }
 
+            Guid UserDeviceId = UserDeviceHelper.ComputeId(dto);
+            if (UserDeviceId == Guid.Empty)
+            {
+                LogSessionUserDeviceIdEmpty();
+                return (null, null);
+            }
+
+            if (session.UserDeviceId != UserDeviceId)
+            {
+                LogSessionUserDeviceIdOther(session.UserDeviceId, UserDeviceId);
+                await RevokeAllUserSessionsAsync(session.UserId, InactivationReason.OTHER_DEVICE);
+                return (null, null);
+            }
+
             session.IsUsed = true;
             session.InactivatedAt = DateTimeOffset.UtcNow;
-            session.InactivationReason = "ROTATION";
+            session.UserSessionInactivationReasonId = await dbContext.GetInactivationReasonIdByCode(InactivationReason.ROTATION);
 
             byte[] newRefreshToken = RandomNumberGenerator.GetBytes(TOKEN_SIZE);
             var newSession = new UserSession
             {
                 Id = Guid.NewGuid(),
                 UserId = session.UserId,
-                RefreshTokenHash = SHA256.HashData(newRefreshToken),
+                SessionTokenHash = SHA256.HashData(newRefreshToken),
                 ExpiresAt = DateTimeOffset.UtcNow.Add(RefreshTokenLifeTime),
                 IsUsed = false,
                 IsRevoked = false,
@@ -227,21 +254,23 @@ public sealed partial class SessionService(DbContextGame dbContext, ILogger<Sess
             LogInvalidBase64Format();
             return;
         }
-        catch (Exception ex) {
+        catch (Exception ex)
+        {
             LogExceptionLogout(ex);
             return;
         }
 
 
         byte[] refreshTokenHash = SHA256.HashData(refreshTokenBytes);
-       
+
         DateTimeOffset now = DateTimeOffset.UtcNow;
+        int? inactivationReasonId = await dbContext.GetInactivationReasonIdByCode(InactivationReason.USER_LOGOUT);
         int affectedRows = await dbContext.UserSessions
-            .Where(s => s.RefreshTokenHash == refreshTokenHash && s.ExpiresAt > now)
+            .Where(s => s.SessionTokenHash == refreshTokenHash && s.ExpiresAt > now)
             .ExecuteUpdateAsync(set => set
                 .SetProperty(s => s.IsRevoked, true)
                 .SetProperty(s => s.InactivatedAt, DateTimeOffset.UtcNow)
-                .SetProperty(s => s.InactivationReason, "USER_LOGOUT"));
+                .SetProperty(s => s.UserSessionInactivationReasonId, inactivationReasonId));
 
         if (affectedRows == 0)
         {
@@ -255,16 +284,16 @@ public sealed partial class SessionService(DbContextGame dbContext, ILogger<Sess
     /// <param name="userId"></param>
     /// <param name="reason"></param>
     /// <returns></returns>
-    public async Task RevokeAllUserSessionsAsync(Guid userId, string reason = "MANUAL_REVOCATION")
+    public async Task RevokeAllUserSessionsAsync(Guid userId, InactivationReason reason)
     {
+        LogAllSessionsRevoked(userId, reason);
+        int? inactivationReasonId = await dbContext.GetInactivationReasonIdByCode(reason);
         _ = await dbContext.UserSessions
             .Where(s => s.UserId == userId)
             .ExecuteUpdateAsync(set => set
                 .SetProperty(s => s.IsRevoked, true)
                 .SetProperty(s => s.InactivatedAt, DateTimeOffset.UtcNow)
-                .SetProperty(s => s.InactivationReason, reason));
-
-        LogAllSessionsRevoked(userId, reason);
+                .SetProperty(s => s.UserSessionInactivationReasonId, inactivationReasonId));
     }
 
     private async Task<Guid?> GetOrAddDeviceId(DtoRequestAuthReg dto)

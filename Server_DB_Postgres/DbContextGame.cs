@@ -74,6 +74,7 @@ public class DbContextGame(DbContextOptions<DbContextGame> options) : IdentityDb
 
     /// <summary> Причины бана пользователей. </summary>
     public DbSet<UserBanReason> UserBanReasons { get; set; }
+    public DbSet<UserSessionInactivationReason> UserSessionInactivationReasons { get; set; }
 
     #endregion server
 

@@ -366,6 +366,9 @@
         <member name="P:Server_DB_Postgres.Entities.Server.UserBanReason.Name">
             <summary> Наименование причины блокировки. </summary>
         </member>
+        <member name="T:Server_DB_Postgres.Entities.Server.UserSessionInactivationReason">
+            <summary> Причины завершения сессии </summary>
+        </member>
         <member name="P:Server_DB_Postgres.Entities.Users.User.CreatedAt">
             <summary> <inheritdoc/> </summary>
         </member>
@@ -514,7 +517,7 @@
             Когда сессия была фактически завершена (для истории)
             </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserSession.InactivationReason">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserSession.UserSessionInactivationReasonId">
             <summary>
             Причина деактивации (например: "Rotation", "Logout", "SystemLock")
             </summary>
@@ -1027,6 +1030,18 @@
             <inheritdoc />
         </member>
         <member name="M:Server_DB_Postgres.Migrations.Fix25.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.UserSessionFix4">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.UserSessionFix4.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.UserSessionFix4.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.UserSessionFix4.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Server_DB_Postgres.ModelBuilderExt">

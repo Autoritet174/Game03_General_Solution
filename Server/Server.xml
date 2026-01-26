@@ -348,25 +348,25 @@
             При успешной проверке возвращает JWT-токен доступа.
             </summary>
         </member>
-        <member name="M:Server.Users.Authentication.SessionService.RevokeAllUserSessionsAsync(System.Guid,System.String)">
+        <member name="M:Server.Users.Authentication.SessionController.Refresh(System.String)">
+            <summary>
+            Эндпоинт для обновления токенов. 
+            Доступен без [authorize], так как access token уже может быть просрочен.
+            </summary>
+        </member>
+        <member name="M:Server.Users.Authentication.SessionController.Logout(General.DTO.RestRequest.DtoRequestLogout)">
+            <summary>
+            Выход из системы.
+            Принимает refresh token в теле запроса, чтобы знать, какую именно сессию закрыть.
+            </summary>
+        </member>
+        <member name="M:Server.Users.Authentication.SessionService.RevokeAllUserSessionsAsync(System.Guid,Server_DB_Postgres.Entities.Server.InactivationReason)">
             <summary>
             Полностью разлогинить пользователя, например при смене пароля или выдаче бана.
             </summary>
             <param name="userId"></param>
             <param name="reason"></param>
             <returns></returns>
-        </member>
-        <member name="M:Server.Users.Authentication.TokenController.Refresh(System.String)">
-            <summary>
-            Эндпоинт для обновления токенов. 
-            Доступен без [authorize], так как access token уже может быть просрочен.
-            </summary>
-        </member>
-        <member name="M:Server.Users.Authentication.TokenController.Logout(General.DTO.RestRequest.DtoRequestLogout)">
-            <summary>
-            Выход из системы.
-            Принимает refresh token в теле запроса, чтобы знать, какую именно сессию закрыть.
-            </summary>
         </member>
         <member name="T:Server.Users.Authentication.PasskeyService">
             <summary>
