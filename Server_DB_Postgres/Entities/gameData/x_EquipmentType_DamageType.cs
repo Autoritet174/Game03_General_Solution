@@ -6,7 +6,7 @@ using static Server_DB_Postgres.Attributes;
 namespace Server_DB_Postgres.Entities.GameData;
 
 /// <summary> Таблица для связи Hero и CreatureType. </summary>
-[Table(nameof(X_EquipmentType_DamageType), Schema = nameof(GameData))]
+[Table(nameof(DbContextGame.x_EquipmentTypes_DamageTypes), Schema = nameof(GameData))]
 [PrimaryKey(nameof(EquipmentTypeId), nameof(DamageTypeId))]
 public class X_EquipmentType_DamageType
 {

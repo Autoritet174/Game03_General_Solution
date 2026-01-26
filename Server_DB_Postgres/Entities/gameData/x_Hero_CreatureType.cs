@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Server_DB_Postgres.Entities.GameData;
 
 /// <summary> Таблица для связи Hero и CreatureType. </summary>
-[Table(nameof(X_Hero_CreatureType), Schema = nameof(GameData))]
+[Table(nameof(DbContextGame.x_Heroes_CreatureTypes), Schema = nameof(GameData))]
 [PrimaryKey(nameof(BaseHeroId), nameof(CreatureTypeId))]
 public class X_Hero_CreatureType
 {

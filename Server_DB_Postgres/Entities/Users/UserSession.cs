@@ -3,10 +3,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Server_DB_Postgres.Entities.Users;
 
-[Table("UserSessions", Schema = nameof(Users))]
+[Table(nameof(DbContextGame.UserSessions), Schema = nameof(Users))]
 public class UserSession : ICreatedAt, IUpdatedAt, IVersion
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; init; }
     public Guid UserId { get; set; }
 
     /// <summary>

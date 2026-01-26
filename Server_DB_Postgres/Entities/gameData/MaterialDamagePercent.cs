@@ -3,11 +3,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Server_DB_Postgres.Entities.GameData;
 
 /// <summary> Коэфициенты урона для материалов. </summary>
-[Table("MaterialDamagePercents", Schema = nameof(GameData))]
+[Table(nameof(DbContextGame.MaterialDamagePercents), Schema = nameof(GameData))]
 public class MaterialDamagePercent
 {
     /// <summary> Уникальный идентификатор. </summary>
-    public int Id { get; set; }
+    public int Id { get; init; }
 
     /// <summary> Возвращает или задает идентификатор <see cref="SmithingMaterial"/>, связанного с данным объектом. </summary>
     public int SmithingMaterialsId { get; set; }

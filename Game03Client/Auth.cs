@@ -22,7 +22,7 @@ public class Auth
             return;
         }
 
-        string? response = await HttpRequester.GetResponseAsync(Url.Auth, JsonConvert.SerializeObject(dto), cancellationToken);
+        string? response = await HttpRequester.GetResponseAsync(Url.AUTH_LOGIN, JsonConvert.SerializeObject(dto), cancellationToken);
         if (response == null)
         {
             LOGGER.LogError("response is null", L.Error.Server.InvalidResponse);

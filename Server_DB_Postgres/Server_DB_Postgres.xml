@@ -205,9 +205,6 @@
         <member name="P:Server_DB_Postgres.Entities.GameData.BaseHero.MainStat">
             <summary> Основной стат который повышает урон. Сила(1) или Ловкость(2) или Интеллект(3). </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.BaseHero.X_Hero_CreatureType">
-            <summary> Навигационное свойство к CreatureTypes. </summary>
-        </member>
         <member name="T:Server_DB_Postgres.Entities.GameData.CreatureType">
             <summary> Тип существа. </summary>
         </member>
@@ -216,9 +213,6 @@
         </member>
         <member name="P:Server_DB_Postgres.Entities.GameData.CreatureType.Name">
             <summary> Уникальное наименование на английском. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.CreatureType.X_Hero_CreatureType">
-            <summary> Навигационное свойство к Heroes. </summary>
         </member>
         <member name="T:Server_DB_Postgres.Entities.GameData.DamageType">
             <summary> Тип урона. </summary>
@@ -234,9 +228,6 @@
         </member>
         <member name="P:Server_DB_Postgres.Entities.GameData.DamageType.DevHintRu">
             <summary> Подсказка для разработчика. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.DamageType.X_EquipmentType_DamageType">
-            <summary> Навигационное свойство к <see cref="T:Server_DB_Postgres.Entities.GameData.X_EquipmentType_DamageType"/>. </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.GameData.DamageType.Category">
             <summary>
@@ -297,9 +288,6 @@
         <member name="P:Server_DB_Postgres.Entities.GameData.SlotType.NameRu">
             <summary> Наименование на русском. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.SlotType.EquipmentTypes">
-            <summary> Навигационное свойство к <see cref="T:Server_DB_Postgres.Entities.GameData.EquipmentType"/>. </summary>
-        </member>
         <member name="P:Server_DB_Postgres.Entities.GameData.SmithingMaterial.Id">
             <summary> Уникальный идентификатор. </summary>
         </member>
@@ -308,9 +296,6 @@
         </member>
         <member name="P:Server_DB_Postgres.Entities.GameData.SmithingMaterial.NameRu">
             <summary> Наименование на русском. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.SmithingMaterial.MaterialDamagePercents">
-            <summary> Навигационное свойство к <see cref="T:Server_DB_Postgres.Entities.GameData.MaterialDamagePercent"/>. </summary>
         </member>
         <member name="T:Server_DB_Postgres.Entities.GameData.X_EquipmentType_DamageType">
             <summary> Таблица для связи Hero и CreatureType. </summary>
@@ -381,9 +366,6 @@
         <member name="P:Server_DB_Postgres.Entities.Server.UserBanReason.Name">
             <summary> Наименование причины блокировки. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Server.UserBanReason.UserBans">
-            <summary> Коллекция <see cref="T:Server_DB_Postgres.Entities.Users.UserBan"/>. </summary>
-        </member>
         <member name="P:Server_DB_Postgres.Entities.Users.User.CreatedAt">
             <summary> <inheritdoc/> </summary>
         </member>
@@ -391,6 +373,34 @@
             <summary> <inheritdoc/> </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.Users.User.Version">
+            <summary> <inheritdoc/> </summary>
+        </member>
+        <member name="T:Server_DB_Postgres.Entities.Users.UserAccesskey">
+            <summary>
+            Представляет публичный ключ Passkey, привязанный к аккаунту пользователя.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Users.UserAccesskey.DescriptorId">
+            <summary>
+            Уникальный идентификатор учетных данных, сгенерированный устройством.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Users.UserAccesskey.PublicKey">
+            <summary>
+            Публичный ключ в бинарном формате.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Users.UserAccesskey.SignatureCounter">
+            <summary>
+            Счетчик использований для защиты от атак воспроизведения.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Users.UserAccesskey.DeviceName">
+            <summary>
+            Тип устройства или дружественное имя (например, "My iPhone 15").
+            </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Users.UserAccesskey.Version">
             <summary> <inheritdoc/> </summary>
         </member>
         <member name="T:Server_DB_Postgres.Entities.Users.UserBan">
@@ -483,34 +493,6 @@
         <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.SystemInfoNpotSupport">
             <summary> Получает или задаёт информацию о поддержке текстур с размерами, не являющимися степенью двойки (NPOT). </summary>
             <value>Строка, описывающая уровень поддержки NPOT (например, 'Full', 'Restricted', 'None').</value>
-        </member>
-        <member name="T:Server_DB_Postgres.Entities.Users.UserPasskey">
-            <summary>
-            Представляет публичный ключ Passkey, привязанный к аккаунту пользователя.
-            </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserPasskey.DescriptorId">
-            <summary>
-            Уникальный идентификатор учетных данных, сгенерированный устройством.
-            </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserPasskey.PublicKey">
-            <summary>
-            Публичный ключ в бинарном формате.
-            </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserPasskey.SignatureCounter">
-            <summary>
-            Счетчик использований для защиты от атак воспроизведения.
-            </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserPasskey.DeviceName">
-            <summary>
-            Тип устройства или дружественное имя (например, "My iPhone 15").
-            </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserPasskey.Version">
-            <summary> <inheritdoc/> </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.Users.UserSession.RefreshTokenHash">
             <summary>
@@ -1021,6 +1003,30 @@
             <inheritdoc />
         </member>
         <member name="M:Server_DB_Postgres.Migrations.UserSessionFix2.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.UserSessionFix3">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.UserSessionFix3.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.UserSessionFix3.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.UserSessionFix3.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Fix25">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix25.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix25.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Fix25.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Server_DB_Postgres.ModelBuilderExt">

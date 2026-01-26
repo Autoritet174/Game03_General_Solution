@@ -21,67 +21,67 @@ public class DbContextGame(DbContextOptions<DbContextGame> options) : IdentityDb
     #region collection
 
     /// <summary> Экипировка игрока. </summary>
-    public required DbSet<Equipment> Equipments { get; set; }
+    public DbSet<Equipment> Equipments { get; set; }
 
     /// <summary> Герои игрока. </summary>
-    public required DbSet<Hero> Heroes { get; set; }
+    public DbSet<Hero> Heroes { get; set; }
 
     #endregion  collection
 
     #region gameData
 
     /// <summary> Экипировка, болванки. </summary>
-    public required DbSet<BaseEquipment> BaseEquipments { get; set; }
+    public DbSet<BaseEquipment> BaseEquipments { get; set; }
 
     /// <summary> Данные героев. </summary>
-    public required DbSet<BaseHero> BaseHeroes { get; set; }
+    public DbSet<BaseHero> BaseHeroes { get; set; }
 
     /// <summary> Типы существ. </summary>
-    public required DbSet<CreatureType> CreatureTypes { get; set; }
+    public DbSet<CreatureType> CreatureTypes { get; set; }
 
     /// <summary> Типы урона. </summary>
-    public required DbSet<DamageType> DamageTypes { get; set; }
+    public DbSet<DamageType> DamageTypes { get; set; }
 
     /// <summary> Типы экипировки. </summary>
-    public required DbSet<EquipmentType> EquipmentTypes { get; set; }
+    public DbSet<EquipmentType> EquipmentTypes { get; set; }
 
     /// <summary> Дополнительный процентный урон от материала. </summary>
-    public required DbSet<MaterialDamagePercent> MaterialDamagePercents { get; set; }
+    public DbSet<MaterialDamagePercent> MaterialDamagePercents { get; set; }
 
     /// <summary> Типы слотов экипировки. </summary>
-    public required DbSet<Slot> Slots { get; set; }
-    public required DbSet<SlotType> SlotTypes { get; set; }
+    public DbSet<Slot> Slots { get; set; }
+    public DbSet<SlotType> SlotTypes { get; set; }
 
     /// <summary> Материалы для кузнечного дела. </summary>
-    public required DbSet<SmithingMaterial> SmithingMaterials { get; set; }
+    public DbSet<SmithingMaterial> SmithingMaterials { get; set; }
 
     /// <summary> Таблица связи многие ко мноким между Heroes и CreatureTypes. </summary>
-    public required DbSet<X_Hero_CreatureType> x_Heroes_CreatureTypes { get; set; }
+    public DbSet<X_Hero_CreatureType> x_Heroes_CreatureTypes { get; set; }
 
     /// <summary> Таблица связи многие ко мноким между WeaponTypes и DamageTypes. </summary>
-    public required DbSet<X_EquipmentType_DamageType> x_EquipmentTypes_DamageTypes { get; set; }
+    public DbSet<X_EquipmentType_DamageType> x_EquipmentTypes_DamageTypes { get; set; }
 
     #endregion gameData
 
     #region logs
 
     /// <summary> Лог авторизации пользователей. </summary>
-    public required DbSet<AuthRegLog> AuthRegLogs { get; set; }
+    public DbSet<AuthRegLog> AuthRegLogs { get; set; }
 
     #endregion logs
 
     #region server
 
     /// <summary> Причины бана пользователей. </summary>
-    public required DbSet<UserBanReason> UserBanReasons { get; set; }
+    public DbSet<UserBanReason> UserBanReasons { get; set; }
 
     #endregion server
 
     #region users
-    public required DbSet<UserBan> UserBans { get; set; }
-    public required DbSet<UserDevice> UserDevices { get; set; }
-    public required DbSet<UserSession> UserSessions { get; set; }
-    public required DbSet<UserPasskey> UserPasskeys { get; set; }
+    public DbSet<UserBan> UserBans { get; set; }
+    public DbSet<UserDevice> UserDevices { get; set; }
+    public DbSet<UserSession> UserSessions { get; set; }
+    public DbSet<UserAccesskey> UserAccesskeys { get; set; }
     #endregion users
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

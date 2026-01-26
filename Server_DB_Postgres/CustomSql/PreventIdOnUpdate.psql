@@ -1,0 +1,126 @@
+-- 1. триггерная функция с именем "prevent_id_update" в схеме "public". Триггерная функция предотвращает изменение поля "id" вне зависимости от того какого типа это поле, поле может быть как int так и uuid. Смысл в том что id должен задаваться при создании записи и больше никогда не меняться.
+
+CREATE OR REPLACE FUNCTION public.prevent_id_update()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Проверка на изменение значения id
+    IF NEW.id IS DISTINCT FROM OLD.id THEN
+        RAISE EXCEPTION 'Изменение поля "id" запрещено. (Table: %.%)', TG_TABLE_SCHEMA, TG_TABLE_NAME;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+
+-- 2. функция "create_triggers__prevent_id_update". Функция вешает триггерную функцию "prevent_id_update" на все таблицы базы данных, кроме тех что есть в схеме "public".
+CREATE OR REPLACE FUNCTION public.create_triggers__prevent_id_update()
+RETURNS void AS $$
+DECLARE
+    tbl_record RECORD;
+BEGIN
+    -- Перебор всех таблиц, кроме схемы public, у которых есть колонка 'id'
+    FOR tbl_record IN
+        SELECT n.nspname AS schema_name, c.relname AS table_name
+        FROM pg_class c
+        JOIN pg_namespace n ON n.oid = c.relnamespace
+        WHERE n.nspname != 'public'
+          AND c.relkind = 'r' -- только обычные таблицы
+          AND EXISTS (
+              SELECT 1 
+              FROM pg_attribute a 
+              WHERE a.attrelid = c.oid 
+                AND a.attname = 'id' 
+                AND a.attnum > 0 
+                AND NOT a.attisdropped
+          )
+    LOOP
+        -- Динамическое создание триггера
+        EXECUTE format('
+            DROP TRIGGER IF EXISTS trg_prevent_id_change ON %I.%I;
+            CREATE TRIGGER trg_prevent_id_change
+            BEFORE UPDATE ON %I.%I
+            FOR EACH ROW
+            EXECUTE FUNCTION public.prevent_id_update();',
+            tbl_record.schema_name, tbl_record.table_name,
+            tbl_record.schema_name, tbl_record.table_name
+        );
+    END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Один раз вызываем функцию
+SELECT public.create_triggers__prevent_id_update();
+
+
+
+
+-- 3. событийный триггер на создание таблиц в любой схеме кроме схемы "public", имя "on_ddl_create_table__prevent_id_update", функция для автоматического создания защиты изменения id для новых таблиц.
+CREATE OR REPLACE FUNCTION public.fn_on_ddl_prevent_id_update()
+RETURNS event_trigger AS $$
+DECLARE
+    obj RECORD;
+    schema_name TEXT;
+    table_name TEXT;
+    has_id BOOLEAN;
+    trigger_exists BOOLEAN;
+BEGIN
+    -- Перебор объектов, затронутых командой DDL
+    FOR obj IN SELECT * FROM pg_event_trigger_ddl_commands() LOOP
+        
+        -- Работаем только с таблицами
+        IF obj.object_type = 'table' THEN
+            
+            -- Получение имени схемы и таблицы через OID объекта
+            SELECT n.nspname, c.relname
+            INTO schema_name, table_name
+            FROM pg_class c
+            JOIN pg_namespace n ON n.oid = c.relnamespace
+            WHERE c.oid = obj.objid;
+
+            -- Проверка условий: схема не public
+            IF schema_name IS DISTINCT FROM 'public' THEN
+                
+                -- Проверка наличия колонки id
+                SELECT EXISTS (
+                    SELECT 1 
+                    FROM pg_attribute 
+                    WHERE attrelid = obj.objid 
+                      AND attname = 'id' 
+                      AND attnum > 0 
+                      AND NOT attisdropped
+                ) INTO has_id;
+
+                -- Если колонка id есть
+                IF has_id THEN
+                    -- ВАЖНО: Проверяем, существует ли уже такой триггер для этой таблицы
+                    SELECT EXISTS (
+                        SELECT 1 
+                        FROM pg_trigger 
+                        WHERE tgrelid = obj.objid 
+                          AND tgname = 'trg_prevent_id_change'
+                    ) INTO trigger_exists;
+
+                    -- Создаем триггер только если его нет
+                    IF NOT trigger_exists THEN
+                        EXECUTE format('
+                            CREATE TRIGGER trg_prevent_id_change
+                            BEFORE UPDATE ON %I.%I
+                            FOR EACH ROW
+                            EXECUTE FUNCTION public.prevent_id_update();',
+                            schema_name, table_name
+                        );
+                    END IF;
+                END IF;
+            END IF;
+        END IF;
+    END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Создание событийного триггера. Триггер будет срабатывать при создании новой таблицы, тем самым гарантируя то что во всех будущих таблицах будет триггер "prevent_id_update" для защиты от изменений поля id.
+CREATE EVENT TRIGGER on_ddl_create_table__prevent_id_update
+ON ddl_command_end
+WHEN TAG IN ('CREATE TABLE', 'CREATE TABLE AS')
+EXECUTE FUNCTION public.fn_on_ddl_prevent_id_update();

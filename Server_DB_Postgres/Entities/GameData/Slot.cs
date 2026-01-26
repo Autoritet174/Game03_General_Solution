@@ -4,12 +4,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Server_DB_Postgres.Entities.GameData;
 
-[Table("Slots", Schema = nameof(GameData))]
+[Table(nameof(DbContextGame.Slots), Schema = nameof(GameData))]
 [Index(nameof(Name), IsUnique = true)]
 public class Slot
 {
     /// <summary> Уникальный идентификатор. </summary>
-    public int Id { get; set; }
+    public int Id { get; init; }
 
     /// <summary> Уникальное наименование на английском. </summary>
     [MaxLength(256)]

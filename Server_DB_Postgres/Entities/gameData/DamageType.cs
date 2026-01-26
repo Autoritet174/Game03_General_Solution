@@ -6,12 +6,12 @@ using static Server_DB_Postgres.Attributes;
 namespace Server_DB_Postgres.Entities.GameData;
 
 /// <summary> Тип урона. </summary>
-[Table("DamageTypes", Schema = nameof(GameData))]
+[Table(nameof(DbContextGame.DamageTypes), Schema = nameof(GameData))]
 [Index(nameof(Name), IsUnique = true)]
 public class DamageType
 {
     /// <summary> Уникальный идентификатор. </summary>
-    public int Id { get; set; }
+    public int Id { get; init; }
 
     /// <summary> Уникальное наименование на английском. </summary>
     [MaxLength(256)]
@@ -25,9 +25,6 @@ public class DamageType
     [Column(TypeName = "text")]
     public string? DevHintRu { get; set; }
 
-
-    /// <summary> Навигационное свойство к <see cref="GameData.X_EquipmentType_DamageType"/>. </summary>
-    public ICollection<X_EquipmentType_DamageType> X_EquipmentType_DamageType { get; set; } = [];
 
     /// <summary>
     /// Категория типа урона.

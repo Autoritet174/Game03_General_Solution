@@ -5,11 +5,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Server_DB_Postgres.Entities.Users;
 
 /// <summary> Представляет пользователя системы. </summary>
-[Table("UserDevices", Schema = nameof(Users))]
+[Table(nameof(DbContextGame.UserDevices), Schema = nameof(Users))]
 public class UserDevice : ICreatedAt
 {
     /// <summary> Уникальный идентификатор. </summary>
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; init; }
 
     /// <summary> <inheritdoc/> </summary>
     public DateTimeOffset CreatedAt { get; set; }

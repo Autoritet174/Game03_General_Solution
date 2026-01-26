@@ -9,11 +9,11 @@ using static Server_DB_Postgres.Attributes;
 namespace Server_DB_Postgres.Entities.Collection;
 
 /// <summary> Герой в коллекции пользователя. </summary>
-[Table("Heroes", Schema = nameof(Collection))]
+[Table(nameof(DbContextGame.Heroes), Schema = nameof(Collection))]
 public class Hero : IVersion, ICreatedAt, IUpdatedAt
 {
     /// <summary> Уникальный идентификатор. </summary>
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; init; }
 
     /// <summary> Уникальный идентификатор владельца. </summary>
     public Guid UserId { get; set; }
@@ -41,15 +41,15 @@ public class Hero : IVersion, ICreatedAt, IUpdatedAt
 
     /// <summary> Редкость. </summary>
     [HasDefaultValue(1)]
-    public int Level { get; set; } = 1;
+    public int Level { get; set; }
 
     /// <summary> Текущий опыт. </summary>
     [HasDefaultValue(0)]
-    public long ExperienceNow { get; set; } = 0;
+    public long ExperienceNow { get; set; }
 
     /// <summary> Редкость. </summary>
     [HasDefaultValue(1)]
-    public int Rarity { get; set; } = 1;
+    public int Rarity { get; set; }
 
 
 

@@ -26,7 +26,7 @@ public sealed class PasskeyService(
             throw new ArgumentException("USER_ID_EMPTY", nameof(userId));
         }
 
-        List<PublicKeyCredentialDescriptor> existingCredentials = await dbContext.Set<UserPasskey>()
+        List<PublicKeyCredentialDescriptor> existingCredentials = await dbContext.Set<UserAccesskey>()
             .Where(p => p.UserId == userId)
             .Select(p => new PublicKeyCredentialDescriptor(p.DescriptorId))
             .ToListAsync();
@@ -70,14 +70,14 @@ public sealed class PasskeyService(
             OriginalOptions = originalOptions,
             IsCredentialIdUniqueToUserCallback = async (args, ct) =>
             {
-                return !await dbContext.Set<UserPasskey>()
+                return !await dbContext.Set<UserAccesskey>()
                     .AnyAsync(p => p.DescriptorId == args.CredentialId, ct);
             }
         };
 
         RegisteredPublicKeyCredential credential = await fido2.MakeNewCredentialAsync(parameters);
 
-        var passkey = new UserPasskey
+        var passkey = new UserAccesskey
         {
             Id = Guid.NewGuid(),
             UserId = userId,
@@ -87,7 +87,7 @@ public sealed class PasskeyService(
             CreatedAt = DateTimeOffset.UtcNow
         };
 
-        _ = dbContext.UserPasskeys.Add(passkey);
+        _ = dbContext.UserAccesskeys.Add(passkey);
         _ = await dbContext.SaveChangesAsync();
     }
 
@@ -100,7 +100,7 @@ public sealed class PasskeyService(
 
         if (userId.HasValue && userId.Value != Guid.Empty)
         {
-            allowedCredentials = await dbContext.Set<UserPasskey>()
+            allowedCredentials = await dbContext.Set<UserAccesskey>()
                 .Where(p => p.UserId == userId.Value)
                 .Select(p => new PublicKeyCredentialDescriptor(p.DescriptorId))
                 .ToListAsync();
@@ -126,7 +126,7 @@ public sealed class PasskeyService(
         ArgumentNullException.ThrowIfNull(clientResponse);
         ArgumentNullException.ThrowIfNull(originalOptions);
 
-        UserPasskey dbKey = await dbContext.Set<UserPasskey>()
+        UserAccesskey dbKey = await dbContext.Set<UserAccesskey>()
             .FirstOrDefaultAsync(p => p.DescriptorId == clientResponse.RawId)
             ?? throw new AuthenticationException("PASSKEY_NOT_FOUND");
 
@@ -138,7 +138,7 @@ public sealed class PasskeyService(
             StoredSignatureCounter = dbKey.SignatureCounter,
             IsUserHandleOwnerOfCredentialIdCallback = async (args, ct) =>
             {
-                return await dbContext.Set<UserPasskey>()
+                return await dbContext.Set<UserAccesskey>()
                     .AnyAsync(p => p.DescriptorId == args.CredentialId, ct);
             }
         };

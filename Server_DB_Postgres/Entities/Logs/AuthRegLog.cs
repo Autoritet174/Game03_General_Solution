@@ -8,11 +8,11 @@ using static Server_DB_Postgres.Attributes;
 namespace Server_DB_Postgres.Entities.Logs;
 
 /// <summary> Лог авторизации пользователей. </summary>
-[Table("AuthRegLogs", Schema = nameof(Logs))]
+[Table(nameof(DbContextGame.AuthRegLogs), Schema = nameof(Logs))]
 public class AuthRegLog : IVersion, ICreatedAt
 {
     /// <summary> Уникальный идентификатор. </summary>
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; init; }
 
     /// <summary> Email при авторизации. </summary>
     [MaxLength(256)]
@@ -41,5 +41,5 @@ public class AuthRegLog : IVersion, ICreatedAt
     public IPAddress? Ip { get; set; }
 
     [HasDefaultValue(true)]
-    public bool ActionIsAuthentication { get; set; } = true;
+    public bool ActionIsAuthentication { get; set; }
 }

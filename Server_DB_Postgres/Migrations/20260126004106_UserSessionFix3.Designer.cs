@@ -4,6 +4,7 @@ using System.Net;
 using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server_DB_Postgres;
@@ -13,9 +14,11 @@ using Server_DB_Postgres;
 namespace Server_DB_Postgres.Migrations
 {
     [DbContext(typeof(DbContextGame))]
-    partial class DbContext_GameModelSnapshot : ModelSnapshot
+    [Migration("20260126004106_UserSessionFix3")]
+    partial class UserSessionFix3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -605,6 +608,9 @@ namespace Server_DB_Postgres.Migrations
                     b.HasIndex("Name")
                         .IsUnique()
                         .HasDatabaseName("equipment_types__name__idx");
+
+                    b.HasIndex("SlotTypeId")
+                        .HasDatabaseName("equipment_types__slot_type_id__idx");
 
                     b.ToTable("equipment_types", "game_data");
                 });
@@ -1345,6 +1351,16 @@ namespace Server_DB_Postgres.Migrations
                     b.Navigation("SmithingMaterial");
                 });
 
+            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.EquipmentType", b =>
+                {
+                    b.HasOne("Server_DB_Postgres.Entities.GameData.SlotType", null)
+                        .WithMany("EquipmentTypes")
+                        .HasForeignKey("SlotTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("equipment_types__slot_type_id__slot_types__fkey");
+                });
+
             modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.MaterialDamagePercent", b =>
                 {
                     b.HasOne("Server_DB_Postgres.Entities.GameData.DamageType", "DamageType")
@@ -1381,14 +1397,14 @@ namespace Server_DB_Postgres.Migrations
             modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.X_EquipmentType_DamageType", b =>
                 {
                     b.HasOne("Server_DB_Postgres.Entities.GameData.DamageType", "DamageType")
-                        .WithMany()
+                        .WithMany("X_EquipmentType_DamageType")
                         .HasForeignKey("DamageTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("x_equipment_types_damage_types__damage_type_id__damage_types__fkey");
 
                     b.HasOne("Server_DB_Postgres.Entities.GameData.EquipmentType", "EquipmentType")
-                        .WithMany()
+                        .WithMany("X_EquipmentType_DamageType")
                         .HasForeignKey("EquipmentTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
@@ -1402,14 +1418,14 @@ namespace Server_DB_Postgres.Migrations
             modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.X_Hero_CreatureType", b =>
                 {
                     b.HasOne("Server_DB_Postgres.Entities.GameData.BaseHero", "BaseHero")
-                        .WithMany()
+                        .WithMany("X_Hero_CreatureType")
                         .HasForeignKey("BaseHeroId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("x_heroes_creature_types__base_hero_id__base_heroes__fkey");
 
                     b.HasOne("Server_DB_Postgres.Entities.GameData.CreatureType", "CreatureType")
-                        .WithMany()
+                        .WithMany("X_Hero_CreatureType")
                         .HasForeignKey("CreatureTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
@@ -1454,7 +1470,7 @@ namespace Server_DB_Postgres.Migrations
             modelBuilder.Entity("Server_DB_Postgres.Entities.Users.UserBan", b =>
                 {
                     b.HasOne("Server_DB_Postgres.Entities.Server.UserBanReason", "UserBanReason")
-                        .WithMany()
+                        .WithMany("UserBans")
                         .HasForeignKey("UserBanReasonId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
@@ -1482,6 +1498,36 @@ namespace Server_DB_Postgres.Migrations
                         .HasConstraintName("user_sessions__user_device_id__user_devices__fkey");
 
                     b.Navigation("UserDevice");
+                });
+
+            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.BaseHero", b =>
+                {
+                    b.Navigation("X_Hero_CreatureType");
+                });
+
+            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.CreatureType", b =>
+                {
+                    b.Navigation("X_Hero_CreatureType");
+                });
+
+            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.DamageType", b =>
+                {
+                    b.Navigation("X_EquipmentType_DamageType");
+                });
+
+            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.EquipmentType", b =>
+                {
+                    b.Navigation("X_EquipmentType_DamageType");
+                });
+
+            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.SlotType", b =>
+                {
+                    b.Navigation("EquipmentTypes");
+                });
+
+            modelBuilder.Entity("Server_DB_Postgres.Entities.Server.UserBanReason", b =>
+                {
+                    b.Navigation("UserBans");
                 });
 
             modelBuilder.Entity("Server_DB_Postgres.Entities.Users.User", b =>

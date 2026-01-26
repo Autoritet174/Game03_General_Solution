@@ -7,11 +7,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Server_DB_Postgres.Entities.Collection;
 
-[Table("Equipments", Schema = nameof(Collection))]
+[Table(nameof(DbContextGame.Equipments), Schema = nameof(Collection))]
 [Index(nameof(SlotId), nameof(HeroId), IsUnique = true)]
 public class Equipment : IVersion, ICreatedAt, IUpdatedAt
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; init; }
 
     public Guid UserId { get; set; }
     [ForeignKey(nameof(UserId))]

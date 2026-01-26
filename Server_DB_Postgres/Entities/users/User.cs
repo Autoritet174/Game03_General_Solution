@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Server_DB_Postgres.Entities.Users;
 
+[Table(nameof(DbContextGame.Users))]
 public class User : IdentityUser<Guid>, IVersion, ICreatedAt, IUpdatedAt
 {
     [MaxLength(256)]

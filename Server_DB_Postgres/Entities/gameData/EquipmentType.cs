@@ -7,11 +7,11 @@ using static Server_DB_Postgres.Attributes;
 namespace Server_DB_Postgres.Entities.GameData;
 
 /// <summary> Тип экипировки. </summary>
-[Table("EquipmentTypes", Schema = nameof(GameData))]
+[Table(nameof(DbContextGame.EquipmentTypes), Schema = nameof(GameData))]
 [Index(nameof(Name), IsUnique = true)]
 public class EquipmentType
 {
-    public int Id { get; set; }
+    public int Id { get; init; }
 
     [MaxLength(256)]
     public required string Name { get; set; }
@@ -19,7 +19,6 @@ public class EquipmentType
     [MaxLength(256)]
     public required string NameRu { get; set; }
 
-    public ICollection<X_EquipmentType_DamageType> X_EquipmentType_DamageType { get; set; } = [];
 
     //[NotMapped]
     //public IReadOnlyCollection<DamageType> DamageTypes => X_EquipmentType_DamageType.Select(static x => x.DamageType).ToList() ?? [];
@@ -36,14 +35,14 @@ public class EquipmentType
     public SlotType? SlotType;
 
     [HasDefaultValue(false)]
-    public bool CanCraftSmithing { get; set; } = false;
+    public bool CanCraftSmithing { get; set; }
 
     [HasDefaultValue(false)]
-    public bool CanCraftJewelcrafting { get; set; } = false;
+    public bool CanCraftJewelcrafting { get; set; }
 
     /// <summary> Трата очков действия за удар. </summary>
     [HasDefaultValue(0)]
-    public int SpendActionPoints { get; set; } = 0;
+    public int SpendActionPoints { get; set; }
 
     /// <summary> Блокирует ли оружие другую руку, если это оружие. </summary>
     public bool? BlockOtherHand { get; set; }

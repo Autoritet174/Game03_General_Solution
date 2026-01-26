@@ -7,8 +7,8 @@ namespace Server_DB_Postgres.Entities.Users;
 /// <summary>
 /// Представляет публичный ключ Passkey, привязанный к аккаунту пользователя.
 /// </summary>
-[Table("UserPasskeys", Schema = nameof(Users))]
-public sealed class UserPasskey : ICreatedAt, IUpdatedAt
+[Table(nameof(DbContextGame.UserAccesskeys), Schema = nameof(Users))]
+public sealed class UserAccesskey : ICreatedAt, IUpdatedAt
 {
     public Guid Id { get; init; }
 

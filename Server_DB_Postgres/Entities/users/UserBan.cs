@@ -5,11 +5,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Server_DB_Postgres.Entities.Users;
 
 /// <summary> Представляет запись о блокировке (бане) пользователя. </summary>
-[Table("UserBans", Schema = nameof(Users))]
+[Table(nameof(DbContextGame.UserBans), Schema = nameof(Users))]
 public class UserBan : IVersion, ICreatedAt, IUpdatedAt
 {
     /// <summary> Уникальный идентификатор. </summary>
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; init; }
 
 
     /// <summary> Идентификатор пользователя, к которому применена блокировка. </summary>
