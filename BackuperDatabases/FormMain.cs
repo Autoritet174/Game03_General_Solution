@@ -59,21 +59,21 @@ public partial class FormMain : Form
     private void button_Restore_PostgreSql_Users_Click(object sender, EventArgs e)
     {
         Enabled = false;
-        Restore(Database.PostgreSql_Users);
+        _ = Restore(Database.PostgreSql_Users);
         Enabled = true;
     }
 
     private void button_Restore_PostgreSql_GameData_Click(object sender, EventArgs e)
     {
         Enabled = false;
-        Restore(Database.PostgreSql_Data);
+        _ = Restore(Database.PostgreSql_Data);
         Enabled = true;
     }
 
     private void button_Restore_MongoDb_UserData_Click(object sender, EventArgs e)
     {
         Enabled = false;
-        Restore(Database.MongoDb_UserData);
+        _ = Restore(Database.MongoDb_UserData);
         Enabled = true;
     }
 
@@ -82,7 +82,7 @@ public partial class FormMain : Form
         Enabled = false;
         foreach (Database database in Enum.GetValues<Database>())
         {
-            Restore(database);
+            _ = Restore(database);
         }
         Enabled = true;
     }
@@ -180,7 +180,7 @@ public partial class FormMain : Form
         BackupFolderClear();
     }
 
-    private static void Restore(Database database)
+    private static bool Restore(Database database, bool fromLastFile = false)
     {
         BackupFolderReset();
         OpenFileDialog openFileDialog = new();
@@ -201,45 +201,73 @@ public partial class FormMain : Form
         }
         else
         {
-            return;
+            return false;
         }
 
+        string fileName;
         openFileDialog.InitialDirectory = Path.Combine(game03_archive_dirPath, DBMS_name, dbName);
-        if (openFileDialog.ShowDialog() != DialogResult.OK)
+        if (fromLastFile)
         {
-            return;
+            FileInfo? lastFile = new DirectoryInfo(openFileDialog.InitialDirectory)
+                .GetFiles()
+                .OrderByDescending(f => f.LastWriteTime)
+                .FirstOrDefault();
+            if (lastFile == null)
+            {
+                return false;
+            }
+            fileName = lastFile.FullName;
         }
+        else
+        {
+            if (openFileDialog.ShowDialog() != DialogResult.OK)
+            {
+                return false;
+            }
+            fileName = openFileDialog.FileName;
+        }
+
 
         string bat = $"""
-            "{archivator7z_exeFilePath}" x -y "{openFileDialog.FileName}" -o"{Path.Combine(backup_folder)}"
+            "{archivator7z_exeFilePath}" x -y "{fileName}" -o"{Path.Combine(backup_folder)}"
             """;
         ExecuteBatCommand_and_WaitForExit(bat);
         ////////////////////////////////////////////////////////////////////////////////////////
 
-
-        ////////////////////////////////////////////////////////////////////////////////////////
-        // Восстановление базы данных
-        if (database is Database.PostgreSql_Users or Database.PostgreSql_Data or Database.PostgreSql)
+        try
         {
-            string dbFilePath = Path.Combine(backup_folder, $"{dbName}.sql");
-            // "{Path.Combine(postgre_tools_pathDir, "pg_restore.exe")}" -U postgres --host={postgre_server_host} --clean --if-exists --verbose --dbname={dbName} "{dbFilePath}"
-            bat = $"""
+            // Восстановление базы данных
+            if (database is Database.PostgreSql_Users or Database.PostgreSql_Data or Database.PostgreSql)
+            {
+                string dbFilePath = Path.Combine(backup_folder, $"{dbName}.sql");
+                // "{Path.Combine(postgre_tools_pathDir, "pg_restore.exe")}" -U postgres --host={postgre_server_host} --clean --if-exists --verbose --dbname={dbName} "{dbFilePath}"
+                bat = $"""
                 "{Path.Combine(postgre_tools_pathDir, "psql.exe")}" -U postgres --host={postgre_server_host} --dbname={dbName} -f "{dbFilePath}"
                 """;
-            ExecuteBatCommand_and_WaitForExit(bat);
-        }
-        else if (database is Database.MongoDb_UserData)
-        {
-            string dbFileName = $"{mongodb_server_dbName}.archiveMongodb";
-            string dbFilePath = Path.Combine(backup_folder, dbFileName);
-            bat = $"""
+                ExecuteBatCommand_and_WaitForExit(bat);
+                return true;
+            }
+            else if (database is Database.MongoDb_UserData)
+            {
+                string dbFileName = $"{mongodb_server_dbName}.archiveMongodb";
+                string dbFilePath = Path.Combine(backup_folder, dbFileName);
+                bat = $"""
                 "{Path.Combine(mongodb_tools_pathDir, "mongorestore.exe")}" --host {mongodb_server_host} --port {mongodb_server_port} --archive="{dbFilePath}" --drop
                 """;
-            ExecuteBatCommand_and_WaitForExit(bat);
-        }
-        ////////////////////////////////////////////////////////////////////////////////////////
+                ExecuteBatCommand_and_WaitForExit(bat);
+                return true;
+            }
 
-        BackupFolderClear();
+            return false;
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+        finally
+        {
+            BackupFolderClear();
+        }
     }
 
     /// <summary>
@@ -308,5 +336,20 @@ public partial class FormMain : Form
         {
             Directory.Delete(backup_folder, true);
         }
+    }
+
+    private async void button_RestoreFromLast_PostgreSql_Users_Click(object sender, EventArgs e)
+    {
+        Enabled = false;
+        bool result = Restore(Database.PostgreSql_Users, true);
+        Enabled = true;
+
+        if (result)
+        {
+            label_Complete.Show();
+            await Task.Delay(750);
+            Close();
+        }
+
     }
 }

@@ -39,6 +39,8 @@ partial class FormMain
         button_Restore_MongoDb_UserData = new Button();
         button_Backup_All = new Button();
         button_Restore_All = new Button();
+        button_RestoreFromLast_PostgreSql_Users = new Button();
+        label_Complete = new Label();
         SuspendLayout();
         // 
         // label1
@@ -167,11 +169,35 @@ partial class FormMain
         button_Restore_All.Visible = false;
         button_Restore_All.Click += button_Restore_All_Click;
         // 
+        // button_RestoreFromLast_PostgreSql_Users
+        // 
+        button_RestoreFromLast_PostgreSql_Users.Location = new Point(388, 13);
+        button_RestoreFromLast_PostgreSql_Users.Margin = new Padding(4);
+        button_RestoreFromLast_PostgreSql_Users.Name = "button_RestoreFromLast_PostgreSql_Users";
+        button_RestoreFromLast_PostgreSql_Users.Size = new Size(142, 32);
+        button_RestoreFromLast_PostgreSql_Users.TabIndex = 2;
+        button_RestoreFromLast_PostgreSql_Users.Text = "Restore from last";
+        button_RestoreFromLast_PostgreSql_Users.UseVisualStyleBackColor = true;
+        button_RestoreFromLast_PostgreSql_Users.Click += button_RestoreFromLast_PostgreSql_Users_Click;
+        // 
+        // label_Complete
+        // 
+        label_Complete.AutoSize = true;
+        label_Complete.Location = new Point(388, 49);
+        label_Complete.Margin = new Padding(4, 0, 4, 0);
+        label_Complete.Name = "label_Complete";
+        label_Complete.Size = new Size(77, 21);
+        label_Complete.TabIndex = 3;
+        label_Complete.Text = "Complete";
+        label_Complete.Visible = false;
+        // 
         // FormMain
         // 
         AutoScaleDimensions = new SizeF(9F, 21F);
         AutoScaleMode = AutoScaleMode.Font;
-        ClientSize = new Size(393, 178);
+        ClientSize = new Size(543, 178);
+        Controls.Add(label_Complete);
+        Controls.Add(button_RestoreFromLast_PostgreSql_Users);
         Controls.Add(button_Restore_All);
         Controls.Add(button_Restore_MongoDb_UserData);
         Controls.Add(button_Restore_PostgreSql_GameData);
@@ -206,4 +232,6 @@ partial class FormMain
     private Button button_Restore_MongoDb_UserData;
     private Button button_Backup_All;
     private Button button_Restore_All;
+    private Button button_RestoreFromLast_PostgreSql_Users;
+    private Label label_Complete;
 }
