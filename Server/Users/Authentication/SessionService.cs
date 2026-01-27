@@ -115,6 +115,7 @@ public sealed partial class SessionService(
             IsUsed = false,
             IsRevoked = false,
             UserDeviceId = userDeviceId.Value,
+            UserSessionInactivationReasonId = cache.GetInactivationReasonIdByCode(InactivationReason.NONE),
         };
 
         _ = dbContext.UserSessions.Add(session);

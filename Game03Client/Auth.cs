@@ -13,24 +13,52 @@ namespace Game03Client;
 
 public class Auth
 {
-    public static DtoResponseAuthReg? Dto { get; private set; }
-    public static async Task RefreshTokensAsync(DtoRequestAuthReg dto, CancellationToken cancellationToken)
+    public enum AuthType
     {
-        Dto = null;
+        Login,
+        RefreshTokens
+    }
+
+    public static async Task<bool> AuthentificationAsync(DtoRequestAuthReg dto, AuthType authType , CancellationToken cancellationToken = default)
+    {
+        AccessToken = null;
+        RefreshToken = null;
+        RefreshTokenExpirationAt = null;
+
         if (cancellationToken.IsCancellationRequested)
         {
-            return;
+            LOGGER.LogError("IsCancellationRequested");
+            return false;
         }
+        string url = authType == AuthType.Login ? Url.AUTH_LOGIN : Url.AUTH_REFRESH_TOKENS;
 
-        string? response = await HttpRequester.GetResponseAsync(Url.AUTH_LOGIN, JsonConvert.SerializeObject(dto), cancellationToken);
+        string? response = await HttpRequester.GetResponseAsync(url, JsonConvert.SerializeObject(dto), cancellationToken);
         if (response == null)
         {
             LOGGER.LogError("response is null", L.Error.Server.InvalidResponse);
-            throw new Exception();
+            return false;
         }
 
-        Dto = JsonConvert.DeserializeObject<DtoResponseAuthReg>(response) ?? throw new Exception();
+        DtoResponseAuthReg? dtoResponse = JsonConvert.DeserializeObject<DtoResponseAuthReg>(response);
+        if (dtoResponse == null)
+        {
+            LOGGER.LogError("dtoResponse is null", L.Error.Server.InvalidResponse);
+            return false;
+        }
+
+        if (!string.IsNullOrEmpty(dtoResponse.ErrorKey))
+        {
+            //LOGGER.LogError($"ErrorKey: {dtoResponse.ErrorKey}", dtoResponse.ErrorKey);
+            return false;
+        }
+
+        AccessToken = dtoResponse.AccessToken;
+        RefreshToken = dtoResponse.RefreshToken;
+        RefreshTokenExpirationAt = dtoResponse.ExtraDateTimeOffset;
+        return true;
     }
 
-    public static string? AccessToken => Dto?.AccessToken;
+    public static string? AccessToken { get; set; }
+    public static string? RefreshToken { get; private set; }
+    public static DateTimeOffset? RefreshTokenExpirationAt { get; private set; }
 }

@@ -29,7 +29,7 @@ public class WebSocketClient
         {
             Connected = false;
             _webSocket = new();
-            string? accessToken = Auth.Dto?.AccessToken;
+            string? accessToken = Auth.AccessToken;
 
             if (!string.IsNullOrWhiteSpace(accessToken))
             {

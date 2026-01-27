@@ -13,6 +13,7 @@ public static class Url
     public const string PING = $"{URL_HEADER}ping";
 
     public const string AUTH_LOGIN = $"{URL_HEADER}auth/login";
+    public const string AUTH_REFRESH_TOKENS = $"{URL_HEADER}session/refresh";
     public const string AUTH_VALIDATE = $"{URL_HEADER}auth/validate";
     public const string REG = $"{URL_HEADER}reg";
 

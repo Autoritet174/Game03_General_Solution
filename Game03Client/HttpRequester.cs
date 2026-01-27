@@ -52,7 +52,7 @@ public class HttpRequester
             {
                 request.Content = new StringContent(jsonBody, Encoding.UTF8, GlobalHelper.APPLICATION_JSON);
             }
-            string? accessToken = Auth.Dto?.AccessToken;
+            string? accessToken = Auth.AccessToken;
             if (!string.IsNullOrWhiteSpace(accessToken))
             {
                 // Если был передан токен то подставляем его в заголовок как авторизацию

@@ -1,7 +1,5 @@
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace General;
 
@@ -47,7 +45,7 @@ public static class AccessTokenHelper
             // Проверяем exp (expiration) — обязательно
             if (payloadObj["exp"] is JToken expToken && long.TryParse(expToken.ToString(), out long exp))
             {
-                if (currentUnix >= exp)
+                if (currentUnix - exp > -30)//истечет через 30 секунд, приравниваем к истекшему
                 {
                     return false; // Истёк
                 }

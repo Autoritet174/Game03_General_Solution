@@ -11,12 +11,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="DataBaseModels\**" />
+    <Compile Remove="GameData\**" />
     <Compile Remove="publish\**" />
     <Content Remove="DataBaseModels\**" />
+    <Content Remove="GameData\**" />
     <Content Remove="publish\**" />
     <EmbeddedResource Remove="DataBaseModels\**" />
+    <EmbeddedResource Remove="GameData\**" />
     <EmbeddedResource Remove="publish\**" />
     <None Remove="DataBaseModels\**" />
+    <None Remove="GameData\**" />
     <None Remove="publish\**" />
   </ItemGroup>
   <ItemGroup>
@@ -141,10 +145,6 @@
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0" />
 
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="GameData\" />
   </ItemGroup>
 
 </Project>
