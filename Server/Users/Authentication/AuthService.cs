@@ -8,7 +8,6 @@ using Server.Jwt_NS;
 using Server_DB_Postgres;
 using Server_DB_Postgres.Entities.Users;
 using System.Net;
-using System.Security.Cryptography;
 
 namespace Server.Users.Authentication;
 
@@ -16,14 +15,13 @@ public sealed class AuthService(
     UserManager<User> userManager,
     SignInManager<User> signInManager,
     JwtService jwt,
-    IMemoryCache cache,
+    IMemoryCache memoryCache,
     DbContextGame dbContext,
     AuthRegLoggerBackgroundService backgroundLoggerAuthentificationService,
     SessionService sessionService,
     ILogger<AuthService> logger)
 {
     private static readonly Random _Random = new();
-    private static readonly TimeSpan _LockoutPeriod = TimeSpan.FromMinutes(2);
 
     public async Task<DtoResponseAuthReg> LoginAsync(
         DtoRequestAuthReg dto,
@@ -94,18 +92,20 @@ public sealed class AuthService(
             ResetFloodAttempts(dto.Email);
 
 
-            //// всегда при успешном логине любым методом удаляем старые токены и генерируем новый RefreshToken.
-            // await dbContext.RefreshTokens.Where(a => a.UserId == userId).ExecuteDeleteAsync();
-
             string accessToken = jwt.GenerateToken(userId.Value);
 
-            string refreshToken = await sessionService.CreateSessionAsync(user.Id, dto);
-            return AuthRegResponse.Success(accessToken, refreshToken);
+            (string? refreshToken, DateTimeOffset? dtExpiration) = await sessionService.CreateSessionAsync(user.Id, dto);
+            if (string.IsNullOrWhiteSpace(refreshToken) || dtExpiration == null)
+            {
+                return AuthRegResponse.InvalidResponse();
+            }
+
+            return AuthRegResponse.Success(accessToken, refreshToken, dtExpiration.Value);
         }
         catch
         {
             IncrementFloodAttempt(dto.Email);
-            throw;
+            return AuthRegResponse.InvalidResponse();
         }
         finally
         {
@@ -184,21 +184,31 @@ public sealed class AuthService(
 
     private static readonly TimeSpan _FastFloodPeriod = TimeSpan.FromSeconds(30);
 
-    private bool IsFloodDetected(string email) =>
-        cache.TryGetValue($"flood:{email.NormalizedValueGame03()}", out int count) && count >= 10;
+    private bool IsFloodDetected(string email)
+    {
+        return memoryCache.TryGetValue($"flood:{email.NormalizedValueGame03()}", out int count) && count >= 10;
+    }
 
     private void IncrementFloodAttempt(string email)
     {
         string key = $"flood:{email.NormalizedValueGame03()}";
-        int current = cache.Get<int?>(key) ?? 0;
-        _ = cache.Set(key, current + 1, _FastFloodPeriod);
+        int current = memoryCache.Get<int?>(key) ?? 0;
+        _ = memoryCache.Set(key, current + 1, _FastFloodPeriod);
     }
-    private void ResetFloodAttempts(string email) => cache.Remove($"flood:{email.NormalizedValueGame03()}");
-    private static long GetSecondsRemaining(DateTimeOffset? end) =>
-        end.HasValue ? (long)Math.Max(0, (end.Value - DateTimeOffset.UtcNow).TotalSeconds) : 0;
+    private void ResetFloodAttempts(string email)
+    {
+        memoryCache.Remove($"flood:{email.NormalizedValueGame03()}");
+    }
 
-    private async Task<bool> IsUserBannedAsync(Guid uId, DateTimeOffset now) =>
-        await dbContext.UserBans.AnyAsync(b => b.UserId == uId && b.CreatedAt <= now && (b.ExpiresAt == null || b.ExpiresAt >= now));
+    private static long GetSecondsRemaining(DateTimeOffset? end)
+    {
+        return end.HasValue ? (long)Math.Max(0, (end.Value - DateTimeOffset.UtcNow).TotalSeconds) : 0;
+    }
+
+    private async Task<bool> IsUserBannedAsync(Guid uId, DateTimeOffset now)
+    {
+        return await dbContext.UserBans.AnyAsync(b => b.UserId == uId && b.CreatedAt <= now && (b.ExpiresAt == null || b.ExpiresAt >= now));
+    }
 
     private async Task<DtoResponseAuthReg> GetBanResponseAsync(Guid uId, DateTimeOffset now)
     {

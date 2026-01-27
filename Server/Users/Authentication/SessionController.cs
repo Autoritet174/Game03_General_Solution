@@ -18,14 +18,14 @@ public sealed class SessionController(SessionService sessionService, JwtService 
     {
         try
         {
-            (Guid? userId, string? newRefreshToken) = await sessionService.RefreshSessionAsync(dto);
-            if (userId == null || string.IsNullOrWhiteSpace(newRefreshToken))
+            (Guid? userId, string? newRefreshToken, DateTimeOffset? dtExpiration) = await sessionService.RefreshSessionAsync(dto);
+            if (userId == null || string.IsNullOrWhiteSpace(newRefreshToken) || dtExpiration == null)
             {
                 return Unauthorized(AuthRegResponse.InvalidCredentials());
             }
             string newAccessToken = jwtService.GenerateToken(userId.Value);
 
-            return Ok(AuthRegResponse.Success(newAccessToken, newRefreshToken));
+            return Ok(AuthRegResponse.Success(newAccessToken, newRefreshToken, dtExpiration.Value));
         }
         catch (SecurityException)
         {

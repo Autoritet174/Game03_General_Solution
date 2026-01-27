@@ -135,5 +135,5 @@ public class DtoRequestAuthReg(
     /// <value>Строка, описывающая уровень поддержки NPOT (например, 'Full', 'Restricted', 'None').</value>
     public string SystemInfo_npotSupport { get; } = systemInfo_npotSupport;
 
-    public string SessionToken { get; } = refreshToken;
+    public string RefreshToken { get; } = refreshToken;
 }

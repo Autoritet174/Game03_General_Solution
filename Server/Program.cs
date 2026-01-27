@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 using Npgsql;
 using Serilog;
 using Serilog.Events;
-using Server.GameData;
+using Server.Cache;
 using Server.Http_NS.Middleware_NS;
 using Server.Jwt_NS;
 using Server.Users;
@@ -68,7 +68,7 @@ internal partial class Program
         // РЕПОЗИТОРИИ
         _ = services.AddScoped<CollectionHeroRepository>();
 
-        _ = services.AddSingleton<IGameDataCacheService, GameDataCacheService>();
+        _ = services.AddSingleton<CacheService>();
         _ = services.AddSingleton<ITestService, TestService>();
 
 
@@ -215,7 +215,7 @@ internal partial class Program
         // на этом момент есть гарантия что соединения со всеми СУБД корректно.
         // иначе где то сработает один из throw.
 
-        await LoadGameDataCache(app);
+        await LoadServerCache(app);
 
         IHostApplicationLifetime lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
 
@@ -516,28 +516,23 @@ internal partial class Program
         }
     }
 
-    /// <summary> Загружаем в оперативную память константные игровые данные которые не меняются во время работы сервера. </summary>
-    private static async Task LoadGameDataCache(WebApplication app)
+    /// <summary> Загружаем в оперативную память константные серверные данные которые не меняются во время работы сервера. </summary>
+    private static async Task LoadServerCache(WebApplication app)
     {
         using IServiceScope scope = app.Services.CreateScope();
-        IGameDataCacheService heroCache = scope.ServiceProvider.GetRequiredService<IGameDataCacheService>();
-        ITestService testService = scope.ServiceProvider.GetRequiredService<ITestService>();
-        // Получаем временный Scoped-контекст БД
-        DbContextGame db = scope.ServiceProvider.GetRequiredService<DbContextGame>();
+        CacheService service = scope.ServiceProvider.GetRequiredService<CacheService>();
+        using DbContextGame db = scope.ServiceProvider.GetRequiredService<DbContextGame>();
+        ILogger<Program> logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
         try
         {
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
-            await heroCache.RefreshGameDataJsonAsync(db, cts.Token);
+            await service.LoadServerDataAsync(db, cts.Token);
 
-            ILogger<Program> logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-            logger.LogInformation("Game data cache loaded successfully");
-
-            await testService.Main(db, cts.Token);
+            logger.LogInformation("Server cache loaded successfully");
         }
         catch (Exception ex)
         {
-            ILogger<Program> logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-            logger.LogError(ex, "Failed to load game data cache");
+            logger.LogError(ex, "Server cache load failed");
             throw;
         }
     }

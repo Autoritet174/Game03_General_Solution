@@ -2,6 +2,7 @@ using General.DTO.RestRequest;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Npgsql;
+using Server.Cache;
 using Server_DB_Postgres;
 using Server_DB_Postgres.Entities.Server;
 using Server_DB_Postgres.Entities.Users;
@@ -9,8 +10,10 @@ using System.Security.Cryptography;
 
 namespace Server.Users.Authentication;
 
-public sealed partial class SessionService(DbContextGame dbContext, ILogger<SessionService> logger
-    )
+public sealed partial class SessionService(
+    DbContextGame dbContext,
+    ILogger<SessionService> logger,
+    CacheService cache)
 {
     private const int TOKEN_SIZE = 32;
     private static readonly TimeSpan RefreshTokenLifeTime = TimeSpan.FromDays(14);
@@ -92,22 +95,23 @@ public sealed partial class SessionService(DbContextGame dbContext, ILogger<Sess
 
     #endregion
 
-    public async Task<string?> CreateSessionAsync(Guid userId, DtoRequestAuthReg dto)
+    public async Task<(string? refreshToken, DateTimeOffset? dtExpiration)> CreateSessionAsync(Guid userId, DtoRequestAuthReg dto)
     {
         Guid? userDeviceId = await GetOrAddDeviceId(dto);
         if (userDeviceId == null)
         {
-            return null;
+            return (null, null);
         }
 
         byte[] refreshToken = RandomNumberGenerator.GetBytes(TOKEN_SIZE);
 
+        DateTimeOffset dtExpiration = DateTimeOffset.UtcNow.Add(RefreshTokenLifeTime);
         var session = new UserSession
         {
             Id = Guid.NewGuid(),
             UserId = userId,
-            SessionTokenHash = SHA256.HashData(refreshToken),
-            ExpiresAt = DateTimeOffset.UtcNow.Add(RefreshTokenLifeTime),
+            RefreshTokenHash = SHA256.HashData(refreshToken),
+            ExpiresAt = dtExpiration,
             IsUsed = false,
             IsRevoked = false,
             UserDeviceId = userDeviceId.Value,
@@ -116,38 +120,39 @@ public sealed partial class SessionService(DbContextGame dbContext, ILogger<Sess
         _ = dbContext.UserSessions.Add(session);
         _ = await dbContext.SaveChangesAsync();
 
-        return Convert.ToBase64String(refreshToken);
+        return (Convert.ToBase64String(refreshToken), dtExpiration);
     }
 
-    public async Task<(Guid? UserId, string? NewRefreshToken)> RefreshSessionAsync(DtoRequestAuthReg dto)
+    public async Task<(Guid? UserId, string? NewRefreshToken, DateTimeOffset? dtExpiration)> RefreshSessionAsync(DtoRequestAuthReg dto)
     {
-        string refreshTokenBase64 = dto.SessionToken;
+        string refreshTokenBase64 = dto.RefreshToken;
+        (Guid? UserId, string? NewRefreshToken, DateTimeOffset? dtExpiration) resultNull = (null, null, null);
         if (string.IsNullOrWhiteSpace(refreshTokenBase64))
         {
             LogEmptyToken();
-            return (null, null);
+            return resultNull;
         }
 
-        byte[] providedSessionTokenHash;
+        byte[] providedRefreshTokenHash;
         try
         {
-            byte[] providedSessionToken = Convert.FromBase64String(refreshTokenBase64);
-            if (providedSessionToken.Length != TOKEN_SIZE)
+            byte[] providedRefreshToken = Convert.FromBase64String(refreshTokenBase64);
+            if (providedRefreshToken.Length != TOKEN_SIZE)
             {
-                LogInvalidTokenSize(providedSessionToken.Length, TOKEN_SIZE);
-                return (null, null);
+                LogInvalidTokenSize(providedRefreshToken.Length, TOKEN_SIZE);
+                return resultNull;
             }
-            providedSessionTokenHash = SHA256.HashData(providedSessionToken);
+            providedRefreshTokenHash = SHA256.HashData(providedRefreshToken);
         }
         catch (FormatException)
         {
             LogInvalidBase64Format();
-            return (null, null);
+            return resultNull;
         }
         catch (Exception ex)
         {
             LogExceptionRefreshSession(ex);
-            return (null, null);
+            return resultNull;
         }
 
         await using IDbContextTransaction transaction = await dbContext.Database.BeginTransactionAsync(
@@ -157,14 +162,14 @@ public sealed partial class SessionService(DbContextGame dbContext, ILogger<Sess
         {
             UserSession? session = await dbContext.UserSessions
                 .FirstOrDefaultAsync(s =>
-                s.SessionTokenHash == providedSessionTokenHash
+                s.RefreshTokenHash == providedRefreshTokenHash
                 && s.ExpiresAt > DateTimeOffset.UtcNow);
 
             if (session == null)
             {
                 LogSessionNotFound();
                 await transaction.RollbackAsync();
-                return (null, null);
+                return resultNull;
             }
 
             if (session.ExpiresAt < DateTimeOffset.UtcNow)
@@ -172,37 +177,38 @@ public sealed partial class SessionService(DbContextGame dbContext, ILogger<Sess
                 LogSessionExpired(session.Id);
                 session.IsUsed = true;
                 session.InactivatedAt = DateTimeOffset.UtcNow;
-                session.UserSessionInactivationReasonId = await dbContext.GetInactivationReasonIdByCode(InactivationReason.EXPIRED);
+                session.UserSessionInactivationReasonId = cache.GetInactivationReasonIdByCode(InactivationReason.EXPIRED);
                 _ = await dbContext.SaveChangesAsync();
                 await transaction.CommitAsync();
-                return (null, null);
+                return resultNull;
             }
 
             Guid UserDeviceId = UserDeviceHelper.ComputeId(dto);
             if (UserDeviceId == Guid.Empty)
             {
                 LogSessionUserDeviceIdEmpty();
-                return (null, null);
+                return resultNull;
             }
 
             if (session.UserDeviceId != UserDeviceId)
             {
                 LogSessionUserDeviceIdOther(session.UserDeviceId, UserDeviceId);
                 await RevokeAllUserSessionsAsync(session.UserId, InactivationReason.OTHER_DEVICE);
-                return (null, null);
+                return resultNull;
             }
 
             session.IsUsed = true;
             session.InactivatedAt = DateTimeOffset.UtcNow;
-            session.UserSessionInactivationReasonId = await dbContext.GetInactivationReasonIdByCode(InactivationReason.ROTATION);
+            session.UserSessionInactivationReasonId = cache.GetInactivationReasonIdByCode(InactivationReason.ROTATION);
 
             byte[] newRefreshToken = RandomNumberGenerator.GetBytes(TOKEN_SIZE);
+            DateTimeOffset dtExpiration = DateTimeOffset.UtcNow.Add(RefreshTokenLifeTime);
             var newSession = new UserSession
             {
                 Id = Guid.NewGuid(),
                 UserId = session.UserId,
-                SessionTokenHash = SHA256.HashData(newRefreshToken),
-                ExpiresAt = DateTimeOffset.UtcNow.Add(RefreshTokenLifeTime),
+                RefreshTokenHash = SHA256.HashData(newRefreshToken),
+                ExpiresAt = dtExpiration,
                 IsUsed = false,
                 IsRevoked = false,
                 UserDeviceId = session.UserDeviceId,
@@ -215,19 +221,19 @@ public sealed partial class SessionService(DbContextGame dbContext, ILogger<Sess
 
             LogSessionRefreshed(session.Id, newSession.Id);
 
-            return (session.UserId, Convert.ToBase64String(newRefreshToken));
+            return (session.UserId, Convert.ToBase64String(newRefreshToken), dtExpiration);
         }
         catch (DbUpdateConcurrencyException)
         {
             LogConcurrencyConflict();
             await transaction.RollbackAsync();
-            return (null, null);
+            return resultNull;
         }
         catch (Exception ex)
         {
             LogExceptionRefreshSession(ex);
             await transaction.RollbackAsync();
-            throw;
+            return resultNull;
         }
     }
 
@@ -264,9 +270,9 @@ public sealed partial class SessionService(DbContextGame dbContext, ILogger<Sess
         byte[] refreshTokenHash = SHA256.HashData(refreshTokenBytes);
 
         DateTimeOffset now = DateTimeOffset.UtcNow;
-        int? inactivationReasonId = await dbContext.GetInactivationReasonIdByCode(InactivationReason.USER_LOGOUT);
+        int inactivationReasonId = cache.GetInactivationReasonIdByCode(InactivationReason.USER_LOGOUT);
         int affectedRows = await dbContext.UserSessions
-            .Where(s => s.SessionTokenHash == refreshTokenHash && s.ExpiresAt > now)
+            .Where(s => s.RefreshTokenHash == refreshTokenHash && s.ExpiresAt > now)
             .ExecuteUpdateAsync(set => set
                 .SetProperty(s => s.IsRevoked, true)
                 .SetProperty(s => s.InactivatedAt, DateTimeOffset.UtcNow)
@@ -287,7 +293,7 @@ public sealed partial class SessionService(DbContextGame dbContext, ILogger<Sess
     public async Task RevokeAllUserSessionsAsync(Guid userId, InactivationReason reason)
     {
         LogAllSessionsRevoked(userId, reason);
-        int? inactivationReasonId = await dbContext.GetInactivationReasonIdByCode(reason);
+        int inactivationReasonId = cache.GetInactivationReasonIdByCode(reason);
         _ = await dbContext.UserSessions
             .Where(s => s.UserId == userId)
             .ExecuteUpdateAsync(set => set

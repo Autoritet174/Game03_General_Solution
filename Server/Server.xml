@@ -4,6 +4,36 @@
         <name>Server</name>
     </assembly>
     <members>
+        <member name="P:Server.Cache.CacheService.GameDataJson">
+            <summary> Возвращает JSON-строку с данными. </summary>
+            <returns> JSON-строка со всеми константными игровыми данными необходимыми на стороне клиента. </returns>
+            <exception cref="T:System.InvalidOperationException">
+            Возникает, если кэш не был инициализирован.
+            </exception>
+        </member>
+        <member name="M:Server.Cache.CacheService.LoadServerDataAsync(Server_DB_Postgres.DbContextGame,System.Threading.CancellationToken)">
+            <summary>
+            Загрузка константных данных в оперативную память. Эти данные меняются только при не работающем сервере.
+            </summary>
+            <param name="db"></param>
+            <param name="cancellationToken"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Server.Cache.GameDataController">
+            <summary>
+            Контроллер с общими методами.
+            </summary>
+            <param name="cache"></param>
+        </member>
+        <member name="M:Server.Cache.GameDataController.#ctor(Server.Cache.CacheService)">
+            <summary>
+            Контроллер с общими методами.
+            </summary>
+            <param name="cache"></param>
+        </member>
+        <member name="M:Server.Cache.GameDataController.Main">
+            <summary> Возвращает в ответе список всех константных игровых данных нужных на клиенте игры. </summary>
+        </member>
         <member name="T:Server.Consts">
             <summary>
             Константы на весь сервер.
@@ -37,28 +67,6 @@
             <param name="obj">Объект <see cref="T:Newtonsoft.Json.Linq.JObject"/>, из которого извлекается значение.</param>
             <param name="path">Путь к значению в формате JSONPath (например: "$.user.name")</param>
             <returns>Значение как строка, если оно существует и может быть преобразовано в строку; иначе <c>null</c>.</returns>
-        </member>
-        <member name="P:Server.GameData.GameDataCacheService.GameDataJson">
-            <summary> Возвращает JSON-строку с данными. </summary>
-            <returns> JSON-строка со всеми константными игровыми данными необходимыми на стороне клиента. </returns>
-            <exception cref="T:System.InvalidOperationException">
-            Возникает, если кэш не был инициализирован.
-            </exception>
-        </member>
-        <member name="T:Server.GameData.GameDataController">
-            <summary>
-            Контроллер с общими методами.
-            </summary>
-            <param name="heroCache"></param>
-        </member>
-        <member name="M:Server.GameData.GameDataController.#ctor(Server.GameData.IGameDataCacheService)">
-            <summary>
-            Контроллер с общими методами.
-            </summary>
-            <param name="heroCache"></param>
-        </member>
-        <member name="M:Server.GameData.GameDataController.Main">
-            <summary> Возвращает в ответе список всех константных игровых данных нужных на клиенте игры. </summary>
         </member>
         <member name="T:Server.Http_NS.Controllers_NS.Admin_NS.AddItemController">
             <summary>
@@ -311,8 +319,8 @@
             <param name="app">Экземпляр работающего WebApplication.</param>
             <exception cref="T:System.InvalidOperationException">Бросается, если соединение не установлено.</exception>
         </member>
-        <member name="M:Server.Program.LoadGameDataCache(Microsoft.AspNetCore.Builder.WebApplication)">
-            <summary> Загружаем в оперативную память константные игровые данные которые не меняются во время работы сервера. </summary>
+        <member name="M:Server.Program.LoadServerCache(Microsoft.AspNetCore.Builder.WebApplication)">
+            <summary> Загружаем в оперативную память константные серверные данные которые не меняются во время работы сервера. </summary>
         </member>
         <member name="T:Server.UserRegAuth_NS.OpenWebSocketController">
             <summary>
@@ -348,7 +356,7 @@
             При успешной проверке возвращает JWT-токен доступа.
             </summary>
         </member>
-        <member name="M:Server.Users.Authentication.SessionController.Refresh(System.String)">
+        <member name="M:Server.Users.Authentication.SessionController.Refresh(General.DTO.RestRequest.DtoRequestAuthReg)">
             <summary>
             Эндпоинт для обновления токенов. 
             Доступен без [authorize], так как access token уже может быть просрочен.

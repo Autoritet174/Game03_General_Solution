@@ -1,17 +1,16 @@
 using Microsoft.AspNetCore.Mvc;
 using Server.Http_NS.Controllers_NS;
 
-namespace Server.GameData;
+namespace Server.Cache;
 
 /// <summary>
 /// Контроллер с общими методами.
 /// </summary>
-/// <param name="heroCache"></param>
-public class GameDataController(IGameDataCacheService heroCache) : ControllerBaseApi
+/// <param name="cache"></param>
+public class GameDataController(CacheService cache) : ControllerBaseApi
 {
-    private static ContentResult? result = null;
+    private static ContentResult? result;
     private static readonly Lock locker = new();
-    private readonly IGameDataCacheService _heroCache = heroCache;
 
     /// <summary> Возвращает в ответе список всех константных игровых данных нужных на клиенте игры. </summary>
     [HttpPost]
@@ -21,7 +20,7 @@ public class GameDataController(IGameDataCacheService heroCache) : ControllerBas
         {
             lock (locker)
             {
-                result ??= Content(_heroCache.GameDataJson, General.GlobalHelper.APPLICATION_JSON);
+                result ??= Content(cache.GameDataJson, General.GlobalHelper.APPLICATION_JSON);
             }
         }
 

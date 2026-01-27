@@ -90,7 +90,7 @@ public sealed class RegService(
             string accessToken = jwt.GenerateToken(user.Id);
             
             // 
-            return AuthRegResponse.Success(accessToken, "временная заглушка для рефреш токена");
+            return AuthRegResponse.Success(accessToken, "временная заглушка для рефреш токена", DateTimeOffset.Now);
         }
         catch
         {

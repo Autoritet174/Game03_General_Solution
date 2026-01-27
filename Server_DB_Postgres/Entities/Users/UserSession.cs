@@ -13,7 +13,7 @@ public class UserSession : ICreatedAt, IUpdatedAt, IVersion
     /// <summary>
     /// Токен сессии. Имеет индекс уникальности для живых токенов.
     /// </summary>
-    public required byte[] SessionTokenHash { get; set; }
+    public required byte[] RefreshTokenHash { get; set; }
 
     /// <summary>
     /// Токен использован.

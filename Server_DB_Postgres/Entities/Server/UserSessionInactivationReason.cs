@@ -15,11 +15,3 @@ public class UserSessionInactivationReason
 }
 
 public enum InactivationReason : int { EXPIRED = 1, ROTATION = 2, USER_LOGOUT = 3, MANUAL_REVOCATION = 4, OTHER_DEVICE = 5 }
-
-public static class UserSessionInactivationReasonExtension
-{
-    public static async Task<int> GetInactivationReasonIdByCode(this DbContextGame dbContext, InactivationReason code)
-    {
-        return dbContext.UserSessionInactivationReasons.FirstAsync(a => a.Code == code).Id;
-    }
-}
