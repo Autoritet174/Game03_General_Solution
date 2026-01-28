@@ -426,7 +426,6 @@
             <summary>
             Добавляет лог в очередь с предварительным вычислением данных устройства.
             </summary>
-            <exception cref="T:System.ArgumentNullException">Бросается, если obj равен null.</exception>
         </member>
         <member name="M:Server.Users.AuthRegLoggerBackgroundService.StartAsync(System.Threading.CancellationToken)">
             <inheritdoc />

@@ -3,16 +3,20 @@ using Microsoft.EntityFrameworkCore;
 using Server_DB_Postgres;
 using Server_DB_Postgres.Entities.Users;
 using System.Collections.Concurrent;
-using System.Linq;
 using System.Net;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace Server.Users;
 
 /// <summary> Фоновый сервис пакетной записи логов авторизации/регистрации и данных устройств с контролируемыми повторными попытками и корректной остановкой. </summary>
-public sealed class AuthRegLoggerBackgroundService(ILogger<AuthRegLoggerBackgroundService> logger, IServiceProvider serviceProvider) : IHostedService, IDisposable
+public sealed class AuthRegLoggerBackgroundService(
+    ILogger<AuthRegLoggerBackgroundService> logger,
+    IServiceProvider serviceProvider
+    ) : IHostedService, IDisposable
 {
+    private const int MAX_QUEUE_SIZE = 100_000;
+    private const int BATCH_SIZE = 1000;
+    private const int MAX_RETRIES = 3;
+
     /// <summary>
     /// Лог авторизации с поддержкой повторной обработки и кэшированными данными устройства.
     /// </summary>
@@ -26,9 +30,6 @@ public sealed class AuthRegLoggerBackgroundService(ILogger<AuthRegLoggerBackgrou
         bool ActionIsAuthentication,
         Guid UserDeviceId);
 
-    private readonly ILogger<AuthRegLoggerBackgroundService> _logger = logger;
-    private readonly IServiceProvider _serviceProvider = serviceProvider;
-
     private readonly ConcurrentQueue<LogEntry> _queue = new();
     private readonly SemaphoreSlim _semaphore = new(1, 1);
 
@@ -37,19 +38,14 @@ public sealed class AuthRegLoggerBackgroundService(ILogger<AuthRegLoggerBackgrou
     private Task? _processingTask;
     private Task? _cleanupTask;
 
-    private const int MAX_QUEUE_SIZE = 10_000;
-    private const int BATCH_SIZE = 100;
-    private const int MAX_RETRIES = 3;
-
     /// <summary>
     /// Добавляет лог в очередь с предварительным вычислением данных устройства.
     /// </summary>
-    /// <exception cref="ArgumentNullException">Бросается, если obj равен null.</exception>
     public void EnqueueLog(bool success, DtoRequestAuthReg dto, Guid? userId, IPAddress? ip, bool actionIsAuthentication)
     {
         if (_queue.Count >= MAX_QUEUE_SIZE)
         {
-            _logger.LogWarning("Очередь логов переполнена. Запись отброшена.");
+            logger.LogWarning("Очередь логов переполнена. Запись отброшена.");
             return;
         }
 
@@ -67,7 +63,7 @@ public sealed class AuthRegLoggerBackgroundService(ILogger<AuthRegLoggerBackgrou
     /// <inheritdoc />
     public Task StartAsync(CancellationToken ct)
     {
-        _logger.LogInformation("Запуск сервиса фонового логирования.");
+        logger.LogInformation("Запуск сервиса фонового логирования.");
         _linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct, _internalCts.Token);
 
         _processingTask = Task.Run(() => ProcessingLoopAsync(_linkedCts.Token), _linkedCts.Token);
@@ -89,7 +85,7 @@ public sealed class AuthRegLoggerBackgroundService(ILogger<AuthRegLoggerBackgrou
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("Цикл обработки логов остановлен.");
+            logger.LogInformation("Цикл обработки логов остановлен.");
         }
     }
 
@@ -106,7 +102,7 @@ public sealed class AuthRegLoggerBackgroundService(ILogger<AuthRegLoggerBackgrou
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("Цикл очистки старых логов остановлен.");
+            logger.LogInformation("Цикл очистки старых логов остановлен.");
         }
     }
 
@@ -172,9 +168,9 @@ public sealed class AuthRegLoggerBackgroundService(ILogger<AuthRegLoggerBackgrou
                     }
                     else
                     {
-                        if (_logger.IsEnabled(LogLevel.Error))
+                        if (logger.IsEnabled(LogLevel.Error))
                         {
-                            _logger.LogError("Лог отброшен после {Retries} попыток.", MAX_RETRIES);
+                            logger.LogError("Лог отброшен после {Retries} попыток.", MAX_RETRIES);
                         }
                     }
                 }
@@ -190,7 +186,7 @@ public sealed class AuthRegLoggerBackgroundService(ILogger<AuthRegLoggerBackgrou
 
     private async Task<bool> WriteBatchToDatabaseAsync(List<LogEntry> batch, CancellationToken ct)
     {
-        using IServiceScope scope = _serviceProvider.CreateScope();
+        using IServiceScope scope = serviceProvider.CreateScope();
         DbContextGame db = scope.ServiceProvider.GetRequiredService<DbContextGame>();
 
         try
@@ -198,8 +194,9 @@ public sealed class AuthRegLoggerBackgroundService(ILogger<AuthRegLoggerBackgrou
             List<Guid> uniqueDevicesId = [.. batch.Where(l => l.UserDeviceId != Guid.Empty)
                 .DistinctBy(l => l.UserDeviceId)
                 .Select(a=>a.UserDeviceId)];
-            for (int i = uniqueDevicesId.Count - 1; i >= 0; i--) {
-                if (db.UserDevices.Any(a=>a.Id == uniqueDevicesId[i]))
+            for (int i = uniqueDevicesId.Count - 1; i >= 0; i--)
+            {
+                if (db.UserDevices.Any(a => a.Id == uniqueDevicesId[i]))
                 {
                     uniqueDevicesId.RemoveAt(i);
                 }
@@ -230,15 +227,15 @@ public sealed class AuthRegLoggerBackgroundService(ILogger<AuthRegLoggerBackgrou
 
             foreach (LogEntry item in batch)
             {
-                _ = db.AuthRegLogs.Add(new Server_DB_Postgres.Entities.Logs.AuthRegLog
+                _ = db.AuthenticationLogs.Add(new Server_DB_Postgres.Entities.Logs.AuthenticationLog
                 {
+                    Id = Guid.NewGuid(),
                     Email = item.dto.Email,
                     Success = item.Success,
                     UserId = item.UserId,
                     UserDeviceId = item.UserDeviceId,
                     CreatedAt = DateTimeOffset.UtcNow,
                     Ip = item.Ip,
-                    ActionIsAuthentication = item.ActionIsAuthentication
                 });
             }
 
@@ -247,9 +244,9 @@ public sealed class AuthRegLoggerBackgroundService(ILogger<AuthRegLoggerBackgrou
         }
         catch (Exception ex)
         {
-            if (_logger.IsEnabled(LogLevel.Error))
+            if (logger.IsEnabled(LogLevel.Error))
             {
-                _logger.LogError(ex, "Ошибка записи батча ({Count} записей).", batch.Count);
+                logger.LogError(ex, "Ошибка записи батча ({Count} записей).", batch.Count);
             }
 
             return false;
@@ -260,34 +257,34 @@ public sealed class AuthRegLoggerBackgroundService(ILogger<AuthRegLoggerBackgrou
     {
         ct.ThrowIfCancellationRequested();
 
-        using IServiceScope scope = _serviceProvider.CreateScope();
+        using IServiceScope scope = serviceProvider.CreateScope();
         DbContextGame db = scope.ServiceProvider.GetRequiredService<DbContextGame>();
 
         try
         {
             DateTimeOffset cutoff = DateTimeOffset.UtcNow.AddMonths(-24);
-            int deleted = await db.AuthRegLogs
+            int deleted = await db.AuthenticationLogs
                 .Where(a => a.CreatedAt < cutoff)
                 .ExecuteDeleteAsync(ct);
 
             if (deleted > 0)
             {
-                if (_logger.IsEnabled(LogLevel.Information))
+                if (logger.IsEnabled(LogLevel.Information))
                 {
-                    _logger.LogInformation("Очистка завершена: удалено {Count} записей.", deleted);
+                    logger.LogInformation("Очистка завершена: удалено {Count} записей.", deleted);
                 }
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Ошибка при очистке старых логов.");
+            logger.LogError(ex, "Ошибка при очистке старых логов.");
         }
     }
 
     /// <inheritdoc />
     public async Task StopAsync(CancellationToken ct)
     {
-        _logger.LogInformation("Запрос на остановку сервиса логирования...");
+        logger.LogInformation("Запрос на остановку сервиса логирования...");
         await _internalCts.CancelAsync();
 
         // Дожидаемся graceful завершения основных циклов
@@ -316,9 +313,9 @@ public sealed class AuthRegLoggerBackgroundService(ILogger<AuthRegLoggerBackgrou
             else
             {
                 consecutiveFailures++;
-                if (_logger.IsEnabled(LogLevel.Warning))
+                if (logger.IsEnabled(LogLevel.Warning))
                 {
-                    _logger.LogWarning("Сбой записи при остановке (ошибка {Count}/{Max}).", consecutiveFailures, maxConsecutiveFailures);
+                    logger.LogWarning("Сбой записи при остановке (ошибка {Count}/{Max}).", consecutiveFailures, maxConsecutiveFailures);
                 }
             }
 
@@ -330,14 +327,14 @@ public sealed class AuthRegLoggerBackgroundService(ILogger<AuthRegLoggerBackgrou
 
         if (!_queue.IsEmpty)
         {
-            if (_logger.IsEnabled(LogLevel.Warning))
+            if (logger.IsEnabled(LogLevel.Warning))
             {
-                _logger.LogWarning("При остановке осталось {Count} необработанных логов.", _queue.Count);
+                logger.LogWarning("При остановке осталось {Count} необработанных логов.", _queue.Count);
             }
         }
         else
         {
-            _logger.LogInformation("Все логи успешно записаны при остановке.");
+            logger.LogInformation("Все логи успешно записаны при остановке.");
         }
     }
 

@@ -10,7 +10,7 @@ public class DbContextGameConfig
     public static void ConfigureAll(ModelBuilder modelBuilder)
     {
         Configure(modelBuilder.Entity<UserSession>());
-        Configure(modelBuilder.Entity<AuthRegLog>());
+        Configure(modelBuilder.Entity<AuthenticationLog>());
         Configure(modelBuilder.Entity<UserBan>());
     }
 
@@ -24,7 +24,7 @@ public class DbContextGameConfig
             .OnDelete(DeleteBehavior.Cascade); // Включить каскад: удалять UserBan при удалении ApplicationUser
     }
 
-    private static void Configure(EntityTypeBuilder<AuthRegLog> builder)
+    private static void Configure(EntityTypeBuilder<AuthenticationLog> builder)
     {
         // Настройка для UserAuthorization: Cascade при удалении ApplicationUser
         _ = builder.HasOne(a => a.User) // Навигационное свойство в UserAuthorization

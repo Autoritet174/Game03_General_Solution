@@ -25,24 +25,31 @@ public partial class FormMain : Form
         InitializeComponent();
     }
 
-    private void button_Backup_PostgreSql_Users_Click(object sender, EventArgs e)
+    private async void button_Backup_PostgreSql_Users_Click(object sender, EventArgs e)
     {
         Enabled = false;
-        Backup(Database.PostgreSql);
+        bool result = Backup(Database.PostgreSql);
         Enabled = true;
+
+        if (result)
+        {
+            label_Complete.Show();
+            await Task.Delay(750);
+            Close();
+        }
     }
 
     private void button_Backup_PostgreSql_GameData_Click(object sender, EventArgs e)
     {
         Enabled = false;
-        Backup(Database.PostgreSql_Data);
+        _ = Backup(Database.PostgreSql_Data);
         Enabled = true;
     }
 
     private void button_Backup_MongoDb_UserData_Click(object sender, EventArgs e)
     {
         Enabled = false;
-        Backup(Database.MongoDb_UserData);
+        _ = Backup(Database.MongoDb_UserData);
         Enabled = true;
     }
 
@@ -51,7 +58,7 @@ public partial class FormMain : Form
         Enabled = false;
         foreach (Database database in Enum.GetValues<Database>())
         {
-            Backup(database);
+            _ = Backup(database);
         }
         Enabled = true;
     }
@@ -115,7 +122,7 @@ public partial class FormMain : Form
     содержание
     localhost:5432:*:postgres:мойПароль
     */
-    private static void Backup(Database database)
+    private static bool Backup(Database database)
     {
         BackupFolderReset();
 
@@ -146,38 +153,46 @@ public partial class FormMain : Form
         }
         else
         {
-            return;
+            return false;
         }
         ////////////////////////////////////////////////////////////////////////////////////////
 
-
-        ////////////////////////////////////////////////////////////////////////////////////////
-        // Создание архива
-        string now = $"{DateTime.Now:yyyy-MM-dd HH-mm-ss}";
-        string archiveFileName = Path.Combine(dbName, $"{now}");
-        if (database is Database.PostgreSql_Users or Database.PostgreSql_Data or Database.PostgreSql)
+        try
         {
-            archiveFileName += $".postgre.sql.7z";
-            bat = $"""
+            // Создание архива
+            string now = $"{DateTime.Now:yyyy-MM-dd HH-mm-ss}";
+            string archiveFileName = Path.Combine(dbName, $"{now}");
+            if (database is Database.PostgreSql_Users or Database.PostgreSql_Data or Database.PostgreSql)
+            {
+                archiveFileName += $".postgre.sql.7z";
+                bat = $"""
                 "{archivator7z_exeFilePath}" a -t7z "{Path.Combine(game03_archive_dirPath, postgre_DBMS_name, archiveFileName)}" "{dbFilePath}"
                 """;
-            ExecuteBatCommand_and_WaitForExit(bat);
-        }
-        else if (database is Database.MongoDb_UserData)
-        {
-            archiveFileName += $".archiveMongodb.7z";
-            bat = $"""
+                ExecuteBatCommand_and_WaitForExit(bat);
+                return true;
+            }
+            else if (database is Database.MongoDb_UserData)
+            {
+                archiveFileName += $".archiveMongodb.7z";
+                bat = $"""
                 "{archivator7z_exeFilePath}" a -t7z "{Path.Combine(game03_archive_dirPath, mongodb_DBMS_name, archiveFileName)}" "{dbFilePath}"
                 """;
-            ExecuteBatCommand_and_WaitForExit(bat);
+                ExecuteBatCommand_and_WaitForExit(bat);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
-        else
+        catch (Exception)
         {
-            return;
+            throw;
         }
-        ////////////////////////////////////////////////////////////////////////////////////////
-
-        BackupFolderClear();
+        finally
+        {
+            BackupFolderClear();
+        }
     }
 
     private static bool Restore(Database database, bool fromLastFile = false)

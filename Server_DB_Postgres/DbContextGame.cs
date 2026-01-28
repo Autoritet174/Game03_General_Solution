@@ -66,7 +66,8 @@ public class DbContextGame(DbContextOptions<DbContextGame> options) : IdentityDb
     #region logs
 
     /// <summary> Лог авторизации пользователей. </summary>
-    public DbSet<AuthRegLog> AuthRegLogs { get; set; }
+    public DbSet<AuthenticationLog> AuthenticationLogs { get; set; }
+    public DbSet<RegistrationLog> RegistrationLogs { get; set; }
 
     #endregion logs
 
@@ -120,13 +121,14 @@ public class DbContextGame(DbContextOptions<DbContextGame> options) : IdentityDb
 
         _ = modelBuilder.Ignore<Microsoft.AspNetCore.Identity.IdentityPasskeyData>();
         // Переопределение имен таблиц Identity
-        _ = modelBuilder.Entity<User>().ToTable("identity_users", "users");
-        _ = modelBuilder.Entity<IdentityRole<Guid>>().ToTable("identity_roles", "users");
-        _ = modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("identity_user_roles", "users");
-        _ = modelBuilder.Entity<IdentityUserClaim<Guid>>().ToTable("identity_user_claims", "users");
-        _ = modelBuilder.Entity<IdentityRoleClaim<Guid>>().ToTable("identity_role_claims", "users");
-        _ = modelBuilder.Entity<IdentityUserLogin<Guid>>().ToTable("identity_user_logins", "users");
-        _ = modelBuilder.Entity<IdentityUserToken<Guid>>().ToTable("identity_user_tokens", "users");
+        string shema = nameof(Server_DB_Postgres.Entities.Users).ToSnakeCase();
+        _ = modelBuilder.Entity<User>().ToTable("identity_users", shema);
+        _ = modelBuilder.Entity<IdentityRole<Guid>>().ToTable("identity_roles", shema);
+        _ = modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("identity_user_roles", shema);
+        _ = modelBuilder.Entity<IdentityUserClaim<Guid>>().ToTable("identity_user_claims", shema);
+        _ = modelBuilder.Entity<IdentityRoleClaim<Guid>>().ToTable("identity_role_claims", shema);
+        _ = modelBuilder.Entity<IdentityUserLogin<Guid>>().ToTable("identity_user_logins", shema);
+        _ = modelBuilder.Entity<IdentityUserToken<Guid>>().ToTable("identity_user_tokens", shema);
 
         modelBuilder.AddConcurrencyTokenToVersion();
         modelBuilder.ApplyDefaultValues();
