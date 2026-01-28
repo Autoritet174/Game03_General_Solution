@@ -154,7 +154,7 @@ public sealed class RegService(
         }
 
         // Формирование ключа кэша
-        string key = $"register-attempts:{email.NormalizedValueGame03()}";
+        string key = $"register-attempts:{email.Trim().ToUpperInvariant()}";
         DateTimeOffset expires = DateTimeOffset.UtcNow + _LockoutPeriod;
 
         // Получение или создание попытки в кэше
@@ -178,7 +178,7 @@ public sealed class RegService(
     {
         if (!string.IsNullOrWhiteSpace(email))
         {
-            cache.Remove($"register-attempts:{email.NormalizedValueGame03()}");
+            cache.Remove($"register-attempts:{email.Trim().ToUpperInvariant()}");
         }
     }
 
@@ -188,7 +188,7 @@ public sealed class RegService(
     /// <param name="email">Email пользователя.</param>
     /// <returns>Оставшееся время в секундах.</returns>
     private long GetRemainingLockoutTime(string email) => cache.TryGetValue(
-            $"register-attempts:{email.NormalizedValueGame03()}",
+            $"register-attempts:{email.Trim().ToUpperInvariant()}",
             out Attempt? attempt)
             && attempt!.ExpiresAt > DateTimeOffset.UtcNow
             ? (long)Math.Ceiling((attempt.ExpiresAt - DateTimeOffset.UtcNow).TotalSeconds)

@@ -13,7 +13,7 @@ public static class GameData
 {
     public static DtoContainerGameData Container = null!;
 
-    public static async Task LoadGameDataAsync(string jwtToken, CancellationToken cancellationToken = default)
+    public static async Task LoadGameDataAsync(CancellationToken cancellationToken = default)
     {
         if (cancellationToken.IsCancellationRequested)
         {

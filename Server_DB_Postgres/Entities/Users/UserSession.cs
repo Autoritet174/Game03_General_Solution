@@ -33,7 +33,7 @@ public class UserSession : ICreatedAt, IUpdatedAt, IVersion
     /// <summary>
     /// Причина деактивации (например: "Rotation", "Logout", "SystemLock")
     /// </summary>
-    public int UserSessionInactivationReasonId { get; set; }
+    public int? UserSessionInactivationReasonId { get; set; }
     [ForeignKey(nameof(UserSessionInactivationReasonId))]
     public UserSessionInactivationReason? UserSessionInactivationReason { get; set; }
 

@@ -15,9 +15,18 @@ public static partial class StringExt
     /// </summary>
     /// <param name="s"></param>
     /// <returns></returns>
-    public static string NormalizedValueGame03(this string s)
+    //public static string NormalizedValueGame03(this string s)
+    //{
+    //    return s.Trim().ToUpperInvariant();
+    //}
+
+    public static string? GetTrimmedOrNull(this string? s)
     {
-        return s.Trim().ToUpperInvariant();
+        return string.IsNullOrWhiteSpace(s) ? null : s.Trim();
+    }
+    public static string GetTrimmedOrEmpty(this string? s)
+    {
+        return string.IsNullOrWhiteSpace(s) ? string.Empty : s.Trim();
     }
 
     /// <summary>

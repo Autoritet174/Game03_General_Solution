@@ -1,4 +1,3 @@
-using General;
 using General.DTO.RestRequest;
 using General.DTO.RestResponse;
 using Microsoft.AspNetCore.Identity;
@@ -35,19 +34,18 @@ public sealed class AuthService(
 
         try
         {
+            if (dto == null || string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
+            {
+                return AuthRegResponse.InvalidCredentials();
+            }
+
             // 1. Уровень: Защита от Flood (Memory Cache)
             if (IsFloodDetected(dto.Email))
             {
                 return AuthRegResponse.TooManyRequests((long)_FastFloodPeriod.TotalSeconds);
             }
 
-            User? user = null;
-            if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
-            {
-                return AuthRegResponse.InvalidCredentials();
-            }
-
-            user = await userManager.FindByEmailAsync(dto.Email);
+            User? user = await userManager.FindByEmailAsync(dto.Email);
             if (user == null)
             {
                 return AuthRegResponse.InvalidCredentials();
@@ -95,12 +93,9 @@ public sealed class AuthService(
             string accessToken = jwt.GenerateToken(userId.Value);
 
             (string? refreshToken, DateTimeOffset? dtExpiration) = await sessionService.CreateSessionAsync(user.Id, dto);
-            if (string.IsNullOrWhiteSpace(refreshToken) || dtExpiration == null)
-            {
-                return AuthRegResponse.InvalidResponse();
-            }
-
-            return AuthRegResponse.Success(accessToken, refreshToken, dtExpiration.Value);
+            return string.IsNullOrWhiteSpace(refreshToken) || dtExpiration == null
+                ? AuthRegResponse.InvalidResponse()
+                : AuthRegResponse.Success(accessToken, refreshToken, dtExpiration.Value);
         }
         catch
         {
@@ -186,18 +181,18 @@ public sealed class AuthService(
 
     private bool IsFloodDetected(string email)
     {
-        return memoryCache.TryGetValue($"flood:{email.NormalizedValueGame03()}", out int count) && count >= 10;
+        return memoryCache.TryGetValue($"flood:{email.Trim().ToUpperInvariant()}", out int count) && count >= 10;
     }
 
     private void IncrementFloodAttempt(string email)
     {
-        string key = $"flood:{email.NormalizedValueGame03()}";
+        string key = $"flood:{email.Trim().ToUpperInvariant()}";
         int current = memoryCache.Get<int?>(key) ?? 0;
         _ = memoryCache.Set(key, current + 1, _FastFloodPeriod);
     }
     private void ResetFloodAttempts(string email)
     {
-        memoryCache.Remove($"flood:{email.NormalizedValueGame03()}");
+        memoryCache.Remove($"flood:{email.Trim().ToUpperInvariant()}");
     }
 
     private static long GetSecondsRemaining(DateTimeOffset? end)

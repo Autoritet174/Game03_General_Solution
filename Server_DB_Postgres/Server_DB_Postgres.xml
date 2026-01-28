@@ -342,9 +342,6 @@
         <member name="P:Server_DB_Postgres.Entities.Logs.AuthenticationLog.Success">
             <summary> Успешность авторизации. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Logs.AuthenticationLog.UserDevice">
-            <summary> Навигационное свойство к <see cref="T:Server_DB_Postgres.Entities.Users.UserDevice"/>. </summary>
-        </member>
         <member name="T:Server_DB_Postgres.Entities.Logs.RegistrationLog">
             <summary> Лог авторизации пользователей. </summary>
         </member>
@@ -356,9 +353,6 @@
         </member>
         <member name="P:Server_DB_Postgres.Entities.Logs.RegistrationLog.Success">
             <summary> Успешность регистрации. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Logs.RegistrationLog.UserDevice">
-            <summary> Навигационное свойство к <see cref="T:Server_DB_Postgres.Entities.Users.UserDevice"/>. </summary>
         </member>
         <member name="T:Server_DB_Postgres.Entities.Server.UserBanReason">
             <summary> Причины блокировки пользователя </summary>
@@ -1069,6 +1063,18 @@
             <inheritdoc />
         </member>
         <member name="M:Server_DB_Postgres.Migrations.LogFix1.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.UserSessionFix5">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.UserSessionFix5.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.UserSessionFix5.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.UserSessionFix5.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Server_DB_Postgres.ModelBuilderExt">

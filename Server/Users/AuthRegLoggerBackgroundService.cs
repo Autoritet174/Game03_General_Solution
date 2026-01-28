@@ -1,5 +1,6 @@
 using General.DTO.RestRequest;
 using Microsoft.EntityFrameworkCore;
+using Server.Utilities;
 using Server_DB_Postgres;
 using Server_DB_Postgres.Entities.Users;
 using System.Collections.Concurrent;
@@ -36,6 +37,8 @@ public sealed class AuthRegLoggerBackgroundService(
     private readonly CancellationTokenSource _internalCts = new();
     private CancellationTokenSource? _linkedCts;
     private Task? _processingTask;
+
+    /// <summary> Задача на очистку старых логов. </summary>
     private Task? _cleanupTask;
 
     /// <summary>
@@ -67,7 +70,9 @@ public sealed class AuthRegLoggerBackgroundService(
         _linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct, _internalCts.Token);
 
         _processingTask = Task.Run(() => ProcessingLoopAsync(_linkedCts.Token), _linkedCts.Token);
-        _cleanupTask = Task.Run(() => CleanupLoopAsync(_linkedCts.Token), _linkedCts.Token);
+
+        _cleanupTask = null;
+        //_cleanupTask = Task.Run(() => CleanupLoopAsync(_linkedCts.Token), _linkedCts.Token);
 
         return Task.CompletedTask;
     }
@@ -229,7 +234,7 @@ public sealed class AuthRegLoggerBackgroundService(
             {
                 _ = db.AuthenticationLogs.Add(new Server_DB_Postgres.Entities.Logs.AuthenticationLog
                 {
-                    Id = Guid.NewGuid(),
+                    Id = UuidHelper.NewV7(),
                     Email = item.dto.Email,
                     Success = item.Success,
                     UserId = item.UserId,
@@ -255,7 +260,7 @@ public sealed class AuthRegLoggerBackgroundService(
 
     private async Task PerformCleanupAsync(CancellationToken ct)
     {
-        ct.ThrowIfCancellationRequested();
+        //ct.ThrowIfCancellationRequested();
 
         using IServiceScope scope = serviceProvider.CreateScope();
         DbContextGame db = scope.ServiceProvider.GetRequiredService<DbContextGame>();

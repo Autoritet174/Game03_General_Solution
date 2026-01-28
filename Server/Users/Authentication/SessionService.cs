@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Npgsql;
 using Server.Cache;
+using Server.Utilities;
 using Server_DB_Postgres;
 using Server_DB_Postgres.Entities.Server;
 using Server_DB_Postgres.Entities.Users;
@@ -108,14 +109,13 @@ public sealed partial class SessionService(
         DateTimeOffset dtExpiration = DateTimeOffset.UtcNow.Add(RefreshTokenLifeTime);
         var session = new UserSession
         {
-            Id = Guid.NewGuid(),
+            Id = UuidHelper.NewV7(),
             UserId = userId,
             RefreshTokenHash = SHA256.HashData(refreshToken),
             ExpiresAt = dtExpiration,
             IsUsed = false,
             IsRevoked = false,
-            UserDeviceId = userDeviceId.Value,
-            UserSessionInactivationReasonId = cache.GetInactivationReasonIdByCode(InactivationReason.NONE),
+            UserDeviceId = userDeviceId.Value
         };
 
         _ = dbContext.UserSessions.Add(session);
@@ -126,7 +126,7 @@ public sealed partial class SessionService(
 
     public async Task<(Guid? UserId, string? NewRefreshToken, DateTimeOffset? dtExpiration)> RefreshSessionAsync(DtoRequestAuthReg dto)
     {
-        string refreshTokenBase64 = dto.RefreshToken;
+        string? refreshTokenBase64 = dto.RefreshToken;
         (Guid? UserId, string? NewRefreshToken, DateTimeOffset? dtExpiration) resultNull = (null, null, null);
         if (string.IsNullOrWhiteSpace(refreshTokenBase64))
         {
@@ -206,7 +206,7 @@ public sealed partial class SessionService(
             DateTimeOffset dtExpiration = DateTimeOffset.UtcNow.Add(RefreshTokenLifeTime);
             var newSession = new UserSession
             {
-                Id = Guid.NewGuid(),
+                Id = UuidHelper.NewV7(),
                 UserId = session.UserId,
                 RefreshTokenHash = SHA256.HashData(newRefreshToken),
                 ExpiresAt = dtExpiration,

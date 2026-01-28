@@ -225,7 +225,7 @@ public partial class FormMain : Form
         {
             FileInfo? lastFile = new DirectoryInfo(openFileDialog.InitialDirectory)
                 .GetFiles()
-                .OrderByDescending(f => f.LastWriteTime)
+                .OrderByDescending(f => f.FullName)
                 .FirstOrDefault();
             if (lastFile == null)
             {
@@ -255,9 +255,19 @@ public partial class FormMain : Form
             if (database is Database.PostgreSql_Users or Database.PostgreSql_Data or Database.PostgreSql)
             {
                 string dbFilePath = Path.Combine(backup_folder, $"{dbName}.sql");
+                string psql_exe = $"\"{Path.Combine(postgre_tools_pathDir, "psql.exe")}\"";
+                string dropdb_exe = $"\"{Path.Combine(postgre_tools_pathDir, "dropdb.exe")}\"";
+                string createdb_exe = $"\"{Path.Combine(postgre_tools_pathDir, "createdb.exe")}\"";
                 // "{Path.Combine(postgre_tools_pathDir, "pg_restore.exe")}" -U postgres --host={postgre_server_host} --clean --if-exists --verbose --dbname={dbName} "{dbFilePath}"
                 bat = $"""
-                "{Path.Combine(postgre_tools_pathDir, "psql.exe")}" -U postgres --host={postgre_server_host} --dbname={dbName} -f "{dbFilePath}"
+                {psql_exe} -U postgres -d postgres -c "REVOKE CONNECT ON DATABASE {dbName} FROM public;"
+                {psql_exe} -U postgres -d postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '{dbName}' AND pid <> pg_backend_pid();"
+
+                {dropdb_exe} -U postgres --if-exists {dbName}
+
+                {createdb_exe} -U postgres {dbName}
+
+                {psql_exe} -U postgres --host={postgre_server_host} --dbname={dbName} -f "{dbFilePath}"
                 """;
                 ExecuteBatCommand_and_WaitForExit(bat);
                 return true;
