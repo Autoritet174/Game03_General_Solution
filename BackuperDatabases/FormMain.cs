@@ -365,6 +365,11 @@ public partial class FormMain : Form
 
     private async void button_RestoreFromLast_PostgreSql_Users_Click(object sender, EventArgs e)
     {
+        if (MessageBox.Show("Go?", "", MessageBoxButtons.YesNo) != DialogResult.Yes)
+        {
+            return;
+        }
+
         Enabled = false;
         bool result = Restore(Database.PostgreSql_Users, true);
         Enabled = true;

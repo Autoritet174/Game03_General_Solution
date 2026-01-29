@@ -144,6 +144,7 @@ public sealed partial class SessionService(
                 return resultNull;
             }
             providedRefreshTokenHash = SHA256.HashData(providedRefreshToken);
+            logger.LogDebug(message: string.Join(" ", providedRefreshTokenHash));
         }
         catch (FormatException)
         {

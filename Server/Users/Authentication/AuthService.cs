@@ -32,18 +32,20 @@ public sealed class AuthService(
         Guid? userId = null; // ID пользователя для логирования
         bool success = false;
 
+        if (dto == null || string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
+        {
+            return AuthRegResponse.InvalidCredentials();
+        }
+
+        // 1. Уровень: Защита от Flood (Memory Cache)
+        if (IsFloodDetected(dto.Email))
+        {
+            return AuthRegResponse.TooManyRequests((long)_FastFloodPeriod.TotalSeconds);
+        }
+
         try
         {
-            if (dto == null || string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
-            {
-                return AuthRegResponse.InvalidCredentials();
-            }
-
-            // 1. Уровень: Защита от Flood (Memory Cache)
-            if (IsFloodDetected(dto.Email))
-            {
-                return AuthRegResponse.TooManyRequests((long)_FastFloodPeriod.TotalSeconds);
-            }
+           
 
             User? user = await userManager.FindByEmailAsync(dto.Email);
             if (user == null)

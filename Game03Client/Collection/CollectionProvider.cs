@@ -18,7 +18,7 @@ public class CollectionProvider
     private static readonly List<string> listGroupNameHero = [];
     private static readonly List<string> listGroupNameEquipment = [];
     private static DtoContainerCollection collection = null!;
-    public static async Task<bool> LoadAllCollectionFromServerAsync(string accessToken, CancellationToken cancellationToken = default)
+    public static async Task<bool> LoadAllCollectionFromServerAsync(CancellationToken cancellationToken = default)
     {
         if (cancellationToken.IsCancellationRequested)
         {
@@ -26,8 +26,17 @@ public class CollectionProvider
         }
 
         // Получить коллекцию героев игрока
-        string? response = await HttpRequester.GetResponseAsync(General.Url.Collection.ALL, null, cancellationToken) ?? throw new ArgumentNullException();
-        DtoContainerCollection c = JsonConvert.DeserializeObject<DtoContainerCollection>(response) ?? throw new ArgumentNullException();
+        string? response = await HttpRequester.GetResponseAsync(General.Url.Collection.ALL, null, cancellationToken);
+        if (string.IsNullOrWhiteSpace(response))
+        {
+            return false;
+        }
+        DtoContainerCollection? c = JsonConvert.DeserializeObject<DtoContainerCollection>(response);
+
+        if (c == null)
+        {
+            return false;
+        }
 
         IEnumerable<DtoBaseEquipment> baseEquipments = GameData.Container.BaseEquipments;
         foreach (DtoEquipment i in c.CollectionEquipments)

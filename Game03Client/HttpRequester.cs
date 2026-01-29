@@ -52,11 +52,10 @@ public class HttpRequester
             {
                 request.Content = new StringContent(jsonBody, Encoding.UTF8, GlobalHelper.APPLICATION_JSON);
             }
-            string? accessToken = Auth.AccessToken;
-            if (!string.IsNullOrWhiteSpace(accessToken))
+            if (!string.IsNullOrWhiteSpace(Auth.AccessToken))
             {
-                // Если был передан токен то подставляем его в заголовок как авторизацию
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                // Если был передан токен то подставляем его в заголовок авторизации
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Auth.AccessToken);
             }
 
 
@@ -68,23 +67,6 @@ public class HttpRequester
                 throw new Exception();
             }
             return responseContent;
-
-            //try
-            //{
-            //    var jObject = JObject.Parse(responseContent);
-            //    if (jObject is null)
-            //    {
-            //        Log("jObject is null", L.Error.Server.InvalidResponse);
-            //        return null;
-            //    }
-
-            //    return jObject;
-            //}
-            //catch
-            //{
-            //    Log("jObject can't be parced", L.Error.Server.InvalidResponse);
-            //    return null;
-            //}
         }
         catch (TaskCanceledException ex) when (ex.InnerException is TimeoutException)
         {

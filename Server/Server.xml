@@ -422,6 +422,9 @@
             Лог авторизации с поддержкой повторной обработки и кэшированными данными устройства.
             </summary>
         </member>
+        <member name="F:Server.Users.AuthRegLoggerBackgroundService._cleanupTask">
+            <summary> Задача на очистку старых логов. </summary>
+        </member>
         <member name="M:Server.Users.AuthRegLoggerBackgroundService.EnqueueLog(System.Boolean,General.DTO.RestRequest.DtoRequestAuthReg,System.Nullable{System.Guid},System.Net.IPAddress,System.Boolean)">
             <summary>
             Добавляет лог в очередь с предварительным вычислением данных устройства.
