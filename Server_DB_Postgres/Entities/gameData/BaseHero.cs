@@ -2,6 +2,7 @@ using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using static Server_DB_Postgres.Attributes;
 
 namespace Server_DB_Postgres.Entities.GameData;
@@ -37,9 +38,11 @@ public class BaseHero
 
     #region Характеристики
     [Column(TypeName = "jsonb")]
+    [JsonPropertyName(nameof(Health))]
     public Dice? Health { get; set; }
 
     [Column(TypeName = "jsonb")]
+    [JsonPropertyName(nameof(Damage))]
     public Dice? Damage { get; set; }
     #endregion Характеристики
 

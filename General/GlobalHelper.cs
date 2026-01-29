@@ -1,6 +1,7 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+using General.DTO;
 using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace General;
 
@@ -10,19 +11,6 @@ namespace General;
 /// </summary>
 public static class GlobalHelper
 {
-    public static JsonSerializerSettings JsonSerializerSettings;
-    static GlobalHelper()
-    {
-        JsonSerializerSettings = new JsonSerializerSettings
-        {
-            // Использование CamelCase для всех полей, если атрибуты не заданы явно
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            // Компактный вид (аналог WriteIndented = false)
-            Formatting = Formatting.None,
-            // Игнорирование null значений для уменьшения веса JSON
-            NullValueHandling = NullValueHandling.Ignore
-        };
-    }
 
     /// <summary>
     /// Константа для типа медиа "application/json", часто используемого в HTTP-запросах.

@@ -16,14 +16,24 @@ public class AuthController(AuthService _authService) : ControllerBaseApi
     [AllowAnonymous, HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] DtoRequestAuthReg dtoRequest)
     {
-        DtoResponseAuthReg dtoResult = await _authService.LoginAsync(dtoRequest, HttpContext.Connection.RemoteIpAddress);
-        string jsonResult = JsonConvert.SerializeObject(dtoResult, General.GlobalHelper.JsonSerializerSettings);
-        return dtoResult.ErrorKey == null ? Ok(jsonResult) : BadRequest(jsonResult);
+        // Используем FluentResults для получения результата
+        var result = await _authService.LoginAsync(dtoRequest, HttpContext.Connection.RemoteIpAddress);
+
+        if (result.IsFailed)
+        {
+            // Обработка системных ошибок или BadRequest
+            return result.HasError(e => e.Metadata.ContainsValue("BadRequest"))
+                ? BadRequest(result.ToResult())
+                : StatusCode(500);
+        }
+
+        DtoResponseAuthReg dtoResult = result.Value;
+
+        // Вместо ручной сериализации в строку возвращаем объект. 
+        // ASP.NET Core сам применит System.Text.Json (который быстрее Newtonsoft).
+        return dtoResult.ErrorKey == null ? Ok(dtoResult) : BadRequest(dtoResult);
     }
 
     [HttpGet("validate")]
-    public IActionResult Validate()
-    {
-        return Ok();
-    }
+    public IActionResult Validate() => Ok();
 }

@@ -1,10 +1,12 @@
+using General;
 using General.DTO.Entities;
 using General.DTO.Entities.GameData;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using Server_DB_Postgres;
 using Server_DB_Postgres.Entities.GameData;
 using Server_DB_Postgres.Entities.Server;
+using System.Text.Json;
 
 namespace Server.Cache;
 
@@ -101,7 +103,9 @@ public class CacheService()
 
         DtoContainerGameData container = new(baseEquipments, baseHeroes, creatureTypes, damageTypes, equipmentType, materialDamagePercents, slotTypes, smithingMaterials, xEquipmentTypesDamageTypes, xHeroesCreatureTypes, slots);
 
-        GameDataJson = JsonConvert.SerializeObject(container, General.GlobalHelper.JsonSerializerSettings);
+        //GameDataJson = Newtonsoft.Json.JsonConvert.SerializeObject(container, General.GlobalHelper.JsonSerializerSettings);
+        //GameDataJson = JsonSerializer.Serialize(container, GlobalJsonOptions.jsonOptions);
+        GameDataJson = JsonSerializer.Serialize(container, GlobalJsonContext.Default.DtoContainerGameData);
         if (string.IsNullOrWhiteSpace(GameDataJson))
         {
             throw new InvalidOperationException("Кэш не инициализирован.");

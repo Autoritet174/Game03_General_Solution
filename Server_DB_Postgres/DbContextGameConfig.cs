@@ -35,7 +35,7 @@ public class DbContextGameConfig
 
     private static void Configure(EntityTypeBuilder<UserSession> builder)
     {
-        _ = builder.HasQueryFilter(s => !s.IsUsed && !s.IsRevoked);// Глобальный фильтр для выборок - только живые токены
+        //_ = builder.HasQueryFilter(s => !s.IsUsed && !s.IsRevoked);// Глобальный фильтр для выборок - только живые токены
 
         // Уникальный индекс на живые токены (неиспользованные и неаннулированные)
         _ = builder.HasIndex(s => s.RefreshTokenHash).IsUnique().HasFilter($"""

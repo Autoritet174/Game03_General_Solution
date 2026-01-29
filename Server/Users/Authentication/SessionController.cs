@@ -1,9 +1,9 @@
+using FluentResults;
 using General.DTO.RestRequest;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Server.Http_NS.Controllers_NS;
 using Server.Jwt_NS;
-using System.Security;
 
 namespace Server.Users.Authentication;
 
@@ -16,21 +16,18 @@ public sealed class SessionController(SessionService sessionService, JwtService 
     [HttpPost("refresh"), AllowAnonymous]
     public async Task<IActionResult> Refresh([FromBody] DtoRequestAuthReg dto)
     {
-        try
-        {
-            (Guid? userId, string? newRefreshToken, DateTimeOffset? dtExpiration) = await sessionService.RefreshSessionAsync(dto);
-            if (userId == null || string.IsNullOrWhiteSpace(newRefreshToken) || dtExpiration == null)
-            {
-                return Unauthorized(AuthRegResponse.InvalidCredentials());
-            }
-            string newAccessToken = jwtService.GenerateToken(userId.Value);
+        Result<SessionResponseData> result = await sessionService.RefreshSessionAsync(dto);
 
-            return Ok(AuthRegResponse.Success(newAccessToken, newRefreshToken, dtExpiration.Value));
-        }
-        catch (SecurityException)
+        if (result.IsFailed)
         {
+            // Можно детализировать статус-коды на основе типа ошибки в result.Errors
             return Unauthorized(AuthRegResponse.InvalidCredentials());
         }
+
+        SessionResponseData data = result.Value;
+        string accessToken = jwtService.GenerateToken(data.UserId);
+
+        return Ok(AuthRegResponse.Success(accessToken, data.RefreshToken, data.ExpiresAt));
     }
 
     /// <summary>
@@ -45,7 +42,7 @@ public sealed class SessionController(SessionService sessionService, JwtService 
             return BadRequest("Refresh token is required.");
         }
 
-        await sessionService.LogoutAsync(request.RefreshToken);
+        _ = await sessionService.LogoutAsync(request.RefreshToken);
 
         return Ok();
     }

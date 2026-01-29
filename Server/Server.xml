@@ -68,6 +68,311 @@
             <param name="path">Путь к значению в формате JSONPath (например: "$.user.name")</param>
             <returns>Значение как строка, если оно существует и может быть преобразовано в строку; иначе <c>null</c>.</returns>
         </member>
+        <member name="T:Server.GlobalJsonContext">
+            <summary>
+            Глобальный контекст для Source Generation. 
+            Сюда нужно добавлять все типы, которые сохраняются в jsonb или передаются по API.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.Boolean">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.NullableBoolean">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.Dice">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.DtoEquipment">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.DtoHero">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.DtoContainerCollection">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.DtoContainerGameData">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.DtoBaseEquipment">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.DtoBaseHero">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.DtoCreatureType">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.DtoDamageType">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.DtoEquipmentType">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.DtoMaterialDamagePercent">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.DtoSlot">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.DtoSlotType">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.DtoSmithingMaterial">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.DtoXEquipmentTypeDamageType">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.DtoXHeroCreatureType">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.DtoRequestAuthReg">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.DtoResponseAuthReg">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.BaseHero">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.IEnumerableDtoEquipment">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.IEnumerableDtoHero">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.IEnumerableDtoBaseEquipment">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.IEnumerableDtoBaseHero">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.IEnumerableDtoCreatureType">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.IEnumerableDtoDamageType">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.IEnumerableDtoEquipmentType">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.IEnumerableDtoMaterialDamagePercent">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.IEnumerableDtoSlot">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.IEnumerableDtoSlotType">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.IEnumerableDtoSmithingMaterial">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.IEnumerableDtoXEquipmentTypeDamageType">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.IEnumerableDtoXHeroCreatureType">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.ListDtoEquipment">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.ListDtoHero">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.ListDtoBaseEquipment">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.ListDtoBaseHero">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.ListDtoCreatureType">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.ListDtoDamageType">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.ListDtoEquipmentType">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.ListDtoMaterialDamagePercent">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.ListDtoSlot">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.ListDtoSlotType">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.ListDtoSmithingMaterial">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.ListDtoXEquipmentTypeDamageType">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.ListDtoXHeroCreatureType">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.DateTimeOffset">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.NullableDateTimeOffset">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.Guid">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.NullableGuid">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.Int32">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.NullableInt32">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.Int64">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.NullableInt64">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.String">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.Default">
+            <summary>
+            The default <see cref="T:System.Text.Json.Serialization.JsonSerializerContext"/> associated with a default <see cref="T:System.Text.Json.JsonSerializerOptions"/> instance.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.GeneratedSerializerOptions">
+            <summary>
+            The source-generated options associated with this context.
+            </summary>
+        </member>
+        <member name="M:Server.GlobalJsonContext.#ctor">
+            <inheritdoc/>
+        </member>
+        <member name="M:Server.GlobalJsonContext.#ctor(System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Server.GlobalJsonContext.GetTypeInfo(System.Type)">
+            <inheritdoc/>
+        </member>
         <member name="T:Server.Http_NS.Controllers_NS.Admin_NS.AddItemController">
             <summary>
             
@@ -356,6 +661,21 @@
             При успешной проверке возвращает JWT-токен доступа.
             </summary>
         </member>
+        <member name="T:Server.Users.Authentication.AuthService">
+            <summary>
+            Сервис аутентификации, оптимизированный для высокой нагрузки.
+            </summary>
+        </member>
+        <member name="M:Server.Users.Authentication.AuthService.#ctor(Microsoft.AspNetCore.Identity.UserManager{Server_DB_Postgres.Entities.Users.User},Microsoft.AspNetCore.Identity.SignInManager{Server_DB_Postgres.Entities.Users.User},Server.Jwt_NS.JwtService,Microsoft.Extensions.Caching.Memory.IMemoryCache,Server_DB_Postgres.DbContextGame,Server.Users.AuthRegLoggerBackgroundService,Server.Users.Authentication.SessionService,Microsoft.Extensions.Logging.ILogger{Server.Users.Authentication.AuthService})">
+            <summary>
+            Сервис аутентификации, оптимизированный для высокой нагрузки.
+            </summary>
+        </member>
+        <member name="M:Server.Users.Authentication.AuthService.LoginAsync(General.DTO.RestRequest.DtoRequestAuthReg,System.Net.IPAddress)">
+            <summary>
+            Выполняет вход пользователя в систему.
+            </summary>
+        </member>
         <member name="M:Server.Users.Authentication.SessionController.Refresh(General.DTO.RestRequest.DtoRequestAuthReg)">
             <summary>
             Эндпоинт для обновления токенов. 
@@ -368,13 +688,35 @@
             Принимает refresh token в теле запроса, чтобы знать, какую именно сессию закрыть.
             </summary>
         </member>
+        <member name="T:Server.Users.Authentication.SessionService">
+            <summary>
+            Сервис управления игровыми сессиями и ротацией токенов.
+            </summary>
+        </member>
+        <member name="M:Server.Users.Authentication.SessionService.#ctor(Server_DB_Postgres.DbContextGame,Microsoft.Extensions.Logging.ILogger{Server.Users.Authentication.SessionService},Server.Cache.CacheService,Microsoft.Extensions.Caching.Memory.IMemoryCache)">
+            <summary>
+            Сервис управления игровыми сессиями и ротацией токенов.
+            </summary>
+        </member>
+        <member name="M:Server.Users.Authentication.SessionService.CreateSessionAsync(System.Guid,General.DTO.RestRequest.DtoRequestAuthReg)">
+            <summary>
+            Создает новую сессию с оптимизированным кэшированием устройств.
+            </summary>
+        </member>
+        <member name="M:Server.Users.Authentication.SessionService.RefreshSessionAsync(General.DTO.RestRequest.DtoRequestAuthReg)">
+            <summary>
+            Обновляет сессию с использованием Compiled Queries и Span-валидации.
+            </summary>
+        </member>
+        <member name="M:Server.Users.Authentication.SessionService.EnsureDeviceExistsCachedAsync(System.Guid,General.DTO.RestRequest.DtoRequestAuthReg)">
+            <summary>
+            Оптимизированная проверка устройства через IMemoryCache и string.Create.
+            </summary>
+        </member>
         <member name="M:Server.Users.Authentication.SessionService.RevokeAllUserSessionsAsync(System.Guid,Server_DB_Postgres.Entities.Server.InactivationReason)">
             <summary>
-            Полностью разлогинить пользователя, например при смене пароля или выдаче бана.
+            Отзывает все сессии через высокопроизводительный ExecuteUpdate.
             </summary>
-            <param name="userId"></param>
-            <param name="reason"></param>
-            <returns></returns>
         </member>
         <member name="T:Server.Users.Authentication.PasskeyService">
             <summary>
@@ -566,6 +908,13 @@
             </summary>
             <param name="email">Email пользователя.</param>
             <returns>Оставшееся время в секундах.</returns>
+        </member>
+        <member name="M:Server.Users.UserDeviceHelper.ComputeId(General.DTO.RestRequest.DtoRequestAuthReg)">
+            <summary>
+            Вычисляет идентификатор устройства, используя IncrementalHash и Span-форматирование примитивов.
+            </summary>
+            <param name="dto">Данные устройства.</param>
+            <returns>Детерминированный GUID на основе хеша характеристик.</returns>
         </member>
         <member name="T:Server.Utilities.JsonObjectExtension">
             <summary>

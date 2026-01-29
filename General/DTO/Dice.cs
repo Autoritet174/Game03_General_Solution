@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace General.DTO;
 
@@ -9,15 +9,15 @@ namespace General.DTO;
 public record Dice
 {
     /// <summary> Count. Количество бросаемых кубиков. </summary>
-    [JsonProperty("c")]
+    [JsonPropertyName("c")]
     public int Count { get; set; }
 
     /// <summary> Sides. Размер кубика (число граней). </summary>
-    [JsonProperty("s")]
+    [JsonPropertyName("s")]
     public int Sides { get; set; }
 
     /// <summary> Modificator. Модификатор к броску кубиков. Первые три знака, тысячные доли от единицы видимой игроку. </summary>
-    [JsonProperty("m")]
+    [JsonPropertyName("m")]
     public long? Modificator1000 { get; set; } = null;
 
     public Dice() { }

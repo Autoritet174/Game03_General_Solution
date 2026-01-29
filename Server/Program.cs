@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 using Npgsql;
 using Serilog;
 using Serilog.Events;
@@ -52,16 +51,21 @@ internal partial class Program
         // База данных с игровыми данными
         //DbContext_Game.Init(connectionString);// Инициализация NpgsqlDataSource с поддержкой Newtonsoft.Json
 
-        //источник данных Npgsql с поддержкой JSON
         var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
-        JsonSerializerSettings jsonSettings = new()
-        {
-            NullValueHandling = NullValueHandling.Ignore // Это исключит null поля из JSON
-        };
-        _ = dataSourceBuilder.UseJsonNet(jsonSettings);
+
+        _ = dataSourceBuilder.EnableDynamicJson();
+        _ = dataSourceBuilder.ConfigureJsonOptions(GlobalJsonOptions.jsonOptions);
+
+
+
         NpgsqlDataSource dataSource = dataSourceBuilder.Build();
         _ = services.AddDbContext<DbContextGame>(options => options.UseNpgsql(dataSource));
 
+        _ = builder.Services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.TypeInfoResolverChain.Insert(0, GlobalJsonContext.Default);
+            });
         //_ = services.AddScoped(sp => new DbContext_Game(DbContext_Game.DbContextOptions));
 
 
@@ -115,7 +119,7 @@ internal partial class Program
         //    name: "database-check",
         //    tags: new[] { "ready" });
 
-        InitNewtonsoftJson(iMvcBuilder);
+        //InitNewtonsoftJson(iMvcBuilder);
         InitCompressionResponse(services);
 
         //_ = services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
@@ -410,38 +414,38 @@ internal partial class Program
         });
     }
 
-    private static void InitNewtonsoftJson(IMvcBuilder iMvcBuilder)
-    {
-        _ = 0;
-        _ = iMvcBuilder.AddNewtonsoftJson(static options =>
-        {
-            // 1. Обработка ссылок
-            options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore; // Обработка циклических ссылок
-            options.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.None; // Сохранение ссылок на объекты
+    //private static void InitNewtonsoftJson(IMvcBuilder iMvcBuilder)
+    //{
+    //    _ = 0;
+    //    _ = iMvcBuilder.AddNewtonsoftJson(static options =>
+    //    {
+    //        // 1. Обработка ссылок
+    //        options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore; // Обработка циклических ссылок
+    //        options.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.None; // Сохранение ссылок на объекты
 
-            //// 2. Null значения
-            options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-            //options.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Populate;
+    //        //// 2. Null значения
+    //        options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+    //        //options.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Populate;
 
-            //// 3. Именование (camelCase для JSON)
-            //options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+    //        //// 3. Именование (camelCase для JSON)
+    //        //options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 
-            //// 4. Даты в UTC ISO формате
-            //options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-            //options.SerializerSettings.DateFormatString = "yyyy-MM-ddTHH:mm:ss.fffZ";
+    //        //// 4. Даты в UTC ISO формате
+    //        //options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+    //        //options.SerializerSettings.DateFormatString = "yyyy-MM-ddTHH:mm:ss.fffZ";
 
-            //// 5. Конвертеры
-            //options.SerializerSettings.Converters.Add(new StringEnumConverter());
+    //        //// 5. Конвертеры
+    //        //options.SerializerSettings.Converters.Add(new StringEnumConverter());
 
-            //// 6. Форматирование
-            //options.SerializerSettings.Formatting = Formatting.Indented;
+    //        //// 6. Форматирование
+    //        //options.SerializerSettings.Formatting = Formatting.Indented;
 
-            //// 8. Дополнительные настройки
-            //options.SerializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
-            //options.SerializerSettings.TypeNameHandling = TypeNameHandling.None;
-            //options.SerializerSettings.MaxDepth = 32;
-        });
-    }
+    //        //// 8. Дополнительные настройки
+    //        //options.SerializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
+    //        //options.SerializerSettings.TypeNameHandling = TypeNameHandling.None;
+    //        //options.SerializerSettings.MaxDepth = 32;
+    //    });
+    //}
 
     /// <summary> Подключение WebSocket-обработчика через маршрутизацию ASP.NET Core. Запросы по адресу /ws будут направляться в ProcessKestrelWebSocketRequest. </summary>
     private static void InitWebSocket(WebApplication app)
