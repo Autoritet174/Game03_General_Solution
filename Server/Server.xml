@@ -373,24 +373,13 @@
         <member name="M:Server.GlobalJsonContext.GetTypeInfo(System.Type)">
             <inheritdoc/>
         </member>
-        <member name="T:Server.Http_NS.Controllers_NS.Admin_NS.AddItemController">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:Server.Http_NS.Controllers_NS.Admin_NS.AddItemController.Main">
-            <summary>
-            
-            </summary>
-            <returns></returns>
-        </member>
         <member name="T:Server.Http_NS.Controllers_NS.Collection_NS.CollectionController">
             <summary> Контроллер для управления коллекциями пользователя. </summary>
         </member>
         <member name="M:Server.Http_NS.Controllers_NS.Collection_NS.CollectionController.#ctor(Server_DB_Postgres.DbContextGame)">
             <summary> Контроллер для управления коллекциями пользователя. </summary>
         </member>
-        <member name="M:Server.Http_NS.Controllers_NS.Collection_NS.CollectionController.GetAllCollection">
+        <member name="M:Server.Http_NS.Controllers_NS.Collection_NS.CollectionController.GetAllCollectionAsync(System.Threading.CancellationToken)">
             <summary> Получает коллекцию текущего пользователя. </summary>
         </member>
         <member name="T:Server.Http_NS.Controllers_NS.ControllerBaseApi">
@@ -451,7 +440,7 @@
             Контроллер регистрации.
             </summary>
         </member>
-        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.RegistrationController.Register">
+        <member name="M:Server.Http_NS.Controllers_NS.Users_NS.RegistrationController.RegisterAsync(System.Threading.CancellationToken)">
             <summary>
             Регистрация.
             </summary>
@@ -617,14 +606,12 @@
         <member name="M:Server.Program.InitWebSocket(Microsoft.AspNetCore.Builder.WebApplication)">
             <summary> Подключение WebSocket-обработчика через маршрутизацию ASP.NET Core. Запросы по адресу /ws будут направляться в ProcessKestrelWebSocketRequest. </summary>
         </member>
-        <member name="M:Server.Program.ConnectionsIsCorrect(Microsoft.AspNetCore.Builder.WebApplication)">
+        <member name="M:Server.Program.ConnectionsIsCorrectAsync(Microsoft.AspNetCore.Builder.WebApplication,System.Threading.CancellationToken)">
             <summary>
             Выполняет проверку соединения с базой данных.
             </summary>
-            <param name="app">Экземпляр работающего WebApplication.</param>
-            <exception cref="T:System.InvalidOperationException">Бросается, если соединение не установлено.</exception>
         </member>
-        <member name="M:Server.Program.LoadServerCache(Microsoft.AspNetCore.Builder.WebApplication)">
+        <member name="M:Server.Program.LoadServerCacheAsync(Microsoft.AspNetCore.Builder.WebApplication,System.Threading.CancellationToken)">
             <summary> Загружаем в оперативную память константные серверные данные которые не меняются во время работы сервера. </summary>
         </member>
         <member name="T:Server.UserRegAuth_NS.OpenWebSocketController">
@@ -671,18 +658,18 @@
             Сервис аутентификации, оптимизированный для высокой нагрузки.
             </summary>
         </member>
-        <member name="M:Server.Users.Authentication.AuthService.LoginAsync(General.DTO.RestRequest.DtoRequestAuthReg,System.Net.IPAddress)">
+        <member name="M:Server.Users.Authentication.AuthService.LoginAsync(General.DTO.RestRequest.DtoRequestAuthReg,System.Net.IPAddress,System.Threading.CancellationToken)">
             <summary>
             Выполняет вход пользователя в систему.
             </summary>
         </member>
-        <member name="M:Server.Users.Authentication.SessionController.Refresh(General.DTO.RestRequest.DtoRequestAuthReg)">
+        <member name="M:Server.Users.Authentication.SessionController.RefreshAsync(General.DTO.RestRequest.DtoRequestAuthReg,System.Threading.CancellationToken)">
             <summary>
             Эндпоинт для обновления токенов. 
             Доступен без [authorize], так как access token уже может быть просрочен.
             </summary>
         </member>
-        <member name="M:Server.Users.Authentication.SessionController.Logout(General.DTO.RestRequest.DtoRequestLogout)">
+        <member name="M:Server.Users.Authentication.SessionController.LogoutAsync(General.DTO.RestRequest.DtoRequestLogout,System.Threading.CancellationToken)">
             <summary>
             Выход из системы.
             Принимает refresh token в теле запроса, чтобы знать, какую именно сессию закрыть.
@@ -698,24 +685,24 @@
             Сервис управления игровыми сессиями и ротацией токенов.
             </summary>
         </member>
-        <member name="M:Server.Users.Authentication.SessionService.CreateSessionAsync(System.Guid,General.DTO.RestRequest.DtoRequestAuthReg)">
+        <member name="M:Server.Users.Authentication.SessionService.CreateSessionAsync(System.Guid,General.DTO.RestRequest.DtoRequestAuthReg,System.Threading.CancellationToken)">
             <summary>
             Создает новую сессию с оптимизированным кэшированием устройств.
             </summary>
         </member>
-        <member name="M:Server.Users.Authentication.SessionService.RefreshSessionAsync(General.DTO.RestRequest.DtoRequestAuthReg)">
+        <member name="M:Server.Users.Authentication.SessionService.RefreshSessionAsync(General.DTO.RestRequest.DtoRequestAuthReg,System.Threading.CancellationToken)">
             <summary>
             Обновляет сессию с использованием Compiled Queries и Span-валидации.
             </summary>
         </member>
-        <member name="M:Server.Users.Authentication.SessionService.EnsureDeviceExistsCachedAsync(System.Guid,General.DTO.RestRequest.DtoRequestAuthReg)">
+        <member name="M:Server.Users.Authentication.SessionService.EnsureDeviceExistsCachedAsync(System.Guid,General.DTO.RestRequest.DtoRequestAuthReg,System.Threading.CancellationToken)">
             <summary>
             Оптимизированная проверка устройства через IMemoryCache и string.Create.
             </summary>
         </member>
-        <member name="M:Server.Users.Authentication.SessionService.RevokeAllUserSessionsAsync(System.Guid,Server_DB_Postgres.Entities.Server.InactivationReason)">
+        <member name="M:Server.Users.Authentication.SessionService.RevokeAllUserSessionsAsync(System.Guid,System.Threading.CancellationToken)">
             <summary>
-            Отзывает все сессии через высокопроизводительный ExecuteUpdate.
+            Отзывает все сессии.
             </summary>
         </member>
         <member name="T:Server.Users.Authentication.PasskeyService">
@@ -723,27 +710,27 @@
             Сервис для управления ключами доступа (Passkeys).
             </summary>
         </member>
-        <member name="M:Server.Users.Authentication.PasskeyService.#ctor(Fido2NetLib.IFido2,Server_DB_Postgres.DbContextGame,Microsoft.Extensions.Logging.ILogger{Server.Users.Authentication.PasskeyService})">
+        <member name="M:Server.Users.Authentication.PasskeyService.#ctor(Fido2NetLib.IFido2,Server_DB_Postgres.DbContextGame)">
             <summary>
             Сервис для управления ключами доступа (Passkeys).
             </summary>
         </member>
-        <member name="M:Server.Users.Authentication.PasskeyService.GetRegistrationOptionsAsync(System.Guid,System.String)">
+        <member name="M:Server.Users.Authentication.PasskeyService.GetRegistrationOptionsAsync(System.Guid,System.String,System.Threading.CancellationToken)">
             <summary>
             Генерирует параметры регистрации нового ключа.
             </summary>
         </member>
-        <member name="M:Server.Users.Authentication.PasskeyService.ConfirmRegistrationAsync(Fido2NetLib.AuthenticatorAttestationRawResponse,Fido2NetLib.CredentialCreateOptions,System.Guid)">
+        <member name="M:Server.Users.Authentication.PasskeyService.ConfirmRegistrationAsync(Fido2NetLib.AuthenticatorAttestationRawResponse,Fido2NetLib.CredentialCreateOptions,System.Guid,System.Threading.CancellationToken)">
             <summary>
             Подтверждает регистрацию и сохраняет ключ.
             </summary>
         </member>
-        <member name="M:Server.Users.Authentication.PasskeyService.GetLoginOptionsAsync(System.Nullable{System.Guid})">
+        <member name="M:Server.Users.Authentication.PasskeyService.GetLoginOptionsAsync(System.Nullable{System.Guid},System.Threading.CancellationToken)">
             <summary>
             Генерирует параметры для входа. Исправлено на GetAssertionOptionsParams.
             </summary>
         </member>
-        <member name="M:Server.Users.Authentication.PasskeyService.ConfirmLoginAsync(Fido2NetLib.AuthenticatorAssertionRawResponse,Fido2NetLib.AssertionOptions)">
+        <member name="M:Server.Users.Authentication.PasskeyService.ConfirmLoginAsync(Fido2NetLib.AuthenticatorAssertionRawResponse,Fido2NetLib.AssertionOptions,System.Threading.CancellationToken)">
             <summary>
             Проверяет подпись при входе.
             </summary>
@@ -793,7 +780,7 @@
             Контроллер для управления процессами регистрации и аутентификации через Passkeys.
             </summary>
         </member>
-        <member name="M:Server.Users.PasskeyController.#ctor(Server.Users.Authentication.PasskeyService,Microsoft.Extensions.Caching.Memory.IMemoryCache,Microsoft.Extensions.Logging.ILogger{Server.Users.PasskeyController})">
+        <member name="M:Server.Users.PasskeyController.#ctor(Server.Users.Authentication.PasskeyService,Microsoft.Extensions.Caching.Memory.IMemoryCache)">
             <summary>
             Контроллер для управления процессами регистрации и аутентификации через Passkeys.
             </summary>
@@ -803,25 +790,22 @@
             Флаг доступности функционала Passkey.
             </summary>
         </member>
-        <member name="M:Server.Users.PasskeyController.GetRegisterOptions(System.Guid,System.String)">
+        <member name="M:Server.Users.PasskeyController.GetRegisterOptionsAsync(System.Guid,System.String,System.Threading.CancellationToken)">
             <summary>
             Получает параметры для создания нового ключа доступа.
             </summary>
-            <param name="userId">Идентификатор пользователя.</param>
-            <param name="email">Электронная почта пользователя.</param>
         </member>
-        <member name="M:Server.Users.PasskeyController.ConfirmRegister(Server.Users.DtoRegisterConfirm)">
+        <member name="M:Server.Users.PasskeyController.ConfirmRegisterAsync(Server.Users.DtoRegisterConfirm,System.Threading.CancellationToken)">
             <summary>
             Подтверждает регистрацию ключа после взаимодействия пользователя с устройством.
             </summary>
         </member>
-        <member name="M:Server.Users.PasskeyController.GetLoginOptions(System.Nullable{System.Guid})">
+        <member name="M:Server.Users.PasskeyController.GetLoginOptionsAsync(System.Nullable{System.Guid},System.Threading.CancellationToken)">
             <summary>
             Получает параметры для выполнения входа (assertion).
             </summary>
-            <param name="userId">Необязательный ID пользователя для фильтрации ключей.</param>
         </member>
-        <member name="M:Server.Users.PasskeyController.ConfirmLogin(Server.Users.DtoLoginConfirm)">
+        <member name="M:Server.Users.PasskeyController.ConfirmLoginAsync(Server.Users.DtoLoginConfirm,System.Threading.CancellationToken)">
             <summary>
             Проверяет подпись ключа и завершает процесс входа.
             </summary>
@@ -867,12 +851,6 @@
             <summary>
             Сервис для обработки регистрации пользователей.
             </summary>
-        </member>
-        <member name="M:Server.Users.Registration.RegService.Delay(System.DateTimeOffset)">
-            <summary>
-            Метод для выполнения задержки.
-            </summary>
-            <param name="end">Время окончания задержки.</param>
         </member>
         <member name="M:Server.Users.Registration.RegService.RegisterFail(System.String)">
             <summary>
@@ -921,16 +899,14 @@
             Расширение для работы с HTTP-запросами, предоставляющее методы для извлечения объекта JSON из тела запроса.
             </summary>
         </member>
-        <member name="M:Server.Utilities.JsonObjectExtension.GetJsonObjectFromRequest(Microsoft.AspNetCore.Http.HttpRequest)">
+        <member name="M:Server.Utilities.JsonObjectExtension.GetJsonObjectFromRequestAsync(Microsoft.AspNetCore.Http.HttpRequest,System.Threading.CancellationToken)">
             <summary>
             Асинхронно извлекает и парсит тело HTTP-запроса как JSON-объект.
             </summary>
-            <param name="httpRequest">HTTP-запрос, из которого читается тело.</param>
             <returns>
             Экземпляр <see cref="T:System.Text.Json.Nodes.JsonObject"/>, если тело запроса содержит валидный JSON-объект; иначе — <c>null</c>.
             Возвращает <c>null</c>, если тело пустое, некорректно или не является объектом.
             </returns>
-            <exception cref="T:System.ArgumentNullException">Возникает, если <paramref name="httpRequest"/> равен <c>null</c>.</exception>
         </member>
         <member name="M:Server.Utilities.JsonObjectExtension.GetString(System.Text.Json.Nodes.JsonObject,System.String,System.Boolean)">
             <summary>
@@ -985,7 +961,7 @@
             Обрабатывает прием и отправку сообщений, аутентификацию и управление жизненным циклом подключения.
             </summary>
         </member>
-        <member name="M:Server.WebSocket_NS.WebSocketConnection.#ctor(System.Net.WebSockets.WebSocket,Microsoft.Extensions.Logging.ILogger{Server.WebSocket_NS.WebSocketConnection},Microsoft.Extensions.Configuration.IConfiguration,Server.WebSocket_NS.WebSocketConnectionHandler,System.IServiceProvider,System.Guid)">
+        <member name="M:Server.WebSocket_NS.WebSocketConnection.#ctor(System.Net.WebSockets.WebSocket,Microsoft.Extensions.Logging.ILogger{Server.WebSocket_NS.WebSocketConnection},Microsoft.Extensions.Configuration.IConfiguration,Server.WebSocket_NS.WebSocketConnectionHandler,System.Guid)">
             <summary>
             Представляет одно WebSocket подключение клиента.
             Обрабатывает прием и отправку сообщений, аутентификацию и управление жизненным циклом подключения.
@@ -1062,7 +1038,7 @@
             <param name="configuration">Конфигурация приложения.</param>
             <param name="jwtService">JWT Сервис</param>
         </member>
-        <member name="M:Server.WebSocket_NS.WebSocketConnectionHandler.ProcessKestrelWebSocketRequest(Microsoft.AspNetCore.Http.HttpContext,System.Threading.CancellationToken)">
+        <member name="M:Server.WebSocket_NS.WebSocketConnectionHandler.ProcessKestrelWebSocketRequestAsync(Microsoft.AspNetCore.Http.HttpContext,System.Threading.CancellationToken)">
             <summary>
             Вызывается при запросе открытия веб сокета от клиента через пайплайн ASP.NET Core.
             </summary>

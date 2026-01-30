@@ -7,6 +7,18 @@ root = true  # Указывает, что это корневой файл ко�
 csharp_style_namespace_declarations = file_scoped:suggestion
 dotnet_diagnostic.CS1591.severity = none
 
+
+# Проверка, что CancellationToken пробрасывается в вызываемые методы
+dotnet_diagnostic.VSTHRD110.severity = error
+# Ошибка, если асинхронный метод не принимает CancellationToken
+dotnet_diagnostic.VSTHRD111.severity = error
+# Проверка наличия параметра CancellationToken в асинхронных методах
+dotnet_diagnostic.CA2016.severity = error
+# Анализатор CA1068: Параметр CancellationToken должен быть в конце (помогает выявлять отсутствие)
+dotnet_diagnostic.CA1068.severity = error
+
+
+
 # тело выражения или тело блока для методов
 csharp_style_expression_bodied_methods = false:none
 

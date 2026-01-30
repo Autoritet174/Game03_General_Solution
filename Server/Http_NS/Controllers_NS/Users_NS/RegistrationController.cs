@@ -13,7 +13,7 @@ public class RegistrationController : ControllerBaseApi
     /// <returns></returns>
     [AllowAnonymous]
     [HttpPost]
-    public async Task<IActionResult> Register()
+    public async Task<IActionResult> RegisterAsync(CancellationToken cancellationToken)
     {
         //await Task.Delay(2000);
 
@@ -64,7 +64,7 @@ public class RegistrationController : ControllerBaseApi
         //int count = await command.ExecuteNonQueryAsync();
 
         //return count > 0 ? Ok() : CBA_BadRequest(General.ServerErrors.Response.Reg_Unknown);
-        await Task.Delay(1);
+        await Task.Delay(1, cancellationToken).ConfigureAwait(false);
         return Ok();
     }
 

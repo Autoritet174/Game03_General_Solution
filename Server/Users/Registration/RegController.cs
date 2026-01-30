@@ -14,9 +14,9 @@ namespace Server.Users.Registration;
 public class RegController(RegService _regService) : ControllerBaseApi
 {
     [AllowAnonymous, HttpPost]
-    public async Task<IActionResult> Register([FromBody] DtoRequestAuthReg dtoRequest)
+    public async Task<IActionResult> RegisterAsync([FromBody] DtoRequestAuthReg dtoRequest, CancellationToken cancellationToken)
     {
-        DtoResponseAuthReg dtoResult = await _regService.RegisterAsync(dtoRequest, HttpContext.Connection.RemoteIpAddress);
+        DtoResponseAuthReg dtoResult = await _regService.RegisterAsync(dtoRequest, HttpContext.Connection.RemoteIpAddress, cancellationToken).ConfigureAwait(false);
 
         string jsonResult = JsonSerializer.Serialize(dtoResult, GlobalJsonOptions.jsonOptions);
         return dtoResult.ErrorKey == null ? Ok(jsonResult) : BadRequest(jsonResult);

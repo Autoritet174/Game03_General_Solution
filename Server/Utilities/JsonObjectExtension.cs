@@ -13,13 +13,11 @@ public static class JsonObjectExtension
     /// <summary>
     /// Асинхронно извлекает и парсит тело HTTP-запроса как JSON-объект.
     /// </summary>
-    /// <param name="httpRequest">HTTP-запрос, из которого читается тело.</param>
     /// <returns>
     /// Экземпляр <see cref="JsonObject"/>, если тело запроса содержит валидный JSON-объект; иначе — <c>null</c>.
     /// Возвращает <c>null</c>, если тело пустое, некорректно или не является объектом.
     /// </returns>
-    /// <exception cref="ArgumentNullException">Возникает, если <paramref name="httpRequest"/> равен <c>null</c>.</exception>
-    public static async Task<JsonObject?> GetJsonObjectFromRequest(HttpRequest httpRequest)
+    public static async Task<JsonObject?> GetJsonObjectFromRequestAsync(HttpRequest httpRequest, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(httpRequest);
 
@@ -27,7 +25,7 @@ public static class JsonObjectExtension
         httpRequest.EnableBuffering();
 
         using StreamReader reader = new(httpRequest.Body, Encoding.UTF8, leaveOpen: true);
-        string body = await reader.ReadToEndAsync();
+        string body = await reader.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
 
         // Проверяем, что тело не пустое и содержит данные
         if (string.IsNullOrWhiteSpace(body))

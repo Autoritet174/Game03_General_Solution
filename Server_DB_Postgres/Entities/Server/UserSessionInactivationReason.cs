@@ -14,4 +14,10 @@ public class UserSessionInactivationReason
     public InactivationReason Code { get; set; }
 }
 
-public enum InactivationReason : int { EXPIRED = 1, ROTATION = 2, USER_LOGOUT = 3, MANUAL_REVOCATION = 4, OTHER_DEVICE = 5 }
+public enum InactivationReason : int {
+    Rotation = 1,
+    UserLogout = 2,
+    //MANUAL_REVOCATION = 4,
+    ServerRevoke = 3,
+    Expired = 4,
+}

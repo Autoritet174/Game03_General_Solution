@@ -10,9 +10,10 @@ namespace Server.Users;
 /// Контроллер для управления процессами регистрации и аутентификации через Passkeys.
 /// </summary>
 public sealed class PasskeyController(
-    PasskeyService passkeyService,
-    IMemoryCache cache,
-    ILogger<PasskeyController> logger) : ControllerBaseApi
+    PasskeyService passkeyService
+    ,IMemoryCache cache
+    //,ILogger<PasskeyController> logger
+    ) : ControllerBaseApi
 {
     private static readonly TimeSpan SessionTimeout = TimeSpan.FromMinutes(5);
 
@@ -27,10 +28,8 @@ public sealed class PasskeyController(
     /// <summary>
     /// Получает параметры для создания нового ключа доступа.
     /// </summary>
-    /// <param name="userId">Идентификатор пользователя.</param>
-    /// <param name="email">Электронная почта пользователя.</param>
     [HttpGet("register/options")]
-    public async Task<IActionResult> GetRegisterOptions([FromQuery] Guid userId, [FromQuery] string email)
+    public async Task<IActionResult> GetRegisterOptionsAsync([FromQuery] Guid userId, [FromQuery] string email, CancellationToken cancellationToken)
     {
         if (IsEnabled)
         {
@@ -42,7 +41,7 @@ public sealed class PasskeyController(
             return BadRequest("Invalid user data provided.");
         }
 
-        CredentialCreateOptions options = await passkeyService.GetRegistrationOptionsAsync(userId, email);
+        CredentialCreateOptions options = await passkeyService.GetRegistrationOptionsAsync(userId, email, cancellationToken).ConfigureAwait(false);
 
         // Сохраняем опции в кэш для последующей верификации
         _ = cache.Set($"{REGISTRATION_CACHE_PREFIX}{userId}", options, SessionTimeout);
@@ -54,7 +53,7 @@ public sealed class PasskeyController(
     /// Подтверждает регистрацию ключа после взаимодействия пользователя с устройством.
     /// </summary>
     [HttpPost("register/confirm")]
-    public async Task<IActionResult> ConfirmRegister([FromBody] DtoRegisterConfirm request)
+    public async Task<IActionResult> ConfirmRegisterAsync([FromBody] DtoRegisterConfirm request, CancellationToken cancellationToken)
     {
         if (IsEnabled)
         {
@@ -71,7 +70,7 @@ public sealed class PasskeyController(
             return Conflict("Registration session expired or not found.");
         }
 
-        await passkeyService.ConfirmRegistrationAsync(request.Response, originalOptions, request.UserId);
+        await passkeyService.ConfirmRegistrationAsync(request.Response, originalOptions, request.UserId, cancellationToken).ConfigureAwait(false);
 
         cache.Remove($"{REGISTRATION_CACHE_PREFIX}{request.UserId}");
 
@@ -81,16 +80,15 @@ public sealed class PasskeyController(
     /// <summary>
     /// Получает параметры для выполнения входа (assertion).
     /// </summary>
-    /// <param name="userId">Необязательный ID пользователя для фильтрации ключей.</param>
     [HttpGet("login/options")]
-    public async Task<IActionResult> GetLoginOptions([FromQuery] Guid? userId)
+    public async Task<IActionResult> GetLoginOptionsAsync([FromQuery] Guid? userId, CancellationToken cancellationToken)
     {
         if (IsEnabled)
         {
             return StatusCode(StatusCodes.Status503ServiceUnavailable, "Passkey registration is currently disabled.");
         }
 
-        AssertionOptions options = await passkeyService.GetLoginOptionsAsync(userId);
+        AssertionOptions options = await passkeyService.GetLoginOptionsAsync(userId, cancellationToken).ConfigureAwait(false);
 
         // Используем Challenge как ключ сессии
         string challengeKey = Convert.ToBase64String(options.Challenge);
@@ -103,7 +101,7 @@ public sealed class PasskeyController(
     /// Проверяет подпись ключа и завершает процесс входа.
     /// </summary>
     [HttpPost("login/confirm")]
-    public async Task<IActionResult> ConfirmLogin([FromBody] DtoLoginConfirm request)
+    public async Task<IActionResult> ConfirmLoginAsync([FromBody] DtoLoginConfirm request, CancellationToken cancellationToken)
     {
         if (IsEnabled)
         {
@@ -121,7 +119,7 @@ public sealed class PasskeyController(
         }
 
         // Выполняем проверку через сервис
-        Guid userId = await passkeyService.ConfirmLoginAsync(request.Response, originalOptions);
+        Guid userId = await passkeyService.ConfirmLoginAsync(request.Response, originalOptions, cancellationToken).ConfigureAwait(false);
 
         cache.Remove($"{ASSERTION_CACHE_PREFIX}{request.Challenge}");
 

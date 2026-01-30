@@ -11,14 +11,15 @@ namespace Server.Users.Authentication;
 /// Сервис для управления ключами доступа (Passkeys).
 /// </summary>
 public sealed class PasskeyService(
-    IFido2 fido2,
-    DbContextGame dbContext,
-    ILogger<PasskeyService> logger)
+    IFido2 fido2
+    ,DbContextGame dbContext
+    //,ILogger<PasskeyService> logger
+    )
 {
     /// <summary>
     /// Генерирует параметры регистрации нового ключа.
     /// </summary>
-    public async Task<CredentialCreateOptions> GetRegistrationOptionsAsync(Guid userId, string userEmail)
+    public async Task<CredentialCreateOptions> GetRegistrationOptionsAsync(Guid userId, string userEmail, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(userEmail);
         if (userId == Guid.Empty)
@@ -29,7 +30,7 @@ public sealed class PasskeyService(
         List<PublicKeyCredentialDescriptor> existingCredentials = await dbContext.Set<UserAccesskey>()
             .Where(p => p.UserId == userId)
             .Select(p => new PublicKeyCredentialDescriptor(p.DescriptorId))
-            .ToListAsync();
+            .ToListAsync(cancellationToken).ConfigureAwait(false);
 
         var user = new Fido2User
         {
@@ -59,10 +60,9 @@ public sealed class PasskeyService(
     public async Task ConfirmRegistrationAsync(
         AuthenticatorAttestationRawResponse clientResponse,
         CredentialCreateOptions originalOptions,
-        Guid userId)
+        Guid userId,
+        CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(clientResponse);
-        ArgumentNullException.ThrowIfNull(originalOptions);
 
         var parameters = new MakeNewCredentialParams
         {
@@ -71,11 +71,11 @@ public sealed class PasskeyService(
             IsCredentialIdUniqueToUserCallback = async (args, ct) =>
             {
                 return !await dbContext.Set<UserAccesskey>()
-                    .AnyAsync(p => p.DescriptorId == args.CredentialId, ct);
+                    .AnyAsync(p => p.DescriptorId == args.CredentialId, ct).ConfigureAwait(false);
             }
         };
 
-        RegisteredPublicKeyCredential credential = await fido2.MakeNewCredentialAsync(parameters);
+        RegisteredPublicKeyCredential credential = await fido2.MakeNewCredentialAsync(parameters, cancellationToken).ConfigureAwait(false);
 
         var passkey = new UserAccesskey
         {
@@ -88,13 +88,13 @@ public sealed class PasskeyService(
         };
 
         _ = dbContext.UserAccesskeys.Add(passkey);
-        _ = await dbContext.SaveChangesAsync();
+        _ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
     /// Генерирует параметры для входа. Исправлено на GetAssertionOptionsParams.
     /// </summary>
-    public async Task<AssertionOptions> GetLoginOptionsAsync(Guid? userId)
+    public async Task<AssertionOptions> GetLoginOptionsAsync(Guid? userId, CancellationToken cancellationToken)
     {
         var allowedCredentials = new List<PublicKeyCredentialDescriptor>();
 
@@ -103,7 +103,7 @@ public sealed class PasskeyService(
             allowedCredentials = await dbContext.Set<UserAccesskey>()
                 .Where(p => p.UserId == userId.Value)
                 .Select(p => new PublicKeyCredentialDescriptor(p.DescriptorId))
-                .ToListAsync();
+                .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         // ИСПРАВЛЕНИЕ: Использование GetAssertionOptionsParams
@@ -121,14 +121,12 @@ public sealed class PasskeyService(
     /// </summary>
     public async Task<Guid> ConfirmLoginAsync(
         AuthenticatorAssertionRawResponse clientResponse,
-        AssertionOptions originalOptions)
+        AssertionOptions originalOptions,
+        CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(clientResponse);
-        ArgumentNullException.ThrowIfNull(originalOptions);
-
         UserAccesskey dbKey = await dbContext.Set<UserAccesskey>()
-            .FirstOrDefaultAsync(p => p.DescriptorId == clientResponse.RawId)
-            ?? throw new AuthenticationException("PASSKEY_NOT_FOUND");
+            .FirstOrDefaultAsync(p => p.DescriptorId == clientResponse.RawId, cancellationToken: cancellationToken)
+            .ConfigureAwait(false) ?? throw new AuthenticationException("PASSKEY_NOT_FOUND");
 
         var parameters = new MakeAssertionParams
         {
@@ -139,14 +137,14 @@ public sealed class PasskeyService(
             IsUserHandleOwnerOfCredentialIdCallback = async (args, ct) =>
             {
                 return await dbContext.Set<UserAccesskey>()
-                    .AnyAsync(p => p.DescriptorId == args.CredentialId, ct);
+                    .AnyAsync(p => p.DescriptorId == args.CredentialId, ct).ConfigureAwait(false);
             }
         };
 
-        VerifyAssertionResult result = await fido2.MakeAssertionAsync(parameters);
+        VerifyAssertionResult result = await fido2.MakeAssertionAsync(parameters, cancellationToken).ConfigureAwait(false);
 
         dbKey.SignatureCounter = result.SignCount;
-        _ = await dbContext.SaveChangesAsync();
+        _ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         return dbKey.UserId;
     }

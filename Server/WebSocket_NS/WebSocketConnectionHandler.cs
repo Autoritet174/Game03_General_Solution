@@ -72,7 +72,7 @@ public class WebSocketConnectionHandler
     /// <param name="stoppingToken">Токен отмены.</param>
     /// <returns>Асинхронная задача обработки соединения.</returns>
     /// <exception cref="ArgumentNullException">Если контекст равен null.</exception>
-    public async Task ProcessKestrelWebSocketRequest(HttpContext context, CancellationToken stoppingToken)
+    public async Task ProcessKestrelWebSocketRequestAsync(HttpContext context, CancellationToken stoppingToken)
     {
         //Console.WriteLine("Запрос на вебсокет. Обработка Kestrel."); // Ваш отладочный вывод
         ArgumentNullException.ThrowIfNull(context);
@@ -80,7 +80,7 @@ public class WebSocketConnectionHandler
         if (!context.WebSockets.IsWebSocketRequest)
         {
             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            await context.Response.WriteAsync("Запрос должен быть WebSocket-запросом.", cancellationToken: stoppingToken);
+            await context.Response.WriteAsync("Запрос должен быть WebSocket-запросом.", cancellationToken: stoppingToken).ConfigureAwait(false);
             return;
         }
 
@@ -106,14 +106,14 @@ public class WebSocketConnectionHandler
         if (string.IsNullOrWhiteSpace(token))
         {
             context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-            await context.Response.WriteAsync("Missing authentication token", cancellationToken: stoppingToken);
+            await context.Response.WriteAsync("Missing authentication token", cancellationToken: stoppingToken).ConfigureAwait(false);
             return;
         }
 
         if (string.IsNullOrWhiteSpace(token))
         {
             context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-            await context.Response.WriteAsync("Missing authentication token", cancellationToken: stoppingToken);
+            await context.Response.WriteAsync("Missing authentication token", cancellationToken: stoppingToken).ConfigureAwait(false);
             return;
         }
 
@@ -126,7 +126,7 @@ public class WebSocketConnectionHandler
             if (!userId.HasValue)
             {
                 context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                await context.Response.WriteAsync("Invalid user ID in token", cancellationToken: stoppingToken);
+                await context.Response.WriteAsync("Invalid user ID in token", cancellationToken: stoppingToken).ConfigureAwait(false);
                 return;
             }
 
@@ -142,7 +142,7 @@ public class WebSocketConnectionHandler
                 _logger.LogWarning(ex, "Invalid JWT token in WebSocket upgrade request");
             }
             context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-            await context.Response.WriteAsync("Invalid token", cancellationToken: stoppingToken);
+            await context.Response.WriteAsync("Invalid token", cancellationToken: stoppingToken).ConfigureAwait(false);
             return;
         }
         catch (Exception ex)
@@ -157,19 +157,20 @@ public class WebSocketConnectionHandler
 
         try
         {
-            WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync((string?)null);
+            WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync((string?)null).ConfigureAwait(false);
 
             using IServiceScope scope = _serviceProvider.CreateScope();
             ILogger<WebSocketConnection> clientLogger = scope.ServiceProvider.GetRequiredService<ILogger<WebSocketConnection>>();
 
             // Создание и инициализация нового WebSocketConnection
-            WebSocketConnection webSocketConnection = new(webSocket, clientLogger, _configuration, this, _serviceProvider, userId.Value);
+            WebSocketConnection webSocketConnection = new(webSocket, clientLogger, _configuration, this//, _serviceProvider
+                , userId.Value);
 
             _ = _activeConnections.TryAdd(webSocketConnection.Id, DateTime.UtcNow);
             Console.WriteLine($"Активных подключений: {_activeConnections.Count}");
 
             // CancellationToken передаётся в HandleAsync
-            await webSocketConnection.HandleAsync(stoppingToken);
+            await webSocketConnection.HandleAsync(stoppingToken).ConfigureAwait(false);
         }
         catch (Exception ex) when (WebSocketConnection.IsExpectedDisconnectException(ex))
         {

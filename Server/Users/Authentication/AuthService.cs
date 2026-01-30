@@ -29,19 +29,23 @@ public sealed partial class AuthService(
 
     #region Compiled Queries
 
-    // 1. Быстрая проверка существования бана (EXISTS). Оптимально для 95% пользователей.
-    private static readonly Func<DbContextGame, Guid, DateTimeOffset, Task<bool>> IsUserBannedQuery =
-        EF.CompileAsyncQuery((DbContextGame db, Guid uId, DateTimeOffset now) =>
-            db.UserBans.Any(b => b.UserId == uId && b.CreatedAt <= now && (b.ExpiresAt == null || b.ExpiresAt >= now)));
+    // 1. Быстрая проверка существования бана. Добавлен CancellationToken.
+    private static readonly Func<DbContextGame, Guid, DateTimeOffset, CancellationToken, Task<bool>> IsUserBannedQuery =
+        EF.CompileAsyncQuery(
+            (DbContextGame db, Guid uId, DateTimeOffset now, CancellationToken ct) =>
+            db.UserBans.Any(b => b.UserId == uId && b.CreatedAt <= now && (b.ExpiresAt == null || b.ExpiresAt >= now))
+        );
 
-    // 2. Получение деталей бана. Вызывается только для забаненных (5%).
-    private static readonly Func<DbContextGame, Guid, DateTimeOffset, Task<UserBan?>> GetActiveBanDetailsQuery =
-        EF.CompileAsyncQuery((DbContextGame db, Guid uId, DateTimeOffset now) =>
+    // 2. Получение деталей бана. Добавлен CancellationToken.
+    private static readonly Func<DbContextGame, Guid, DateTimeOffset, CancellationToken, Task<UserBan?>> GetActiveBanDetailsQuery =
+        EF.CompileAsyncQuery(
+            (DbContextGame db, Guid uId, DateTimeOffset now, CancellationToken ct) =>
             db.UserBans
                 .Where(b => b.UserId == uId && b.CreatedAt <= now && (b.ExpiresAt == null || b.ExpiresAt >= now))
                 .OrderByDescending(b => b.ExpiresAt == null)
                 .ThenByDescending(b => b.ExpiresAt)
-                .FirstOrDefault());
+                .FirstOrDefault()
+        );
 
     #endregion
 
@@ -56,7 +60,7 @@ public sealed partial class AuthService(
     /// <summary>
     /// Выполняет вход пользователя в систему.
     /// </summary>
-    public async Task<Result<DtoResponseAuthReg>> LoginAsync(DtoRequestAuthReg dto, IPAddress? ip)
+    public async Task<Result<DtoResponseAuthReg>> LoginAsync(DtoRequestAuthReg dto, IPAddress? ip, CancellationToken cancellationToken)
     {
         DateTimeOffset now = DateTimeOffset.UtcNow;
         DateTimeOffset dtEndCheck = now.AddMilliseconds(_Random.Next(600, 800));
@@ -79,7 +83,7 @@ public sealed partial class AuthService(
 
         try
         {
-            User? user = await userManager.FindByEmailAsync(dto.Email);
+            User? user = await userManager.FindByEmailAsync(dto.Email).ConfigureAwait(false);
             if (user == null)
             {
                 return Result.Ok(AuthRegResponse.InvalidCredentials());
@@ -88,27 +92,27 @@ public sealed partial class AuthService(
             userId = user.Id;
 
             // Проверка Lockout (Identity)
-            if (await userManager.IsLockedOutAsync(user))
+            if (await userManager.IsLockedOutAsync(user).ConfigureAwait(false))
             {
-                DateTimeOffset? lockoutEnd = await userManager.GetLockoutEndDateAsync(user);
+                DateTimeOffset? lockoutEnd = await userManager.GetLockoutEndDateAsync(user).ConfigureAwait(false);
                 return Result.Ok(AuthRegResponse.TooManyRequests(GetSecondsLeft(lockoutEnd)));
             }
 
-            SignInResult signInResult = await signInManager.CheckPasswordSignInAsync(user, dto.Password, true);
+            SignInResult signInResult = await signInManager.CheckPasswordSignInAsync(user, dto.Password, true).ConfigureAwait(false);
             if (!signInResult.Succeeded)
             {
                 IncrementFlood(floodKey);
                 return Result.Ok(signInResult.IsLockedOut
-                    ? AuthRegResponse.TooManyRequests(GetSecondsLeft(await userManager.GetLockoutEndDateAsync(user)))
+                    ? AuthRegResponse.TooManyRequests(GetSecondsLeft(await userManager.GetLockoutEndDateAsync(user).ConfigureAwait(false)))
                     : AuthRegResponse.InvalidCredentials());
             }
 
             // --- ОПТИМИЗАЦИЯ ПРОВЕРКИ БАНА ---
             // Сначала легкий EXISTS для 95% случаев
-            if (await IsUserBannedQuery(dbContext, userId.Value, now))
+            if (await IsUserBannedQuery(dbContext, userId.Value, now, cancellationToken).ConfigureAwait(false))
             {
                 // Только для 5% случаев запрашиваем сущность целиком
-                UserBan? ban = await GetActiveBanDetailsQuery(dbContext, userId.Value, now);
+                UserBan? ban = await GetActiveBanDetailsQuery(dbContext, userId.Value, now, cancellationToken).ConfigureAwait(false);
                 return Result.Ok(AuthRegResponse.Banned(ban?.ExpiresAt));
             }
 
@@ -116,7 +120,7 @@ public sealed partial class AuthService(
             memoryCache.Remove(floodKey);
 
             string accessToken = jwt.GenerateToken(userId.Value);
-            Result<SessionResponseData> sessionResult = await sessionService.CreateSessionAsync(userId.Value, dto);
+            Result<SessionResponseData> sessionResult = await sessionService.CreateSessionAsync(userId.Value, dto, cancellationToken).ConfigureAwait(false);
 
             return sessionResult.IsFailed
                 ? Result.Ok(AuthRegResponse.InvalidResponse())
@@ -130,7 +134,7 @@ public sealed partial class AuthService(
         finally
         {
             backgroundLoggerAuthentificationService.EnqueueLog(success, dto, userId, ip, true);
-            await ApplyArtificialDelay(dtEndCheck);
+            await ApplyArtificialDelayAsync(dtEndCheck, cancellationToken).ConfigureAwait(false);
         }
     }
 
@@ -150,12 +154,12 @@ public sealed partial class AuthService(
     private static long GetSecondsLeft(DateTimeOffset? end) =>
         end.HasValue ? (long)Math.Max(0, (end.Value - DateTimeOffset.UtcNow).TotalSeconds) : 0;
 
-    private static async Task ApplyArtificialDelay(DateTimeOffset end)
+    private static async Task ApplyArtificialDelayAsync(DateTimeOffset end, CancellationToken cancellationToken)
     {
         TimeSpan delay = end - DateTimeOffset.UtcNow;
         if (delay > TimeSpan.Zero)
         {
-            await Task.Delay(delay);
+            await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
         }
     }
 }

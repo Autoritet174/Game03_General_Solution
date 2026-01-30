@@ -23,7 +23,7 @@ public class HttpRequester
     }
 
 
-    public static async Task<string?> GetResponseAsync(string url, string? jsonBody = null, CancellationToken cancellationToken = default)
+    public static async Task<string?> GetResponseAsync(string url, string? jsonBody, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(url))
         {
@@ -59,8 +59,8 @@ public class HttpRequester
             }
 
 
-            using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
-            string responseContent = await response.Content.ReadAsStringAsync();
+            using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+            string responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (string.IsNullOrWhiteSpace(responseContent))
             {
                 LOGGER.LogError($"responseContent IsEmpty, StatusCode={response.StatusCode}", L.Error.Server.InvalidResponse);
@@ -75,7 +75,7 @@ public class HttpRequester
         }
         catch (HttpRequestException ex) when (ex.InnerException is WebException)
         {
-            bool haveInternet = await InternetChecker.CheckInternetConnectionAsync(cancellationToken);
+            bool haveInternet = await InternetChecker.CheckInternetConnectionAsync(cancellationToken).ConfigureAwait(false);
             string key = haveInternet ? L.Error.Server.Unavailable : L.Error.Server.NoInternetConnection;
             LOGGER.LogError(ex.ToString(), key);
             return null;

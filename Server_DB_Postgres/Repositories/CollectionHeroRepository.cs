@@ -1,10 +1,8 @@
-using Microsoft.EntityFrameworkCore;
-using Server_DB_Postgres.Entities.Collection;
-
 namespace Server_DB_Postgres.Repositories;
 
 /// <summary> Репозиторий для управления пользователями. </summary>
-public class CollectionHeroRepository(DbContextGame dbContext)
+public class CollectionHeroRepository(//DbContextGame dbContext
+    )
 {
 
     ///// <summary> Получить всех героев из коллекции игрока. </summary>

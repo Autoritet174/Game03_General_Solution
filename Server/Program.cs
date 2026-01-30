@@ -20,6 +20,7 @@ using Server_DB_Postgres.Entities.Users;
 using Server_DB_Postgres.Repositories;
 using System.IO.Compression;
 using System.Net;
+using System.Threading;
 using System.Threading.RateLimiting;
 
 namespace Server;
@@ -27,6 +28,7 @@ namespace Server;
 /// <summary> Класс содержит точку входа приложения и настройки сервисов, аутентификации, middleware, маршрутов и баз данных. </summary>
 internal partial class Program
 {
+    private static readonly CancellationToken cancellationToken = (new CancellationTokenSource(TimeSpan.FromSeconds(60))).Token;
 
     /// <summary> Точка входа в приложение. Выполняет настройку DI, БД, аутентификации, регистрацию сервисов и запускает сервер. </summary>
     private static async Task Main(string[] args)
@@ -73,7 +75,7 @@ internal partial class Program
         _ = services.AddScoped<CollectionHeroRepository>();
 
         _ = services.AddSingleton<CacheService>();
-        _ = services.AddSingleton<ITestService, TestService>();
+        _ = services.AddSingleton<TestService>();
 
 
         //// Настройки "MongoDb"
@@ -214,12 +216,12 @@ internal partial class Program
 
         _ = app.MapControllers();// Маршрутизация контроллеров (после всех Use())
 
-        await ConnectionsIsCorrect(app);
+        await ConnectionsIsCorrectAsync(app, cancellationToken).ConfigureAwait(false);
 
         // на этом момент есть гарантия что соединения со всеми СУБД корректно.
         // иначе где то сработает один из throw.
 
-        await LoadServerCache(app);
+        await LoadServerCacheAsync(app, cancellationToken).ConfigureAwait(false);
 
         IHostApplicationLifetime lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
 
@@ -237,7 +239,7 @@ internal partial class Program
 
         try
         {
-            app.Run();
+            await app.RunAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -246,7 +248,7 @@ internal partial class Program
         }
         finally
         {
-            Log.CloseAndFlush();
+            await Log.CloseAndFlushAsync().ConfigureAwait(false);
         }
 
 
@@ -461,7 +463,7 @@ internal partial class Program
                 if (context.Request.Method != "GET")
                 {
                     context.Response.StatusCode = (int)HttpStatusCode.MethodNotAllowed; // 405 Method Not Allowed
-                    await context.Response.WriteAsync("Для WebSocket-хендшейка разрешен только метод GET.");
+                    await context.Response.WriteAsync("Для WebSocket-хендшейка разрешен только метод GET.", cancellationToken).ConfigureAwait(false);
                     return;
                 }
                 if (context.WebSockets.IsWebSocketRequest)
@@ -473,7 +475,7 @@ internal partial class Program
 
                         // Запускаем обработку WebSocket
                         // Используем CancellationToken из контекста приложения
-                        await handler.ProcessKestrelWebSocketRequest(context, context.RequestAborted);
+                        await handler.ProcessKestrelWebSocketRequestAsync(context, context.RequestAborted).ConfigureAwait(false);
                     }
                     catch (OperationCanceledException)
                     {
@@ -484,7 +486,7 @@ internal partial class Program
                 else
                 {
                     context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    await context.Response.WriteAsync("Запрос должен быть WebSocket-запросом.");
+                    await context.Response.WriteAsync("Запрос должен быть WebSocket-запросом.", cancellationToken).ConfigureAwait(false);
                 }
             });
         });
@@ -493,9 +495,7 @@ internal partial class Program
     /// <summary>
     /// Выполняет проверку соединения с базой данных.
     /// </summary>
-    /// <param name="app">Экземпляр работающего WebApplication.</param>
-    /// <exception cref="InvalidOperationException">Бросается, если соединение не установлено.</exception>
-    private static async Task ConnectionsIsCorrect(WebApplication app)
+    private static async Task ConnectionsIsCorrectAsync(WebApplication app, CancellationToken cancellationToken)
     {
         using IServiceScope scope = app.Services.CreateScope();
         // Использование целевого типа для логгера
@@ -504,10 +504,8 @@ internal partial class Program
         try
         {
             DbContextGame db = scope.ServiceProvider.GetRequiredService<DbContextGame>();
-            using CancellationTokenSource cts = new(TimeSpan.FromSeconds(10));
-
             // Простая проверка активности соединения
-            _ = await db.Database.CanConnectAsync(cts.Token)
+            _ = await db.Database.CanConnectAsync(cancellationToken).ConfigureAwait(false)
                 ? true
                 : throw new InvalidOperationException("Database is unreachable");
 
@@ -521,7 +519,7 @@ internal partial class Program
     }
 
     /// <summary> Загружаем в оперативную память константные серверные данные которые не меняются во время работы сервера. </summary>
-    private static async Task LoadServerCache(WebApplication app)
+    private static async Task LoadServerCacheAsync(WebApplication app, CancellationToken cancellationToken)
     {
         using IServiceScope scope = app.Services.CreateScope();
         CacheService service = scope.ServiceProvider.GetRequiredService<CacheService>();
@@ -529,8 +527,7 @@ internal partial class Program
         ILogger<Program> logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
         try
         {
-            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
-            await service.LoadServerDataAsync(db, cts.Token);
+            await service.LoadServerDataAsync(db, cancellationToken).ConfigureAwait(false);
 
             logger.LogInformation("Server cache loaded successfully");
         }

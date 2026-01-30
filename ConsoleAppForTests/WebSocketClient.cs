@@ -4,21 +4,14 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 
-public class WebSocketClient
+public class WebSocketClient(string serverUrl)
 {
-    private readonly ClientWebSocket _webSocket;
-    private readonly Uri _serverUri;
-    private readonly CancellationTokenSource _cts;
+    private readonly ClientWebSocket _webSocket = new();
+    private readonly Uri _serverUri = new(serverUrl);
+    private readonly CancellationTokenSource _cts = new();
     private bool _isReceiving = false;
 
-    public WebSocketClient(string serverUrl)
-    {
-        _webSocket = new ClientWebSocket();
-        _serverUri = new Uri(serverUrl);
-        _cts = new CancellationTokenSource();
-    }
-
-    public async Task ConnectAsync(CancellationToken cancellationToken = default)
+    public async Task ConnectAsync(CancellationToken cancellationToken)
     {
         bool connected = false;
 
@@ -27,7 +20,7 @@ public class WebSocketClient
             try
             {
                 //Console.WriteLine($"Подключение к {_serverUri}...");
-                await _webSocket.ConnectAsync(_serverUri, cancellationToken);
+                await _webSocket.ConnectAsync(_serverUri, cancellationToken).ConfigureAwait(false);
                 //Console.WriteLine("Подключение установлено!");
 
                 // Запускаем прием сообщений без привязки к _cts.Token
@@ -59,7 +52,7 @@ public class WebSocketClient
                 var result = await _webSocket.ReceiveAsync(
                     new ArraySegment<byte>(buffer),
                     CancellationToken.None
-                );
+                ).ConfigureAwait(false);
 
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
@@ -99,7 +92,7 @@ public class WebSocketClient
                 WebSocketMessageType.Text,
                 true,
                 _cts.Token // Для отправки можно использовать _cts.Token
-            );
+            ).ConfigureAwait(false);
             //Console.WriteLine($"Отправлено: {message}");
         }
         catch (OperationCanceledException)
@@ -118,7 +111,7 @@ public class WebSocketClient
         WriteIndented = true
     };
 
-    public async Task StartSendingMessages(JsonSerializerOptions options, Action<int>? onMessagesSent = null)
+    public async Task StartSendingMessagesAsync(JsonSerializerOptions options, Action<int>? onMessagesSent = null)
     {
         while (!_cts.Token.IsCancellationRequested && _webSocket.State == WebSocketState.Open)
         {
@@ -127,7 +120,7 @@ public class WebSocketClient
             //    var message = $"Сообщение #{++messageCount} - {DateTime.Now:HH:mm:ss}";
             //    await SendMessageAsync(message);
             //}
-            string com = Console.ReadLine();
+            string? com = Console.ReadLine();
             var r = new Random();
             if (com == "1")
             {
@@ -146,7 +139,7 @@ public class WebSocketClient
                 // Просто сериализуйте - Newtonsoft.Json по умолчанию не экранирует Unicode
                 string json = JsonConvert.SerializeObject(data, Formatting.Indented);
                 Console.WriteLine(json);
-                await SendMessageAsync(json);
+                await SendMessageAsync(json).ConfigureAwait(false);
 
             }
 
@@ -154,7 +147,7 @@ public class WebSocketClient
             // Сообщаем о количестве отправленных сообщений
             onMessagesSent?.Invoke(100);
 
-            await Task.Delay(10, _cts.Token);
+            await Task.Delay(10, _cts.Token).ConfigureAwait(false);
 
             if (Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Q)
             {
@@ -169,7 +162,7 @@ public class WebSocketClient
         try
         {
             _isReceiving = false; // Останавливаем прием сообщений
-            _cts.Cancel(); // Отменяем операции отправки
+            await _cts.CancelAsync().ConfigureAwait(false); // Отменяем операции отправки
 
             if (_webSocket.State == WebSocketState.Open)
             {
@@ -177,7 +170,7 @@ public class WebSocketClient
                     WebSocketCloseStatus.NormalClosure,
                     "Закрытие клиентом",
                     CancellationToken.None // Не используем _cts.Token здесь
-                );
+                ).ConfigureAwait(false);
             }
         }
         catch (Exception ex)
@@ -189,5 +182,10 @@ public class WebSocketClient
             _webSocket.Dispose();
             Console.WriteLine("Отключено");
         }
+    }
+
+    internal async Task ConnectAsync()
+    {
+        throw new NotImplementedException();
     }
 }

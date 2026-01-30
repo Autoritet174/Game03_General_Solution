@@ -14,9 +14,9 @@ public sealed class SessionController(SessionService sessionService, JwtService 
     /// Доступен без [authorize], так как access token уже может быть просрочен.
     /// </summary>
     [HttpPost("refresh"), AllowAnonymous]
-    public async Task<IActionResult> Refresh([FromBody] DtoRequestAuthReg dto)
+    public async Task<IActionResult> RefreshAsync([FromBody] DtoRequestAuthReg dto, CancellationToken cancellationToken)
     {
-        Result<SessionResponseData> result = await sessionService.RefreshSessionAsync(dto);
+        Result<SessionResponseData> result = await sessionService.RefreshSessionAsync(dto, cancellationToken).ConfigureAwait(false);
 
         if (result.IsFailed)
         {
@@ -35,14 +35,14 @@ public sealed class SessionController(SessionService sessionService, JwtService 
     /// Принимает refresh token в теле запроса, чтобы знать, какую именно сессию закрыть.
     /// </summary>
     [HttpPost("logout"), Authorize]
-    public async Task<IActionResult> Logout([FromBody] DtoRequestLogout request)
+    public async Task<IActionResult> LogoutAsync([FromBody] DtoRequestLogout request, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(request.RefreshToken))
         {
             return BadRequest("Refresh token is required.");
         }
 
-        _ = await sessionService.LogoutAsync(request.RefreshToken);
+        _ = await sessionService.LogoutAsync(request.RefreshToken, cancellationToken).ConfigureAwait(false);
 
         return Ok();
     }

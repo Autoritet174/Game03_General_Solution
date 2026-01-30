@@ -24,7 +24,7 @@ public sealed class RegService(
     private static readonly Random _Random = new(); // Генератор случайных задержек для защиты от timing-атак
     private static readonly TimeSpan _LockoutPeriod = TimeSpan.FromMinutes(2); // Период блокировки при неудачных попытках
 
-    public async Task<DtoResponseAuthReg> RegisterAsync(DtoRequestAuthReg dto, IPAddress? ip)
+    public async Task<DtoResponseAuthReg> RegisterAsync(DtoRequestAuthReg dto, IPAddress? ip, CancellationToken cancellationToken)
     {
         // Инициализация времени для задержек
         DateTimeOffset now = DateTimeOffset.UtcNow;
@@ -43,7 +43,7 @@ public sealed class RegService(
             }
 
             // Проверка существования пользователя
-            User? existingUser = await userManager.FindByEmailAsync(email);
+            User? existingUser = await userManager.FindByEmailAsync(email).ConfigureAwait(false);
             if (existingUser != null)
             {
                 return AuthRegResponse.UserAlreadyExists();
@@ -57,7 +57,7 @@ public sealed class RegService(
             };
 
             // Попытка создания пользователя с паролем
-            IdentityResult createResult = await userManager.CreateAsync(user, password);
+            IdentityResult createResult = await userManager.CreateAsync(user, password).ConfigureAwait(false);
             if (!createResult.Succeeded)
             {
                 return AuthRegResponse.InvalidCredentials();
@@ -65,7 +65,7 @@ public sealed class RegService(
             userId = user.Id; // Установка ID после успешного создания
 
             // Автоматический вход после регистрации
-            SignInResult signInResult = await signInManager.PasswordSignInAsync(user, password, isPersistent: false, lockoutOnFailure: true);
+            SignInResult signInResult = await signInManager.PasswordSignInAsync(user, password, isPersistent: false, lockoutOnFailure: true).ConfigureAwait(false);
             if (!signInResult.Succeeded)
             {
                 return AuthRegResponse.InvalidCredentials();
@@ -103,9 +103,18 @@ public sealed class RegService(
                 backgroundLoggerAuthentificationService.EnqueueLog(success, dto, userId, ip, false);
                 if (!success)
                 {
-                    RegisterFail(email);
+                    if (!string.IsNullOrWhiteSpace(email))
+                    {
+                        RegisterFail(email);
+                    }
                 }
-                await Delay(dtEndCheck); // Задержка перед возвратом
+
+                // Задержка перед возвратом
+                TimeSpan delay = dtEndCheck - DateTimeOffset.UtcNow;
+                if (delay > TimeSpan.Zero)
+                {
+                    await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
+                }
             }
             catch (Exception ex)
             {
@@ -117,19 +126,6 @@ public sealed class RegService(
         }
     }
 
-
-    /// <summary>
-    /// Метод для выполнения задержки.
-    /// </summary>
-    /// <param name="end">Время окончания задержки.</param>
-    private static async Task Delay(DateTimeOffset end)
-    {
-        TimeSpan delay = end - DateTimeOffset.UtcNow;
-        if (delay > TimeSpan.Zero)
-        {
-            await Task.Delay(delay);
-        }
-    }
 
     /// <summary>
     /// Регистрация неудачной попытки.

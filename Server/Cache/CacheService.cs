@@ -1,7 +1,5 @@
-using General;
 using General.DTO.Entities;
 using General.DTO.Entities.GameData;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Server_DB_Postgres;
 using Server_DB_Postgres.Entities.GameData;
@@ -39,64 +37,64 @@ public class CacheService()
     /// <param name="db"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task LoadServerDataAsync(DbContextGame db, CancellationToken cancellationToken = default)
+    public async Task LoadServerDataAsync(DbContextGame db, CancellationToken cancellationToken)
     {
-        TableUserBanReasons = await db.UserBanReasons.AsNoTracking().ToListAsync(cancellationToken);
+        TableUserBanReasons = await db.UserBanReasons.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
 
-        await LoadTableUserSessionInactivationReasons(db, cancellationToken);
+        await LoadTableUserSessionInactivationReasonsAsync(db, cancellationToken).ConfigureAwait(false);
 
 
-         TableBaseEquipment = await db.BaseEquipments.AsNoTracking().ToListAsync(cancellationToken);
+        TableBaseEquipment = await db.BaseEquipments.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
         List<DtoBaseEquipment> baseEquipments = [.. TableBaseEquipment.Select(static h => new DtoBaseEquipment(
             h.Id, h.Name, h.Rarity, h.IsUnique, h.EquipmentTypeId, h.Health, h.Damage)
             )];
 
-        TableBaseHeroes = await db.BaseHeroes.AsNoTracking().ToListAsync(cancellationToken);
+        TableBaseHeroes = await db.BaseHeroes.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
         List<DtoBaseHero> baseHeroes = [.. TableBaseHeroes.Select(static h => new DtoBaseHero(
             h.Id, h.Name, h.Rarity, h.IsUnique, h.MainStat, h.Health, h.Damage)
             )];
 
-        TableCreatureTypes = await db.CreatureTypes.AsNoTracking().ToListAsync(cancellationToken);
+        TableCreatureTypes = await db.CreatureTypes.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
         List<DtoCreatureType> creatureTypes = [..TableCreatureTypes.Select(static h => new DtoCreatureType(
             h.Id, h.Name)
             )];
 
-        TableDamageTypes = await db.DamageTypes.AsNoTracking().ToListAsync(cancellationToken);
+        TableDamageTypes = await db.DamageTypes.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
         List<DtoDamageType> damageTypes = [..TableDamageTypes.Select(static h => new DtoDamageType(
             h.Id, h.Name)
             )];
 
-        TableEquipmentTypes = await db.EquipmentTypes.AsNoTracking().ToListAsync(cancellationToken);
+        TableEquipmentTypes = await db.EquipmentTypes.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
         List<DtoEquipmentType> equipmentType = [..TableEquipmentTypes.Select(static h => new DtoEquipmentType(
             h.Id, h.Name, h.MassPhysical, h.MassMagical, h.SlotTypeId, h.CanCraftSmithing, h.CanCraftJewelcrafting, h.SpendActionPoints, h.BlockOtherHand)
            )];
 
-        TableMaterialDamagePercents = await db.MaterialDamagePercents.AsNoTracking().ToListAsync(cancellationToken);
+        TableMaterialDamagePercents = await db.MaterialDamagePercents.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
         List<DtoMaterialDamagePercent> materialDamagePercents = [..TableMaterialDamagePercents.Select(static h => new DtoMaterialDamagePercent(
             h.Id, h.SmithingMaterialsId, h.DamageTypeId, h.Percent)
             )];
 
-        TableSlotTypes = await db.SlotTypes.AsNoTracking().ToListAsync(cancellationToken);
+        TableSlotTypes = await db.SlotTypes.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
         List<DtoSlotType> slotTypes = [..TableSlotTypes.Select(static h => new DtoSlotType(
             h.Id, h.Name)
            )];
 
-        TableSlots = await db.Slots.AsNoTracking().ToListAsync(cancellationToken);
+        TableSlots = await db.Slots.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
         List<DtoSlot> slots = [..TableSlots.Select(static h => new DtoSlot(
             h.Id, h.Name, h.SlotTypeId)
            )];
 
-        TableSmithingMaterials = await db.SmithingMaterials.AsNoTracking().ToListAsync(cancellationToken);
+        TableSmithingMaterials = await db.SmithingMaterials.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
         List<DtoSmithingMaterial> smithingMaterials = [..TableSmithingMaterials.Select(static h => new DtoSmithingMaterial(
             h.Id, h.Name)
            )];
 
-        TableX_EquipmentTypes_DamageTypes = await db.x_EquipmentTypes_DamageTypes.AsNoTracking().ToListAsync(cancellationToken);
+        TableX_EquipmentTypes_DamageTypes = await db.x_EquipmentTypes_DamageTypes.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
         List<DtoXEquipmentTypeDamageType> xEquipmentTypesDamageTypes = [..TableX_EquipmentTypes_DamageTypes.Select(static h => new DtoXEquipmentTypeDamageType(
             h.EquipmentTypeId, h.DamageTypeId, h.DamageCoef)
            )];
 
-        TableX_Heroes_CreatureTypes = await db.x_Heroes_CreatureTypes.AsNoTracking().ToListAsync(cancellationToken);
+        TableX_Heroes_CreatureTypes = await db.x_Heroes_CreatureTypes.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
         List<DtoXHeroCreatureType> xHeroesCreatureTypes = [..TableX_Heroes_CreatureTypes.Select(static h => new DtoXHeroCreatureType(
             h.BaseHeroId, h.CreatureTypeId)
            )];
@@ -112,14 +110,16 @@ public class CacheService()
         }
     }
 
-    private async Task LoadTableUserSessionInactivationReasons(DbContextGame db, CancellationToken cancellationToken = default) {
+    private async Task LoadTableUserSessionInactivationReasonsAsync(DbContextGame db, CancellationToken cancellationToken)
+    {
         bool reload = false;
 
-        async Task Load() {
-            TableUserSessionInactivationReasons = await db.UserSessionInactivationReasons.AsNoTracking().ToListAsync(cancellationToken);
+        async Task LoadAsync()
+        {
+            TableUserSessionInactivationReasons = await db.UserSessionInactivationReasons.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        await Load();
+        await LoadAsync().ConfigureAwait(false);
         foreach (InactivationReason item in Enum.GetValues<InactivationReason>())
         {
             if (!TableUserSessionInactivationReasons.Any(a => a.Code == item))
@@ -129,15 +129,15 @@ public class CacheService()
                     Name = item.ToString(),
                     Code = item
                 };
-                await db.UserSessionInactivationReasons.AddAsync(entity, cancellationToken);
+                _ = await db.UserSessionInactivationReasons.AddAsync(entity, cancellationToken).ConfigureAwait(false);
                 reload = true;
             }
         }
 
         if (reload)
         {
-            await db.SaveChangesAsync(cancellationToken);
-            await Load();
+            _ = await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await LoadAsync().ConfigureAwait(false);
         }
     }
 

@@ -1,8 +1,8 @@
+using FluentResults;
 using General.DTO.RestRequest;
 using General.DTO.RestResponse;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using Server.Http_NS.Controllers_NS;
 
 namespace Server.Users.Authentication;
@@ -14,10 +14,10 @@ namespace Server.Users.Authentication;
 public class AuthController(AuthService _authService) : ControllerBaseApi
 {
     [AllowAnonymous, HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] DtoRequestAuthReg dtoRequest)
+    public async Task<IActionResult> LoginAsync([FromBody] DtoRequestAuthReg dtoRequest, CancellationToken cancellationToken)
     {
         // Используем FluentResults для получения результата
-        var result = await _authService.LoginAsync(dtoRequest, HttpContext.Connection.RemoteIpAddress);
+        Result<DtoResponseAuthReg> result = await _authService.LoginAsync(dtoRequest, HttpContext.Connection.RemoteIpAddress, cancellationToken).ConfigureAwait(false);
 
         if (result.IsFailed)
         {

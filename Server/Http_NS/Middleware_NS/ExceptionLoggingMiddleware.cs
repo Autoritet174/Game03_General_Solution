@@ -16,7 +16,7 @@ public class ExceptionLoggingMiddleware(RequestDelegate next, ILogger<ExceptionL
     {
         try
         {
-            await next(context);
+            await next(context).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -28,7 +28,7 @@ public class ExceptionLoggingMiddleware(RequestDelegate next, ILogger<ExceptionL
                 // Минимальный JSON-ответ
                 context.Response.StatusCode = 500;
                 context.Response.ContentType = "application/json";
-                await context.Response.WriteAsync("""{"error":"Internal Server Error"}""");
+                await context.Response.WriteAsync("""{"error":"Internal Server Error"}""").ConfigureAwait(false);
             }
             else
             {

@@ -53,6 +53,6 @@ public class SecurityHeadersMiddleware(RequestDelegate next)
         // Или удалите CSP для API, если не обслуживаете HTML
         // headers.Remove("Content-Security-Policy");
 
-        await next(context);
+        await next(context).ConfigureAwait(false);
     }
 }

@@ -29,7 +29,7 @@ public static class InternetChecker
             SendPingAsync("2606:4700::64") // IPv6 адрес Cloudflare DNS
         ];
 
-        PingReply?[] results = await Task.WhenAll(tasks); // ждем завершения всех запросов
+        PingReply?[] results = await Task.WhenAll(tasks).ConfigureAwait(false); // ждем завершения всех запросов
 
         foreach (PingReply? result in results)
         {
@@ -47,7 +47,7 @@ public static class InternetChecker
         using Ping ping = new();
         try
         {
-            return await ping.SendPingAsync(host, 1000); // ожидание ответа до 1 секунды
+            return await ping.SendPingAsync(host, 1000).ConfigureAwait(false); // ожидание ответа до 1 секунды
         }
         catch //(Exception ex)
         {

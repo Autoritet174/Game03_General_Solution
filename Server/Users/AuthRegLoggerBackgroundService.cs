@@ -83,9 +83,9 @@ public sealed class AuthRegLoggerBackgroundService(
 
         try
         {
-            while (await timer.WaitForNextTickAsync(ct))
+            while (await timer.WaitForNextTickAsync(ct).ConfigureAwait(false))
             {
-                _ = await ProcessBatchAsync(ct);
+                _ = await ProcessBatchAsync(ct).ConfigureAwait(false);
             }
         }
         catch (OperationCanceledException)
@@ -100,9 +100,9 @@ public sealed class AuthRegLoggerBackgroundService(
 
         try
         {
-            while (await timer.WaitForNextTickAsync(ct))
+            while (await timer.WaitForNextTickAsync(ct).ConfigureAwait(false))
             {
-                await PerformCleanupAsync(ct);
+                await PerformCleanupAsync(ct).ConfigureAwait(false);
             }
         }
         catch (OperationCanceledException)
@@ -123,7 +123,7 @@ public sealed class AuthRegLoggerBackgroundService(
             return true;
         }
 
-        if (!await _semaphore.WaitAsync(TimeSpan.FromSeconds(5), ct))
+        if (!await _semaphore.WaitAsync(TimeSpan.FromSeconds(5), ct).ConfigureAwait(false))
         {
             return false;
         }
@@ -156,7 +156,7 @@ public sealed class AuthRegLoggerBackgroundService(
                 return true;
             }
 
-            bool success = await WriteBatchToDatabaseAsync(batch, ct);
+            bool success = await WriteBatchToDatabaseAsync(batch, ct).ConfigureAwait(false);
 
             if (!success)
             {
@@ -219,7 +219,7 @@ public sealed class AuthRegLoggerBackgroundService(
                 HashSet<Guid> existingIds = await db.UserDevices
                     .Where(d => deviceIds.Contains(d.Id))
                     .Select(d => d.Id)
-                    .ToHashSetAsync(ct);
+                    .ToHashSetAsync(ct).ConfigureAwait(false);
 
                 foreach (UserDevice device in uniqueDevices)
                 {
@@ -244,7 +244,7 @@ public sealed class AuthRegLoggerBackgroundService(
                 });
             }
 
-            _ = await db.SaveChangesAsync(ct);
+            _ = await db.SaveChangesAsync(ct).ConfigureAwait(false);
             return true;
         }
         catch (Exception ex)
@@ -270,7 +270,7 @@ public sealed class AuthRegLoggerBackgroundService(
             DateTimeOffset cutoff = DateTimeOffset.UtcNow.AddMonths(-24);
             int deleted = await db.AuthenticationLogs
                 .Where(a => a.CreatedAt < cutoff)
-                .ExecuteDeleteAsync(ct);
+                .ExecuteDeleteAsync(ct).ConfigureAwait(false);
 
             if (deleted > 0)
             {
@@ -290,17 +290,17 @@ public sealed class AuthRegLoggerBackgroundService(
     public async Task StopAsync(CancellationToken ct)
     {
         logger.LogInformation("Запрос на остановку сервиса логирования...");
-        await _internalCts.CancelAsync();
+        await _internalCts.CancelAsync().ConfigureAwait(false);
 
         // Дожидаемся graceful завершения основных циклов
         if (_processingTask != null)
         {
-            await _processingTask.WaitAsync(ct).ContinueWith(_ => { }, TaskScheduler.Default);
+            await _processingTask.WaitAsync(ct).ContinueWith(_ => { }, TaskScheduler.Default).ConfigureAwait(false);
         }
 
         if (_cleanupTask != null)
         {
-            await _cleanupTask.WaitAsync(ct).ContinueWith(_ => { }, TaskScheduler.Default);
+            await _cleanupTask.WaitAsync(ct).ContinueWith(_ => { }, TaskScheduler.Default).ConfigureAwait(false);
         }
 
         // "Умный" финальный flush: до 20 попыток, но не более 2 ошибок БД подряд
@@ -309,7 +309,7 @@ public sealed class AuthRegLoggerBackgroundService(
 
         while (!_queue.IsEmpty && !ct.IsCancellationRequested && consecutiveFailures < maxConsecutiveFailures)
         {
-            bool success = await ProcessBatchAsync(ct);
+            bool success = await ProcessBatchAsync(ct).ConfigureAwait(false);
 
             if (success)
             {
@@ -326,7 +326,7 @@ public sealed class AuthRegLoggerBackgroundService(
 
             if (!_queue.IsEmpty && !ct.IsCancellationRequested)
             {
-                await Task.Delay(success ? 100 : 1000, ct);
+                await Task.Delay(success ? 100 : 1000, ct).ConfigureAwait(false);
             }
         }
 

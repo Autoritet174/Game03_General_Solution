@@ -19,7 +19,7 @@ public class Auth
         RefreshTokens
     }
 
-    public static async Task<bool> AuthentificationAsync(DtoRequestAuthReg dto, AuthType authType , CancellationToken cancellationToken = default)
+    public static async Task<bool> AuthentificationAsync(DtoRequestAuthReg dto, AuthType authType , CancellationToken cancellationToken)
     {
         AccessToken = null;
         RefreshToken = null;
@@ -32,7 +32,7 @@ public class Auth
         }
         string url = authType == AuthType.Login ? Url.AUTH_LOGIN : Url.AUTH_REFRESH_TOKENS;
 
-        string? response = await HttpRequester.GetResponseAsync(url, JsonConvert.SerializeObject(dto), cancellationToken);
+        string? response = await HttpRequester.GetResponseAsync(url, JsonConvert.SerializeObject(dto), cancellationToken).ConfigureAwait(false);
         if (response == null)
         {
             LOGGER.LogError("response is null", L.Error.Server.InvalidResponse);

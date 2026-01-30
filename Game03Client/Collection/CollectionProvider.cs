@@ -18,7 +18,7 @@ public class CollectionProvider
     private static readonly List<string> listGroupNameHero = [];
     private static readonly List<string> listGroupNameEquipment = [];
     private static DtoContainerCollection collection = null!;
-    public static async Task<bool> LoadAllCollectionFromServerAsync(CancellationToken cancellationToken = default)
+    public static async Task<bool> LoadAllCollectionFromServerAsync(CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
         {
@@ -26,7 +26,7 @@ public class CollectionProvider
         }
 
         // Получить коллекцию героев игрока
-        string? response = await HttpRequester.GetResponseAsync(General.Url.Collection.ALL, null, cancellationToken);
+        string? response = await HttpRequester.GetResponseAsync(General.Url.Collection.ALL, null, cancellationToken).ConfigureAwait(false);
         if (string.IsNullOrWhiteSpace(response))
         {
             return false;

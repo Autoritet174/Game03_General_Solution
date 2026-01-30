@@ -161,7 +161,7 @@ public class DbContextGame(DbContextOptions<DbContextGame> options) : IdentityDb
     public override async Task<int> SaveChangesAsync(CancellationToken ct = default)
     {
         OnSave();
-        return await base.SaveChangesAsync(ct);
+        return await base.SaveChangesAsync(ct).ConfigureAwait(false);
     }
 
     private void OnSave()

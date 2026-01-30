@@ -13,15 +13,23 @@ public static class GameData
 {
     public static DtoContainerGameData Container = null!;
 
-    public static async Task LoadGameDataAsync(CancellationToken cancellationToken = default)
+    public static async Task<bool> LoadGameDataAsync(CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
         {
-            return;
+            return false;
         }
 
-        string response = await HttpRequester.GetResponseAsync(Url.GAME_DATA, null, cancellationToken) ?? throw new Exception();
-        DtoContainerGameData c = JsonConvert.DeserializeObject<DtoContainerGameData>(response) ?? throw new Exception();
+        string? response = await HttpRequester.GetResponseAsync(Url.GAME_DATA, null, cancellationToken).ConfigureAwait(false);
+        if (string.IsNullOrWhiteSpace(response))
+        {
+            return false;
+        }
+        DtoContainerGameData? c = JsonConvert.DeserializeObject<DtoContainerGameData>(response);
+        if (c == null)
+        {
+            return false;
+        }
 
         foreach (DtoBaseEquipment i in c.BaseEquipments)
         {
@@ -43,6 +51,7 @@ public static class GameData
         }
 
         Container = c;
+        return true;
     }
 
 }

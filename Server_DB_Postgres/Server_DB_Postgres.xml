@@ -1153,32 +1153,18 @@
         <member name="T:Server_DB_Postgres.Repositories.CollectionHeroRepository">
             <summary> Репозиторий для управления пользователями. </summary>
         </member>
-        <member name="M:Server_DB_Postgres.Repositories.CollectionHeroRepository.#ctor(Server_DB_Postgres.DbContextGame)">
+        <member name="M:Server_DB_Postgres.Repositories.CollectionHeroRepository.#ctor">
             <summary> Репозиторий для управления пользователями. </summary>
         </member>
         <member name="T:Server_DB_Postgres.Repositories.UserRepository">
             <summary>
             Репозиторий для управления пользователями.
             </summary>
-            <remarks>
-            Инициализирует новый экземпляр класса <see cref="T:Server_DB_Postgres.Repositories.UserRepository"/>.
-            </remarks>
-            <param name="dbContext">Контекст базы данных для работы с пользователями.</param>
-            <exception cref="T:System.ArgumentNullException">
-            Выбрасывается, если <paramref name="dbContext"/> равен null.
-            </exception>
         </member>
-        <member name="M:Server_DB_Postgres.Repositories.UserRepository.#ctor(Server_DB_Postgres.DbContextGame)">
+        <member name="M:Server_DB_Postgres.Repositories.UserRepository.#ctor">
             <summary>
             Репозиторий для управления пользователями.
             </summary>
-            <remarks>
-            Инициализирует новый экземпляр класса <see cref="T:Server_DB_Postgres.Repositories.UserRepository"/>.
-            </remarks>
-            <param name="dbContext">Контекст базы данных для работы с пользователями.</param>
-            <exception cref="T:System.ArgumentNullException">
-            Выбрасывается, если <paramref name="dbContext"/> равен null.
-            </exception>
         </member>
     </members>
 </doc>

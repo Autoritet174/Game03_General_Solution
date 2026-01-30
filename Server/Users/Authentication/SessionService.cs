@@ -10,6 +10,8 @@ using Server_DB_Postgres;
 using Server_DB_Postgres.Entities.Server;
 using Server_DB_Postgres.Entities.Users;
 using System.Security.Cryptography;
+using System.Threading;
+using static General.LocalizationKeys.Error;
 
 namespace Server.Users.Authentication;
 
@@ -28,15 +30,20 @@ public sealed partial class SessionService(
     private const int BASE_64_TOKEN_LENGTH = 44;
     private static readonly TimeSpan RefreshTokenLifeTime = TimeSpan.FromDays(14);
 
+    private readonly int inactivationReasonIdRotation = cacheService.GetInactivationReasonIdByCode(InactivationReason.Rotation);
+    private readonly int inactivationReasonIdUserLogout = cacheService.GetInactivationReasonIdByCode(InactivationReason.UserLogout);
+    private readonly int inactivationReasonIdServerRevoke = cacheService.GetInactivationReasonIdByCode(InactivationReason.ServerRevoke);
+    private readonly int inactivationReasonIdExpired = cacheService.GetInactivationReasonIdByCode(InactivationReason.Expired);
+
     #region Compiled Queries
     // Предварительно скомпилированный запрос для поиска сессии по хешу
-    private static readonly Func<DbContextGame, byte[], Task<UserSession?>> GetSessionByHashQuery =
-        EF.CompileAsyncQuery((DbContextGame db, byte[] hash) =>
+    private static readonly Func<DbContextGame, byte[], CancellationToken, Task<UserSession?>> GetSessionByHashQuery =
+        EF.CompileAsyncQuery((DbContextGame db, byte[] hash, CancellationToken ct) =>
             db.UserSessions.FirstOrDefault(s => s.RefreshTokenHash == hash));
 
     // Предварительно скомпилированный запрос для проверки существования устройства
-    private static readonly Func<DbContextGame, Guid, Task<bool>> DeviceExistsQuery =
-        EF.CompileAsyncQuery((DbContextGame db, Guid id) =>
+    private static readonly Func<DbContextGame, Guid, CancellationToken, Task<bool>> DeviceExistsQuery =
+        EF.CompileAsyncQuery((DbContextGame db, Guid id, CancellationToken ct) =>
             db.UserDevices.Any(d => d.Id == id));
     #endregion
 
@@ -54,7 +61,7 @@ public sealed partial class SessionService(
     /// <summary>
     /// Создает новую сессию с оптимизированным кэшированием устройств.
     /// </summary>
-    public async Task<Result<SessionResponseData>> CreateSessionAsync(Guid userId, DtoRequestAuthReg dto)
+    public async Task<Result<SessionResponseData>> CreateSessionAsync(Guid userId, DtoRequestAuthReg dto, CancellationToken cancellationToken)
     {
         Guid deviceId = UserDeviceHelper.ComputeId(dto);
         if (deviceId == Guid.Empty)
@@ -62,7 +69,7 @@ public sealed partial class SessionService(
             return Result.Fail("Invalid device data");
         }
 
-        Result deviceResult = await EnsureDeviceExistsCachedAsync(deviceId, dto);
+        Result deviceResult = await EnsureDeviceExistsCachedAsync(deviceId, dto, cancellationToken).ConfigureAwait(false);
         if (deviceResult.IsFailed)
         {
             return deviceResult.ToResult<SessionResponseData>();
@@ -94,8 +101,7 @@ public sealed partial class SessionService(
 
         _ = dbContext.UserSessions.Add(session);
 
-        // Теперь await безопасен, так как Span уже вне области видимости
-        _ = await dbContext.SaveChangesAsync();
+        _ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         return Result.Ok(new SessionResponseData(userId, refreshTokenBase64, expiresAt));
     }
@@ -103,7 +109,7 @@ public sealed partial class SessionService(
     /// <summary>
     /// Обновляет сессию с использованием Compiled Queries и Span-валидации.
     /// </summary>
-    public async Task<Result<SessionResponseData>> RefreshSessionAsync(DtoRequestAuthReg dto)
+    public async Task<Result<SessionResponseData>> RefreshSessionAsync(DtoRequestAuthReg dto, CancellationToken cancellationToken)
     {
         if (dto.RefreshToken?.Length != BASE_64_TOKEN_LENGTH)
         {
@@ -120,8 +126,7 @@ public sealed partial class SessionService(
         _ = SHA256.HashData(rawToken, hashBuffer);
         byte[] hashArray = hashBuffer.ToArray();
 
-        // Используем Compiled Query
-        UserSession? session = await GetSessionByHashQuery(dbContext, hashArray);
+        UserSession? session = await GetSessionByHashQuery(dbContext, hashArray, cancellationToken).ConfigureAwait(false);
 
         if (session == null)
         {
@@ -132,12 +137,19 @@ public sealed partial class SessionService(
         if (session.IsUsed || session.IsRevoked)
         {
             LogTokenReuse(session.UserId, session.Id);
-            await RevokeAllUserSessionsAsync(session.UserId, InactivationReason.ROTATION);
+            await RevokeAllUserSessionsAsync(session.UserId, cancellationToken).ConfigureAwait(false);
             return Result.Fail("Security risk: Token reuse");
         }
 
         if (session.ExpiresAt < DateTimeOffset.UtcNow)
         {
+            _ = await dbContext.UserSessions
+            .Where(s => s.Id == session.Id)
+            .ExecuteUpdateAsync(set => set
+                .SetProperty(s => s.IsRevoked, true)
+                .SetProperty(s => s.InactivatedAt, DateTimeOffset.UtcNow)
+                .SetProperty(s => s.UserSessionInactivationReasonId, inactivationReasonIdExpired),
+                cancellationToken).ConfigureAwait(false);
             return Result.Fail("Expired");
         }
 
@@ -148,12 +160,12 @@ public sealed partial class SessionService(
             return Result.Fail("Device mismatch");
         }
 
-        await using IDbContextTransaction transaction = await dbContext.Database.BeginTransactionAsync();
+        await using IDbContextTransaction transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
         try
         {
             session.IsUsed = true;
             session.InactivatedAt = DateTimeOffset.UtcNow;
-            session.UserSessionInactivationReasonId = cacheService.GetInactivationReasonIdByCode(InactivationReason.ROTATION);
+            session.UserSessionInactivationReasonId = inactivationReasonIdRotation;
 
             DateTimeOffset nextExpiry = DateTimeOffset.UtcNow.Add(RefreshTokenLifeTime);
             string nextRawTokenBase64;
@@ -184,8 +196,8 @@ public sealed partial class SessionService(
             _ = dbContext.UserSessions.Add(nextSession);
 
             // Теперь await безопасен, так как Span больше не существует в контексте метода
-            _ = await dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
+            _ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
 
             return Result.Ok(new SessionResponseData(session.UserId, nextRawTokenBase64, nextExpiry));
         }
@@ -196,10 +208,35 @@ public sealed partial class SessionService(
         }
     }
 
+    public async Task<Result> LogoutAsync(string refreshToken, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(refreshToken))
+        {
+            return Result.Fail("Empty token");
+        }
+
+        Span<byte> tokenBytes = stackalloc byte[TOKEN_SIZE];
+        if (!Convert.TryFromBase64String(refreshToken, tokenBytes, out _))
+        {
+            return Result.Fail("Invalid token format");
+        }
+
+        byte[] hash = SHA256.HashData(tokenBytes);
+
+        int affected = await dbContext.UserSessions
+            .Where(s => s.RefreshTokenHash == hash)
+            .ExecuteUpdateAsync(set => set
+                .SetProperty(s => s.IsRevoked, true)
+                .SetProperty(s => s.InactivatedAt, DateTimeOffset.UtcNow)
+                .SetProperty(s => s.UserSessionInactivationReasonId, inactivationReasonIdUserLogout), cancellationToken: cancellationToken).ConfigureAwait(false);
+
+        return affected > 0 ? Result.Ok() : Result.Fail("Session not found");
+    }
+
     /// <summary>
     /// Оптимизированная проверка устройства через IMemoryCache и string.Create.
     /// </summary>
-    private async Task<Result> EnsureDeviceExistsCachedAsync(Guid deviceId, DtoRequestAuthReg dto)
+    private async Task<Result> EnsureDeviceExistsCachedAsync(Guid deviceId, DtoRequestAuthReg dto, CancellationToken cancellationToken)
     {
         // Оптимизация ключа кэша через string.Create (40 символов: "dev_" + 36 символов GUID)
         string cacheKey = string.Create(40, deviceId, static (span, id) =>
@@ -214,13 +251,13 @@ public sealed partial class SessionService(
         }
 
         // Используем Compiled Query для БД
-        if (!await DeviceExistsQuery(dbContext, deviceId))
+        if (!await DeviceExistsQuery(dbContext, deviceId,cancellationToken).ConfigureAwait(false))
         {
             UserDevice newDevice = UserDeviceHelper.DtoToUserDevice(dto, deviceId);
             _ = dbContext.UserDevices.Add(newDevice);
             try
             {
-                _ = await dbContext.SaveChangesAsync();
+                _ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             }
             catch (DbUpdateException ex) when (ex.InnerException is PostgresException { SqlState: "23505" })
             {
@@ -233,44 +270,19 @@ public sealed partial class SessionService(
     }
 
     /// <summary>
-    /// Отзывает все сессии через высокопроизводительный ExecuteUpdate.
+    /// Отзывает все сессии.
     /// </summary>
-    public async Task RevokeAllUserSessionsAsync(Guid userId, InactivationReason reason)
+    private async Task RevokeAllUserSessionsAsync(Guid userId, CancellationToken cancellationToken)
     {
-        int reasonId = cacheService.GetInactivationReasonIdByCode(reason);
-
         _ = await dbContext.UserSessions
             .Where(s => s.UserId == userId && !s.IsRevoked)
             .ExecuteUpdateAsync(set => set
                 .SetProperty(s => s.IsRevoked, true)
                 .SetProperty(s => s.InactivatedAt, DateTimeOffset.UtcNow)
-                .SetProperty(s => s.UserSessionInactivationReasonId, reasonId));
+                .SetProperty(s => s.UserSessionInactivationReasonId, inactivationReasonIdServerRevoke)
+                , cancellationToken: cancellationToken).ConfigureAwait(false);
     }
-
-    public async Task<Result> LogoutAsync(string refreshToken)
-    {
-        if (string.IsNullOrWhiteSpace(refreshToken))
-        {
-            return Result.Fail("Empty token");
-        }
-
-        Span<byte> tokenBytes = stackalloc byte[TOKEN_SIZE];
-        if (!Convert.TryFromBase64String(refreshToken, tokenBytes, out _))
-        {
-            return Result.Fail("Invalid token format");
-        }
-
-        byte[] hash = SHA256.HashData(tokenBytes);
-        int reasonId = cacheService.GetInactivationReasonIdByCode(InactivationReason.USER_LOGOUT);
-        int affected = await dbContext.UserSessions
-            .Where(s => s.RefreshTokenHash == hash)
-            .ExecuteUpdateAsync(set => set
-                .SetProperty(s => s.IsRevoked, true)
-                .SetProperty(s => s.InactivatedAt, DateTimeOffset.UtcNow)
-                .SetProperty(s => s.UserSessionInactivationReasonId, reasonId));
-
-        return affected > 0 ? Result.Ok() : Result.Fail("Session not found");
-    }
+    
 }
 //using FluentResults;
 //using General.DTO.RestRequest;
