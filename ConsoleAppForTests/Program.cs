@@ -1,12 +1,33 @@
 using Game03Client;
+using System.Diagnostics;
+using UUIDNext;
 
 namespace ConsoleAppForTests;
 
 internal class Program
 {
 
+    // Фиксированный namespace для устройств вашей системы (сгенерирован как UUID v4)
+    private static readonly Guid DeviceNamespace =
+        Guid.Parse("a1b2c3d4-e5f6-7890-abcd-ef1234567890"); // Замените на свой постоянный Guid
+
+    public static Guid GenerateForDevice(string deviceUniqueId)
+    {
+        // Генерация детерминированного UUID v5
+        Guid deviceUuid = Uuid.NewNameBased(DeviceNamespace, deviceUniqueId);
+        return deviceUuid; // Тип System.Guid, готов для PostgreSQL
+    }
     private static async Task Main()
     {
+        Random r = new();
+        for (int i = 0; i < 100; i++)
+        {
+            Console.WriteLine(UUIDNext.Uuid.NewNameBased(DeviceNamespace, r.NextDouble().ToString()));
+        }
+        //test1();
+        //test2();
+        return;
+
         //List<int> list = new() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         //foreach (var item in list.Take(2).Skip(3))
         //{

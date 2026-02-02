@@ -887,12 +887,10 @@
             <param name="email">Email пользователя.</param>
             <returns>Оставшееся время в секундах.</returns>
         </member>
-        <member name="M:Server.Users.UserDeviceHelper.ComputeId(General.DTO.RestRequest.DtoRequestAuthReg)">
+        <member name="M:Server.Users.UserDeviceHelper.ComputeUUIDv8(General.DTO.RestRequest.DtoRequestAuthReg)">
             <summary>
-            Вычисляет идентификатор устройства, используя IncrementalHash и Span-форматирование примитивов.
+            Генерирует детерминированный UUID v8 на основе SHA-256.
             </summary>
-            <param name="dto">Данные устройства.</param>
-            <returns>Детерминированный GUID на основе хеша характеристик.</returns>
         </member>
         <member name="T:Server.Utilities.JsonObjectExtension">
             <summary>

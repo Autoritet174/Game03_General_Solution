@@ -60,7 +60,7 @@ public sealed class AuthRegLoggerBackgroundService(
             RetryCount: 0,
             NextRetryAt: DateTimeOffset.UtcNow,
             actionIsAuthentication,
-            UserDeviceHelper.ComputeId(dto)));
+            UserDeviceHelper.ComputeUUIDv8(dto)));
     }
 
     /// <inheritdoc />

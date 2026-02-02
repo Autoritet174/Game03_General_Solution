@@ -63,7 +63,7 @@ public sealed partial class SessionService(
     /// </summary>
     public async Task<Result<SessionResponseData>> CreateSessionAsync(Guid userId, DtoRequestAuthReg dto, CancellationToken cancellationToken)
     {
-        Guid deviceId = UserDeviceHelper.ComputeId(dto);
+        Guid deviceId = UserDeviceHelper.ComputeUUIDv8(dto);
         if (deviceId == Guid.Empty)
         {
             return Result.Fail("Invalid device data");
@@ -153,7 +153,7 @@ public sealed partial class SessionService(
             return Result.Fail("Expired");
         }
 
-        Guid currentDeviceId = UserDeviceHelper.ComputeId(dto);
+        Guid currentDeviceId = UserDeviceHelper.ComputeUUIDv8(dto);
         if (session.UserDeviceId != currentDeviceId)
         {
             LogDeviceMismatch(session.Id);

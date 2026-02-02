@@ -18,9 +18,9 @@ public class WebSocketClient
     public static bool Connected { get; private set; } = false;
     //private static readonly CancellationTokenSource _cancellationTokenSource = new();
 
-    public static async Task ConnectAsync(CancellationToken cancellationToken)
+    public static async Task ConnectAsync(CancellationToken cancellationTokenOpen, CancellationToken cancellationTokenReceive)
     {
-        if (cancellationToken.IsCancellationRequested)
+        if (cancellationTokenOpen.IsCancellationRequested || cancellationTokenReceive.IsCancellationRequested)
         {
             return;
         }
@@ -36,14 +36,14 @@ public class WebSocketClient
                 // Добавляем JWT токен в заголовки, если он предоставлен
                 _webSocket.Options.SetRequestHeader("Authorization", $"Bearer {accessToken}");
             }
-            await _webSocket.ConnectAsync(_serverUri, cancellationToken).ConfigureAwait(false);
+            await _webSocket.ConnectAsync(_serverUri, cancellationTokenOpen).ConfigureAwait(false);
         }
         catch { }
 
         if (_webSocket.State == WebSocketState.Open)
         {
             _isReceiving = true;
-            _ = Task.Run(async ()=> { await ReceiveMessagesAsync(cancellationToken).ConfigureAwait(false); });
+            _ = Task.Run(async ()=> { await ReceiveMessagesAsync(cancellationTokenReceive).ConfigureAwait(false); });
             Connected = true;
         }
     }
