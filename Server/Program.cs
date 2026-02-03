@@ -221,6 +221,7 @@ internal partial class Program
         // иначе где то сработает один из throw.
 
         await LoadServerCacheAsync(app, cancellationToken).ConfigureAwait(false);
+        await LoadTestServiceAsync(app, cancellationToken).ConfigureAwait(false);
 
         IHostApplicationLifetime lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
 
@@ -533,6 +534,25 @@ internal partial class Program
         catch (Exception ex)
         {
             logger.LogError(ex, "Server cache load failed");
+            throw;
+        }
+    }
+    /// <summary> Загружаем в оперативную память константные серверные данные которые не меняются во время работы сервера. </summary>
+    private static async Task LoadTestServiceAsync(WebApplication app, CancellationToken cancellationToken)
+    {
+        using IServiceScope scope = app.Services.CreateScope();
+        TestService service = scope.ServiceProvider.GetRequiredService<TestService>();
+        using DbContextGame db = scope.ServiceProvider.GetRequiredService<DbContextGame>();
+        ILogger<Program> logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        try
+        {
+            await service.MainAsync(db, cancellationToken).ConfigureAwait(false);
+
+            logger.LogInformation("TestService loaded successfully");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "TestService load failed");
             throw;
         }
     }

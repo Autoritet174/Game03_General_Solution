@@ -614,6 +614,9 @@
         <member name="M:Server.Program.LoadServerCacheAsync(Microsoft.AspNetCore.Builder.WebApplication,System.Threading.CancellationToken)">
             <summary> Загружаем в оперативную память константные серверные данные которые не меняются во время работы сервера. </summary>
         </member>
+        <member name="M:Server.Program.LoadTestServiceAsync(Microsoft.AspNetCore.Builder.WebApplication,System.Threading.CancellationToken)">
+            <summary> Загружаем в оперативную память константные серверные данные которые не меняются во время работы сервера. </summary>
+        </member>
         <member name="T:Server.UserRegAuth_NS.OpenWebSocketController">
             <summary>
             Контроллер для аутентификации пользователей.
@@ -886,6 +889,11 @@
             </summary>
             <param name="email">Email пользователя.</param>
             <returns>Оставшееся время в секундах.</returns>
+        </member>
+        <member name="F:Server.Users.UserDeviceHelper.SEPARATOR_BYTE">
+            <summary>
+            Символ '|'
+            </summary>
         </member>
         <member name="M:Server.Users.UserDeviceHelper.ComputeUUIDv8(General.DTO.RestRequest.DtoRequestAuthReg)">
             <summary>

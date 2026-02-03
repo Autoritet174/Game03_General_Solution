@@ -161,8 +161,10 @@ public static class UserDeviceHelper
     //    }
     //}
 
-
-    private const byte SEPARATOR_BYTE = 0x7C; // Символ '|'
+    /// <summary>
+    /// Символ '|'
+    /// </summary>
+    private const byte SEPARATOR_BYTE = 0x7C; 
 
     /// <summary>
     /// Генерирует детерминированный UUID v8 на основе SHA-256.
@@ -217,7 +219,7 @@ public static class UserDeviceHelper
 
     private static void AppendString(string? value, IncrementalHash h, ReadOnlySpan<byte> sep)
     {
-        if (string.IsNullOrEmpty(value))
+        if (string.IsNullOrWhiteSpace(value))
         {
             return;
         }
