@@ -1,9 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Server_DB_Postgres;
-using Server_DB_Postgres.Entities.Collection;
-using Server_DB_Postgres.Entities.GameData;
 using Server_DB_Postgres.Entities.Users;
-using General;
 
 namespace Server;
 

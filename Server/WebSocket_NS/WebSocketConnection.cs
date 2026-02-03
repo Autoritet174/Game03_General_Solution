@@ -14,7 +14,7 @@ public class WebSocketConnection(
     , IConfiguration configuration
     , WebSocketConnectionHandler webSocketServer
     //, IServiceProvider serviceProvider
-    ,Guid userId)
+    , Guid userId)
 {
     /// <summary>
     /// Уникальный идентификатор подключения.

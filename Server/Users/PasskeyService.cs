@@ -5,14 +5,14 @@ using Server_DB_Postgres;
 using Server_DB_Postgres.Entities.Users;
 using System.Security.Authentication;
 
-namespace Server.Users.Authentication;
+namespace Server.Users;
 
 /// <summary>
 /// Сервис для управления ключами доступа (Passkeys).
 /// </summary>
 public sealed class PasskeyService(
     IFido2 fido2
-    ,DbContextGame dbContext
+    , DbContextGame dbContext
     //,ILogger<PasskeyService> logger
     )
 {

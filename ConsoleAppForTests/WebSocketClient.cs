@@ -49,7 +49,7 @@ public class WebSocketClient(string serverUrl)
             while (_isReceiving && _webSocket.State == WebSocketState.Open)
             {
                 // Используем CancellationToken.None вместо _cts.Token
-                var result = await _webSocket.ReceiveAsync(
+                WebSocketReceiveResult result = await _webSocket.ReceiveAsync(
                     new ArraySegment<byte>(buffer),
                     CancellationToken.None
                 ).ConfigureAwait(false);

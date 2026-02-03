@@ -7,19 +7,18 @@ using System.Threading;
 using System.Threading.Tasks;
 using L = General.LocalizationKeys;
 
-using LOGGER = Game03Client.LOGGER<Game03Client.Auth>;
-
 namespace Game03Client;
 
 public class Auth
 {
+    private static readonly Logger<Auth> logger = new();
     public enum AuthType
     {
         Login,
         RefreshTokens
     }
 
-    public static async Task<bool> AuthentificationAsync(DtoRequestAuthReg dto, AuthType authType , CancellationToken cancellationToken)
+    public static async Task<bool> AuthentificationAsync(DtoRequestAuthReg dto, AuthType authType, CancellationToken cancellationToken)
     {
         AccessToken = null;
         RefreshToken = null;
@@ -27,7 +26,7 @@ public class Auth
 
         if (cancellationToken.IsCancellationRequested)
         {
-            LOGGER.LogError("IsCancellationRequested");
+            logger.LogError("IsCancellationRequested");
             return false;
         }
         string url = authType == AuthType.Login ? Url.AUTH_LOGIN : Url.AUTH_REFRESH_TOKENS;
@@ -35,20 +34,20 @@ public class Auth
         string? response = await HttpRequester.GetResponseAsync(url, JsonConvert.SerializeObject(dto), cancellationToken).ConfigureAwait(false);
         if (response == null)
         {
-            LOGGER.LogError("response is null", L.Error.Server.InvalidResponse);
+            logger.LogError("response is null", L.Error.Server.InvalidResponse);
             return false;
         }
 
         DtoResponseAuthReg? dtoResponse = JsonConvert.DeserializeObject<DtoResponseAuthReg>(response);
         if (dtoResponse == null)
         {
-            LOGGER.LogError("dtoResponse is null", L.Error.Server.InvalidResponse);
+            logger.LogError("dtoResponse is null", L.Error.Server.InvalidResponse);
             return false;
         }
 
         if (!string.IsNullOrEmpty(dtoResponse.ErrorKey))
         {
-            //LOGGER.LogError($"ErrorKey: {dtoResponse.ErrorKey}", dtoResponse.ErrorKey);
+            //logger.LogError($"ErrorKey: {dtoResponse.ErrorKey}", dtoResponse.ErrorKey);
             return false;
         }
 

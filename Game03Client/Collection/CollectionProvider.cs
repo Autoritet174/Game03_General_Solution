@@ -8,8 +8,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using LOGGER = Game03Client.LOGGER<Game03Client.Collection.CollectionProvider>;
-
 namespace Game03Client.Collection;
 
 public class CollectionProvider
@@ -18,10 +16,12 @@ public class CollectionProvider
     private static readonly List<string> listGroupNameHero = [];
     private static readonly List<string> listGroupNameEquipment = [];
     private static DtoContainerCollection collection = null!;
+    private static readonly Logger<CollectionProvider> logger = new();
     public static async Task<bool> LoadAllCollectionFromServerAsync(CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
         {
+            logger.LogError("LoadAllCollectionFromServerAsync cancelled");
             return false;
         }
 
@@ -29,12 +29,14 @@ public class CollectionProvider
         string? response = await HttpRequester.GetResponseAsync(General.Url.Collection.ALL, null, cancellationToken).ConfigureAwait(false);
         if (string.IsNullOrWhiteSpace(response))
         {
+            logger.LogError("response is null or empty");
             return false;
         }
         DtoContainerCollection? c = JsonConvert.DeserializeObject<DtoContainerCollection>(response);
 
         if (c == null)
         {
+            logger.LogError("c is null");
             return false;
         }
 
@@ -71,7 +73,7 @@ public class CollectionProvider
             {
                 if (a.BaseHero == null)
                 {
-                    LOGGER.LogError("a.DtoBaseHero is null");
+                    logger.LogError("a.DtoBaseHero is null");
                     throw new Exception();
                 }
                 return a.BaseHero.Name;
@@ -84,8 +86,8 @@ public class CollectionProvider
             {
                 if (a.BaseEquipment == null)
                 {
-                    LOGGER.LogError("a.DtoBaseEquipment is null");
-            throw new Exception();
+                    logger.LogError("a.DtoBaseEquipment is null");
+                    throw new Exception();
                 }
                 return a.BaseEquipment.Rarity;
             })
@@ -93,7 +95,7 @@ public class CollectionProvider
             {
                 if (a.BaseEquipment == null)
                 {
-                    LOGGER.LogError("a.DtoBaseEquipment is null");
+                    logger.LogError("a.DtoBaseEquipment is null");
                     throw new Exception();
                 }
                 return a.BaseEquipment.Name;
@@ -158,7 +160,7 @@ public class CollectionProvider
             {
                 if (hero.BaseHero == null)
                 {
-                    LOGGER.LogError("hero.DtoBaseHero is null");
+                    logger.LogError("hero.DtoBaseHero is null");
                     throw new Exception();
                 }
                 collectionElements.Add(new CollectionElement(hero.Id, hero.BaseHeroId, hero.Rarity, hero.BaseHero.Name, hero.BaseHero.IsUnique, TypeCollectionElement.Hero));
@@ -191,7 +193,7 @@ public class CollectionProvider
             {
                 if (equipment.BaseEquipment == null)
                 {
-                    LOGGER.LogError("Equipment.DtoBaseEquipment is null");
+                    logger.LogError("Equipment.DtoBaseEquipment is null");
                     throw new Exception();
                 }
                 collectionElements.Add(new CollectionElement(equipment.Id, equipment.BaseEquipmentId, equipment.BaseEquipment.Rarity, equipment.BaseEquipment.Name, equipment.BaseEquipment.IsUnique, TypeCollectionElement.Equipment));

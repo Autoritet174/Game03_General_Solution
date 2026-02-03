@@ -8,16 +8,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using L = General.LocalizationKeys;
 
-
 namespace Game03Client;
 
-using LOGGER = LOGGER<HttpRequester>;
 
 public class HttpRequester
 {
+    private static readonly Logger<HttpRequester> logger = new();
     private static readonly HttpClient httpClient = new();
 
-    public static void Init() {
+    public static void Init()
+    {
         double timeout = IniFile.ReadDouble("Http", "Timeout", 30d);
         httpClient.Timeout = TimeSpan.FromSeconds(timeout);
     }
@@ -27,21 +27,20 @@ public class HttpRequester
     {
         if (string.IsNullOrWhiteSpace(url))
         {
-            string e = "url IsEmpty";
-            LOGGER.LogError(e);
-            throw new Exception();
+            logger.LogError("url IsEmpty");
+            return null;
         }
 
         Uri uri = new(url);
         if (uri == null)
         {
-            string e = "uri is null";
-            LOGGER.LogError(e);
-            throw new Exception();
+            logger.LogError("uri is null");
+            return null;
         }
 
         if (cancellationToken.IsCancellationRequested)
         {
+            logger.LogError("IsCancellationRequested");
             return null;
         }
 
@@ -54,35 +53,35 @@ public class HttpRequester
             }
             if (!string.IsNullOrWhiteSpace(Auth.AccessToken))
             {
-                // Если был передан токен то подставляем его в заголовок авторизации
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Auth.AccessToken);
             }
 
 
             using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
-            string responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            string? responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (string.IsNullOrWhiteSpace(responseContent))
             {
-                LOGGER.LogError($"responseContent IsEmpty, StatusCode={response.StatusCode}", L.Error.Server.InvalidResponse);
-                throw new Exception();
+                logger.LogError($"responseContent IsEmpty, StatusCode={response.StatusCode}, url={url}", L.Error.Server.InvalidResponse);
+                return null;
             }
+
             return responseContent;
         }
         catch (TaskCanceledException ex) when (ex.InnerException is TimeoutException)
         {
-            LOGGER.LogError(ex.ToString(), L.Error.Server.Timeout);
+            logger.LogException(ex, L.Error.Server.Timeout);
             return null;
         }
         catch (HttpRequestException ex) when (ex.InnerException is WebException)
         {
             bool haveInternet = await InternetChecker.CheckInternetConnectionAsync(cancellationToken).ConfigureAwait(false);
             string key = haveInternet ? L.Error.Server.Unavailable : L.Error.Server.NoInternetConnection;
-            LOGGER.LogError(ex.ToString(), key);
+            logger.LogException(ex, key);
             return null;
         }
         catch (Exception ex)
         {
-            LOGGER.LogError(ex.ToString(), L.Error.Server.InvalidResponse);
+            logger.LogException(ex, L.Error.Server.InvalidResponse);
             return null;
         }
     }

@@ -1,5 +1,5 @@
+using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
-using RTools_NTS.Util;
 using Server.Jwt_NS;
 using System.Collections.Concurrent;
 using System.Net; // Добавлено для HttpStatusCode
@@ -89,7 +89,7 @@ public class WebSocketConnectionHandler
         string? token = null;
 
         // 1. Пытаемся из Authorization: Bearer <token>
-        if (context.Request.Headers.TryGetValue("Authorization", out var authHeader) &&
+        if (context.Request.Headers.TryGetValue("Authorization", out StringValues authHeader) &&
             authHeader.Count > 0 &&
             authHeader[0]?.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase) == true)
         {

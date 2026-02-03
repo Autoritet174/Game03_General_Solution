@@ -20,7 +20,6 @@ using Server_DB_Postgres.Entities.Users;
 using Server_DB_Postgres.Repositories;
 using System.IO.Compression;
 using System.Net;
-using System.Threading;
 using System.Threading.RateLimiting;
 
 namespace Server;
@@ -28,7 +27,7 @@ namespace Server;
 /// <summary> Класс содержит точку входа приложения и настройки сервисов, аутентификации, middleware, маршрутов и баз данных. </summary>
 internal partial class Program
 {
-    private static readonly CancellationToken cancellationToken = (new CancellationTokenSource(TimeSpan.FromSeconds(60))).Token;
+    private static readonly CancellationToken cancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(60)).Token;
 
     /// <summary> Точка входа в приложение. Выполняет настройку DI, БД, аутентификации, регистрацию сервисов и запускает сервер. </summary>
     private static async Task Main(string[] args)

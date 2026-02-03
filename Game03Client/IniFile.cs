@@ -5,10 +5,9 @@ using System.IO;
 
 namespace Game03Client;
 
-using LOGGER = LOGGER<IniFile>;
-
 public class IniFile
 {
+    private static readonly Logger<IniFile> logger = new();
     private static readonly FileIniDataParser _fileIniDataParser = new();
     public static string FileName { get; internal set; } = null!;
     public static string? Read(string section, string key)
@@ -24,12 +23,12 @@ public class IniFile
                 }
                 catch
                 {
-                    LOGGER.LogError($"error read section=[{section}] key=[{key}] in file <{FileName}>");
+                    logger.LogError($"error read section=[{section}] key=[{key}] in file <{FileName}>");
                 }
             }
             catch
             {
-                LOGGER.LogError($"error read ini file <{FileName}>");
+                logger.LogError($"error read ini file <{FileName}>");
             }
         }
         return null;
@@ -46,7 +45,7 @@ public class IniFile
             }
         }
 
-        LOGGER.LogError($"not found value in [{section}][{key}]");
+        logger.LogError($"not found value in [{section}][{key}]");
         return defaultValue;
     }
 

@@ -1,4 +1,3 @@
-using General;
 using General.DTO.RestRequest;
 using General.DTO.RestResponse;
 using Microsoft.AspNetCore.Identity;
@@ -88,7 +87,7 @@ public sealed class RegService(
 
 
             string accessToken = jwt.GenerateToken(user.Id);
-            
+
             // 
             return AuthRegResponse.Success(accessToken, "временная заглушка для рефреш токена", DateTimeOffset.Now);
         }

@@ -2,7 +2,7 @@ using System;
 
 namespace Game03Client.Collection;
 
-public enum TypeCollectionElement { Hero, Equipment}
+public enum TypeCollectionElement { Hero, Equipment }
 public class CollectionElement(Guid id, int baseId, int rarity, string name, bool isUnique, TypeCollectionElement typeCollectionElement)
 {
     public Guid Id { get; } = id;

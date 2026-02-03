@@ -1,5 +1,4 @@
 using Game03Client;
-using System.Diagnostics;
 using UUIDNext;
 
 namespace ConsoleAppForTests;
@@ -26,7 +25,11 @@ internal class Program
         }
         //test1();
         //test2();
-        return;
+        if (string.Empty == "")
+        {
+            return;
+        }
+
 
         //List<int> list = new() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         //foreach (var item in list.Take(2).Skip(3))
@@ -131,7 +134,7 @@ internal class Program
         //    {"Email":"SUPERadmin@mail.RU","Password":"iluLRhHe5Gs9rzUx+rsqc6k6K+N26qJA3BFd1YGL0kpTPu7ppGqqJ8gGRRbkieYLdVM1Bud04ZeSKEKMkQrydQ==","TimeZoneInfo_Local_BaseUtcOffset_Minutes":480,"System_Environment_UserName":"AUTORITET","DeviceModel":"B550 GAMING X V2 (Gigabyte Technology Co., Ltd.)","DeviceType":"Desktop","OperatingSystem":"Windows 11  (10.0.22000) 64bit","ProcessorType":"AMD Ryzen 7 3700X 8-Core Processor ","ProcessorCount":16,"SystemMemorySize":32691,"GraphicsDeviceName":"NVIDIA GeForce RTX 4070","GraphicsMemorySize":12011,"DeviceUniqueIdentifier":"e307f13fd5fb9d8c59a3a7b4df863c02bdbb300c","SystemInfo_supportsInstancing":true,"SystemInfo_npotSupport":"Full"}
         //    """;
 
-        await Auth.AuthentificationAsync(new General.DTO.RestRequest.DtoRequestAuthReg(
+        _ = await Auth.AuthentificationAsync(new General.DTO.RestRequest.DtoRequestAuthReg(
             email: "SUPERadmin@mail.RU",
             password: "iluLRhHe5Gs9rzUx+rsqc6k6K+N26qJA3BFd1YGL0kpTPu7ppGqqJ8gGRRbkieYLdVM1Bud04ZeSKEKMkQrydQ==",
             timeZoneInfo_Local_BaseUtcOffset_Minutes: 480,

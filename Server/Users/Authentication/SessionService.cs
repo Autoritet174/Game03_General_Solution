@@ -10,8 +10,6 @@ using Server_DB_Postgres;
 using Server_DB_Postgres.Entities.Server;
 using Server_DB_Postgres.Entities.Users;
 using System.Security.Cryptography;
-using System.Threading;
-using static General.LocalizationKeys.Error;
 
 namespace Server.Users.Authentication;
 
@@ -251,7 +249,7 @@ public sealed partial class SessionService(
         }
 
         // Используем Compiled Query для БД
-        if (!await DeviceExistsQuery(dbContext, deviceId,cancellationToken).ConfigureAwait(false))
+        if (!await DeviceExistsQuery(dbContext, deviceId, cancellationToken).ConfigureAwait(false))
         {
             UserDevice newDevice = UserDeviceHelper.DtoToUserDevice(dto, deviceId);
             _ = dbContext.UserDevices.Add(newDevice);
@@ -282,7 +280,7 @@ public sealed partial class SessionService(
                 .SetProperty(s => s.UserSessionInactivationReasonId, inactivationReasonIdServerRevoke)
                 , cancellationToken: cancellationToken).ConfigureAwait(false);
     }
-    
+
 }
 //using FluentResults;
 //using General.DTO.RestRequest;

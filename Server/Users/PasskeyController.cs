@@ -2,7 +2,6 @@ using Fido2NetLib;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Server.Http_NS.Controllers_NS;
-using Server.Users.Authentication;
 using System.ComponentModel.DataAnnotations;
 
 namespace Server.Users;
@@ -11,7 +10,7 @@ namespace Server.Users;
 /// </summary>
 public sealed class PasskeyController(
     PasskeyService passkeyService
-    ,IMemoryCache cache
+    , IMemoryCache cache
     //,ILogger<PasskeyController> logger
     ) : ControllerBaseApi
 {

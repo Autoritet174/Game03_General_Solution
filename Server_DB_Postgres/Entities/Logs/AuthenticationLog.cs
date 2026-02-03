@@ -3,7 +3,6 @@ using Server_DB_Postgres.Interfaces;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Net;
-using static Server_DB_Postgres.Attributes;
 
 namespace Server_DB_Postgres.Entities.Logs;
 

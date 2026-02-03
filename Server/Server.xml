@@ -705,36 +705,6 @@
             Отзывает все сессии.
             </summary>
         </member>
-        <member name="T:Server.Users.Authentication.PasskeyService">
-            <summary>
-            Сервис для управления ключами доступа (Passkeys).
-            </summary>
-        </member>
-        <member name="M:Server.Users.Authentication.PasskeyService.#ctor(Fido2NetLib.IFido2,Server_DB_Postgres.DbContextGame)">
-            <summary>
-            Сервис для управления ключами доступа (Passkeys).
-            </summary>
-        </member>
-        <member name="M:Server.Users.Authentication.PasskeyService.GetRegistrationOptionsAsync(System.Guid,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Генерирует параметры регистрации нового ключа.
-            </summary>
-        </member>
-        <member name="M:Server.Users.Authentication.PasskeyService.ConfirmRegistrationAsync(Fido2NetLib.AuthenticatorAttestationRawResponse,Fido2NetLib.CredentialCreateOptions,System.Guid,System.Threading.CancellationToken)">
-            <summary>
-            Подтверждает регистрацию и сохраняет ключ.
-            </summary>
-        </member>
-        <member name="M:Server.Users.Authentication.PasskeyService.GetLoginOptionsAsync(System.Nullable{System.Guid},System.Threading.CancellationToken)">
-            <summary>
-            Генерирует параметры для входа. Исправлено на GetAssertionOptionsParams.
-            </summary>
-        </member>
-        <member name="M:Server.Users.Authentication.PasskeyService.ConfirmLoginAsync(Fido2NetLib.AuthenticatorAssertionRawResponse,Fido2NetLib.AssertionOptions,System.Threading.CancellationToken)">
-            <summary>
-            Проверяет подпись при входе.
-            </summary>
-        </member>
         <member name="T:Server.Users.AuthRegLoggerBackgroundService">
             <summary> Фоновый сервис пакетной записи логов авторизации/регистрации и данных устройств с контролируемыми повторными попытками и корректной остановкой. </summary>
         </member>
@@ -780,7 +750,7 @@
             Контроллер для управления процессами регистрации и аутентификации через Passkeys.
             </summary>
         </member>
-        <member name="M:Server.Users.PasskeyController.#ctor(Server.Users.Authentication.PasskeyService,Microsoft.Extensions.Caching.Memory.IMemoryCache)">
+        <member name="M:Server.Users.PasskeyController.#ctor(Server.Users.PasskeyService,Microsoft.Extensions.Caching.Memory.IMemoryCache)">
             <summary>
             Контроллер для управления процессами регистрации и аутентификации через Passkeys.
             </summary>
@@ -828,6 +798,36 @@
         <member name="M:Server.Users.DtoLoginConfirm.#ctor(System.String,Fido2NetLib.AuthenticatorAssertionRawResponse)">
             <summary>
             Данные для завершения входа по ключу.
+            </summary>
+        </member>
+        <member name="T:Server.Users.PasskeyService">
+            <summary>
+            Сервис для управления ключами доступа (Passkeys).
+            </summary>
+        </member>
+        <member name="M:Server.Users.PasskeyService.#ctor(Fido2NetLib.IFido2,Server_DB_Postgres.DbContextGame)">
+            <summary>
+            Сервис для управления ключами доступа (Passkeys).
+            </summary>
+        </member>
+        <member name="M:Server.Users.PasskeyService.GetRegistrationOptionsAsync(System.Guid,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Генерирует параметры регистрации нового ключа.
+            </summary>
+        </member>
+        <member name="M:Server.Users.PasskeyService.ConfirmRegistrationAsync(Fido2NetLib.AuthenticatorAttestationRawResponse,Fido2NetLib.CredentialCreateOptions,System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Подтверждает регистрацию и сохраняет ключ.
+            </summary>
+        </member>
+        <member name="M:Server.Users.PasskeyService.GetLoginOptionsAsync(System.Nullable{System.Guid},System.Threading.CancellationToken)">
+            <summary>
+            Генерирует параметры для входа. Исправлено на GetAssertionOptionsParams.
+            </summary>
+        </member>
+        <member name="M:Server.Users.PasskeyService.ConfirmLoginAsync(Fido2NetLib.AuthenticatorAssertionRawResponse,Fido2NetLib.AssertionOptions,System.Threading.CancellationToken)">
+            <summary>
+            Проверяет подпись при входе.
             </summary>
         </member>
         <member name="T:Server.Users.Registration.RegController">
