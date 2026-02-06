@@ -16,15 +16,11 @@ internal class Program
         Guid deviceUuid = Uuid.NewNameBased(DeviceNamespace, deviceUniqueId);
         return deviceUuid; // Тип System.Guid, готов для PostgreSQL
     }
+
     private static async Task Main()
     {
-        Random r = new();
-        for (int i = 0; i < 100; i++)
-        {
-            Console.WriteLine(UUIDNext.Uuid.NewNameBased(DeviceNamespace, r.NextDouble().ToString()));
-        }
-        //test1();
-        //test2();
+
+
         if (string.Empty == "")
         {
             return;

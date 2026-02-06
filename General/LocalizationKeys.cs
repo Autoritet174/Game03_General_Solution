@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using static General.LocalizationKeys.UI.Label;
 
 namespace General;
 
@@ -67,6 +68,7 @@ public static class LocalizationKeys
                 public const string Ring = $"{_Slots}{nameof(Ring)}";
                 public const string Trinket = $"{_Slots}{nameof(Trinket)}";
             }
+            public const string NoGroup = $"{_Label}{nameof(NoGroup)}";
         }
     }
 

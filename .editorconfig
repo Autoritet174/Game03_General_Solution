@@ -7,6 +7,8 @@ root = true  # Указывает, что это корневой файл ко�
 csharp_style_namespace_declarations = file_scoped:suggestion
 dotnet_diagnostic.CS1591.severity = none
 
+# Отключаем преобразование expression-bodied членов в автосвойства
+dotnet_style_prefer_auto_properties = false:silent
 
 # Проверка, что CancellationToken пробрасывается в вызываемые методы
 dotnet_diagnostic.VSTHRD110.severity = error
