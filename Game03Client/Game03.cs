@@ -9,11 +9,11 @@ public static class Game03
 {
     public static void Init(string iniFileFullPath, StringCapsule stringCapsuleJsonFileData, LoggerCallbackError loggerCallbackError, LoggerCallbackInfo loggerCallbackInfo)
     {
-        HttpRequester.Init();
         LoggerProvider.LoggerCallbackInfo = loggerCallbackInfo;
         LoggerProvider.LoggerCallbackError = loggerCallbackError;
         IniFile.FileName = iniFileFullPath;
         LocalizationManager.Init(stringCapsuleJsonFileData);
+        HttpRequester.Init();
     }
 
 }
