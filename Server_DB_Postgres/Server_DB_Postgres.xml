@@ -84,11 +84,6 @@
             <summary> <inheritdoc/> </summary>
             <returns></returns>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Equipment.SlotId">
-            <summary>
-            Слот в который эпипирован предмет.
-            </summary>
-        </member>
         <member name="P:Server_DB_Postgres.Entities.Collection.Equipment.HeroId">
             <summary>
             Герой на которого экипирован предмет.
@@ -184,7 +179,7 @@
         <member name="P:Server_DB_Postgres.Entities.GameData.BaseEquipment.EquipmentTypeId">
             <summary> Идентификатор EquipmentType. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.BaseEquipment.EquipmentTypes">
+        <member name="P:Server_DB_Postgres.Entities.GameData.BaseEquipment.EquipmentType">
             <summary> Сущность EquipmentType. </summary>
         </member>
         <member name="T:Server_DB_Postgres.Entities.GameData.BaseHero">
@@ -240,7 +235,7 @@
         <member name="T:Server_DB_Postgres.Entities.GameData.EquipmentType">
             <summary> Тип экипировки. </summary>
         </member>
-        <member name="F:Server_DB_Postgres.Entities.GameData.EquipmentType.SlotType">
+        <member name="P:Server_DB_Postgres.Entities.GameData.EquipmentType.SlotType">
             <summary> Тип слота экипировки. Не индекс слота а его тип, то есть Кольцо или Браслет, а не Кольцо2 или Браслет1. </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.GameData.EquipmentType.SpendActionPoints">
@@ -1075,6 +1070,42 @@
             <inheritdoc />
         </member>
         <member name="M:Server_DB_Postgres.Migrations.UserSessionFix5.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.EquipmentFix3">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.EquipmentFix3.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.EquipmentFix3.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.EquipmentFix3.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.EquipmentFix4">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.EquipmentFix4.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.EquipmentFix4.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.EquipmentFix4.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.EquipmentFix6">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.EquipmentFix6.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.EquipmentFix6.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.EquipmentFix6.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Server_DB_Postgres.ModelBuilderExt">

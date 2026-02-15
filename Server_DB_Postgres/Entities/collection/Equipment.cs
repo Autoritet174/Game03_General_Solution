@@ -4,11 +4,12 @@ using Server_DB_Postgres.Entities.Users;
 using Server_DB_Postgres.Interfaces;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using static Server_DB_Postgres.Attributes;
 
 namespace Server_DB_Postgres.Entities.Collection;
 
 [Table(nameof(DbContextGame.Equipments), Schema = nameof(Collection))]
-[Index(nameof(SlotId), nameof(HeroId), IsUnique = true)]
+[Index(nameof(HeroId), nameof(SlotId))]
 public class Equipment : IVersion, ICreatedAt, IUpdatedAt
 {
     public Guid Id { get; init; }
@@ -29,16 +30,13 @@ public class Equipment : IVersion, ICreatedAt, IUpdatedAt
     public BaseEquipment? BaseEquipment { get; set; }
 
     /// <summary>
-    /// Слот в который эпипирован предмет.
-    /// </summary>
-    public int? SlotId { get; set; }
-    [ForeignKey(nameof(SlotId))]
-    public Slot? Slot { get; set; }
-
-    /// <summary>
     /// Герой на которого экипирован предмет.
     /// </summary>
     public Guid? HeroId { get; set; }
     [ForeignKey(nameof(HeroId))]
     public Hero? Hero { get; set; }
+
+    public int? SlotId { get; set; }
+    [ForeignKey(nameof(SlotId))]
+    public Slot? Slot { get; set; }
 }

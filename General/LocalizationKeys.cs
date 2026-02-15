@@ -38,6 +38,7 @@ public static class LocalizationKeys
             public const string Item = $"{_Button}{nameof(Item)}";
             public const string TakeOn = $"{_Button}{nameof(TakeOn)}";
             public const string TakeOff = $"{_Button}{nameof(TakeOff)}";
+            public const string TakeOnAlt = $"{_Button}{nameof(TakeOnAlt)}";
             public const string Sell = $"{_Button}{nameof(Sell)}";
         }
 

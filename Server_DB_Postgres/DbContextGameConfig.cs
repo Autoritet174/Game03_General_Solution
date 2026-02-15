@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Server_DB_Postgres.Entities.Collection;
 using Server_DB_Postgres.Entities.Logs;
 using Server_DB_Postgres.Entities.Users;
-using System.Reflection.Emit;
 namespace Server_DB_Postgres;
 
 public class DbContextGameConfig
@@ -12,6 +12,7 @@ public class DbContextGameConfig
         Configure(modelBuilder.Entity<UserSession>());
         Configure(modelBuilder.Entity<AuthenticationLog>());
         Configure(modelBuilder.Entity<UserBan>());
+        Configure(modelBuilder.Entity<Equipment>());
     }
 
     private static void Configure(EntityTypeBuilder<UserBan> builder)
@@ -41,5 +42,24 @@ public class DbContextGameConfig
         _ = builder.HasIndex(s => s.RefreshTokenHash).IsUnique().HasFilter($"""
             {nameof(UserSession.IsUsed).ToSnakeCase()} = false AND {nameof(UserSession.IsRevoked).ToSnakeCase()} = false
             """);
+    }
+
+    private static void Configure(EntityTypeBuilder<Equipment> builder)
+    {
+        // 1. Уникальный индекс для надетых предметов.
+        // Гарантирует, что у героя в конкретном слоте только один предмет.
+        _ = builder.HasIndex(e => new { e.HeroId, e.SlotId })
+            .IsUnique()
+            .HasFilter($"""
+            {nameof(Equipment.HeroId).ToSnakeCase()} IS NOT NULL AND {nameof(Equipment.SlotId).ToSnakeCase()} IS NOT NULL
+            """);
+
+        // 2. Неуникальный индекс для предметов в инвентаре.
+        // Ускоряет получение списка всех предметов игрока, которые НЕ надеты.
+        _ = builder.HasIndex(e => new { e.UserId })
+            .HasFilter($"""
+            {nameof(Equipment.HeroId).ToSnakeCase()} IS NULL
+            """);
+
     }
 }

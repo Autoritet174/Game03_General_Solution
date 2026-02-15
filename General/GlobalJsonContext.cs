@@ -2,10 +2,9 @@ using General.DTO;
 using General.DTO.Entities;
 using General.DTO.RestRequest;
 using General.DTO.RestResponse;
-using Server_DB_Postgres.Entities.GameData;
 using System.Text.Json.Serialization;
 
-namespace Server;
+namespace General;
 
 /// <summary>
 /// Глобальный контекст для Source Generation. 
@@ -14,7 +13,6 @@ namespace Server;
 [JsonSerializable(typeof(Dice))]
 [JsonSerializable(typeof(DtoRequestAuthReg))]
 [JsonSerializable(typeof(DtoResponseAuthReg))]
-[JsonSerializable(typeof(BaseHero))]
 [JsonSerializable(typeof(DtoWebSocket))]
 [JsonSerializable(typeof(DtoContainerGameData))]
 [JsonSerializable(typeof(DtoContainerCollection))]

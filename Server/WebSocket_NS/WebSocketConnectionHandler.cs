@@ -1,6 +1,10 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
+using Server.Cache;
 using Server.Jwt_NS;
+using Server_DB_Postgres;
 using System.Collections.Concurrent;
 using System.Net; // Добавлено для HttpStatusCode
 using System.Net.WebSockets;
@@ -22,6 +26,8 @@ public class WebSocketConnectionHandler
     private readonly Timer _monitoringTimer;
     private readonly JwtService _jwtService;
     private readonly int _maxConnections;
+    private readonly IDbContextFactory<DbContextGame> _dbContextFactory;
+    private readonly CacheService _cacheService;
 
     /// <summary>
     /// Инициализирует новый экземпляр <see cref="WebSocketConnectionHandler"/>.
@@ -30,7 +36,9 @@ public class WebSocketConnectionHandler
     /// <param name="serviceProvider">Поставщик зависимостей для разрешения сервисов.</param>
     /// <param name="configuration">Конфигурация приложения.</param>
     /// <param name="jwtService">JWT Сервис</param>
-    public WebSocketConnectionHandler(ILogger<WebSocketConnectionHandler> logger, IServiceProvider serviceProvider, IConfiguration configuration, JwtService jwtService)
+    /// <param name="dbContextFactory"></param>
+    /// <param name="cacheService"></param>
+    public WebSocketConnectionHandler(ILogger<WebSocketConnectionHandler> logger, IServiceProvider serviceProvider, IConfiguration configuration, JwtService jwtService, IDbContextFactory<DbContextGame> dbContextFactory, CacheService cacheService)
     {
         ArgumentNullException.ThrowIfNull(configuration);
         _configuration = configuration;
@@ -42,6 +50,8 @@ public class WebSocketConnectionHandler
 
         _monitoringTimer = new Timer(LogConnectionStats, null, TimeSpan.Zero, TimeSpan.FromSeconds(0.33));
         _jwtService = jwtService;
+        _dbContextFactory = dbContextFactory;
+        _cacheService = cacheService;
     }
 
     // protected override async Task ExecuteAsync(CancellationToken stoppingToken) - УДАЛЕН
@@ -88,7 +98,7 @@ public class WebSocketConnectionHandler
 
         string? token = null;
 
-        // 1. Пытаемся из Authorization: Bearer <token>
+        // Пытаемся из Authorization: Bearer <token>
         if (context.Request.Headers.TryGetValue("Authorization", out StringValues authHeader) &&
             authHeader.Count > 0 &&
             authHeader[0]?.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase) == true)
@@ -96,7 +106,7 @@ public class WebSocketConnectionHandler
             token = authHeader[0]!["Bearer ".Length..].Trim();
         }
 
-        // 2. Если не найден в заголовке — из query string (для совместимости с клиентами, где header не поддерживается)
+        // Если не найден в заголовке — из query string (для совместимости с клиентами, где header не поддерживается)
         if (string.IsNullOrWhiteSpace(token))
         {
             token = context.Request.Query["token"].FirstOrDefault()
@@ -164,7 +174,7 @@ public class WebSocketConnectionHandler
 
             // Создание и инициализация нового WebSocketConnection
             WebSocketConnection webSocketConnection = new(webSocket, clientLogger, _configuration, this//, _serviceProvider
-                , userId.Value);
+                , userId.Value, _dbContextFactory, _cacheService);
 
             _ = _activeConnections.TryAdd(webSocketConnection.Id, DateTime.UtcNow);
             Console.WriteLine($"Активных подключений: {_activeConnections.Count}");

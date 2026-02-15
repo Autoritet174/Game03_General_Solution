@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
@@ -60,7 +61,12 @@ internal partial class Program
 
 
         NpgsqlDataSource dataSource = dataSourceBuilder.Build();
-        _ = services.AddDbContext<DbContextGame>(options => options.UseNpgsql(dataSource));
+        _ = services.AddDbContextFactory<DbContextGame>(options => options.UseNpgsql(dataSource));
+        //_ = services.AddDbContext<DbContextGame>(options => options.UseNpgsql(dataSource));
+        _ = services.AddDbContext<DbContextGame>(options =>
+            options.UseNpgsql(dataSource),
+            ServiceLifetime.Scoped,  // DbContext как Scoped
+            ServiceLifetime.Singleton); // DbContextOptions как Singleton
 
         _ = builder.Services.AddControllers()
             .AddJsonOptions(options =>

@@ -32,7 +32,7 @@ public class EquipmentType
     public int SlotTypeId { get; set; }
     /// <summary> Тип слота экипировки. Не индекс слота а его тип, то есть Кольцо или Браслет, а не Кольцо2 или Браслет1. </summary>
     [ForeignKey(nameof(SlotTypeId))]
-    public SlotType? SlotType;
+    public SlotType SlotType { get; set; } = null!;
 
     [HasDefaultValue(false)]
     public bool CanCraftSmithing { get; set; }

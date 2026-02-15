@@ -76,7 +76,7 @@ public class CacheService()
 
         TableSlotTypes = await db.SlotTypes.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
         List<DtoSlotType> slotTypes = [..TableSlotTypes.Select(static h => new DtoSlotType(
-            h.Id, h.Name)
+            h.Id, h.Name, h.HaveAltSlot)
            )];
 
         TableSlots = await db.Slots.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
@@ -108,6 +108,57 @@ public class CacheService()
         {
             throw new InvalidOperationException("Кэш не инициализирован.");
         }
+
+        foreach (BaseEquipment i in TableBaseEquipment)
+        {
+            i.EquipmentType = TableEquipmentTypes.First(a => a.Id == i.EquipmentTypeId);
+            i.SmithingMaterial = TableSmithingMaterials.First(a => a.Id == i.SmithingMaterialId);
+        }
+        foreach (BaseHero i in TableBaseHeroes)
+        {
+
+        }
+        foreach (CreatureType i in TableCreatureTypes)
+        {
+
+        }
+        foreach (DamageType i in TableDamageTypes)
+        {
+
+        }
+        foreach (EquipmentType i in TableEquipmentTypes)
+        {
+            i.SlotType = TableSlotTypes.First(a => a.Id == i.SlotTypeId);
+        }
+        foreach (MaterialDamagePercent i in TableMaterialDamagePercents)
+        {
+            i.SmithingMaterials = TableSmithingMaterials.First(a => a.Id == i.SmithingMaterialsId);
+            i.DamageType = TableDamageTypes.First(a => a.Id == i.DamageTypeId);
+        }
+        foreach (SlotType i in TableSlotTypes)
+        {
+
+        }
+        foreach (Slot i in TableSlots)
+        {
+            i.SlotType = TableSlotTypes.First(a => a.Id == i.SlotTypeId);
+        }
+        foreach (SmithingMaterial i in TableSmithingMaterials)
+        {
+
+        }
+        foreach (X_EquipmentType_DamageType i in TableX_EquipmentTypes_DamageTypes)
+        {
+            i.EquipmentType = TableEquipmentTypes.First(a => a.Id == i.EquipmentTypeId);
+            i.DamageType = TableDamageTypes.First(a => a.Id == i.DamageTypeId);
+        }
+        foreach (X_Hero_CreatureType i in TableX_Heroes_CreatureTypes)
+        {
+            i.BaseHero = TableBaseHeroes.First(a => a.Id == i.BaseHeroId);
+            i.CreatureType = TableCreatureTypes.First(a => a.Id == i.CreatureTypeId);
+        }
+
+
     }
 
     private async Task LoadTableUserSessionInactivationReasonsAsync(DbContextGame db, CancellationToken cancellationToken)

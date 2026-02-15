@@ -1,15 +1,17 @@
-using Newtonsoft.Json;
+using General;
+using General.DTO;
 using System;
 using System.Net.WebSockets;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Game03Client;
 
-public class WebSocketClient
+public class WebSocketProvider
 {
-    private static readonly Logger<WebSocketClient> logger = new();
+    private static readonly Logger<WebSocketProvider> logger = new();
     private const string SERVER_URL = "wss://localhost:7227/ws/";
     private static ClientWebSocket _webSocket = new();
     private static readonly Uri _serverUri = new(SERVER_URL);
@@ -71,14 +73,28 @@ public class WebSocketClient
                     break;
                 }
 
-                string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                logger.LogInfo($"Получено от сервера: {message}");
+                try
+                {
+                    string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                    logger.LogInfo($"Получено от сервера: {message}");
+                    //DtoWebSocket? dtoWebSocket = JsonSerializer.Deserialize<DtoWebSocket>(message);
+                    //if (dtoWebSocket != null)
+                    //{
+                    //    if (dtoWebSocket.Command == WebSocketCommand.EquipmentTakeOn)
+                    //    {
+
+                    //    }
+                    //}
+                }
+                catch (Exception ex) {
+                    logger.LogError($"Ошибка обработки сообщения от сервера: {ex}");
+                }
                 //ProcessReceivedMessage(message);
             }
         }
         catch (WebSocketException ex) when (ex.WebSocketErrorCode == WebSocketError.ConnectionClosedPrematurely)
         {
-            logger.LogError("Соединение закрыто сервером");
+            logger.LogInfo("Соединение закрыто сервером");
         }
         catch (Exception ex)
         {
@@ -94,12 +110,12 @@ public class WebSocketClient
     /// Отправить сообщение на сервер.
     /// </summary>
     /// <returns></returns>
-    public static async Task SendMessageAsync(string message, CancellationToken cancellationToken)
+    public static async Task<bool> SendMessageAsync(string message, CancellationToken cancellationToken)
     {
         if (_webSocket.State != WebSocketState.Open)
         {
             logger.LogError("WebSocket не подключен");
-            return;
+            return false;
         }
 
         try
@@ -111,63 +127,26 @@ public class WebSocketClient
                 true,
                 cancellationToken
             ).ConfigureAwait(false);
-            //Console.WriteLine($"Отправлено: {message}");
+            return true;
         }
         catch (OperationCanceledException)
         {
             logger.LogError("Отправка отменена");
+            return false;
         }
         catch (Exception ex)
         {
             logger.LogError($"Ошибка отправки: {ex.Message}");
+            return false;
         }
     }
 
-    public static async Task StartSendingMessagesAsync(Action<int>? onMessagesSent, CancellationToken cancellationToken)
+    public static async Task<bool> SendMessageAsync(EquipmentTakeOnMessage equipmentTakeOnMessage, CancellationToken cancellationToken)
     {
-        while (!cancellationToken.IsCancellationRequested && _webSocket.State == WebSocketState.Open)
-        {
-            //for (int i = 0; i < 1; i++)
-            //{
-            //    var message = $"Сообщение #{++messageCount} - {DateTime.Now:HH:mm:ss}";
-            //    await SendMessageAsync(message);
-            //}
-            string com = Console.ReadLine();
-            Random r = new();
-            if (com == "1")
-            {
-
-                var data = new
-                {
-                    command = "AddItem",
-                    item = new
-                    {
-                        damage = r.Next(1, 10),
-                        health = r.Next(10, 20),
-                        location = Guid.NewGuid()
-                    }
-                };
-
-                string json = JsonConvert.SerializeObject(data, Formatting.Indented);
-                logger.LogError(json);
-                await SendMessageAsync(json, cancellationToken).ConfigureAwait(false);
-
-            }
-
-
-            // Сообщаем о количестве отправленных сообщений
-            onMessagesSent?.Invoke(100);
-
-            await Task.Delay(10, cancellationToken).ConfigureAwait(false);
-
-            if (Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Q)
-            {
-                break;
-            }
-        }
-
-        onMessagesSent?.Invoke(0); // Завершение
+        string message = JsonSerializer.Serialize(equipmentTakeOnMessage);
+        return await SendMessageAsync(message, cancellationToken).ConfigureAwait(false);
     }
+
     /// <summary>
     /// Корректно отключает клиента от сервера.
     /// </summary>

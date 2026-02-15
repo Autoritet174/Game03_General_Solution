@@ -25,7 +25,7 @@ public class CollectionController(DbContextGame dbContext) : ControllerBaseApi
         }
 
         List<DtoEquipment> equipments = await dbContext.Equipments.AsNoTracking().Where(a => a.UserId == userId).Select(a => new
-        DtoEquipment(a.Id, a.UserId, a.BaseEquipmentId, a.GroupName, a.SlotId, a.HeroId)).ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+            DtoEquipment(a.Id, a.UserId, a.BaseEquipmentId, a.GroupName, a.HeroId, a.SlotId)).ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
         List<DtoHero> heroes = await dbContext.Heroes.AsNoTracking().Where(a => a.UserId == userId).Select(a => new DtoHero(a.Id, a.UserId, a.BaseHeroId, a.GroupName, a.Rarity, a.Level, a.ExperienceNow, a.Strength, a.Agility, a.Intelligence, a.CritChance, a.CritPower, a.Haste, a.Versality, a.EndurancePhysical, a.EnduranceMagical, a.Health1000, a.Damage, a.ResistDamagePhysical, a.ResistDamageMagical)).ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 

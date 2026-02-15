@@ -1,6 +1,13 @@
+using FluentResults;
+using General.DTO;
+using Microsoft.EntityFrameworkCore;
+using Server.Cache;
+using Server.Collection;
+using Server_DB_Postgres;
 using System.Buffers;
 using System.Net.WebSockets;
 using System.Text;
+using System.Text.Json;
 
 namespace Server.WebSocket_NS;
 
@@ -14,17 +21,21 @@ public class WebSocketConnection(
     , IConfiguration configuration
     , WebSocketConnectionHandler webSocketServer
     //, IServiceProvider serviceProvider
-    , Guid userId)
+    , Guid userId
+    , IDbContextFactory<DbContextGame> dbContextFactory
+    , CacheService cacheService)
 {
     /// <summary>
     /// Уникальный идентификатор подключения.
     /// </summary>
     public Guid Id { get; private set; } = Guid.NewGuid();
 
+    private readonly EquipmentManager _EquipmentManager = new(userId, dbContextFactory, logger, cacheService);
+
     /// <summary>
     /// Размер буфера для приема сообщений из конфигурации.
     /// </summary>
-    private readonly int _receiveBufferSize = configuration.GetValue<int>("WebSocketSettings:ReceiveBufferSize");
+    private readonly int _ReceiveBufferSize = configuration.GetValue<int>("WebSocketSettings:ReceiveBufferSize");
 
     /// <summary>
     /// Обрабатывает WebSocket подключение клиента.
@@ -40,7 +51,7 @@ public class WebSocketConnection(
     public async Task HandleAsync(CancellationToken cancellationToken)
     {
         // Используем ArrayPool для уменьшения нагрузки на GC
-        byte[] buffer = ArrayPool<byte>.Shared.Rent(_receiveBufferSize);
+        byte[] buffer = ArrayPool<byte>.Shared.Rent(_ReceiveBufferSize);
 
         try
         {
@@ -79,17 +90,72 @@ public class WebSocketConnection(
                     break;
                 }
 
-                // Декодируем полученное сообщение
-                //string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                //Декодируем полученное сообщение
+                string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                if (!string.IsNullOrWhiteSpace(message))
+                {
+                    if (logger.IsEnabled(LogLevel.Information))
+                    {
+                        logger.LogInformation("ClientId={ClientId}; Message={Message}", userId, message);
+                    }
+
+                    try
+                    {
+                        WebSocketMessage? webSocketMessage = JsonSerializer.Deserialize<WebSocketMessage>(message);
+                        if (webSocketMessage != null)
+                        {
+                            switch (webSocketMessage)
+                            {
+                                case EquipmentTakeOnMessage takeOn:
+                                    {
+                                        Result wsResult = await _EquipmentManager.TakeOnAsync(takeOn, cancellationToken).ConfigureAwait(false);
+                                        if (logger.IsEnabled(LogLevel.Information))
+                                        {
+                                            logger.LogInformation("TakeOn={webSocketCommandResult}", wsResult.ToString());
+                                        }
+                                        if (wsResult.IsSuccess)
+                                        {
+                                            await SendMessageSafeAsync($"Эхо: {message}", cancellationToken).ConfigureAwait(false);
+                                        }
+                                        break;
+                                    }
+
+                                case EquipmentTakeOffMessage takeOff:
+                                    {
+                                        Result wsResult = await _EquipmentManager.TakeOffAsync(takeOff, cancellationToken).ConfigureAwait(false);
+                                        if (logger.IsEnabled(LogLevel.Information))
+                                        {
+                                            logger.LogInformation("TakeOff={webSocketCommandResult}", wsResult.ToString());
+                                        }
+                                        break;
+                                    }
+
+                            }
+                        }
+                        else
+                        {
+                            logger.LogError("userId={userId}; dtoWebSocket == null; Message={Message}", userId, message);
+                        }
+                       
+                    }
+                    catch (Exception ex)
+                    {
+                        if (logger.IsEnabled(LogLevel.Error))
+                        {
+                            logger.LogError("userId={userId}; Message={Message}; Exception={ex}", userId, message, ex);
+                        }
+                    }
+                }
+
                 //if (logger.IsEnabled(LogLevel.Information))
                 //{
                 //    logger.LogInformation("FROM {ClientId}: {Message}", userId, message);
                 //}
 
-                // Передаем команду менеджеру игроков для обработки
+                //Передаем команду менеджеру игроков для обработки
                 //await _playerManager.Command(message);
 
-                // Эхо-ответ (если нужно)
+                //Эхо - ответ(если нужно)
                 //if (webSocket.State == WebSocketState.Open)
                 //{
                 //    await SendMessageSafeAsync($"Эхо: {message}", cancellationToken);

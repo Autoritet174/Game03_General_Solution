@@ -4,6 +4,7 @@ using System.Net;
 using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server_DB_Postgres;
@@ -13,9 +14,11 @@ using Server_DB_Postgres;
 namespace Server_DB_Postgres.Migrations
 {
     [DbContext(typeof(DbContextGame))]
-    partial class DbContext_GameModelSnapshot : ModelSnapshot
+    [Migration("20260214110326_EquipmentFix3")]
+    partial class EquipmentFix3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -210,9 +213,11 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("hero_id");
 
-                    b.Property<int?>("SlotId")
-                        .HasColumnType("integer")
-                        .HasColumnName("slot_id");
+                    b.Property<bool>("InAltSlot")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("in_alt_slot");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -235,14 +240,11 @@ namespace Server_DB_Postgres.Migrations
                     b.HasIndex("BaseEquipmentId")
                         .HasDatabaseName("equipments__base_equipment_id__idx");
 
-                    b.HasIndex("SlotId")
-                        .HasDatabaseName("equipments__slot_id__idx");
+                    b.HasIndex("HeroId")
+                        .HasDatabaseName("equipments__hero_id__idx");
 
                     b.HasIndex("UserId")
                         .HasDatabaseName("equipments__user_id__idx");
-
-                    b.HasIndex("HeroId", "SlotId")
-                        .HasDatabaseName("equipments__hero_id__slot_id__idx");
 
                     b.ToTable("equipments", "collection");
                 });
@@ -607,9 +609,6 @@ namespace Server_DB_Postgres.Migrations
                         .IsUnique()
                         .HasDatabaseName("equipment_types__name__idx");
 
-                    b.HasIndex("SlotTypeId")
-                        .HasDatabaseName("equipment_types__slot_type_id__idx");
-
                     b.ToTable("equipment_types", "game_data");
                 });
 
@@ -655,12 +654,6 @@ namespace Server_DB_Postgres.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("MainSlot")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true)
-                        .HasColumnName("main_slot");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -692,10 +685,6 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("HaveAltSlot")
-                        .HasColumnType("boolean")
-                        .HasColumnName("have_alt_slot");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1379,12 +1368,6 @@ namespace Server_DB_Postgres.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("equipments__hero_id__heroes__fkey");
 
-                    b.HasOne("Server_DB_Postgres.Entities.GameData.Slot", "Slot")
-                        .WithMany()
-                        .HasForeignKey("SlotId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("equipments__slot_id__slots__fkey");
-
                     b.HasOne("Server_DB_Postgres.Entities.Users.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -1395,8 +1378,6 @@ namespace Server_DB_Postgres.Migrations
                     b.Navigation("BaseEquipment");
 
                     b.Navigation("Hero");
-
-                    b.Navigation("Slot");
 
                     b.Navigation("User");
                 });
@@ -1424,7 +1405,7 @@ namespace Server_DB_Postgres.Migrations
 
             modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.BaseEquipment", b =>
                 {
-                    b.HasOne("Server_DB_Postgres.Entities.GameData.EquipmentType", "EquipmentType")
+                    b.HasOne("Server_DB_Postgres.Entities.GameData.EquipmentType", "EquipmentTypes")
                         .WithMany()
                         .HasForeignKey("EquipmentTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -1437,21 +1418,9 @@ namespace Server_DB_Postgres.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("base_equipments__smithing_material_id__smithing_materials__fkey");
 
-                    b.Navigation("EquipmentType");
+                    b.Navigation("EquipmentTypes");
 
                     b.Navigation("SmithingMaterial");
-                });
-
-            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.EquipmentType", b =>
-                {
-                    b.HasOne("Server_DB_Postgres.Entities.GameData.SlotType", "SlotType")
-                        .WithMany()
-                        .HasForeignKey("SlotTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("equipment_types__slot_type_id__slot_types__fkey");
-
-                    b.Navigation("SlotType");
                 });
 
             modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.MaterialDamagePercent", b =>

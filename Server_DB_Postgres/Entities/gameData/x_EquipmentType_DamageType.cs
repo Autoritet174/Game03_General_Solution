@@ -12,19 +12,19 @@ public class X_EquipmentType_DamageType
 {
     /// <summary> Идентификатор <see cref="GameData.EquipmentType"/>. </summary>
     [Key, Column(Order = 0)]
-    public required int EquipmentTypeId { get; set; }
+    public int EquipmentTypeId { get; set; }
     /// <summary> Сущность <see cref="GameData.EquipmentType"/>. </summary>
     [ForeignKey(nameof(EquipmentTypeId))]
-    public EquipmentType? EquipmentType { get; set; }
+    public EquipmentType EquipmentType { get; set; } = null!;
 
     /// <summary> Идентификатор <see cref="GameData.DamageType"/>. </summary>
     [Key, Column(Order = 1)]
-    public required int DamageTypeId { get; set; }
+    public int DamageTypeId { get; set; }
     /// <summary> Сущность <see cref="GameData.DamageType"/>. </summary>
     [ForeignKey(nameof(DamageTypeId))]
-    public DamageType? DamageType { get; set; }
+    public DamageType DamageType { get; set; } = null!;
 
     /// <summary> Коэффициент типа урона у оружия. </summary>
-    [Column(name: nameof(DamageCoef)), HasDefaultValue(0)]
-    public required int DamageCoef { get; set; }
+    [HasDefaultValue(0)]
+    public int DamageCoef { get; set; }
 }

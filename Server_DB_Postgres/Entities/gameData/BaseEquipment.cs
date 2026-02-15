@@ -30,11 +30,11 @@ public class BaseEquipment
     public int EquipmentTypeId { get; set; }
     /// <summary> Сущность EquipmentType. </summary>
     [ForeignKey(nameof(EquipmentTypeId))]
-    public EquipmentType? EquipmentTypes { get; set; }
+    public EquipmentType EquipmentType { get; set; } = null!;
 
     public int? SmithingMaterialId { get; set; }
     [ForeignKey(nameof(SmithingMaterialId))]
-    public SmithingMaterial? SmithingMaterial { get; set; }
+    public SmithingMaterial SmithingMaterial { get; set; } = null!;
 
     #region Характеристики
     [Column(TypeName = "jsonb")]

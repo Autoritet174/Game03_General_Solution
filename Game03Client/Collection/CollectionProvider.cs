@@ -1,3 +1,4 @@
+using General.DTO;
 using General.DTO.Entities;
 using General.DTO.Entities.Collection;
 using General.DTO.Entities.GameData;
@@ -55,7 +56,6 @@ public class CollectionProvider
         IEnumerable<DtoSlot> slots = GameData.Container.Slots;
         foreach (DtoEquipment i in c.CollectionEquipments)
         {
-            i.Slot = slots.FirstOrDefault(a => a.Id == i.SlotId);
             i.Hero = c.CollectionHeroes.FirstOrDefault(a => a.Id == i.HeroId);
         }
 
@@ -207,5 +207,51 @@ public class CollectionProvider
             }
         }
         return result.OrderByDescending(a => a.Priority);
+    }
+
+    public static bool EquipmentIsEquipped(Guid equipmentId)
+    {
+        DtoEquipment? equipment = collection.CollectionEquipments.FirstOrDefault(a => a.Id == equipmentId);
+        if (equipment == null)
+        {
+            logger.LogError("Equipment not found in collection. Id: {EquipmentId}", equipmentId.ToString());
+            return false;
+        }
+        return equipment.HeroId != null;
+    }
+
+    public static async Task<bool> EquipmentTakeOnAsync(Guid equipmentId, Guid heroId, bool? inAltSlot, CancellationToken cancellationToken)
+    {
+        DtoEquipment? equipment = collection.CollectionEquipments.FirstOrDefault(a => a.Id == equipmentId);
+        if (equipment == null)
+        {
+            logger.LogError("Equipment not found in collection. Id: {EquipmentId}", equipmentId.ToString());
+            return false;
+        }
+        DtoHero? hero = collection.CollectionHeroes.FirstOrDefault(a => a.Id == heroId);
+        if (hero == null)
+        {
+            logger.LogError("Hero not found in collection. Id: {heroId}", heroId.ToString());
+            return false;
+        }
+
+        if (equipment.HeroId != null)
+        {
+            logger.LogError("Equipment is not equipped. Id: {EquipmentId}", equipmentId.ToString());
+            return false;
+        }
+
+        EquipmentTakeOnMessage equipmentTakeOnMessage = new(heroId: heroId, equipmentId: equipmentId, inAltSlot: inAltSlot);
+        bool result = await WebSocketProvider.SendMessageAsync(equipmentTakeOnMessage, cancellationToken).ConfigureAwait(false);
+        if (result)
+        {
+            // тут мы знаем только то что сообщение ушло на сервер, но пока что понятие не имеем что сделал сервер
+            // ждём сообщение по веб сокету от сервера о том была ли фактически одета экипировка
+
+            return true;
+        }
+
+
+        return false;
     }
 }
