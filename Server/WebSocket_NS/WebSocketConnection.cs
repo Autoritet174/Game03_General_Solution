@@ -101,12 +101,12 @@ public class WebSocketConnection(
 
                     try
                     {
-                        WebSocketMessage? webSocketMessage = JsonSerializer.Deserialize<WebSocketMessage>(message);
+                        DtoWS? webSocketMessage = JsonSerializer.Deserialize<DtoWS>(message);
                         if (webSocketMessage != null)
                         {
                             switch (webSocketMessage)
                             {
-                                case EquipmentTakeOnMessage takeOn:
+                                case DtoWSEquipmentTakeOnC2S takeOn:
                                     {
                                         Result wsResult = await _EquipmentManager.TakeOnAsync(takeOn, cancellationToken).ConfigureAwait(false);
                                         if (logger.IsEnabled(LogLevel.Information))
@@ -120,7 +120,7 @@ public class WebSocketConnection(
                                         break;
                                     }
 
-                                case EquipmentTakeOffMessage takeOff:
+                                case DtoWSEquipmentTakeOffC2S takeOff:
                                     {
                                         Result wsResult = await _EquipmentManager.TakeOffAsync(takeOff, cancellationToken).ConfigureAwait(false);
                                         if (logger.IsEnabled(LogLevel.Information))

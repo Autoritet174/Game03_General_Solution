@@ -18,6 +18,7 @@ public class CollectionProvider
     private static readonly List<string> listGroupNameEquipment = [];
     private static DtoContainerCollection collection = null!;
     private static readonly Logger<CollectionProvider> logger = new();
+
     public static async Task<bool> LoadAllCollectionFromServerAsync(CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
@@ -241,13 +242,25 @@ public class CollectionProvider
             return false;
         }
 
-        EquipmentTakeOnMessage equipmentTakeOnMessage = new(heroId: heroId, equipmentId: equipmentId, inAltSlot: inAltSlot);
+        DtoWSEquipmentTakeOnC2S equipmentTakeOnMessage = new(heroId, equipmentId, inAltSlot, Guid.NewGuid());
         bool result = await WebSocketProvider.SendMessageAsync(equipmentTakeOnMessage, cancellationToken).ConfigureAwait(false);
         if (result)
         {
             // тут мы знаем только то что сообщение ушло на сервер, но пока что понятие не имеем что сделал сервер
             // ждём сообщение по веб сокету от сервера о том была ли фактически одета экипировка
+            // Ждем ответ не более 2 секунд
 
+            var response = await WebSocketProvider.WaitForResponseAsync(
+                equipmentTakeOnMessage.MessageId.Value,
+                TimeSpan.FromSeconds(2),
+                cancellationToken).ConfigureAwait(false);
+
+            if (response?.Success == true)
+            {
+                // Обновляем локальное состояние
+                equipment.HeroId = heroId;
+                return true;
+            }
             return true;
         }
 

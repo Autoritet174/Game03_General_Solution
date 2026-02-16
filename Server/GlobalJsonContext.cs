@@ -15,7 +15,6 @@ namespace Server;
 [JsonSerializable(typeof(DtoRequestAuthReg))]
 [JsonSerializable(typeof(DtoResponseAuthReg))]
 [JsonSerializable(typeof(BaseHero))]
-[JsonSerializable(typeof(DtoWebSocket))]
 [JsonSerializable(typeof(DtoContainerGameData))]
 [JsonSerializable(typeof(DtoContainerCollection))]
 [JsonSourceGenerationOptions(

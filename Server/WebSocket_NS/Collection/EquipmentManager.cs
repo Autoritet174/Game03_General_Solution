@@ -69,7 +69,7 @@ public partial class EquipmentManager(
     /// <param name="dto">Объект передачи данных, содержащий ID героя и предмета.</param>
     /// <param name="cancellationToken">Токен отмены асинхронной операции.</param>
     /// <returns>Результат операции: Ok — успешно, Fail — ошибка валидации или БД.</returns>
-    public async Task<Result> TakeOnAsync(EquipmentTakeOnMessage dto, CancellationToken cancellationToken)
+    public async Task<Result> TakeOnAsync(DtoWSEquipmentTakeOnC2S dto, CancellationToken cancellationToken)
     {
         Guid heroId = dto.HeroId;
         Guid equipmentId = dto.EquipmentId;
@@ -124,7 +124,7 @@ public partial class EquipmentManager(
     /// <param name="dto">Объект передачи данных, содержащий ID предмета.</param>
     /// <param name="cancellationToken">Токен отмены асинхронной операции.</param>
     /// <returns>Результат операции: Ok — предмет снят или уже был не надет.</returns>
-    public async Task<Result> TakeOffAsync(EquipmentTakeOffMessage dto, CancellationToken cancellationToken)
+    public async Task<Result> TakeOffAsync(DtoWSEquipmentTakeOffC2S dto, CancellationToken cancellationToken)
     {
         Guid equipmentId = dto.EquipmentId;
 

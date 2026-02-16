@@ -13,7 +13,6 @@ namespace General;
 [JsonSerializable(typeof(Dice))]
 [JsonSerializable(typeof(DtoRequestAuthReg))]
 [JsonSerializable(typeof(DtoResponseAuthReg))]
-[JsonSerializable(typeof(DtoWebSocket))]
 [JsonSerializable(typeof(DtoContainerGameData))]
 [JsonSerializable(typeof(DtoContainerCollection))]
 [JsonSourceGenerationOptions(
