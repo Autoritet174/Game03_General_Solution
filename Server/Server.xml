@@ -34,63 +34,6 @@
         <member name="M:Server.Cache.GameDataController.Main">
             <summary> Возвращает в ответе список всех константных игровых данных нужных на клиенте игры. </summary>
         </member>
-        <member name="T:Server.Collection.EquipmentManager">
-            <summary>
-            Менеджер управления экипировкой персонажей.
-            </summary>
-            <param name="userId">Идентификатор владельца (текущего пользователя).</param>
-            <param name="dbContextFactory">Фабрика для создания контекста базы данных.</param>
-            <param name="logger">Интерфейс логирования.</param>
-            <param name="cacheService">Сервис для работы с кэшированными игровыми таблицами.</param>
-        </member>
-        <member name="M:Server.Collection.EquipmentManager.#ctor(System.Guid,Microsoft.EntityFrameworkCore.IDbContextFactory{Server_DB_Postgres.DbContextGame},Microsoft.Extensions.Logging.ILogger{Server.WebSocket_NS.WebSocketConnection},Server.Cache.CacheService)">
-            <summary>
-            Менеджер управления экипировкой персонажей.
-            </summary>
-            <param name="userId">Идентификатор владельца (текущего пользователя).</param>
-            <param name="dbContextFactory">Фабрика для создания контекста базы данных.</param>
-            <param name="logger">Интерфейс логирования.</param>
-            <param name="cacheService">Сервис для работы с кэшированными игровыми таблицами.</param>
-        </member>
-        <member name="F:Server.Collection.EquipmentManager.GetHeroByIdAsync">
-            <summary>
-            Скомпилированный запрос для получения героя по ID (без отслеживания изменений).
-            </summary>
-        </member>
-        <member name="F:Server.Collection.EquipmentManager.GetEquipmentByIdAsync">
-            <summary>
-            Скомпилированный запрос для получения предмета экипировки по ID.
-            </summary>
-        </member>
-        <member name="F:Server.Collection.EquipmentManager.GetEquippedInSlotAsync">
-            <summary>
-            Скомпилированный запрос для поиска предмета, надетого в конкретный слот героя.
-            </summary>
-        </member>
-        <member name="M:Server.Collection.EquipmentManager.TakeOnAsync(General.DTO.EquipmentTakeOnMessage,System.Threading.CancellationToken)">
-            <summary>
-            Надевает предмет экипировки на указанного героя.
-            </summary>
-            <param name="dto">Объект передачи данных, содержащий ID героя и предмета.</param>
-            <param name="cancellationToken">Токен отмены асинхронной операции.</param>
-            <returns>Результат операции: Ok — успешно, Fail — ошибка валидации или БД.</returns>
-        </member>
-        <member name="M:Server.Collection.EquipmentManager.TakeOffAsync(General.DTO.EquipmentTakeOffMessage,System.Threading.CancellationToken)">
-            <summary>
-            Снимает указанный предмет экипировки с героя.
-            </summary>
-            <param name="dto">Объект передачи данных, содержащий ID предмета.</param>
-            <param name="cancellationToken">Токен отмены асинхронной операции.</param>
-            <returns>Результат операции: Ok — предмет снят или уже был не надет.</returns>
-        </member>
-        <member name="M:Server.Collection.EquipmentManager.GetSlotId(System.Int32,System.Boolean)">
-            <summary>
-            Вычисляет ID слота на основе базового типа оборудования и флага альтернативного слота.
-            </summary>
-            <param name="baseEquipmentId">ID базового шаблона предмета.</param>
-            <param name="inAltSlot">Флаг использования альтернативного слота (например, второе кольцо).</param>
-            <returns>ID конкретного слота из базы данных.</returns>
-        </member>
         <member name="T:Server.Consts">
             <summary>
             Константы на весь сервер.
@@ -1017,6 +960,63 @@
             <returns>
             Булево значение или <c>null</c>, если ключ не найден, значение <c>null</c> или не удаётся интерпретировать.
             </returns>
+        </member>
+        <member name="T:Server.Collection.EquipmentManager">
+            <summary>
+            Менеджер управления экипировкой персонажей.
+            </summary>
+            <param name="userId">Идентификатор владельца (текущего пользователя).</param>
+            <param name="dbContextFactory">Фабрика для создания контекста базы данных.</param>
+            <param name="logger">Интерфейс логирования.</param>
+            <param name="cacheService">Сервис для работы с кэшированными игровыми таблицами.</param>
+        </member>
+        <member name="M:Server.Collection.EquipmentManager.#ctor(System.Guid,Microsoft.EntityFrameworkCore.IDbContextFactory{Server_DB_Postgres.DbContextGame},Microsoft.Extensions.Logging.ILogger{Server.WebSocket_NS.WebSocketConnection},Server.Cache.CacheService)">
+            <summary>
+            Менеджер управления экипировкой персонажей.
+            </summary>
+            <param name="userId">Идентификатор владельца (текущего пользователя).</param>
+            <param name="dbContextFactory">Фабрика для создания контекста базы данных.</param>
+            <param name="logger">Интерфейс логирования.</param>
+            <param name="cacheService">Сервис для работы с кэшированными игровыми таблицами.</param>
+        </member>
+        <member name="F:Server.Collection.EquipmentManager.GetHeroByIdAsync">
+            <summary>
+            Скомпилированный запрос для получения героя по ID (без отслеживания изменений).
+            </summary>
+        </member>
+        <member name="F:Server.Collection.EquipmentManager.GetEquipmentByIdAsync">
+            <summary>
+            Скомпилированный запрос для получения предмета экипировки по ID.
+            </summary>
+        </member>
+        <member name="F:Server.Collection.EquipmentManager.GetEquippedInSlotAsync">
+            <summary>
+            Скомпилированный запрос для поиска предмета, надетого в конкретный слот героя.
+            </summary>
+        </member>
+        <member name="M:Server.Collection.EquipmentManager.TakeOnAsync(General.DTO.DtoWSEquipmentTakeOnC2S,System.Threading.CancellationToken)">
+            <summary>
+            Надевает предмет экипировки на указанного героя.
+            </summary>
+            <param name="dto">Объект передачи данных, содержащий ID героя и предмета.</param>
+            <param name="cancellationToken">Токен отмены асинхронной операции.</param>
+            <returns>Результат операции: Ok — успешно, Fail — ошибка валидации или БД.</returns>
+        </member>
+        <member name="M:Server.Collection.EquipmentManager.TakeOffAsync(General.DTO.DtoWSEquipmentTakeOffC2S,System.Threading.CancellationToken)">
+            <summary>
+            Снимает указанный предмет экипировки с героя.
+            </summary>
+            <param name="dto">Объект передачи данных, содержащий ID предмета.</param>
+            <param name="cancellationToken">Токен отмены асинхронной операции.</param>
+            <returns>Результат операции: Ok — предмет снят или уже был не надет.</returns>
+        </member>
+        <member name="M:Server.Collection.EquipmentManager.GetSlotId(System.Int32,System.Boolean)">
+            <summary>
+            Вычисляет ID слота на основе базового типа оборудования и флага альтернативного слота.
+            </summary>
+            <param name="baseEquipmentId">ID базового шаблона предмета.</param>
+            <param name="inAltSlot">Флаг использования альтернативного слота (например, второе кольцо).</param>
+            <returns>ID конкретного слота из базы данных.</returns>
         </member>
         <member name="T:Server.WebSocket_NS.WebSocketConnection">
             <summary>

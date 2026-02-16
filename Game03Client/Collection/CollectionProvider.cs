@@ -242,26 +242,27 @@ public class CollectionProvider
             return false;
         }
 
-        DtoWSEquipmentTakeOnC2S equipmentTakeOnMessage = new(heroId, equipmentId, inAltSlot, Guid.NewGuid());
+        var guid = Guid.NewGuid();
+        DtoWSEquipmentTakeOnC2S equipmentTakeOnMessage = new(heroId, equipmentId, inAltSlot, guid);
         bool result = await WebSocketProvider.SendMessageAsync(equipmentTakeOnMessage, cancellationToken).ConfigureAwait(false);
         if (result)
         {
             // тут мы знаем только то что сообщение ушло на сервер, но пока что понятие не имеем что сделал сервер
             // ждём сообщение по веб сокету от сервера о том была ли фактически одета экипировка
-            // Ждем ответ не более 2 секунд
+            // Ждем ответ не более 5 секунд
 
-            var response = await WebSocketProvider.WaitForResponseAsync(
-                equipmentTakeOnMessage.MessageId.Value,
-                TimeSpan.FromSeconds(2),
+            DtoWSResponseS2C? response = await WebSocketProvider.WaitForResponseAsync(
+                guid,
+                TimeSpan.FromSeconds(5),
                 cancellationToken).ConfigureAwait(false);
 
             if (response?.Success == true)
             {
                 // Обновляем локальное состояние
                 equipment.HeroId = heroId;
+                equipment.SlotId = 0;
                 return true;
             }
-            return true;
         }
 
 
