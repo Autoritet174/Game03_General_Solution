@@ -258,14 +258,65 @@ public class CollectionProvider
 
             if (response?.Success == true)
             {
+                DtoBaseEquipment? baseEquip = equipment.BaseEquipment;
+                int slotTypeId = baseEquip?.EquipmentType?.SlotType?.Id ?? 0;
+
                 // Обновляем локальное состояние
                 equipment.HeroId = heroId;
-                equipment.SlotId = 0;
+                equipment.SlotId = slotTypeId switch
+                {
+                    1 => inAltSlot == true ? 2 : 1,     // Оружие
+                    14 => inAltSlot == true ? 9 : 8,    // Кольцо
+                    16 => inAltSlot == true ? 11 : 10,  // Аксессуар
+                    _ => GameData.Container.Slots.First(a => a.SlotTypeId == slotTypeId).Id
+                };
+                logger.LogInfo(equipment.HeroId);
+                logger.LogInfo(equipment.SlotId);
                 return true;
             }
         }
 
+        return false;
+    }
+
+    public static async Task<bool> EquipmentTakeOffAsync(Guid equipmentId, CancellationToken cancellationToken)
+    {
+        DtoEquipment? equipment = collection.CollectionEquipments.FirstOrDefault(a => a.Id == equipmentId);
+        if (equipment == null)
+        {
+            logger.LogError("Equipment not found in collection. Id: {EquipmentId}", equipmentId.ToString());
+            return false;
+        }
+
+        // Сразу возвращаем успех если предмет и так не одет
+        if (equipment.HeroId == null)
+        {
+            return true;
+        }
+
+        var guid = Guid.NewGuid();
+        DtoWSEquipmentTakeOffC2S equipmentTakeOnMessage = new(equipmentId, guid);
+        bool result = await WebSocketProvider.SendMessageAsync(equipmentTakeOnMessage, cancellationToken).ConfigureAwait(false);
+        if (result)
+        {
+            DtoWSResponseS2C? response = await WebSocketProvider.WaitForResponseAsync(
+                guid,
+                TimeSpan.FromSeconds(5),
+                cancellationToken).ConfigureAwait(false);
+
+            if (response?.Success == true)
+            {
+                DtoBaseEquipment? baseEquip = equipment.BaseEquipment;
+                int slotTypeId = baseEquip?.EquipmentType?.SlotType?.Id ?? 0;
+
+                // Обновляем локальное состояние
+                equipment.HeroId = null;
+                equipment.SlotId = null;
+                return true;
+            }
+        }
 
         return false;
     }
+
 }

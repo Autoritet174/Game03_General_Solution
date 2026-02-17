@@ -1,13 +1,17 @@
 using FluentResults;
 using General.DTO;
 using Microsoft.EntityFrameworkCore;
+using RTools_NTS.Util;
 using Server.Cache;
 using Server.Collection;
 using Server_DB_Postgres;
 using System.Buffers;
 using System.Net.WebSockets;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 
 namespace Server.WebSocket_NS;
 
@@ -25,6 +29,31 @@ public class WebSocketConnection(
     , IDbContextFactory<DbContextGame> dbContextFactory
     , CacheService cacheService)
 {
+    // Кэшированные пулы и настройки (статичные для всего класса)
+    private static readonly ArrayPool<byte> _bufferPool = ArrayPool<byte>.Shared;
+
+    // Для логирования используем слабые ссылки или кэширование
+    private static readonly Action<ILogger, string, string, Exception?> _logInformation =
+        LoggerMessage.Define<string, string>(
+            LogLevel.Information,
+            new EventId(0, "SendMessage"),
+            "сообщение клиенту {ClientId}: {Message}");
+
+    private static readonly Action<ILogger, string, Exception?> _logDebugDisconnect =
+        LoggerMessage.Define<string>(
+            LogLevel.Debug,
+            new EventId(1, "SendDisconnect"),
+            "Не удалось отправить сообщение клиенту {ClientId} (соединение закрыто)");
+
+    private static readonly Action<ILogger, string, Exception?> _logWarningError =
+        LoggerMessage.Define<string>(
+            LogLevel.Warning,
+            new EventId(2, "SendError"),
+            "Неожиданная ошибка при отправке сообщения клиенту {ClientId}");
+
+
+
+
     /// <summary>
     /// Уникальный идентификатор подключения.
     /// </summary>
@@ -36,6 +65,8 @@ public class WebSocketConnection(
     /// Размер буфера для приема сообщений из конфигурации.
     /// </summary>
     private readonly int _ReceiveBufferSize = configuration.GetValue<int>("WebSocketSettings:ReceiveBufferSize");
+
+    private static readonly TimeSpan MaxTimeSendMessage = TimeSpan.FromSeconds(5);
 
     /// <summary>
     /// Обрабатывает WebSocket подключение клиента.
@@ -56,8 +87,8 @@ public class WebSocketConnection(
         try
         {
             // Отправляем приветственное сообщение
-            await SendMessageSafeAsync($"Добро пожаловать! Ваш userId: {userId}", cancellationToken).ConfigureAwait(false);
-
+            await SendMessageSafeAsync(new DtoWSLogMessageS2C($"Добро пожаловать! Ваш userId: {userId}"), cancellationToken).ConfigureAwait(false);
+            
             // Основной цикл чтения
             while (webSocket.State is WebSocketState.Open or WebSocketState.CloseReceived)
             {
@@ -109,24 +140,24 @@ public class WebSocketConnection(
                                 case DtoWSEquipmentTakeOnC2S takeOn:
                                     {
                                         Result wsResult = await _EquipmentManager.TakeOnAsync(takeOn, cancellationToken).ConfigureAwait(false);
-                                        if (logger.IsEnabled(LogLevel.Information))
+
+                                        if (wsResult.IsSuccess && logger.IsEnabled(LogLevel.Information))
                                         {
                                             logger.LogInformation("TakeOn={webSocketCommandResult}", wsResult.ToString());
                                         }
-                                        if (wsResult.IsSuccess)
-                                        {
-                                            await SendMessageSafeAsync($"Эхо: {message}", cancellationToken).ConfigureAwait(false);
-                                        }
+
+                                        await SendMessageSafeAsync(new DtoWSResponseS2C(wsResult.IsSuccess, takeOn.MessageId ?? Guid.Empty), cancellationToken).ConfigureAwait(false);
                                         break;
                                     }
 
                                 case DtoWSEquipmentTakeOffC2S takeOff:
                                     {
                                         Result wsResult = await _EquipmentManager.TakeOffAsync(takeOff, cancellationToken).ConfigureAwait(false);
-                                        if (logger.IsEnabled(LogLevel.Information))
+                                        if (wsResult.IsSuccess && logger.IsEnabled(LogLevel.Information))
                                         {
                                             logger.LogInformation("TakeOff={webSocketCommandResult}", wsResult.ToString());
                                         }
+                                        await SendMessageSafeAsync(new DtoWSResponseS2C(wsResult.IsSuccess, takeOff.MessageId ?? Guid.Empty), cancellationToken).ConfigureAwait(false);
                                         break;
                                     }
 
@@ -235,44 +266,68 @@ public class WebSocketConnection(
     /// <summary>
     /// Безопасно отправляет сообщение клиенту.
     /// </summary>
-    /// <param name="message">Текст сообщения для отправки.</param>
+    /// <param name="dtoWS">Текст сообщения для отправки.</param>
     /// <param name="cancellationToken">Токен отмены операции отправки.</param>
     /// <returns>Задача, представляющая асинхронную отправку сообщения.</returns>
-    private async Task SendMessageSafeAsync(string message, CancellationToken cancellationToken)
+    private async Task SendMessageSafeAsync<T>(T dtoWS, CancellationToken cancellationToken) where T : DtoWS
     {
-        // Проверяем, что соединение еще открыто
+        // Быстрая проверка без аллокаций
         if (webSocket.State != WebSocketState.Open)
         {
             return;
         }
 
+        // Rent массив из пула
+        byte[]? buffer = null;
+
         try
         {
-            byte[] buffer = Encoding.UTF8.GetBytes(message);
-            await webSocket.SendAsync(
-                new ArraySegment<byte>(buffer),
-                WebSocketMessageType.Text,
-                true,  // Отправляем полное сообщение
-                cancellationToken
-            ).ConfigureAwait(false);
+            // Используем ArrayBufferWriter с Utf8JsonWriter для минимальных аллокаций
+            var bufferWriter = new ArrayBufferWriter<byte>(1024); // Начальный буфер 1KB
+
+            using (var jsonWriter = new Utf8JsonWriter(bufferWriter, new JsonWriterOptions
+            {
+                SkipValidation = true, // Для производительности
+                Indented = false,
+                Encoder = General.JsonSettings.JsonOptions.Encoder
+            }))
+            {
+                JsonSerializer.Serialize<DtoWS>(jsonWriter, dtoWS, General.JsonSettings.JsonOptions);
+            }
+
+            using CancellationTokenSource timeoutCts = new(MaxTimeSendMessage);
+            using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
+
+            // Отправляем напрямую из памяти
+            await webSocket.SendAsync(bufferWriter.WrittenMemory, WebSocketMessageType.Text, true, linkedCts.Token).ConfigureAwait(false);
+
+            // Логирование (если нужно)
             if (logger.IsEnabled(LogLevel.Information))
             {
-                logger.LogInformation("сообщение клиенту {ClientId}: {Message}", Id, message);
+                string jsonMessage = Encoding.UTF8.GetString(bufferWriter.WrittenSpan);
+                logger.LogInformation("сообщение клиенту {ClientId}: {Message}", Id, jsonMessage);
             }
         }
         catch (Exception ex) when (IsExpectedDisconnectException(ex))
         {
             if (logger.IsEnabled(LogLevel.Debug))
             {
-                // Игнорируем ошибки при закрытых соединениях
-                logger.LogDebug("Не удалось отправить сообщение клиенту {ClientId} (соединение закрыто): {Message}", Id, ex.Message);
+                _logDebugDisconnect(logger, Id.ToString(), null);
             }
         }
         catch (Exception ex)
         {
             if (logger.IsEnabled(LogLevel.Warning))
             {
-                logger.LogWarning(ex, "Неожиданная ошибка при отправке сообщения клиенту {ClientId}", Id);
+                _logWarningError(logger, Id.ToString(), ex);
+            }
+        }
+        finally
+        {
+            // Если использовали пул, возвращаем буфер
+            if (buffer != null)
+            {
+                _bufferPool.Return(buffer);
             }
         }
     }

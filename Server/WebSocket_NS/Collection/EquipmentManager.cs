@@ -73,18 +73,10 @@ public partial class EquipmentManager(
     {
         Guid heroId = dto.HeroId;
         Guid equipmentId = dto.EquipmentId;
-
+        
         await using DbContextGame db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        // 1. Проверка героя (существование и принадлежность)
-        Hero? hero = await GetHeroByIdAsync(db, heroId, cancellationToken).ConfigureAwait(false);
-        if (hero == null || hero.UserId != userId)
-        {
-            LogHeroNotFound(heroId, userId);
-            return Result.Fail("Hero not found or access denied.");
-        }
-
-        // 2. Проверка экипировки
+        // Проверка экипировки (существование и принадлежность)
         Equipment? equipment = await GetEquipmentByIdAsync(db, equipmentId, cancellationToken).ConfigureAwait(false);
         if (equipment == null || equipment.UserId != userId)
         {
@@ -92,17 +84,32 @@ public partial class EquipmentManager(
             return Result.Fail("Equipment not found or access denied.");
         }
 
-        // 3. Проверка, не надет ли уже предмет на кого-то другого
+        // Если предмет уже одет на нужного героя, то просто возвращаем успех
+        if (equipment.HeroId == heroId)
+        {
+            // тут нет смысла проверять принаджлежит ли герой игроку так как мы не меняем данные в базе
+            return Result.Ok();
+        }
+
+        // Проверка героя (существование и принадлежность)
+        Hero? hero = await GetHeroByIdAsync(db, heroId, cancellationToken).ConfigureAwait(false);
+        if (hero == null || hero.UserId != userId)
+        {
+            LogHeroNotFound(heroId, userId);
+            return Result.Fail("Hero not found or access denied.");
+        }
+
+        // Проверка, не надет ли уже предмет на кого-то другого
         if (equipment.HeroId != null)
         {
             LogEquipmentAlreadyEquipped(equipmentId, equipment.HeroId.Value);
             return Result.Fail("This equipment is already in use.");
         }
 
-        // 4. Определение целевого слота
+        // Определение целевого слота
         int slotId = GetSlotId(equipment.BaseEquipmentId, dto.InAltSlot ?? false);
 
-        // 5. Обработка конфликта (если слот занят — снимаем текущий предмет)
+        // Обработка конфликта (если слот занят — снимаем текущий предмет)
         Equipment? currentSlotItem = await GetEquippedInSlotAsync(db, heroId, slotId, cancellationToken).ConfigureAwait(false);
         if (currentSlotItem != null)
         {
@@ -110,7 +117,7 @@ public partial class EquipmentManager(
             currentSlotItem.SlotId = null;
         }
 
-        // 6. Назначение новой экипировки
+        // Назначение новой экипировки
         equipment.SlotId = slotId;
         equipment.HeroId = heroId;
 

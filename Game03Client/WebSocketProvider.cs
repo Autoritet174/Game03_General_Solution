@@ -4,6 +4,7 @@ using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net.WebSockets;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -198,11 +199,18 @@ public class WebSocketProvider
     {
         try
         {
-            DtoWS? dtoWS = JsonSerializer.Deserialize<DtoWS>(data);
+            DtoWS? dtoWS = JsonSerializer.Deserialize<DtoWS>(data, General.JsonSettings.JsonOptions);
 
-            if (dtoWS is DtoWSResponseS2C response)
+            switch (dtoWS)
             {
-                OnMessageReceived(response);
+                case DtoWSResponseS2C dtoWSResponseS2C:
+                    OnMessageReceived_DtoWSResponseS2C(dtoWSResponseS2C);
+                    break;
+                case DtoWSLogMessageS2C dtoWSLogMessageS2C:
+                    logger.LogInfo(dtoWSLogMessageS2C.Message);
+                    break;
+                default:
+                    break;
             }
         }
         catch (Exception ex)
@@ -211,7 +219,7 @@ public class WebSocketProvider
         }
     }
 
-    private static void OnMessageReceived(DtoWSResponseS2C response)
+    private static void OnMessageReceived_DtoWSResponseS2C(DtoWSResponseS2C response)
     {
         // Убираем StartNew, так как TCS создан с RunContinuationsAsynchronously.
         // Это минимизирует Latency и убирает лишние аллокации Task.
@@ -226,7 +234,8 @@ public class WebSocketProvider
         }
     }
 
-    public static async Task<bool> SendMessageAsync(DtoWSEquipmentTakeOnC2S message, CancellationToken ct)
+    public static async Task<bool> SendMessageAsync<T>(T message, CancellationToken ct)
+    where T : DtoWS  // Ограничение: T должен быть наследником DtoWS
     {
         if (_webSocket.State != WebSocketState.Open)
         {
@@ -236,7 +245,7 @@ public class WebSocketProvider
         try
         {
             // Сериализация напрямую в байты
-            byte[] jsonBytes = JsonSerializer.SerializeToUtf8Bytes(message);
+            byte[] jsonBytes = JsonSerializer.SerializeToUtf8Bytes<DtoWS>(message);
 
             await _webSocket.SendAsync(
                 new ArraySegment<byte>(jsonBytes),

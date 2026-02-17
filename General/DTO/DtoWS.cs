@@ -6,6 +6,7 @@ namespace General.DTO;
 [JsonDerivedType(typeof(DtoWSResponseS2C), nameof(DtoWSResponseS2C))]
 [JsonDerivedType(typeof(DtoWSEquipmentTakeOnC2S), nameof(DtoWSEquipmentTakeOnC2S))]
 [JsonDerivedType(typeof(DtoWSEquipmentTakeOffC2S), nameof(DtoWSEquipmentTakeOffC2S))]
+[JsonDerivedType(typeof(DtoWSLogMessageS2C), nameof(DtoWSLogMessageS2C))]
 public abstract class DtoWS(Guid? messageId = null)
 {
     /// <summary> Идентификатор сообщения. </summary>
@@ -34,4 +35,9 @@ public class DtoWSEquipmentTakeOnC2S(Guid heroId, Guid equipmentId, bool? inAltS
 public class DtoWSEquipmentTakeOffC2S(Guid equipmentId, Guid? messageId = null) : DtoWS(messageId)
 {
     public Guid EquipmentId { get; } = equipmentId;
+}
+
+public class DtoWSLogMessageS2C(string message) : DtoWS
+{
+    public string Message { get; } = message;
 }

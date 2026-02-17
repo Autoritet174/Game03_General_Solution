@@ -1063,11 +1063,11 @@
             false - если это неожиданная ошибка.
             </returns>
         </member>
-        <member name="M:Server.WebSocket_NS.WebSocketConnection.SendMessageSafeAsync(System.String,System.Threading.CancellationToken)">
+        <member name="M:Server.WebSocket_NS.WebSocketConnection.SendMessageSafeAsync``1(``0,System.Threading.CancellationToken)">
             <summary>
             Безопасно отправляет сообщение клиенту.
             </summary>
-            <param name="message">Текст сообщения для отправки.</param>
+            <param name="dtoWS">Текст сообщения для отправки.</param>
             <param name="cancellationToken">Токен отмены операции отправки.</param>
             <returns>Задача, представляющая асинхронную отправку сообщения.</returns>
         </member>
