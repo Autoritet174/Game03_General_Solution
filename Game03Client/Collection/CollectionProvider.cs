@@ -54,13 +54,6 @@ public class CollectionProvider
             i.BaseHero = baseHeroes.FirstOrDefault(a => a.Id == i.BaseHeroId);
         }
 
-        IEnumerable<DtoSlot> slots = GameData.Container.Slots;
-        foreach (DtoEquipment i in c.CollectionEquipments)
-        {
-            i.Hero = c.CollectionHeroes.FirstOrDefault(a => a.Id == i.HeroId);
-        }
-
-
         collection = c;
 
         RefreshListGroupNameHero();
@@ -263,20 +256,25 @@ public class CollectionProvider
 
                 // Обновляем локальное состояние
                 equipment.HeroId = heroId;
-                equipment.SlotId = slotTypeId switch
-                {
-                    1 => inAltSlot == true ? 2 : 1,     // Оружие
-                    14 => inAltSlot == true ? 9 : 8,    // Кольцо
-                    16 => inAltSlot == true ? 11 : 10,  // Аксессуар
-                    _ => GameData.Container.Slots.First(a => a.SlotTypeId == slotTypeId).Id
-                };
-                logger.LogInfo(equipment.HeroId);
-                logger.LogInfo(equipment.SlotId);
+                equipment.SlotId = GetSlotId(equipment, inAltSlot);
+                //logger.LogInfo(equipment.HeroId);
+                //logger.LogInfo(equipment.SlotId);
                 return true;
             }
         }
 
         return false;
+    }
+
+    public static int GetSlotId(DtoEquipment equipment, bool? inAltSlot = null) {
+        int slotTypeId = equipment.BaseEquipment?.EquipmentType?.SlotType?.Id ?? 0;
+        return slotTypeId switch
+        {
+            1 => inAltSlot == true ? 2 : 1,     // Оружие
+            14 => inAltSlot == true ? 9 : 8,    // Кольцо
+            16 => inAltSlot == true ? 11 : 10,  // Аксессуар
+            _ => GameData.Container.Slots.First(a => a.SlotTypeId == slotTypeId).Id
+        };
     }
 
     public static async Task<bool> EquipmentTakeOffAsync(Guid equipmentId, CancellationToken cancellationToken)

@@ -15,7 +15,5 @@ public class DtoEquipment(Guid id, Guid userId, int baseEquipmentId, string? gro
     public DtoBaseEquipment? BaseEquipment { get; set; } = null;
     public string? GroupName { get; set; } = groupName;
     public Guid? HeroId { get; set; } = heroId;
-    public DtoHero? Hero { get; set; }
     public int? SlotId { get; set; } = slotId;
-    public DtoSlot? Slot { get; set; }
 }
