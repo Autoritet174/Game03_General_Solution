@@ -17,6 +17,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Game03Client", "Game03Clien
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataBaseEditor", "DataBaseEditor\DataBaseEditor.csproj", "{3E264A5A-7AF6-4C82-AF40-60DA39931BBE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageGenerator", "ImageGenerator\ImageGenerator.csproj", "{F92CC8E6-E6B3-4C30-834C-E76D0C90F58F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Auxiliary", "Auxiliary", "{B1DCEFA7-371F-4878-A6B0-2BA61B406525}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,9 +55,19 @@ Global
 		{3E264A5A-7AF6-4C82-AF40-60DA39931BBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E264A5A-7AF6-4C82-AF40-60DA39931BBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E264A5A-7AF6-4C82-AF40-60DA39931BBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F92CC8E6-E6B3-4C30-834C-E76D0C90F58F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F92CC8E6-E6B3-4C30-834C-E76D0C90F58F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F92CC8E6-E6B3-4C30-834C-E76D0C90F58F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F92CC8E6-E6B3-4C30-834C-E76D0C90F58F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CD5C228E-7AC3-43F0-97E3-448D3E203180} = {B1DCEFA7-371F-4878-A6B0-2BA61B406525}
+		{E9147802-0356-4716-8CBD-B1807A7241C3} = {B1DCEFA7-371F-4878-A6B0-2BA61B406525}
+		{3E264A5A-7AF6-4C82-AF40-60DA39931BBE} = {B1DCEFA7-371F-4878-A6B0-2BA61B406525}
+		{F92CC8E6-E6B3-4C30-834C-E76D0C90F58F} = {B1DCEFA7-371F-4878-A6B0-2BA61B406525}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {432B3655-7049-4C50-9780-DE39CFE9ED74}

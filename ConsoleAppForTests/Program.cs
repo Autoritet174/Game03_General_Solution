@@ -1,6 +1,9 @@
 using Game03Client;
+using System.Drawing;
+using System.Runtime.InteropServices;
 using UUIDNext;
-
+using System;
+using System.Drawing.Imaging;
 namespace ConsoleAppForTests;
 
 internal class Program
@@ -8,7 +11,7 @@ internal class Program
 
     // Фиксированный namespace для устройств вашей системы (сгенерирован как UUID v4)
     private static readonly Guid DeviceNamespace =
-        Guid.Parse("a1b2c3d4-e5f6-7890-abcd-ef1234567890"); // Замените на свой постоянный Guid
+        Guid.Parse("a1b2c3d4-e5f6-7890-abcd-ef1234567890");
 
     public static Guid GenerateForDevice(string deviceUniqueId)
     {
@@ -17,9 +20,10 @@ internal class Program
         return deviceUuid; // Тип System.Guid, готов для PostgreSQL
     }
 
+
     private static async Task Main()
     {
-
+      
 
         if (string.Empty == "")
         {
