@@ -6,14 +6,13 @@ namespace General.DTO.Entities.Collection;
 /// <summary>
 /// Герой из коллекции игрока.
 /// </summary>
-public class DtoHero(Guid id, Guid userId, int baseHeroId, string? groupName, int rarity, int level, long experienceNow, int strength, int agility, int intelligence, int critChance, int critPower, int haste, int versality, int edurancePhysical, int enduranceMagical, long health1000, Dice? damage, int resistDamagePhysical, int resistDamageMagical, DtoBaseHero? dtoBaseHero = null)
+public class DtoHero(Guid id, Guid userId, int baseHeroId, string? groupName, int level, long experienceNow, int strength, int agility, int intelligence, int critChance, int critPower, int haste, int versality, int edurancePhysical, int enduranceMagical, long health1000, Dice? damage, int resistDamagePhysical, int resistDamageMagical, DtoBaseHero? dtoBaseHero = null)
 {
     public Guid Id { get; } = id;
     public Guid UserId { get; } = userId;
     public int BaseHeroId { get; } = baseHeroId;
     public DtoBaseHero? BaseHero { get; set; } = dtoBaseHero;
     public string? GroupName { get; } = groupName;
-    public int Rarity { get; } = rarity;
     public int Level { get; } = level;
     public long ExperienceNow { get; } = experienceNow;
 

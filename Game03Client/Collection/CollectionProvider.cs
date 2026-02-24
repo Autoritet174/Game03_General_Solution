@@ -61,7 +61,7 @@ public class CollectionProvider
 
         // Сортировка героев по редкости, уровню и имени
         c.CollectionHeroes = [.. c.CollectionHeroes
-            .OrderByDescending(a => a.Rarity)
+            .OrderByDescending(a => a.BaseHero!.Rarity)
             .ThenBy(a => a.Level)
             .ThenBy(a =>
             {
@@ -157,7 +157,7 @@ public class CollectionProvider
                     logger.LogError("hero.DtoBaseHero is null");
                     throw new Exception();
                 }
-                collectionElements.Add(new CollectionElement(hero.Id, hero.BaseHeroId, hero.Rarity, hero.BaseHero.Name, hero.BaseHero.IsUnique, TypeCollectionElement.Hero));
+                collectionElements.Add(new CollectionElement(hero.Id, hero.BaseHeroId, hero.BaseHero.Rarity, hero.BaseHero.Name, hero.BaseHero.IsUnique, TypeCollectionElement.Hero));
             }
 
             GroupCollectionElement groupCollectionElement = new(groupName, collectionElements);

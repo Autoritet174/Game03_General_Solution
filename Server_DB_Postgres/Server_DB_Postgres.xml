@@ -122,9 +122,6 @@
         <member name="P:Server_DB_Postgres.Entities.Collection.Hero.ExperienceNow">
             <summary> Текущий опыт. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Rarity">
-            <summary> Редкость. </summary>
-        </member>
         <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Strength">
             <summary> Сила. </summary>
         </member>
@@ -1106,6 +1103,18 @@
             <inheritdoc />
         </member>
         <member name="M:Server_DB_Postgres.Migrations.EquipmentFix6.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.EquipmentFix7">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.EquipmentFix7.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.EquipmentFix7.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.EquipmentFix7.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Server_DB_Postgres.ModelBuilderExt">
