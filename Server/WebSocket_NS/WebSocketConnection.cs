@@ -141,10 +141,21 @@ public class WebSocketConnection(
                                     {
                                         Result wsResult = await _EquipmentManager.TakeOnAsync(takeOn, cancellationToken).ConfigureAwait(false);
 
-                                        if (wsResult.IsSuccess && logger.IsEnabled(LogLevel.Information))
+                                        if (wsResult.IsSuccess)
                                         {
-                                            logger.LogInformation("TakeOn={webSocketCommandResult}", wsResult.ToString());
+                                            if (logger.IsEnabled(LogLevel.Information))
+                                            {
+                                                logger.LogInformation("TakeOn={webSocketCommandResult}", wsResult.ToString());
+                                            }
                                         }
+                                        else {
+                                            if (logger.IsEnabled(LogLevel.Error))
+                                            {
+                                                logger.LogError("TakeOn={webSocketCommandResult}", wsResult.ToString());
+                                            }
+                                        }
+
+                                        
 
                                         await SendMessageSafeAsync(new DtoWSResponseS2C(wsResult.IsSuccess, takeOn.MessageId ?? Guid.Empty), cancellationToken).ConfigureAwait(false);
                                         break;

@@ -1,0 +1,25 @@
+CREATE OR REPLACE FUNCTION equip_item(
+    p_hero_id UUID,
+    p_equipment_id UUID,
+    p_slot_id INT
+) RETURNS BOOLEAN AS $$
+BEGIN
+    -- Начинаем транзакцию (автоматически в функции)
+    
+    -- Снимаем текущий предмет в слоте (если есть)
+    UPDATE equipment 
+    SET hero_id = NULL, slot_id = NULL 
+    WHERE hero_id = p_hero_id AND slot_id = p_slot_id;
+    
+    -- Надеваем новый предмет
+    UPDATE equipment 
+    SET hero_id = p_hero_id, slot_id = p_slot_id 
+    WHERE id = p_equipment_id AND hero_id IS NULL;
+    
+    -- Возвращаем true только если надели предмет
+    RETURN FOUND;
+    
+    -- COMMIT происходит автоматически при успешном завершении
+    -- ROLLBACK автоматически при любой ошибке
+END;
+$$ LANGUAGE plpgsql;

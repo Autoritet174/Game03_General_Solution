@@ -1,6 +1,7 @@
 using FluentResults;
 using General.DTO;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Server.Cache;
 using Server.WebSocket_NS;
 using Server_DB_Postgres;
@@ -45,6 +46,8 @@ public partial class EquipmentManager(
         EF.CompileAsyncQuery((DbContextGame db, Guid heroId, int slotId, CancellationToken ct) =>
             db.Equipments.FirstOrDefault(e => e.HeroId == heroId && e.SlotId == slotId));
 
+    private static readonly string _EquipmentTakeOnSql = "SELECT collection.equipment_take_on({0}, {1}, {2})";
+
     #endregion
 
     #region LoggerMessages
@@ -73,7 +76,7 @@ public partial class EquipmentManager(
     {
         Guid heroId = dto.HeroId;
         Guid equipmentId = dto.EquipmentId;
-        
+
         await using DbContextGame db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         // Проверка экипировки (существование и принадлежность)
@@ -109,12 +112,16 @@ public partial class EquipmentManager(
         // Определение целевого слота
         int slotId = GetSlotId(equipment.BaseEquipmentId, dto.InAltSlot ?? false);
 
-        // Обработка конфликта (если слот занят — снимаем текущий предмет)
+        // Обработка конфликта(если слот занят — снимаем текущий предмет)
         Equipment? currentSlotItem = await GetEquippedInSlotAsync(db, heroId, slotId, cancellationToken).ConfigureAwait(false);
         if (currentSlotItem != null)
         {
             currentSlotItem.HeroId = null;
             currentSlotItem.SlotId = null;
+
+            // Приходиться вызывать отдельный SaveChangesAsync, так как это самый простой выход,
+            // другие я уже попробовал и они суммарно хуже этого
+            await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
 
         // Назначение новой экипировки
@@ -122,6 +129,7 @@ public partial class EquipmentManager(
         equipment.HeroId = heroId;
 
         int affectedRows = await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
         return affectedRows > 0 ? Result.Ok() : Result.Fail("Database update failed during equipment assignment.");
     }
 
