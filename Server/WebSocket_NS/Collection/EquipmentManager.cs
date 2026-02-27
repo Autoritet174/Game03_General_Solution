@@ -87,19 +87,20 @@ public partial class EquipmentManager(
             return Result.Fail("Equipment not found or access denied.");
         }
 
-        // Если предмет уже одет на нужного героя, то просто возвращаем успех
-        if (equipment.HeroId == heroId)
-        {
-            // тут нет смысла проверять принаджлежит ли герой игроку так как мы не меняем данные в базе
-            return Result.Ok();
-        }
-
         // Проверка героя (существование и принадлежность)
         Hero? hero = await GetHeroByIdAsync(db, heroId, cancellationToken).ConfigureAwait(false);
         if (hero == null || hero.UserId != userId)
         {
             LogHeroNotFound(heroId, userId);
             return Result.Fail("Hero not found or access denied.");
+        }
+
+        // Если предмет уже одет на нужного героя, то просто возвращаем успех
+        if (equipment.HeroId == heroId)
+        {
+            // раньше я думал что тут нет смысла проверять принаджлежит ли герой игроку так как мы не меняем данные в базе
+            // однако это позволяло бы любому игроку ручным управлением командами в вебсокете просматривать то какая экипировка надета на других героях других игроков, что могло давать нечесное преимущество например на арене
+            return Result.Ok();
         }
 
         // Проверка, не надет ли уже предмет на кого-то другого
