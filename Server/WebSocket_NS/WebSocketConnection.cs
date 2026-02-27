@@ -155,8 +155,6 @@ public class WebSocketConnection(
                                             }
                                         }
 
-                                        
-
                                         await SendMessageSafeAsync(new DtoWSResponseS2C(wsResult.IsSuccess, takeOn.MessageId ?? Guid.Empty), cancellationToken).ConfigureAwait(false);
                                         break;
                                     }
@@ -189,19 +187,6 @@ public class WebSocketConnection(
                     }
                 }
 
-                //if (logger.IsEnabled(LogLevel.Information))
-                //{
-                //    logger.LogInformation("FROM {ClientId}: {Message}", userId, message);
-                //}
-
-                //Передаем команду менеджеру игроков для обработки
-                //await _playerManager.Command(message);
-
-                //Эхо - ответ(если нужно)
-                //if (webSocket.State == WebSocketState.Open)
-                //{
-                //    await SendMessageSafeAsync($"Эхо: {message}", cancellationToken);
-                //}
             }
         }
         catch (OperationCanceledException)
@@ -210,14 +195,17 @@ public class WebSocketConnection(
             {
                 logger.LogInformation("Обработка клиента {ClientId} прервана", Id);
             }
-
         }
         catch (Exception ex)
         {
             // Логируем только неожиданные ошибки, ожидаемые исключения игнорируем
             if (IsExpectedDisconnectException(ex))
             {
-                Console.WriteLine($"Клиент {Id} разорвал соединение. Активных подключений: {webSocketServer.GetCount()}");
+                //Console.WriteLine($"Клиент {Id} разорвал соединение. Активных подключений: {webSocketServer.GetCount()}");
+                if (logger.IsEnabled(LogLevel.Information))
+                {
+                    logger.LogInformation("Клиент {id} разорвал соединение.", Id);
+                }
             }
             else
             {

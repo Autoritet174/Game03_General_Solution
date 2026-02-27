@@ -109,8 +109,7 @@ public class WebSocketConnectionHandler
         // Если не найден в заголовке — из query string (для совместимости с клиентами, где header не поддерживается)
         if (string.IsNullOrWhiteSpace(token))
         {
-            token = context.Request.Query["token"].FirstOrDefault()
-                    ?? context.Request.Query["access_token"].FirstOrDefault();
+            token = context.Request.Query["token"].FirstOrDefault() ?? context.Request.Query["access_token"].FirstOrDefault();
         }
 
         if (string.IsNullOrWhiteSpace(token))

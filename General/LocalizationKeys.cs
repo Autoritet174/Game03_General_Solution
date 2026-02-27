@@ -70,6 +70,20 @@ public static class LocalizationKeys
                 public const string Ring = $"{_Slots}{nameof(Ring)}";
                 public const string Trinket = $"{_Slots}{nameof(Trinket)}";
             }
+            public static class Stat
+            {
+                private const string _Stat = $"{_Label}{nameof(Stat)}.";
+                public static string GetKey(string stat) => $"{_Stat}{stat}";
+
+                public const string Level = $"{_Stat}{nameof(Level)}";
+                public const string Health = $"{_Stat}{nameof(Health)}";
+                public const string Strength = $"{_Stat}{nameof(Strength)}";
+                public const string Agility = $"{_Stat}{nameof(Agility)}";
+                public const string Intelligence = $"{_Stat}{nameof(Intelligence)}";
+                public const string CritChance = $"{_Stat}{nameof(CritChance)}";
+                public const string CritPower = $"{_Stat}{nameof(CritPower)}";
+            }
+
             public const string NoGroup = $"{_Label}{nameof(NoGroup)}";
         }
     }
