@@ -1,7 +1,6 @@
 using FluentResults;
 using General.DTO;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Server.Cache;
 using Server.WebSocket_NS;
 using Server_DB_Postgres;
@@ -122,7 +121,7 @@ public partial class EquipmentManager(
 
             // Приходиться вызывать отдельный SaveChangesAsync, так как это самый простой выход,
             // другие я уже попробовал и они суммарно хуже этого
-            await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            _ = await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
 
         // Назначение новой экипировки

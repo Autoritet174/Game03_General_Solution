@@ -1,3 +1,4 @@
+using General.DTO;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,8 @@ using Server_DB_Postgres.Entities.Server;
 using Server_DB_Postgres.Entities.Users;
 using Server_DB_Postgres.Interfaces;
 using System.Collections.Concurrent;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Reflection;
 
 namespace Server_DB_Postgres;
 
@@ -106,18 +109,6 @@ public class DbContextGame(DbContextOptions<DbContextGame> options) : IdentityDb
     {
         base.OnModelCreating(modelBuilder);
 
-        // Кастомные ограничения
-        //_ = modelBuilder.Entity<BaseEquipment>(static entity =>
-        //{
-        //    string s1 = nameof(BaseEquipment.SlotType1Id).ToSnakeCase();
-        //    string s2 = nameof(BaseEquipment.SlotType2Id).ToSnakeCase();
-        //    _ = entity.ToTable(t => t.HasCheckConstraint("CK_BaseEquipment_SlotTypes_Different".ToSnakeCase(), $"""
-        //        "{s2}" IS NULL OR "{s2}" <> "{s1}"
-        //        """));
-        //});
-
-
-
         _ = modelBuilder.Ignore<Microsoft.AspNetCore.Identity.IdentityPasskeyData>();
         // Переопределение имен таблиц Identity
         string shema = nameof(Server_DB_Postgres.Entities.Users).ToSnakeCase();
@@ -143,6 +134,7 @@ public class DbContextGame(DbContextOptions<DbContextGame> options) : IdentityDb
 
         DbContextGameConfig.ConfigureAll(modelBuilder);
         modelBuilder.CorrectNames();
+
 
         //modelBuilder.Entity<Equipment>().HasQueryFilter(e => e.DeletedAt == null);
     }

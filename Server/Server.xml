@@ -68,6 +68,11 @@
             <param name="path">Путь к значению в формате JSONPath (например: "$.user.name")</param>
             <returns>Значение как строка, если оно существует и может быть преобразовано в строку; иначе <c>null</c>.</returns>
         </member>
+        <member name="F:Server.Game.LootGenerator._getUserHeroIdsQuery">
+            <summary>
+            Возвращает список id базовых героев, которых уже имеет пользователь, из заданного списка id базовых героев.
+            </summary>
+        </member>
         <member name="T:Server.GlobalJsonContext">
             <summary>
             Глобальный контекст для Source Generation. 
@@ -1092,16 +1097,10 @@
             в пайплайн ASP.NET Core Middleware через app.Map().
             </summary>
         </member>
-        <member name="M:Server.WebSocket_NS.WebSocketConnectionHandler.#ctor(Microsoft.Extensions.Logging.ILogger{Server.WebSocket_NS.WebSocketConnectionHandler},System.IServiceProvider,Microsoft.Extensions.Configuration.IConfiguration,Server.Jwt_NS.JwtService,Microsoft.EntityFrameworkCore.IDbContextFactory{Server_DB_Postgres.DbContextGame},Server.Cache.CacheService)">
+        <member name="M:Server.WebSocket_NS.WebSocketConnectionHandler.#ctor(Microsoft.Extensions.Logging.ILogger{Server.WebSocket_NS.WebSocketConnectionHandler},System.IServiceProvider,Microsoft.Extensions.Configuration.IConfiguration,Server.Jwt_NS.JwtService,Microsoft.EntityFrameworkCore.IDbContextFactory{Server_DB_Postgres.DbContextGame},Server.Cache.CacheService,Server.Game.LootGenerator)">
             <summary>
             Инициализирует новый экземпляр <see cref="T:Server.WebSocket_NS.WebSocketConnectionHandler"/>.
             </summary>
-            <param name="logger">Сервис логирования для записи информации и ошибок.</param>
-            <param name="serviceProvider">Поставщик зависимостей для разрешения сервисов.</param>
-            <param name="configuration">Конфигурация приложения.</param>
-            <param name="jwtService">JWT Сервис</param>
-            <param name="dbContextFactory"></param>
-            <param name="cacheService"></param>
         </member>
         <member name="M:Server.WebSocket_NS.WebSocketConnectionHandler.ProcessKestrelWebSocketRequestAsync(Microsoft.AspNetCore.Http.HttpContext,System.Threading.CancellationToken)">
             <summary>

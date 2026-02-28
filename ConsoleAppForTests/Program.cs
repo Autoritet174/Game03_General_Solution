@@ -4,6 +4,8 @@ using System.Runtime.InteropServices;
 using UUIDNext;
 using System;
 using System.Drawing.Imaging;
+using System.Diagnostics;
+using General;
 namespace ConsoleAppForTests;
 
 internal class Program
@@ -25,10 +27,10 @@ internal class Program
     {
       
 
-        if (string.Empty == "")
-        {
-            return;
-        }
+        //if (string.Empty == "")
+        //{
+        //    return;
+        //}
 
 
         //List<int> list = new() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
@@ -71,47 +73,6 @@ internal class Program
         //        Start();
         //    });
         //}
-
-
-
-        //Stopwatch sw = Stopwatch.StartNew();
-        //Random r = new();
-        //CustomRandom cr = new();
-
-        //int max = 10000;
-        //for (int i = 0; i < 100000000; i++)
-        //{
-        //    r.Next(1, 10000);
-        //}
-        //for (int i = 0; i < 100000000; i++)
-        //{
-        //    cr.NextInclusive(1, 10000);
-        //}
-
-        //for (int j = 0; j < 10; j++)
-        //{
-        //    //sw = Stopwatch.StartNew();
-        //    //for (int i = 0; i < 100000000; i++)
-        //    //{
-        //    //    r.Next(1000000, 2000000);
-        //    //}
-        //    //sw.Stop();
-        //    //Console.WriteLine($"Random {sw.ElapsedMilliseconds}"); //2201
-
-        //    sw = Stopwatch.StartNew();
-        //    int q;
-        //    for (int i = 0; i < 100000000; i++)
-        //    {
-        //        q = cr.NextInclusive(10, 20);
-        //        if (q < 10 || q > 20)
-        //        {
-        //            throw new Exception();
-        //        }
-        //    }
-        //    sw.Stop();
-        //    Console.WriteLine($"CustomRandom {sw.ElapsedMilliseconds}"); //4919
-        //}
-        _ = Console.ReadLine();
     }
     private static void Game_OnLog(object message)
     {

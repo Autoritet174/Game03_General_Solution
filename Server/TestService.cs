@@ -1,5 +1,6 @@
 using General.DTO;
 using Microsoft.EntityFrameworkCore;
+using Server.Game;
 using Server_DB_Postgres;
 using Server_DB_Postgres.Entities.GameData;
 using Server_DB_Postgres.Entities.Users;
@@ -7,13 +8,18 @@ using System.Threading;
 
 namespace Server;
 
-public class TestService
+public class TestService(LootGenerator lootGenerator)
 {
     public async Task MainAsync(DbContextGame db, CancellationToken cancellationToken)
     {
         //019b7d31-93fd-703f-a582-c82e6bd40036
         var userId = Guid.Parse("019b7d31-93fd-703f-a582-c82e6bd40036");
-        User user = db.Users.First(u => u.Id == userId);
+        //User user = db.Users.First(u => u.Id == userId);
+        for (int i = 0; i < 0; i++)
+        {
+            await lootGenerator.GenerateHeroAsync(userId, cancellationToken).ConfigureAwait(false);
+        }
+       
 
         //BaseHero Warrior = db.BaseHeroes.First(a => a.Id == 1);
         //Warrior.Health = new General.DTO.Dice(16, 24);

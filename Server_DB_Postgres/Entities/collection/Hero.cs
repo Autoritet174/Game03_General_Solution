@@ -39,7 +39,7 @@ public class Hero : IVersion, ICreatedAt, IUpdatedAt
     [MaxLength(256)]
     public string? GroupName { get; set; }
 
-    /// <summary> Редкость. </summary>
+    /// <summary> Уровень героя. </summary>
     [HasDefaultValue(1)]
     public int Level { get; set; }
 
@@ -52,50 +52,47 @@ public class Hero : IVersion, ICreatedAt, IUpdatedAt
     #region Характеристики
     // --------------Характеристики числовые----------------
 
-    /// <summary> Сила. </summary>
-    public int Strength { get; set; }
-
-    /// <summary> Ловкость. </summary>
-    public int Agility { get; set; }
-
-    /// <summary> Интеллект. </summary>
-    public int Intelligence { get; set; }
-
-    /// <summary> Шанс критического урона. </summary>
-    public int CritChance { get; set; }
-
-    /// <summary> Сила критического урона. </summary>
-    public int CritPower { get; set; }
-
-    /// <summary> Скорость. </summary>
-    public int Haste { get; set; }
-
-    /// <summary> Универсальность. </summary>
-    public int Versality { get; set; }
-
-    /// <summary> Физическая выносливось. </summary>
-    public int EndurancePhysical { get; set; }
-
-    /// <summary> Магическая выносливось. </summary>
-    public int EnduranceMagical { get; set; }
-
     /// <summary> Здоровье. Первые три знака, тысячные доли от единицы видимой игроку. </summary>
     public long Health1000 { get; set; }
 
-    // --------------Характеристики кубика ДНД----------------
+    /// <summary> Сила. </summary>
+    public long Strength1000 { get; set; }
 
-    [Column(TypeName = "jsonb")]
-    public Dice? Damage { get; set; }
+    /// <summary> Ловкость. </summary>
+    public long Agility1000 { get; set; }
+
+    /// <summary> Интеллект. </summary>
+    public long Intelligence1000 { get; set; }
+
+    /// <summary> Шанс критического урона. </summary>
+    public long CritChance1000 { get; set; }
+
+    /// <summary> Сила критического урона. </summary>
+    public long CritPower1000 { get; set; }
+
+    /// <summary> Скорость. </summary>
+    public long Haste1000 { get; set; }
+
+    /// <summary> Универсальность. </summary>
+    public long Versality1000 { get; set; }
+
+    /// <summary> Физическая выносливось. </summary>
+    public long EndurancePhysical1000 { get; set; }
+
+    /// <summary> Магическая выносливось. </summary>
+    public long EnduranceMagical1000 { get; set; }
+
+    // --------------Характеристики кубика ДНД----------------
     #endregion Характеристики
 
 
     #region Resistances
 
-    /// <summary> Сопротивление физическому урону. Выражается числом которое преобразовывается в проценты. </summary>
-    public int ResistDamagePhysical { get; set; }
+    ///// <summary> Сопротивление физическому урону. Выражается числом которое преобразовывается в проценты. </summary>
+    //public long ResistDamagePhysical1000 { get; set; }
 
-    /// <summary> Сопротивление магическому урону. Выражается числом которое преобразовывается в проценты. </summary>
-    public int ResistDamageMagical { get; set; }
+    ///// <summary> Сопротивление магическому урону. Выражается числом которое преобразовывается в проценты. </summary>
+    //public long ResistDamageMagical1000 { get; set; }
 
     #endregion Resistances
 

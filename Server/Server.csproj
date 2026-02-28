@@ -148,4 +148,9 @@
 
   </ItemGroup>
 
+
+  <ItemGroup>
+    <Folder Include="Game\Loot\" />
+  </ItemGroup>
+
 </Project>

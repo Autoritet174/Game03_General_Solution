@@ -2,7 +2,6 @@ using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 using static Server_DB_Postgres.Attributes;
 
 namespace Server_DB_Postgres.Entities.GameData;
@@ -38,12 +37,39 @@ public class BaseHero
 
     #region Характеристики
     [Column(TypeName = "jsonb")]
-    [JsonPropertyName(nameof(Health))]
-    public Dice? Health { get; set; }
+    public Dice Health1000 { get; set; } = null!;
 
     [Column(TypeName = "jsonb")]
-    [JsonPropertyName(nameof(Damage))]
-    public Dice? Damage { get; set; }
+    public Dice Damage1000 { get; set; } = null!;
+
+    [Column(TypeName = "jsonb")]
+    public Dice Strength1000 { get; set; } = null!;
+
+    [Column(TypeName = "jsonb")]
+    public Dice Agility1000 { get; set; } = null!;
+
+    [Column(TypeName = "jsonb")]
+    public Dice Intelligence1000 { get; set; } = null!;
+
+    [Column(TypeName = "jsonb")]
+    public Dice CritChance1000 { get; set; } = null!;
+
+    [Column(TypeName = "jsonb")]
+    public Dice CritPower1000 { get; set; } = null!;
+
+    [Column(TypeName = "jsonb")]
+    public Dice Haste1000 { get; set; } = null!;
+
+    [Column(TypeName = "jsonb")]
+    public Dice Versality1000 { get; set; } = null!;
+
+    [Column(TypeName = "jsonb")]
+    public Dice EndurancePhysical1000 { get; set; } = null!;
+
+    [Column(TypeName = "jsonb")]
+    public Dice EnduranceMagical1000 { get; set; } = null!;
+
+
     #endregion Характеристики
 
 }

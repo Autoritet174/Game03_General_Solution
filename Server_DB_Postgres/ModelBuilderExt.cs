@@ -1,11 +1,10 @@
+using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Server_DB_Postgres.Entities.Collection;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
-using static General.StringExt;
 using static Server_DB_Postgres.Attributes;
 
 namespace Server_DB_Postgres;
@@ -15,6 +14,8 @@ namespace Server_DB_Postgres;
 /// </summary>
 public static class ModelBuilderExt
 {
+    private const string DICE_JSON_DEFAULT_VALUE = """{"c":0,"s":0}""";
+
     public static void ApplyDefaultValues(this ModelBuilder modelBuilder)
     {
         IEnumerable<IMutableEntityType> entityTypes = modelBuilder.Model.GetEntityTypes();
@@ -25,10 +26,24 @@ public static class ModelBuilderExt
 
             foreach (PropertyInfo property in entityType.ClrType.GetProperties())
             {
+                // Пропускаем свойства с атрибутом [NotMapped]
+                if (property.GetCustomAttribute<NotMappedAttribute>() != null)
+                {
+                    continue;
+                }
+
                 HasDefaultValueAttribute? attr = property.GetCustomAttribute<HasDefaultValueAttribute>();
                 if (attr != null)
                 {
+                    // Если атрибут HasDefaultValue есть, используем его значение
                     _ = entity.Property(property.Name).HasDefaultValue(attr.Value);
+                }
+                // Проверяем, является ли свойство типом Dice и не nullable
+                else if (property.PropertyType == typeof(Dice) &&
+                         Nullable.GetUnderlyingType(property.PropertyType) == null) // not null
+                {
+                    // Для PostgreSQL с типом jsonb
+                    _ = entity.Property(property.Name).HasDefaultValueSql($"'{DICE_JSON_DEFAULT_VALUE}'::jsonb");
                 }
             }
         }
@@ -60,49 +75,49 @@ public static class ModelBuilderExt
     /// <param name="modelBuilder">Экземпляр ModelBuilder.</param>
     public static void CorrectNames(this ModelBuilder modelBuilder)
     {
-/*
-Основные суффиксы объектов БД:
-1. Ограничения (Constraints)
-_pkey - первичный ключ (primary key constraint)
-_key - уникальное ограничение (unique constraint)
-_fkey или _fk - внешний ключ (foreign key constraint)
-_check - check-ограничение
-_excl - exclusion constraint
+        /*
+        Основные суффиксы объектов БД:
+        1. Ограничения (Constraints)
+        _pkey - первичный ключ (primary key constraint)
+        _key - уникальное ограничение (unique constraint)
+        _fkey или _fk - внешний ключ (foreign key constraint)
+        _check - check-ограничение
+        _excl - exclusion constraint
 
-2. Индексы
-_idx - обычный B-tree индекс
-_gin_idx - GIN индекс
-_gist_idx - GiST индекс
-_brin_idx - BRIN индекс
-_spgist_idx - SP-GiST индекс
-_hash_idx - hash индекс
-_btree_idx - явное указание B-tree
+        2. Индексы
+        _idx - обычный B-tree индекс
+        _gin_idx - GIN индекс
+        _gist_idx - GiST индекс
+        _brin_idx - BRIN индекс
+        _spgist_idx - SP-GiST индекс
+        _hash_idx - hash индекс
+        _btree_idx - явное указание B-tree
 
-3. Последовательности (Sequences)
-_seq - sequence (автоинкремент)
-_id_seq - часто для полей ID
+        3. Последовательности (Sequences)
+        _seq - sequence (автоинкремент)
+        _id_seq - часто для полей ID
 
-4. Представления (Views)
-_vw или _view - представление
-_mv - материализованное представление
+        4. Представления (Views)
+        _vw или _view - представление
+        _mv - материализованное представление
 
-5. Функции и процедуры
-_fn или _func - функция
-_proc или _sp - хранимая процедура
-_trigger или _tg - триггерная функция
+        5. Функции и процедуры
+        _fn или _func - функция
+        _proc или _sp - хранимая процедура
+        _trigger или _tg - триггерная функция
 
-6. Триггеры
-_trigger или _tg - триггер
+        6. Триггеры
+        _trigger или _tg - триггер
 
-7. Типы данных
-_type - пользовательский тип (composite type)
-_enum - перечисление (enum type)
-_range - range type
+        7. Типы данных
+        _type - пользовательский тип (composite type)
+        _enum - перечисление (enum type)
+        _range - range type
 
-8. Другие объекты
-_rule - правило (rule)
-_domain - домен (domain constraint)
-*/
+        8. Другие объекты
+        _rule - правило (rule)
+        _domain - домен (domain constraint)
+        */
         foreach (IMutableEntityType entity in modelBuilder.Model.GetEntityTypes())
         {
             if (entity.GetTableName() is string tableName)

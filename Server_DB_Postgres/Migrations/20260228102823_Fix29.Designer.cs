@@ -4,6 +4,7 @@ using System.Net;
 using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server_DB_Postgres;
@@ -13,9 +14,11 @@ using Server_DB_Postgres;
 namespace Server_DB_Postgres.Migrations
 {
     [DbContext(typeof(DbContextGame))]
-    partial class DbContext_GameModelSnapshot : ModelSnapshot
+    [Migration("20260228102823_Fix29")]
+    partial class Fix29
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -314,6 +317,14 @@ namespace Server_DB_Postgres.Migrations
                         .HasDefaultValue(1)
                         .HasColumnName("level");
 
+                    b.Property<long>("ResistDamageMagical1000")
+                        .HasColumnType("bigint")
+                        .HasColumnName("resist_damage_magical1000");
+
+                    b.Property<long>("ResistDamagePhysical1000")
+                        .HasColumnType("bigint")
+                        .HasColumnName("resist_damage_physical1000");
+
                     b.Property<long>("Strength1000")
                         .HasColumnType("bigint")
                         .HasColumnName("strength1000");
@@ -419,67 +430,11 @@ namespace Server_DB_Postgres.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<Dice>("Agility1000")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("agility1000")
-                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
-
-                    b.Property<Dice>("CritChance1000")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("crit_chance1000")
-                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
-
-                    b.Property<Dice>("CritPower1000")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("crit_power1000")
-                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
-
-                    b.Property<Dice>("Damage1000")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("damage1000")
-                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
-
-                    b.Property<Dice>("EnduranceMagical1000")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("endurance_magical1000")
-                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
-
-                    b.Property<Dice>("EndurancePhysical1000")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("endurance_physical1000")
-                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
-
-                    b.Property<Dice>("Haste1000")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("haste1000")
-                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
-
                     b.Property<Dice>("Health1000")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("jsonb")
                         .HasColumnName("health1000")
-                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
-
-                    b.Property<Dice>("Intelligence1000")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("intelligence1000")
                         .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
 
                     b.Property<bool>("IsUnique")
@@ -503,20 +458,6 @@ namespace Server_DB_Postgres.Migrations
                     b.Property<int>("Rarity")
                         .HasColumnType("integer")
                         .HasColumnName("rarity");
-
-                    b.Property<Dice>("Strength1000")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("strength1000")
-                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
-
-                    b.Property<Dice>("Versality1000")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("versality1000")
-                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
 
                     b.HasKey("Id")
                         .HasName("base_heroes__pkey");

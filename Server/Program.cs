@@ -9,6 +9,7 @@ using Npgsql;
 using Serilog;
 using Serilog.Events;
 using Server.Cache;
+using Server.Game;
 using Server.Http_NS.Middleware_NS;
 using Server.Jwt_NS;
 using Server.Users;
@@ -102,6 +103,7 @@ internal partial class Program
 
         // Регистрируем сервис как синглтон
         _ = services.AddSingleton<AuthRegLoggerBackgroundService>();
+        _ = services.AddSingleton<LootGenerator>();
 
         // Регистрируем его как IHostedService, используя тот же экземпляр
         _ = services.AddHostedService(provider => provider.GetRequiredService<AuthRegLoggerBackgroundService>());

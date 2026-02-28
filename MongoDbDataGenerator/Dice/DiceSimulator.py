@@ -117,8 +117,7 @@ class DiceSimulator:
         sizes = [count for val, count in top_results]
         colors = plt.cm.Set3(np.linspace(0, 1, top_n))
 
-        ax3.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%',
-               startangle=90)
+        ax3.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=90)
         ax3.set_title(f'Топ-{top_n} наиболее частых результатов')
         ax3.axis('equal')
 

@@ -51,7 +51,7 @@ public class CacheService()
 
         TableBaseHeroes = await db.BaseHeroes.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
         List<DtoBaseHero> baseHeroes = [.. TableBaseHeroes.Select(static h => new DtoBaseHero(
-            h.Id, h.Name, h.Rarity, h.IsUnique, h.MainStat, h.Health, h.Damage)
+            h.Id, h.Name, h.Rarity, h.IsUnique, h.MainStat, h.Health1000, h.Damage1000,h.Strength1000,h.Agility1000,h.Intelligence1000,h.CritChance1000, h.CritPower1000, h.Haste1000, h.Versality1000, h.EndurancePhysical1000, h.EnduranceMagical1000)
             )];
 
         TableCreatureTypes = await db.CreatureTypes.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);

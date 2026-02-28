@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using Server.Cache;
+using Server.Game;
 using Server.Jwt_NS;
 using Server_DB_Postgres;
 using System.Collections.Concurrent;
@@ -18,61 +19,65 @@ namespace Server.WebSocket_NS;
 /// </summary>
 public class WebSocketConnectionHandler
 {
-    private readonly ILogger<WebSocketConnectionHandler> _logger;
-    private readonly IServiceProvider _serviceProvider;
-    private readonly IConfiguration _configuration;
-    private readonly ConcurrentDictionary<Guid, DateTime> _activeConnections = new();
-    private int _activeConnections_Count_Last = 0;
-    private readonly Timer _monitoringTimer;
-    private readonly JwtService _jwtService;
-    private readonly int _maxConnections;
-    private readonly IDbContextFactory<DbContextGame> _dbContextFactory;
-    private readonly CacheService _cacheService;
+    private readonly ILogger<WebSocketConnectionHandler> _Logger;
+    private readonly IServiceProvider _ServiceProvider;
+    private readonly IConfiguration _Configuration;
+    private readonly ConcurrentDictionary<Guid, DateTime> _ActiveConnections = new();
+    private int _ActiveConnections_Count_Last = 0;
+    private readonly Timer _MonitoringTimer;
+    private readonly JwtService _JwtService;
+    private readonly int _MaxConnections;
+    private readonly IDbContextFactory<DbContextGame> _DbContextFactory;
+    private readonly CacheService _CacheService;
+    private readonly LootGenerator _LootGenerator;
 
     /// <summary>
     /// Инициализирует новый экземпляр <see cref="WebSocketConnectionHandler"/>.
     /// </summary>
-    /// <param name="logger">Сервис логирования для записи информации и ошибок.</param>
-    /// <param name="serviceProvider">Поставщик зависимостей для разрешения сервисов.</param>
-    /// <param name="configuration">Конфигурация приложения.</param>
-    /// <param name="jwtService">JWT Сервис</param>
-    /// <param name="dbContextFactory"></param>
-    /// <param name="cacheService"></param>
-    public WebSocketConnectionHandler(ILogger<WebSocketConnectionHandler> logger, IServiceProvider serviceProvider, IConfiguration configuration, JwtService jwtService, IDbContextFactory<DbContextGame> dbContextFactory, CacheService cacheService)
+    public WebSocketConnectionHandler(
+        ILogger<WebSocketConnectionHandler> logger,
+        IServiceProvider serviceProvider,
+        IConfiguration configuration,
+        JwtService jwtService,
+        IDbContextFactory<DbContextGame> dbContextFactory,
+        CacheService cacheService,
+        LootGenerator lootGenerator)
     {
         ArgumentNullException.ThrowIfNull(configuration);
-        _configuration = configuration;
+        _Configuration = configuration;
 
-        _logger = logger;
-        _serviceProvider = serviceProvider;
+        _Logger = logger;
+        _ServiceProvider = serviceProvider;
 
-        _maxConnections = configuration.GetValue<int>("WebSocketSettings:MaxConnections");
+        _MaxConnections = configuration.GetValue<int>("WebSocketSettings:MaxConnections");
 
-        _monitoringTimer = new Timer(LogConnectionStats, null, TimeSpan.Zero, TimeSpan.FromSeconds(0.33));
-        _jwtService = jwtService;
-        _dbContextFactory = dbContextFactory;
-        _cacheService = cacheService;
+        _MonitoringTimer = new Timer(LogConnectionStats, null, TimeSpan.Zero, TimeSpan.FromSeconds(0.33));
+        _JwtService = jwtService;
+        _DbContextFactory = dbContextFactory;
+        _CacheService = cacheService;
+        _LootGenerator = lootGenerator;
     }
-
-    // protected override async Task ExecuteAsync(CancellationToken stoppingToken) - УДАЛЕН
 
     private void LogConnectionStats(object? state)
     {
-        if (_activeConnections_Count_Last != _activeConnections.Count)
+        if (_ActiveConnections_Count_Last != _ActiveConnections.Count)
         {
-            _activeConnections_Count_Last = _activeConnections.Count;
-            Console.WriteLine($"АКТИВНЫХ ПОДКЛЮЧЕНИЙ: {_activeConnections.Count}");
+            _ActiveConnections_Count_Last = _ActiveConnections.Count;
+            if (_Logger.IsEnabled(LogLevel.Information))
+            {
+                _Logger.LogInformation("Активных подключений: {Count}", _ActiveConnections.Count);
+            }
         }
     }
 
     public int GetCount()
     {
-        return _activeConnections.Count;
+        return _ActiveConnections.Count;
     }
 
     public void ActiveConnectionsRemove(Guid guid)
     {
-        _ = _activeConnections.TryRemove(guid, out _);
+        _ = _ActiveConnections.TryRemove(guid, out _);
     }
 
     /// <summary>
@@ -84,7 +89,6 @@ public class WebSocketConnectionHandler
     /// <exception cref="ArgumentNullException">Если контекст равен null.</exception>
     public async Task ProcessKestrelWebSocketRequestAsync(HttpContext context, CancellationToken stoppingToken)
     {
-        //Console.WriteLine("Запрос на вебсокет. Обработка Kestrel."); // Ваш отладочный вывод
         ArgumentNullException.ThrowIfNull(context);
 
         if (!context.WebSockets.IsWebSocketRequest)
@@ -119,17 +123,10 @@ public class WebSocketConnectionHandler
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(token))
-        {
-            context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-            await context.Response.WriteAsync("Missing authentication token", cancellationToken: stoppingToken).ConfigureAwait(false);
-            return;
-        }
-
         Guid? userId;
         try
         {
-            ClaimsPrincipal claims = _jwtService.ValidateToken(token);
+            ClaimsPrincipal claims = _JwtService.ValidateToken(token);
             userId = claims.GetGuid(); // Метод расширения из ClaimsExtensions.cs
 
             if (!userId.HasValue)
@@ -139,16 +136,16 @@ public class WebSocketConnectionHandler
                 return;
             }
 
-            if (_logger.IsEnabled(LogLevel.Information))
+            if (_Logger.IsEnabled(LogLevel.Information))
             {
-                _logger.LogInformation("Pre-authenticated WebSocket connection for user {UserId}", userId.Value);
+                _Logger.LogInformation("Pre-authenticated WebSocket connection for user {UserId}", userId.Value);
             }
         }
         catch (SecurityTokenException ex)
         {
-            if (_logger.IsEnabled(LogLevel.Warning))
+            if (_Logger.IsEnabled(LogLevel.Warning))
             {
-                _logger.LogWarning(ex, "Invalid JWT token in WebSocket upgrade request");
+                _Logger.LogWarning(ex, "Invalid JWT token in WebSocket upgrade request");
             }
             context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
             await context.Response.WriteAsync("Invalid token", cancellationToken: stoppingToken).ConfigureAwait(false);
@@ -156,9 +153,9 @@ public class WebSocketConnectionHandler
         }
         catch (Exception ex)
         {
-            if (_logger.IsEnabled(LogLevel.Error))
+            if (_Logger.IsEnabled(LogLevel.Error))
             {
-                _logger.LogError(ex, "Error validating token in WebSocket upgrade");
+                _Logger.LogError(ex, "Error validating token in WebSocket upgrade");
             }
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             return;
@@ -168,30 +165,32 @@ public class WebSocketConnectionHandler
         {
             WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync((string?)null).ConfigureAwait(false);
 
-            using IServiceScope scope = _serviceProvider.CreateScope();
+            using IServiceScope scope = _ServiceProvider.CreateScope();
             ILogger<WebSocketConnection> clientLogger = scope.ServiceProvider.GetRequiredService<ILogger<WebSocketConnection>>();
 
             // Создание и инициализация нового WebSocketConnection
-            WebSocketConnection webSocketConnection = new(webSocket, clientLogger, _configuration, this//, _serviceProvider
-                , userId.Value, _dbContextFactory, _cacheService);
+            WebSocketConnection webSocketConnection = new(webSocket, clientLogger, _Configuration, this//, _serviceProvider
+                , userId.Value, _DbContextFactory, _CacheService);
 
-            _ = _activeConnections.TryAdd(webSocketConnection.Id, DateTime.UtcNow);
-            Console.WriteLine($"Активных подключений: {_activeConnections.Count}");
-
+            _ = _ActiveConnections.TryAdd(webSocketConnection.Id, DateTime.UtcNow);
+            if (_Logger.IsEnabled(LogLevel.Information))
+            {
+                _Logger.LogInformation("Активных подключений: {Count}", _ActiveConnections.Count);
+            }
             // CancellationToken передаётся в HandleAsync
             await webSocketConnection.HandleAsync(stoppingToken).ConfigureAwait(false);
         }
         catch (Exception ex) when (WebSocketConnection.IsExpectedDisconnectException(ex))
         {
-            _logger.LogInformation("WebSocket соединение было прервано клиентом");
+            _Logger.LogInformation("WebSocket соединение было прервано клиентом");
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("WebSocket обработка прервана");
+            _Logger.LogInformation("WebSocket обработка прервана");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Ошибка при обработке WebSocket запроса");
+            _Logger.LogError(ex, "Ошибка при обработке WebSocket запроса");
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
         }
     }
