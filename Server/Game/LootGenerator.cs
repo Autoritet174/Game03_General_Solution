@@ -13,6 +13,7 @@ public class LootGenerator(
     IDbContextFactory<DbContextGame> dbContextFactory,
     CacheService cacheService)
 {
+
     /// <summary>
     /// Возвращает список id базовых героев, которых уже имеет пользователь, из заданного списка id базовых героев.
     /// </summary>
@@ -21,46 +22,14 @@ public class LootGenerator(
         (DbContextGame db, Guid userId, List<int> baseHeroIds) =>
             db.Heroes
                 .Where(h => h.UserId == userId && baseHeroIds.Contains(h.BaseHeroId))
-                .Select(h => h.BaseHeroId)
-                .Distinct()
+                .Select(h => h.BaseHeroId).Distinct()
     );
-
 
     public async Task<Result> GenerateHeroAsync(Guid userId, CancellationToken cancellationToken)
     {
-        BaseHero? baseHero = await SelectRandomBaseHeroAsync(userId, cancellationToken).ConfigureAwait(false);
-        if (baseHero == null)
-        {
-            logger.LogError("Failed to select random base hero for user {UserId}", userId);
-            return Result.Fail("No base hero selected");
-        }
-
-        Result addHeroResult = await AddNewHeroAsync(baseHero, userId, cancellationToken).ConfigureAwait(false);
-        if (addHeroResult.IsFailed)
-        {
-            addHeroResult.Errors.ForEach(e => logger.LogError("Error adding new hero for user {UserId} based on base hero {BaseHeroId}: {ErrorMessage}", userId, baseHero.Id, e.Message));
-            return Result.Fail("Failed to add new hero");
-        }
-
-        return Result.Ok();
-    }
-
-    private async Task<BaseHero?> SelectRandomBaseHeroAsync(Guid userId, CancellationToken cancellationToken)
-    {
-        if (cancellationToken.IsCancellationRequested)
-        {
-            return null;
-        }
-
-        await using DbContextGame db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
         Random rand = Random.Shared;
-        int rarity1 = 1000;
-        int rarity2 = 250;
-        int rarity3 = 0;
-        int rarity4 = 0;
-        int rarity5 = 0;
 
+        int rarity1 = 1000, rarity2 = 250, rarity3 = 0, rarity4 = 0, rarity5 = 0;
         int rarity45 = rarity4 + rarity5;
         int rarity345 = rarity3 + rarity45;
         int rarity2345 = rarity2 + rarity345;
@@ -87,6 +56,32 @@ public class LootGenerator(
         else
         {
             raritySelected = 1;
+        }
+
+
+        await using DbContextGame db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        BaseHero? baseHero = await SelectRandomBaseHeroAsync(db, rand, userId, raritySelected, cancellationToken).ConfigureAwait(false);
+        if (baseHero == null)
+        {
+            logger.LogError("Failed to select random base hero for user {UserId}", userId);
+            return Result.Fail("No base hero selected");
+        }
+
+        Result addHeroResult = await AddNewHeroAsync(db, baseHero, userId, cancellationToken).ConfigureAwait(false);
+        if (addHeroResult.IsFailed)
+        {
+            addHeroResult.Errors.ForEach(e => logger.LogError("Error adding new hero for user {UserId} based on base hero {BaseHeroId}: {ErrorMessage}", userId, baseHero.Id, e.Message));
+            return Result.Fail("Failed to add new hero");
+        }
+
+        return Result.Ok();
+    }
+
+    private async Task<BaseHero?> SelectRandomBaseHeroAsync(DbContextGame db, Random rand, Guid userId, int raritySelected, CancellationToken cancellationToken)
+    {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return null;
         }
 
         for (int r = raritySelected; r > 0; r--)
@@ -123,14 +118,12 @@ public class LootGenerator(
         return null;
     }
 
-    private async Task<Result> AddNewHeroAsync(BaseHero baseHero, Guid userId, CancellationToken cancellationToken)
+    private async Task<Result> AddNewHeroAsync(DbContextGame db, BaseHero baseHero, Guid userId, CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
         {
             return Result.Fail("IsCancellationRequested");
         }
-
-        await using DbContextGame db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         Hero hero = CreateNewHeroByBase(baseHero);
         hero.UserId = userId;

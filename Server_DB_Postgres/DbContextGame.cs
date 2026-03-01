@@ -22,11 +22,9 @@ public class DbContextGame(DbContextOptions<DbContextGame> options) : IdentityDb
 {
     #region collection
 
-    /// <summary> Экипировка игрока. </summary>
     public DbSet<Equipment> Equipments { get; set; }
-
-    /// <summary> Герои игрока. </summary>
     public DbSet<Hero> Heroes { get; set; }
+    public DbSet<DropRate> DropRates { get; set; }
 
     #endregion  collection
 

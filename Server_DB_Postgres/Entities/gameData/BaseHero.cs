@@ -11,8 +11,6 @@ namespace Server_DB_Postgres.Entities.GameData;
 [Index(nameof(Name), IsUnique = true)]
 public class BaseHero
 {
-
-    /// <summary> Уникальный идентификатор. </summary>
     public int Id { get; init; }
 
     /// <summary> Наименование на английском языке. </summary>

@@ -136,9 +136,18 @@ public static class ModelBuilderExt
             pk?.SetName($"{entity.GetTableName().ToSnakeCase()}__pkey");
 
             // Обработка индексов: изменение только если имя не задано явно
+            //foreach (IMutableIndex index in entity.GetIndexes())
+            //{
+            //    index.SetDatabaseName($"{entity.GetTableName().ToSnakeCase()}__{string.Join("__", index.Properties.Select(static p => p.GetColumnName().ToSnakeCase()))}__idx");
+            //}
             foreach (IMutableIndex index in entity.GetIndexes())
             {
-                index.SetDatabaseName($"{entity.GetTableName().ToSnakeCase()}__{string.Join("__", index.Properties.Select(static p => p.GetColumnName().ToSnakeCase()))}__idx");
+                // Проверяем, задано ли имя через атрибут или HasDatabaseName
+                string? name = index.GetDatabaseName();
+                if (string.IsNullOrEmpty(name) || !name.EndsWith("__idx"))
+                {
+                    index.SetDatabaseName($"{entity.GetTableName().ToSnakeCase()}__{string.Join("__", index.Properties.Select(static p => p.GetColumnName().ToSnakeCase()))}__idx");
+                }
             }
 
             // Обработка внешних ключей: изменение только если имя не задано явно

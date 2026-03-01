@@ -30,12 +30,6 @@
         <member name="M:Server_DB_Postgres.DbContextGame.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions{Server_DB_Postgres.DbContextGame})">
             <summary> Контекст базы данных для работы с игровыми данными. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.DbContextGame.Equipments">
-            <summary> Экипировка игрока. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.DbContextGame.Heroes">
-            <summary> Герои игрока. </summary>
-        </member>
         <member name="P:Server_DB_Postgres.DbContextGame.BaseEquipments">
             <summary> Экипировка, болванки. </summary>
         </member>
@@ -83,6 +77,16 @@
         <member name="M:Server_DB_Postgres.DbContextGame.SaveChangesAsync(System.Threading.CancellationToken)">
             <summary> <inheritdoc/> </summary>
             <returns></returns>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Collection.DropRate.Type">
+            <summary>
+            Тип вероятностей. 1 - Герой. 2 - Предмет.
+            </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Collection.DropRate.Counts">
+            <summary>
+            Абстрактое количество из которого сервер вычислит вероятность.
+            </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.Collection.Equipment.HeroId">
             <summary>
@@ -175,9 +179,6 @@
         </member>
         <member name="T:Server_DB_Postgres.Entities.GameData.BaseHero">
             <summary> Базовая версия героя. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.BaseHero.Id">
-            <summary> Уникальный идентификатор. </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.GameData.BaseHero.Name">
             <summary> Наименование на английском языке. </summary>
@@ -1205,6 +1206,30 @@
             <inheritdoc />
         </member>
         <member name="M:Server_DB_Postgres.Migrations.Migration_20260228_211206.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Migration_20260301_154558">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260301_154558.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260301_154558.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260301_154558.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Migration_20260301_161310">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260301_161310.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260301_161310.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260301_161310.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Server_DB_Postgres.ModelBuilderExt">

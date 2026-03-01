@@ -4,6 +4,7 @@ using System.Net;
 using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server_DB_Postgres;
@@ -13,9 +14,11 @@ using Server_DB_Postgres;
 namespace Server_DB_Postgres.Migrations
 {
     [DbContext(typeof(DbContextGame))]
-    partial class DbContext_GameModelSnapshot : ModelSnapshot
+    [Migration("20260301074614_Migration_20260301_154558")]
+    partial class Migration_20260301_154558
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -198,9 +201,17 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnType("integer[]")
                         .HasColumnName("counts");
 
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
                     b.Property<int>("Type")
                         .HasColumnType("integer")
                         .HasColumnName("type");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid")
@@ -216,8 +227,8 @@ namespace Server_DB_Postgres.Migrations
                     b.HasKey("Id")
                         .HasName("drop_rates__pkey");
 
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("drop_rates__user_id__idx");
+                    b.HasIndex("UserId", "Type")
+                        .HasDatabaseName("drop_rates__user_id__type__idx");
 
                     b.ToTable("drop_rates", "collection");
                 });

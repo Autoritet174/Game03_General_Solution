@@ -39,27 +39,28 @@ public class DbContextGameConfig
         //_ = builder.HasQueryFilter(s => !s.IsUsed && !s.IsRevoked);// Глобальный фильтр для выборок - только живые токены
 
         // Уникальный индекс на живые токены (неиспользованные и неаннулированные)
-        _ = builder.HasIndex(s => s.RefreshTokenHash).IsUnique().HasFilter($"""
-            {nameof(UserSession.IsUsed).ToSnakeCase()} = false AND {nameof(UserSession.IsRevoked).ToSnakeCase()} = false
-            """);
+        _ = builder.HasIndex(s => s.RefreshTokenHash).IsUnique().HasFilter($"{nameof(UserSession.IsUsed).ToSnakeCase()} = false AND {nameof(UserSession.IsRevoked).ToSnakeCase()} = false");
     }
 
     private static void Configure(EntityTypeBuilder<Equipment> builder)
     {
-        // 1. Уникальный индекс для надетых предметов.
-        // Гарантирует, что у героя в конкретном слоте только один предмет.
-        _ = builder.HasIndex(e => new { e.HeroId, e.SlotId })
-            .IsUnique()
-            .HasFilter($"""
-            {nameof(Equipment.HeroId).ToSnakeCase()} IS NOT NULL AND {nameof(Equipment.SlotId).ToSnakeCase()} IS NOT NULL
-            """);
+        //вручную делаем индекс по HeroId так как EF не сделает его автоматически изза следующего индекса который нацелен на уникальность с фильтрацией
+        builder.HasIndex(e => e.HeroId);
 
-        // 2. Неуникальный индекс для предметов в инвентаре.
-        // Ускоряет получение списка всех предметов игрока, которые НЕ надеты.
-        _ = builder.HasIndex(e => new { e.UserId })
-            .HasFilter($"""
-            {nameof(Equipment.HeroId).ToSnakeCase()} IS NULL
-            """);
+        // Уникальный индекс для надетых предметов. Гарантирует, что у героя в конкретном слоте только один предмет.
+        _ = builder.HasIndex(e => new { e.HeroId, e.SlotId }).IsUnique()
+            .HasFilter($"{nameof(Equipment.HeroId).ToSnakeCase()} IS NOT NULL AND {nameof(Equipment.SlotId).ToSnakeCase()} IS NOT NULL");
 
+        /*
+         * Тут была попытка сделать частичный индекс на предметы пользователя только неодетые, 
+         * но их 95% и при таком сценарии частичный индекс теряет смысл, проще оставить обычный полный индекс по UserId
+         
+        // Неуникальные индексы для предметов в инвентаре.
+        // только неодетые предметы
+        //builder.HasIndex(e => e.UserId).HasFilter($"{nameof(Equipment.HeroId).ToSnakeCase()} IS NULL");
+
+        // только одетые предметы
+        //builder.HasIndex(e => new { e.UserId, e.HeroId }).HasFilter($"{nameof(Equipment.HeroId).ToSnakeCase()} IS NOT NULL");
+        */
     }
 }
