@@ -29,27 +29,32 @@ public class LootGenerator(
     {
         Random rand = Random.Shared;
 
-        int rarity1 = 1000, rarity2 = 250, rarity3 = 0, rarity4 = 0, rarity5 = 0;
-        int rarity45 = rarity4 + rarity5;
-        int rarity345 = rarity3 + rarity45;
-        int rarity2345 = rarity2 + rarity345;
+        int rarity1 = 100, rarity2 = 50, rarity3 = 24, rarity4 = 12, rarity5 = 4, rarity6 = 1;
+        int raritySumFrom5 = rarity5 + rarity6;
+        int raritySumFrom4 = rarity4 + raritySumFrom5;
+        int raritySumFrom3 = rarity3 + raritySumFrom4;
+        int raritySumFrom2 = rarity2 + raritySumFrom3;
 
-        int raritySumm = rarity1 + rarity2 + rarity3 + rarity4 + rarity5;
+        int raritySumm = rarity1 + raritySumFrom2;
         int rarityRandom = rand.Next(0, raritySumm);
         int raritySelected;
-        if (rarityRandom < rarity5)
+        if (rarityRandom < rarity6)
+        {
+            raritySelected = 6;
+        }
+        else if (rarityRandom < raritySumFrom5)
         {
             raritySelected = 5;
         }
-        else if (rarityRandom < rarity45)
+        else if (rarityRandom < raritySumFrom4)
         {
             raritySelected = 4;
         }
-        else if (rarityRandom < rarity345)
+        else if (rarityRandom < raritySumFrom3)
         {
             raritySelected = 3;
         }
-        else if (rarityRandom < rarity2345)
+        else if (rarityRandom < raritySumFrom2)
         {
             raritySelected = 2;
         }
