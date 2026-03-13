@@ -81,7 +81,7 @@ public static class LocalizationKeys
                 public const string Agility = $"{_Stat}{nameof(Agility)}";
                 public const string Intelligence = $"{_Stat}{nameof(Intelligence)}";
                 public const string CritChance = $"{_Stat}{nameof(CritChance)}";
-                public const string CritPower = $"{_Stat}{nameof(CritPower)}";
+                public const string CritMultiplier = $"{_Stat}{nameof(CritMultiplier)}";
             }
 
             public const string NoGroup = $"{_Label}{nameof(NoGroup)}";

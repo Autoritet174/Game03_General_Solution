@@ -53,7 +53,7 @@ public class BaseHero
     public Dice CritChance1000 { get; set; } = null!;
 
     [Column(TypeName = "jsonb")]
-    public Dice CritPower1000 { get; set; } = null!;
+    public Dice CritMultiplier1000 { get; set; } = null!;
 
     [Column(TypeName = "jsonb")]
     public Dice Haste1000 { get; set; } = null!;
@@ -67,6 +67,8 @@ public class BaseHero
     [Column(TypeName = "jsonb")]
     public Dice EnduranceMagical1000 { get; set; } = null!;
 
+    [Column(TypeName = "jsonb")]
+    public Dice Initiative1000 { get; set; } = null!;
 
     #endregion Характеристики
 

@@ -156,7 +156,7 @@ public class LootGenerator(
             Agility1000 = DiceHelper.GetRandomValue(baseHero.Agility1000),
             Intelligence1000 = DiceHelper.GetRandomValue(baseHero.Intelligence1000),
             CritChance1000 = DiceHelper.GetRandomValue(baseHero.CritChance1000),
-            CritPower1000 = DiceHelper.GetRandomValue(baseHero.CritPower1000),
+            CritPower1000 = DiceHelper.GetRandomValue(baseHero.CritMultiplier1000),
             Haste1000 = DiceHelper.GetRandomValue(baseHero.Haste1000),
             Versality1000 = DiceHelper.GetRandomValue(baseHero.Versality1000),
             EndurancePhysical1000 = DiceHelper.GetRandomValue(baseHero.EndurancePhysical1000),

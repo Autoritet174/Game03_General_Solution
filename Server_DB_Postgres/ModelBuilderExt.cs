@@ -128,7 +128,13 @@ public static class ModelBuilderExt
             // Обработка имен столбцов: изменение только если имя не задано явно
             foreach (IMutableProperty property in entity.GetProperties())
             {
-                property.SetColumnName(property.GetColumnName().ToSnakeCase());
+                string newName = property.GetColumnName().ToSnakeCase();
+                if (newName.EndsWith("1000"))
+                {
+                    newName = $"{newName[..^4]}_1000";
+                }
+
+                property.SetColumnName(newName);
             }
 
             // Обработка первичных ключей: изменение только если имя не задано явно

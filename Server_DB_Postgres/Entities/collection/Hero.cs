@@ -82,6 +82,9 @@ public class Hero : IVersion, ICreatedAt, IUpdatedAt
     /// <summary> Магическая выносливось. </summary>
     public long EnduranceMagical1000 { get; set; }
 
+    [Column(TypeName = "jsonb")]
+    public long Initiative1000 { get; set; }
+
     // --------------Характеристики кубика ДНД----------------
     #endregion Характеристики
 

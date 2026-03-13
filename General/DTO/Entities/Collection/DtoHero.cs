@@ -6,7 +6,7 @@ namespace General.DTO.Entities.Collection;
 /// <summary>
 /// Герой из коллекции игрока.
 /// </summary>
-public class DtoHero(Guid id, Guid userId, int baseHeroId, string? groupName, int level, long experienceNow, long strength1000, long agility1000, long intelligence1000, long critChance1000, long critPower1000, long haste1000, long versality1000, long edurancePhysical1000, long enduranceMagical1000, long health1000, DtoBaseHero? dtoBaseHero = null)
+public class DtoHero(Guid id, Guid userId, int baseHeroId, string? groupName, int level, long experienceNow, long strength1000, long agility1000, long intelligence1000, long critChance1000, long critPower1000, long haste1000, long versality1000, long edurancePhysical1000, long enduranceMagical1000, long health1000, long initiative1000, DtoBaseHero? dtoBaseHero = null)
 {
     public Guid Id { get; } = id;
     public Guid UserId { get; } = userId;
@@ -29,6 +29,7 @@ public class DtoHero(Guid id, Guid userId, int baseHeroId, string? groupName, in
     public long Versality1000 { get; } = versality1000;
     public long EndurancePhysical1000 { get; } = edurancePhysical1000;
     public long EnduranceMagical1000 { get; } = enduranceMagical1000;
+    public long Initiative1000 { get; } = initiative1000;
     #endregion Характеристики
 
     #region Resistances

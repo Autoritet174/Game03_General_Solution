@@ -1,7 +1,9 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace General.DTO.Entities.GameData;
 
 /// <summary> Data Transfer Object. Представляет базовую сущность игрового героя с основными характеристиками. </summary>
-public class DtoBaseHero(int id, string name, int rarity, bool isUnique, int mainStat, Dice health1000, Dice damage1000, Dice strength1000, Dice agility1000, Dice intelligence1000, Dice critChance1000, Dice critPower1000, Dice haste1000, Dice versality1000, Dice endurancePhysical1000, Dice enduranceMagical1000)
+public class DtoBaseHero(int id, string name, int rarity, bool isUnique, int mainStat, Dice health1000, Dice damage1000, Dice strength1000, Dice agility1000, Dice intelligence1000, Dice critChance1000, Dice critPower1000, Dice haste1000, Dice versality1000, Dice endurancePhysical1000, Dice enduranceMagical1000, Dice initiative1000)
 {
     public int Id { get; } = id;
     public string Name { get; } = name;
@@ -21,6 +23,7 @@ public class DtoBaseHero(int id, string name, int rarity, bool isUnique, int mai
     public Dice Versality1000 { get; } = versality1000;
     public Dice EndurancePhysical1000 { get; } = endurancePhysical1000;
     public Dice EnduranceMagical1000 { get; } = enduranceMagical1000;
+    public Dice Initiative1000 { get; } = initiative1000;
     #endregion Характеристики
 
 }
