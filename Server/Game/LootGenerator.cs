@@ -29,7 +29,7 @@ public class LootGenerator(
     {
         Random rand = Random.Shared;
 
-        int rarity1 = 100, rarity2 = 50, rarity3 = 24, rarity4 = 12, rarity5 = 4, rarity6 = 1;
+        int rarity1 = 0, rarity2 = 0, rarity3 = 1, rarity4 = 0, rarity5 = 0, rarity6 = 0;
         int raritySumFrom5 = rarity5 + rarity6;
         int raritySumFrom4 = rarity4 + raritySumFrom5;
         int raritySumFrom3 = rarity3 + raritySumFrom4;
@@ -92,21 +92,21 @@ public class LootGenerator(
         for (int r = raritySelected; r > 0; r--)
         {
             // Получаем id базовых героев с выбранной редкостью, разделяя их на уникальных и неуникальных
-            var baseHeroUniqueIds = cacheService.TableBaseHeroes
+            List<int> baseHeroUniqueIds = [.. cacheService.TableBaseHeroes
                     .Where(a => a.Rarity == r && a.IsUnique)
-                    .Select(b => b.Id).ToList();
-            var baseHeroNotUniqueIds = cacheService.TableBaseHeroes
+                    .Select(b => b.Id)];
+            List<int> baseHeroNotUniqueIds = [.. cacheService.TableBaseHeroes
                     .Where(a => a.Rarity == r && !a.IsUnique)
-                    .Select(b => b.Id).ToList();
+                    .Select(b => b.Id)];
 
             // Получаем список id базовых героев с выбранной редкостью, которых уже имеет пользователь, из списка уникальных героев
-            var existingIds = _getUserHeroIdsQuery(db, userId, baseHeroUniqueIds).ToList();
+            List<int> existingUniqueIds = [.. _getUserHeroIdsQuery(db, userId, baseHeroUniqueIds)];
 
             // Получаем список id базовых уникальных героев, которых нет у пользователя
-            var notExistingUniqueHeroesId = baseHeroUniqueIds.Except(existingIds).ToList();
+            List<int> notExistingUniqueHeroesId = [.. baseHeroUniqueIds.Except(existingUniqueIds)];
 
             // К списку id базовых героев, которых нет у пользователя, добавляем всех неуникальных героев
-            var heroesId = notExistingUniqueHeroesId.Union(baseHeroNotUniqueIds).ToList();
+            List<int> heroesId = [.. notExistingUniqueHeroesId.Union(baseHeroNotUniqueIds)];
 
             if (heroesId.Count < 1)
             {
@@ -115,7 +115,7 @@ public class LootGenerator(
             }
 
             // Выбираем случайного героя из списка доступных
-            int randomIndex = rand.Next(0, heroesId.Count);
+            int randomIndex = rand.Next(heroesId.Count);
             int selectedBaseHeroId = heroesId[randomIndex];
             return cacheService.TableBaseHeroes.FirstOrDefault(b => b.Id == selectedBaseHeroId);
         }

@@ -26,6 +26,6 @@ public class DiceHelper
             sum += rand.Next(sides) + 1;
         }
 
-        return (sum * 1000L) + (dice.Modificator1000 ?? 0L);
+        return (sum * 1000L) + (dice.Modificator_1000 ?? 0L);
     }
 }

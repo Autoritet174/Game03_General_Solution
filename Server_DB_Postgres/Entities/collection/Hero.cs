@@ -35,6 +35,8 @@ public class Hero : IVersion, ICreatedAt, IUpdatedAt
     [ForeignKey(nameof(BaseHeroId))]
     public BaseHero? BaseHero { get; set; }
 
+    public bool IsBaseHeroUnique { get; set; }
+
     /// <summary> Имя группы. </summary>
     [MaxLength(256)]
     public string? GroupName { get; set; }

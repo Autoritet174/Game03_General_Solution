@@ -136,9 +136,13 @@ public partial class FormMain : Form
             dbName = "Game";
             dbFilePath = Path.Combine(backup_folder, $"{dbName}.sql");
             //--format=plain --format=custom //sql OR binary
-            bat = $"""
+            /*bat = $"""
                 "{Path.Combine(postgre_tools_pathDir, "pg_dump.exe")}" -U postgres --host={postgre_server_host} --format=plain --verbose --clean --if-exists --no-owner --no-privileges {dbName} > "{dbFilePath}"
+                """;*/
+            bat = $"""
+                "{Path.Combine(postgre_tools_pathDir, "pg_dump.exe")}" -U postgres --host={postgre_server_host} --format=plain --clean --if-exists --no-owner --no-privileges {dbName} > "{dbFilePath}"
                 """;
+            //"C:\Program Files\PostgreSQL\18\bin\pg_dump.exe" -U postgres --host=localhost --format=custom --compress=9 --no-owner --no-privileges Game > "c:\Users\Public\Documents\Game03_DatabaseBackups\Game.backup"
             ExecuteBatCommand_and_WaitForExit(bat);
         }
         else if (database is Database.MongoDb_UserData)

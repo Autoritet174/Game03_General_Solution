@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Server_DB_Postgres.Entities.Collection;
 using Server_DB_Postgres.Entities.Logs;
 using Server_DB_Postgres.Entities.Users;
+using Server_DB_Postgres.Entities.GameData;
 namespace Server_DB_Postgres;
 
 public class DbContextGameConfig
@@ -44,8 +45,9 @@ public class DbContextGameConfig
 
     private static void Configure(EntityTypeBuilder<Equipment> builder)
     {
-        //вручную делаем индекс по HeroId так как EF не сделает его автоматически изза следующего индекса который нацелен на уникальность с фильтрацией
+        //вручную делаем индексы так как EF не сделает автоматически изза следующих индексов
         builder.HasIndex(e => e.HeroId);
+        builder.HasIndex(e => e.UserId);
 
         // Уникальный индекс для надетых предметов. Гарантирует, что у героя в конкретном слоте только один предмет.
         _ = builder.HasIndex(e => new { e.HeroId, e.SlotId }).IsUnique()
