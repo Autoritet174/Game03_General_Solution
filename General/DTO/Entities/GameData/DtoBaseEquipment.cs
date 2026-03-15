@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace General.DTO.Entities.GameData;
 
 /// <summary> Представляет базовую сущность предмета. </summary>
-public class DtoBaseEquipment(int id, string name, int rarity, bool isUnique, int equipmentTypeId, Dice? health, Dice? damage, DtoEquipmentType? equipmentType = null)
+public class DtoBaseEquipment(int id, string name, int rarity, bool isUnique, int equipmentTypeId, Dice? health_1000, Dice? damage_1000, DtoEquipmentType? equipmentType = null)
 {
     public int Id { get; } = id;
     public string Name { get; } = name;
@@ -13,10 +13,8 @@ public class DtoBaseEquipment(int id, string name, int rarity, bool isUnique, in
     public DtoEquipmentType? EquipmentType { get; set; } = equipmentType;
 
     #region Характеристики
-    [Column(TypeName = "jsonb")]
-    public Dice? Health { get; } = health;
+    public Dice? Health_1000 { get; } = health_1000;
 
-    [Column(TypeName = "jsonb")]
-    public Dice? Damage { get; } = damage;
+    public Dice? Damage_1000 { get; } = damage_1000;
     #endregion Характеристики
 }

@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Server_DB_Postgres.Attributes;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using static Server_DB_Postgres.Attributes;
 
 namespace Server_DB_Postgres.Entities.GameData;
 
@@ -25,6 +25,6 @@ public class X_EquipmentType_DamageType
     public DamageType DamageType { get; set; } = null!;
 
     /// <summary> Коэффициент типа урона у оружия. </summary>
-    [HasDefaultValue(0)]
+    [Default(0)]
     public int DamageCoef { get; set; }
 }

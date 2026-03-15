@@ -4,24 +4,24 @@
         <name>Server_DB_Postgres</name>
     </assembly>
     <members>
-        <member name="T:Server_DB_Postgres.Attributes">
-            <summary>
-            Кастомные атрибуты.
-            </summary>
-        </member>
-        <member name="T:Server_DB_Postgres.Attributes.HasDefaultValueAttribute">
+        <member name="T:Server_DB_Postgres.Attributes.DefaultAttribute">
             <summary>
             Значение по умолчанию.
             </summary>
         </member>
-        <member name="M:Server_DB_Postgres.Attributes.HasDefaultValueAttribute.#ctor(System.Object)">
+        <member name="M:Server_DB_Postgres.Attributes.DefaultAttribute.#ctor(System.Object)">
             <summary>
             Значение по умолчанию.
             </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Attributes.HasDefaultValueAttribute.Value">
+        <member name="P:Server_DB_Postgres.Attributes.DefaultAttribute.Value">
             <summary>
             Значение.
+            </summary>
+        </member>
+        <member name="T:Server_DB_Postgres.Attributes.JsonbAttribute">
+            <summary>
+            Атрибут для указания, что свойство должно храниться в базе данных в виде jsonb.
             </summary>
         </member>
         <member name="T:Server_DB_Postgres.DbContextGame">
@@ -125,36 +125,6 @@
         </member>
         <member name="P:Server_DB_Postgres.Entities.Collection.Hero.ExperienceNow">
             <summary> Текущий опыт. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Health1000">
-            <summary> Здоровье. Первые три знака, тысячные доли от единицы видимой игроку. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Strength1000">
-            <summary> Сила. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Agility1000">
-            <summary> Ловкость. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Intelligence1000">
-            <summary> Интеллект. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.CritChance1000">
-            <summary> Шанс критического урона. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.CritPower1000">
-            <summary> Сила критического урона. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Haste1000">
-            <summary> Скорость. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Versality1000">
-            <summary> Универсальность. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.EndurancePhysical1000">
-            <summary> Физическая выносливось. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.EnduranceMagical1000">
-            <summary> Магическая выносливось. </summary>
         </member>
         <member name="T:Server_DB_Postgres.Entities.GameData.BaseEquipment">
             <summary> Экипировка. Базовые болванки. Мечи, топоры, шлемы, щиты, кольцо, браслеты, амулеты и так далее. </summary>
@@ -1266,6 +1236,42 @@
             <inheritdoc />
         </member>
         <member name="M:Server_DB_Postgres.Migrations.Migration_20260313_145053.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.ItemExp">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.ItemExp.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.ItemExp.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.ItemExp.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Migration_20260315_205349">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260315_205349.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260315_205349.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260315_205349.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Migration_20260315_223520">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260315_223520.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260315_223520.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260315_223520.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Server_DB_Postgres.ModelBuilderExt">

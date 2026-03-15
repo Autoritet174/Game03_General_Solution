@@ -1,8 +1,8 @@
 using General.DTO;
 using Microsoft.EntityFrameworkCore;
+using Server_DB_Postgres.Attributes;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using static Server_DB_Postgres.Attributes;
 
 namespace Server_DB_Postgres.Entities.GameData;
 
@@ -21,11 +21,11 @@ public class BaseHero
     public int Rarity { get; set; }
 
     /// <summary> Уникальный для одного аккаунта. </summary>
-    [HasDefaultValue(false)]
+    [Default(false)]
     public bool IsUnique { get; set; }
 
     /// <summary> Основной стат который повышает урон. Сила(1) или Ловкость(2) или Интеллект(3). </summary>
-    [HasDefaultValue(0)]
+    [Default(0)]
     public int MainStat { get; set; }
 
 
@@ -34,42 +34,18 @@ public class BaseHero
     //public IReadOnlyCollection<CreatureType> CreatureTypes => X_Hero_CreatureType?.Select(static x => x.CreatureTypes).ToList() ?? [];
 
     #region Характеристики
-    [Column(TypeName = "jsonb")]
-    public Dice Health1000 { get; set; } = null!;
-
-    [Column(TypeName = "jsonb")]
-    public Dice Damage1000 { get; set; } = null!;
-
-    [Column(TypeName = "jsonb")]
-    public Dice Strength1000 { get; set; } = null!;
-
-    [Column(TypeName = "jsonb")]
-    public Dice Agility1000 { get; set; } = null!;
-
-    [Column(TypeName = "jsonb")]
-    public Dice Intelligence1000 { get; set; } = null!;
-
-    [Column(TypeName = "jsonb")]
-    public Dice CritChance1000 { get; set; } = null!;
-
-    [Column(TypeName = "jsonb")]
-    public Dice CritMultiplier1000 { get; set; } = null!;
-
-    [Column(TypeName = "jsonb")]
-    public Dice Haste1000 { get; set; } = null!;
-
-    [Column(TypeName = "jsonb")]
-    public Dice Versality1000 { get; set; } = null!;
-
-    [Column(TypeName = "jsonb")]
-    public Dice EndurancePhysical1000 { get; set; } = null!;
-
-    [Column(TypeName = "jsonb")]
-    public Dice EnduranceMagical1000 { get; set; } = null!;
-
-    [Column(TypeName = "jsonb")]
-    public Dice Initiative1000 { get; set; } = null!;
-
+    [Jsonb] public Dice Health_1000 { get; set; } = null!;
+    [Jsonb] public Dice Damage_1000 { get; set; } = null!;
+    [Jsonb] public Dice Strength_1000 { get; set; } = null!;
+    [Jsonb] public Dice Agility_1000 { get; set; } = null!;
+    [Jsonb] public Dice Intelligence_1000 { get; set; } = null!;
+    [Jsonb] public Dice CritChance_1000 { get; set; } = null!;
+    [Jsonb] public Dice CritMultiplier_1000 { get; set; } = null!;
+    [Jsonb] public Dice Haste_1000 { get; set; } = null!;
+    [Jsonb] public Dice Versality_1000 { get; set; } = null!;
+    [Jsonb] public Dice EndurancePhysical_1000 { get; set; } = null!;
+    [Jsonb] public Dice EnduranceMagical_1000 { get; set; } = null!;
+    [Jsonb] public Dice Initiative_1000 { get; set; } = null!;
     #endregion Характеристики
 
 }

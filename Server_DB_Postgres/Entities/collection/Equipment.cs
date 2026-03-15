@@ -1,10 +1,11 @@
+using General.DTO;
 using Microsoft.EntityFrameworkCore;
+using Server_DB_Postgres.Attributes;
 using Server_DB_Postgres.Entities.GameData;
 using Server_DB_Postgres.Entities.Users;
 using Server_DB_Postgres.Interfaces;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using static Server_DB_Postgres.Attributes;
 
 namespace Server_DB_Postgres.Entities.Collection;
 
@@ -39,4 +40,22 @@ public class Equipment : IVersion, ICreatedAt, IUpdatedAt
     public int? SlotId { get; set; }
     [ForeignKey(nameof(SlotId))]
     public Slot? Slot { get; set; }
+
+
+
+    [Jsonb] public Dictionary<Guid, ItemExp>? ExperienceHeroes { get; set; }
+
+    #region Характеристики
+    public long? Health_1000 { get; set; }
+    public long? Strength_1000 { get; set; }
+    public long? Agility_1000 { get; set; }
+    public long Intelligence_1000 { get; set; }
+    public long? CritChance_1000 { get; set; }
+    public long? CritMultiplier_1000 { get; set; }
+    public long? Haste_1000 { get; set; }
+    public long? Versality_1000 { get; set; }
+    public long? EndurancePhysical_1000 { get; set; }
+    public long? EnduranceMagical_1000 { get; set; }
+    public long? Initiative_1000 { get; set; }
+    #endregion Характеристики
 }

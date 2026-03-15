@@ -5,12 +5,12 @@ namespace Server.Utilities;
 
 public class DiceHelper
 {
-    public static long GetRandomValue(Dice dice)
+    public static long GetRandomValue(Dice? dice)
     {
-        //if (dice == null)
-        //{
-        //    return 0L;
-        //}
+        if (dice == null)
+        {
+            return 0L;
+        }
 
         int count = dice.Count;
         int sides = dice.Sides;

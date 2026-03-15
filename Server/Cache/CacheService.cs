@@ -19,7 +19,7 @@ public class CacheService()
 
     public IEnumerable<UserBanReason> TableUserBanReasons { get; private set; } = null!;
     public IEnumerable<UserSessionInactivationReason> TableUserSessionInactivationReasons { get; private set; } = null!;
-    public IEnumerable<BaseEquipment> TableBaseEquipment { get; private set; } = null!;
+    public IEnumerable<BaseEquipment> TableBaseEquipments { get; private set; } = null!;
     public IEnumerable<BaseHero> TableBaseHeroes { get; private set; } = null!;
     public IEnumerable<CreatureType> TableCreatureTypes { get; private set; } = null!;
     public IEnumerable<DamageType> TableDamageTypes { get; private set; } = null!;
@@ -44,14 +44,14 @@ public class CacheService()
         await LoadTableUserSessionInactivationReasonsAsync(db, cancellationToken).ConfigureAwait(false);
 
 
-        TableBaseEquipment = await db.BaseEquipments.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
-        List<DtoBaseEquipment> baseEquipments = [.. TableBaseEquipment.Select(static h => new DtoBaseEquipment(
-            h.Id, h.Name, h.Rarity, h.IsUnique, h.EquipmentTypeId, h.Health, h.Damage)
+        TableBaseEquipments = await db.BaseEquipments.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
+        List<DtoBaseEquipment> baseEquipments = [.. TableBaseEquipments.Select(static h => new DtoBaseEquipment(
+            h.Id, h.Name, h.Rarity, h.IsUnique, h.EquipmentTypeId, h.Health_1000, h.Damage_1000)
             )];
 
         TableBaseHeroes = await db.BaseHeroes.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
         List<DtoBaseHero> baseHeroes = [.. TableBaseHeroes.Select(static h => new DtoBaseHero(
-            h.Id, h.Name, h.Rarity, h.IsUnique, h.MainStat, h.Health1000, h.Damage1000,h.Strength1000,h.Agility1000,h.Intelligence1000,h.CritChance1000, h.CritMultiplier1000, h.Haste1000, h.Versality1000, h.EndurancePhysical1000, h.EnduranceMagical1000, h.Initiative1000)
+            h.Id, h.Name, h.Rarity, h.IsUnique, h.MainStat, h.Health_1000, h.Damage_1000,h.Strength_1000,h.Agility_1000,h.Intelligence_1000,h.CritChance_1000, h.CritMultiplier_1000, h.Haste_1000, h.Versality_1000, h.EndurancePhysical_1000, h.EnduranceMagical_1000, h.Initiative_1000)
             )];
 
         TableCreatureTypes = await db.CreatureTypes.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
@@ -109,7 +109,7 @@ public class CacheService()
             throw new InvalidOperationException("Кэш не инициализирован.");
         }
 
-        foreach (BaseEquipment i in TableBaseEquipment)
+        foreach (BaseEquipment i in TableBaseEquipments)
         {
             i.EquipmentType = TableEquipmentTypes.First(a => a.Id == i.EquipmentTypeId);
             i.SmithingMaterial = TableSmithingMaterials.First(a => a.Id == i.SmithingMaterialId);

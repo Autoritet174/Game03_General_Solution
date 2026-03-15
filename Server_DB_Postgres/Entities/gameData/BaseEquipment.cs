@@ -1,9 +1,8 @@
 using General.DTO;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
+using Server_DB_Postgres.Attributes;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using static Server_DB_Postgres.Attributes;
 
 namespace Server_DB_Postgres.Entities.GameData;
 
@@ -23,7 +22,7 @@ public class BaseEquipment
     public int Rarity { get; set; }
 
     /// <summary> Уникальный для одного аккаунта. </summary>
-    [HasDefaultValue(false)]
+    [Default(false)]
     public bool IsUnique { get; set; }
 
     /// <summary> Идентификатор EquipmentType. </summary>
@@ -37,10 +36,17 @@ public class BaseEquipment
     public SmithingMaterial SmithingMaterial { get; set; } = null!;
 
     #region Характеристики
-    [Column(TypeName = "jsonb")]
-    public Dice? Health { get; set; }
-
-    [Column(TypeName = "jsonb")]
-    public Dice? Damage { get; set; }
+    [Jsonb] public Dice Health_1000 { get; set; } = null!;
+    [Jsonb] public Dice Damage_1000 { get; set; } = null!;
+    [Jsonb] public Dice Strength_1000 { get; set; } = null!;
+    [Jsonb] public Dice Agility_1000 { get; set; } = null!;
+    [Jsonb] public Dice Intelligence_1000 { get; set; } = null!;
+    [Jsonb] public Dice CritChance_1000 { get; set; } = null!;
+    [Jsonb] public Dice CritMultiplier_1000 { get; set; } = null!;
+    [Jsonb] public Dice Haste_1000 { get; set; } = null!;
+    [Jsonb] public Dice Versality_1000 { get; set; } = null!;
+    [Jsonb] public Dice EndurancePhysical_1000 { get; set; } = null!;
+    [Jsonb] public Dice EnduranceMagical_1000 { get; set; } = null!;
+    [Jsonb] public Dice Initiative_1000 { get; set; } = null!;
     #endregion Характеристики
 }

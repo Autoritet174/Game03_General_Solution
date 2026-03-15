@@ -19,7 +19,8 @@ dotnet_diagnostic.CA2016.severity = error
 # Анализатор CA1068: Параметр CancellationToken должен быть в конце (помогает выявлять отсутствие)
 dotnet_diagnostic.CA1068.severity = error
 
-
+# Отключить правило CA1707 для всего проекта
+dotnet_diagnostic.CA1707.severity = none
 
 # тело выражения или тело блока для методов
 csharp_style_expression_bodied_methods = false:none

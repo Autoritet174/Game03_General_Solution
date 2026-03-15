@@ -1,8 +1,8 @@
 using General.DTO;
 using Microsoft.EntityFrameworkCore;
+using Server_DB_Postgres.Attributes;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using static Server_DB_Postgres.Attributes;
 
 namespace Server_DB_Postgres.Entities.GameData;
 
@@ -23,10 +23,10 @@ public class EquipmentType
     //[NotMapped]
     //public IReadOnlyCollection<DamageType> DamageTypes => X_EquipmentType_DamageType.Select(static x => x.DamageType).ToList() ?? [];
 
-    [HasDefaultValue(0)]
+    [Default(0)]
     public int MassPhysical { get; set; }
 
-    [HasDefaultValue(0)]
+    [Default(0)]
     public int MassMagical { get; set; }
 
     public int SlotTypeId { get; set; }
@@ -34,19 +34,19 @@ public class EquipmentType
     [ForeignKey(nameof(SlotTypeId))]
     public SlotType SlotType { get; set; } = null!;
 
-    [HasDefaultValue(false)]
+    [Default(false)]
     public bool CanCraftSmithing { get; set; }
 
-    [HasDefaultValue(false)]
+    [Default(false)]
     public bool CanCraftJewelcrafting { get; set; }
 
     /// <summary> Трата очков действия за удар. </summary>
-    [HasDefaultValue(0)]
+    [Default(0)]
     public int SpendActionPoints { get; set; }
 
     /// <summary> Блокирует ли оружие другую руку, если это оружие. </summary>
     public bool? BlockOtherHand { get; set; }
 
-    [Column(TypeName = "jsonb")]
+    [Jsonb]
     public Dice? Damage { get; set; }
 }

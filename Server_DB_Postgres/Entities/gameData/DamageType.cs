@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Server_DB_Postgres.Attributes;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using static Server_DB_Postgres.Attributes;
 
 namespace Server_DB_Postgres.Entities.GameData;
 
@@ -32,7 +32,7 @@ public class DamageType
     /// 1 - физический.
     /// 2 - магический.
     /// </summary>
-    [HasDefaultValue(0)]
+    [Default(0)]
     public int Category {get; set; }
 
     ///// <summary>// Типы оружия для этого типа урона. Вычисляемое свойство.

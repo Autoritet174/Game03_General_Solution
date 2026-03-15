@@ -176,7 +176,7 @@ public partial class EquipmentManager(
     /// <returns>ID конкретного слота из базы данных.</returns>
     private int GetSlotId(int baseEquipmentId, bool inAltSlot)
     {
-        BaseEquipment baseEquip = cacheService.TableBaseEquipment.First(a => a.Id == baseEquipmentId);
+        BaseEquipment baseEquip = cacheService.TableBaseEquipments.First(a => a.Id == baseEquipmentId);
         int slotTypeId = baseEquip.EquipmentType.SlotType.Id;
 
         return slotTypeId switch

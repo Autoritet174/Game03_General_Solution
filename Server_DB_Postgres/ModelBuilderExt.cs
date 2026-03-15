@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Server_DB_Postgres.Attributes;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
-using static Server_DB_Postgres.Attributes;
 
 namespace Server_DB_Postgres;
 
@@ -32,7 +32,7 @@ public static class ModelBuilderExt
                     continue;
                 }
 
-                HasDefaultValueAttribute? attr = property.GetCustomAttribute<HasDefaultValueAttribute>();
+                DefaultAttribute? attr = property.GetCustomAttribute<DefaultAttribute>();
                 if (attr != null)
                 {
                     // Если атрибут HasDefaultValue есть, используем его значение
@@ -129,7 +129,7 @@ public static class ModelBuilderExt
             foreach (IMutableProperty property in entity.GetProperties())
             {
                 string newName = property.GetColumnName().ToSnakeCase();
-                if (newName.EndsWith("1000"))
+                if (newName.EndsWith("1000") && !newName.EndsWith("_1000"))
                 {
                     newName = $"{newName[..^4]}_1000";
                 }

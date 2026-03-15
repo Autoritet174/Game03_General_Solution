@@ -73,6 +73,22 @@
             Возвращает список id базовых героев, которых уже имеет пользователь, из заданного списка id базовых героев.
             </summary>
         </member>
+        <member name="F:Server.Game.LootGenerator._getUserEquipmentIdsQuery">
+            <summary>
+            Возвращает список id базовых предметов, которых уже имеет пользователь, из заданного списка id базовых предметов.
+            </summary>
+        </member>
+        <member name="M:Server.Game.LootGenerator.GenerateHeroAsync(System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Генерирует нового героя для пользователя, выбирая случайного базового героя с учетом редкости и наличия уникальных героев, которых пользователь уже имеет. Добавляет нового героя в базу данных и возвращает результат операции.
+            </summary>
+        </member>
+        <member name="M:Server.Game.LootGenerator.GenerateEquipmentAsync(System.Guid,General.SlotTypeName,System.Threading.CancellationToken)">
+            <summary>
+            Генерирует новую экипировку для пользователя, выбирая случайный базовый предмет с учетом редкости и наличия уникальных предметов, которых пользователь уже имеет. Добавляет новый предмет в базу данных и возвращает результат операции.
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:Server.GlobalJsonContext">
             <summary>
             Глобальный контекст для Source Generation. 

@@ -1,4 +1,5 @@
 using FluentResults;
+using General;
 using Microsoft.EntityFrameworkCore;
 using Server.Cache;
 using Server.Utilities;
@@ -18,76 +19,151 @@ public class LootGenerator(
     /// Возвращает список id базовых героев, которых уже имеет пользователь, из заданного списка id базовых героев.
     /// </summary>
     private static readonly Func<DbContextGame, Guid, List<int>, IEnumerable<int>> _getUserHeroIdsQuery =
-    EF.CompileQuery(
-        (DbContextGame db, Guid userId, List<int> baseHeroIds) =>
-            db.Heroes
-                .Where(h => h.UserId == userId && baseHeroIds.Contains(h.BaseHeroId))
-                .Select(h => h.BaseHeroId).Distinct()
-    );
+    EF.CompileQuery((DbContextGame db, Guid userId, List<int> baseHeroIds) =>
+            db.Heroes.Where(h => h.UserId == userId && baseHeroIds.Contains(h.BaseHeroId))
+                .Select(h => h.BaseHeroId).Distinct());
 
-    public async Task<Result> GenerateHeroAsync(Guid userId, CancellationToken cancellationToken)
+    /// <summary>
+    /// Возвращает список id базовых предметов, которых уже имеет пользователь, из заданного списка id базовых предметов.
+    /// </summary>
+    private static readonly Func<DbContextGame, Guid, List<int>, IEnumerable<int>> _getUserEquipmentIdsQuery =
+    EF.CompileQuery((DbContextGame db, Guid userId, List<int> baseEquipmentIds) =>
+            db.Equipments.Where(h => h.UserId == userId && baseEquipmentIds.Contains(h.BaseEquipmentId))
+                .Select(h => h.BaseEquipmentId).Distinct());
+
+    private static readonly int rarity1 = 3125, rarity2 = 625, rarity3 = 125, rarity4 = 25, rarity5 = 5, rarity6 = 1;
+
+    private static int SelectRandomRarity(int minRarity = 1, int maxRarity = 6)
     {
-        Random rand = Random.Shared;
+        if (minRarity < 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(minRarity), "minRarity must be between 1 and 6");
+        }
 
-        int rarity1 = 0, rarity2 = 0, rarity3 = 1, rarity4 = 0, rarity5 = 0, rarity6 = 0;
+        if (maxRarity > 6)
+        {
+            throw new ArgumentOutOfRangeException(nameof(maxRarity), "maxRarity must be between 1 and 6");
+        }
+
+        if (minRarity > maxRarity)
+        {
+            throw new ArgumentException("minRarity cannot be greater than maxRarity");
+        }
+
+        int rarity1 = LootGenerator.rarity1,
+            rarity2 = LootGenerator.rarity2,
+            rarity3 = LootGenerator.rarity3,
+            rarity4 = LootGenerator.rarity4,
+            rarity5 = LootGenerator.rarity5,
+            rarity6 = LootGenerator.rarity6;
+        if (minRarity > 1)
+        {
+            rarity1 = 0;
+        }
+        if (minRarity > 2)
+        {
+            rarity2 = 0;
+        }
+        if (minRarity > 3)
+        {
+            rarity3 = 0;
+        }
+        if (minRarity > 4)
+        {
+            rarity4 = 0;
+        }
+        if (minRarity > 5)
+        {
+            rarity5 = 0;
+        }
+        if (maxRarity < 6)
+        {
+            rarity6 = 0;
+        }
+        if (maxRarity < 5)
+        {
+            rarity5 = 0;
+        }
+        if (maxRarity < 4)
+        {
+            rarity4 = 0;
+        }
+        if (maxRarity < 3)
+        {
+            rarity3 = 0;
+        }
+        if (maxRarity < 2)
+        {
+            rarity2 = 0;
+        }
+
         int raritySumFrom5 = rarity5 + rarity6;
         int raritySumFrom4 = rarity4 + raritySumFrom5;
         int raritySumFrom3 = rarity3 + raritySumFrom4;
         int raritySumFrom2 = rarity2 + raritySumFrom3;
 
         int raritySumm = rarity1 + raritySumFrom2;
-        int rarityRandom = rand.Next(0, raritySumm);
-        int raritySelected;
-        if (rarityRandom < rarity6)
-        {
-            raritySelected = 6;
-        }
-        else if (rarityRandom < raritySumFrom5)
-        {
-            raritySelected = 5;
-        }
-        else if (rarityRandom < raritySumFrom4)
-        {
-            raritySelected = 4;
-        }
-        else if (rarityRandom < raritySumFrom3)
-        {
-            raritySelected = 3;
-        }
-        else if (rarityRandom < raritySumFrom2)
-        {
-            raritySelected = 2;
-        }
-        else
-        {
-            raritySelected = 1;
-        }
+        int rarityRandom = Random.Shared.Next(0, raritySumm);
+        return rarityRandom < rarity6 ? 6
+            : rarityRandom < raritySumFrom5 ? 5
+            : rarityRandom < raritySumFrom4 ? 4
+            : rarityRandom < raritySumFrom3 ? 3
+            : rarityRandom < raritySumFrom2 ? 2 : 1;
+    }
 
-
+    /// <summary>
+    /// Генерирует нового героя для пользователя, выбирая случайного базового героя с учетом редкости и наличия уникальных героев, которых пользователь уже имеет. Добавляет нового героя в базу данных и возвращает результат операции.
+    /// </summary>
+    public async Task<Result> GenerateHeroAsync(Guid userId, CancellationToken cancellationToken)
+    {
         await using DbContextGame db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        BaseHero? baseHero = await SelectRandomBaseHeroAsync(db, rand, userId, raritySelected, cancellationToken).ConfigureAwait(false);
+        int raritySelected = SelectRandomRarity();
+        BaseHero? baseHero = await SelectRandomBaseHeroAsync(db, userId, raritySelected, cancellationToken).ConfigureAwait(false);
         if (baseHero == null)
         {
             logger.LogError("Failed to select random base hero for user {UserId}", userId);
             return Result.Fail("No base hero selected");
         }
-
         Result addHeroResult = await AddNewHeroAsync(db, baseHero, userId, cancellationToken).ConfigureAwait(false);
         if (addHeroResult.IsFailed)
         {
             addHeroResult.Errors.ForEach(e => logger.LogError("Error adding new hero for user {UserId} based on base hero {BaseHeroId}: {ErrorMessage}", userId, baseHero.Id, e.Message));
             return Result.Fail("Failed to add new hero");
         }
-
         return Result.Ok();
     }
 
-    private async Task<BaseHero?> SelectRandomBaseHeroAsync(DbContextGame db, Random rand, Guid userId, int raritySelected, CancellationToken cancellationToken)
+    /// <summary>
+    /// Генерирует новую экипировку для пользователя, выбирая случайный базовый предмет с учетом редкости и наличия уникальных предметов, которых пользователь уже имеет. Добавляет новый предмет в базу данных и возвращает результат операции.
+    /// </summary>
+    /// <returns></returns>
+    public async Task<Result> GenerateEquipmentAsync(Guid userId, SlotTypeName slotTypeName, CancellationToken cancellationToken)
+    {
+        await using DbContextGame db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        int raritySelected = SelectRandomRarity();
+        BaseEquipment? baseEquipment = await SelectRandomBaseEquipmentAsync(db, userId, slotTypeName, raritySelected, cancellationToken).ConfigureAwait(false);
+        if (baseEquipment == null)
+        {
+            logger.LogError("Failed to select random base equipment for user {UserId}", userId);
+            return Result.Fail("No base equipment selected");
+        }
+        Result addEquipmentResult = await AddNewEquipmentAsync(db, baseEquipment, userId, cancellationToken).ConfigureAwait(false);
+        if (addEquipmentResult.IsFailed)
+        {
+            addEquipmentResult.Errors.ForEach(e => logger.LogError("Error adding new equipment for user {UserId} based on base equipment {BaseEquipmentId}: {ErrorMessage}", userId, baseEquipment.Id, e.Message));
+            return Result.Fail("Failed to add new equipment");
+        }
+        return Result.Ok();
+    }
+
+    private async Task<BaseHero?> SelectRandomBaseHeroAsync(DbContextGame db, Guid userId, int raritySelected, CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
         {
             return null;
         }
+
+        Random rand = Random.Shared;
 
         for (int r = raritySelected; r > 0; r--)
         {
@@ -110,14 +186,55 @@ public class LootGenerator(
 
             if (heroesId.Count < 1)
             {
-                // Если нет доступных героев с данной редкостью, переходим к редкости ниже уровнем
-                continue;
+                continue; // Если нет доступных героев с данной редкостью, переходим к редкости ниже уровнем
             }
 
             // Выбираем случайного героя из списка доступных
             int randomIndex = rand.Next(heroesId.Count);
             int selectedBaseHeroId = heroesId[randomIndex];
             return cacheService.TableBaseHeroes.FirstOrDefault(b => b.Id == selectedBaseHeroId);
+        }
+
+        return null;
+    }
+
+    private async Task<BaseEquipment?> SelectRandomBaseEquipmentAsync(DbContextGame db, Guid userId, SlotTypeName slotTypeName, int raritySelected, CancellationToken cancellationToken)
+    {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return null;
+        }
+
+        Random rand = Random.Shared;
+        int slotTypeId = (int)slotTypeName;
+        for (int r = raritySelected; r > 0; r--)
+        {
+            // Получаем id базовых предметов с выбранной редкостью, разделяя их на уникальных и неуникальных
+            List<int> baseEquipmentUniqueIds = [.. cacheService.TableBaseEquipments
+                    .Where(a => a.Rarity == r && a.IsUnique && (slotTypeName == SlotTypeName.None || a.EquipmentType.SlotTypeId == slotTypeId))
+                    .Select(b => b.Id)];
+            List<int> baseEquipmentNotUniqueIds = [.. cacheService.TableBaseEquipments
+                    .Where(a => a.Rarity == r && !a.IsUnique && (slotTypeName == SlotTypeName.None || a.EquipmentType.SlotTypeId == slotTypeId))
+                    .Select(b => b.Id)];
+
+            // Получаем список id базовых предметов с выбранной редкостью, которых уже имеет пользователь, из списка уникальных предметов
+            List<int> existingUniqueIds = [.. _getUserEquipmentIdsQuery(db, userId, baseEquipmentUniqueIds)];
+
+            // Получаем список id базовых уникальных предметов, которых нет у пользователя
+            List<int> notExistingUniqueEquipmentsId = [.. baseEquipmentUniqueIds.Except(existingUniqueIds)];
+
+            // К списку id базовых предметов, которых нет у пользователя, добавляем все неуникальные предметы
+            List<int> EquipmentsId = [.. notExistingUniqueEquipmentsId.Union(baseEquipmentNotUniqueIds)];
+
+            if (EquipmentsId.Count < 1)
+            {
+                continue; // Если нет доступных предметов с данной редкостью, переходим к редкости ниже уровнем
+            }
+
+            // Выбираем случайный предмет из списка доступных
+            int randomIndex = rand.Next(EquipmentsId.Count);
+            int selectedBaseEquipmentId = EquipmentsId[randomIndex];
+            return cacheService.TableBaseEquipments.FirstOrDefault(b => b.Id == selectedBaseEquipmentId);
         }
 
         return null;
@@ -144,23 +261,65 @@ public class LootGenerator(
         return Result.Ok();
     }
 
+    private async Task<Result> AddNewEquipmentAsync(DbContextGame db, BaseEquipment baseEquipment, Guid userId, CancellationToken cancellationToken)
+    {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return Result.Fail("IsCancellationRequested");
+        }
+
+        Equipment equipment = CreateNewEquipmentByBase(baseEquipment);
+        equipment.UserId = userId;
+
+        _ = await db.Equipments.AddAsync(equipment, cancellationToken).ConfigureAwait(false);
+        int rowsChanged = await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        if (rowsChanged < 1)
+        {
+            logger.LogError("Failed to add new equipment for user {UserId}", userId);
+            return Result.Fail("Equipment not added");
+        }
+
+        return Result.Ok();
+    }
+
     private static Hero CreateNewHeroByBase(BaseHero baseHero)
     {
-        return new Hero()
+        return new Hero
         {
             BaseHeroId = baseHero.Id,
             Level = 1,
             ExperienceNow = 0,
-            Health1000 = DiceHelper.GetRandomValue(baseHero.Health1000),
-            Strength1000 = DiceHelper.GetRandomValue(baseHero.Strength1000),
-            Agility1000 = DiceHelper.GetRandomValue(baseHero.Agility1000),
-            Intelligence1000 = DiceHelper.GetRandomValue(baseHero.Intelligence1000),
-            CritChance1000 = DiceHelper.GetRandomValue(baseHero.CritChance1000),
-            CritPower1000 = DiceHelper.GetRandomValue(baseHero.CritMultiplier1000),
-            Haste1000 = DiceHelper.GetRandomValue(baseHero.Haste1000),
-            Versality1000 = DiceHelper.GetRandomValue(baseHero.Versality1000),
-            EndurancePhysical1000 = DiceHelper.GetRandomValue(baseHero.EndurancePhysical1000),
-            EnduranceMagical1000 = DiceHelper.GetRandomValue(baseHero.EnduranceMagical1000),
+            Health_1000 = DiceHelper.GetRandomValue(baseHero.Health_1000),
+            Strength_1000 = DiceHelper.GetRandomValue(baseHero.Strength_1000),
+            Agility_1000 = DiceHelper.GetRandomValue(baseHero.Agility_1000),
+            Intelligence_1000 = DiceHelper.GetRandomValue(baseHero.Intelligence_1000),
+            CritChance_1000 = DiceHelper.GetRandomValue(baseHero.CritChance_1000),
+            CritMultiplier_1000 = DiceHelper.GetRandomValue(baseHero.CritMultiplier_1000),
+            Haste_1000 = DiceHelper.GetRandomValue(baseHero.Haste_1000),
+            Versality_1000 = DiceHelper.GetRandomValue(baseHero.Versality_1000),
+            EndurancePhysical_1000 = DiceHelper.GetRandomValue(baseHero.EndurancePhysical_1000),
+            EnduranceMagical_1000 = DiceHelper.GetRandomValue(baseHero.EnduranceMagical_1000),
+            Initiative_1000 = DiceHelper.GetRandomValue(baseHero.Initiative_1000)
         };
     }
+
+    private static Equipment CreateNewEquipmentByBase(BaseEquipment baseEquipment)
+    {
+        return new Equipment
+        {
+            BaseEquipmentId = baseEquipment.Id,
+            Health_1000 = DiceHelper.GetRandomValue(baseEquipment.Health_1000),
+            Strength_1000 = DiceHelper.GetRandomValue(baseEquipment.Strength_1000),
+            Agility_1000 = DiceHelper.GetRandomValue(baseEquipment.Agility_1000),
+            Intelligence_1000 = DiceHelper.GetRandomValue(baseEquipment.Intelligence_1000),
+            CritChance_1000 = DiceHelper.GetRandomValue(baseEquipment.CritChance_1000),
+            CritMultiplier_1000 = DiceHelper.GetRandomValue(baseEquipment.CritMultiplier_1000),
+            Haste_1000 = DiceHelper.GetRandomValue(baseEquipment.Haste_1000),
+            Versality_1000 = DiceHelper.GetRandomValue(baseEquipment.Versality_1000),
+            EndurancePhysical_1000 = DiceHelper.GetRandomValue(baseEquipment.EndurancePhysical_1000),
+            EnduranceMagical_1000 = DiceHelper.GetRandomValue(baseEquipment.EnduranceMagical_1000),
+            Initiative_1000 = DiceHelper.GetRandomValue(baseEquipment.Initiative_1000)
+        };
+    }
+
 }

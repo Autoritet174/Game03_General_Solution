@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Server_DB_Postgres.Attributes;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using static Server_DB_Postgres.Attributes;
 
 namespace Server_DB_Postgres.Entities.GameData;
 
@@ -20,6 +20,6 @@ public class Slot
     [ForeignKey(nameof(SlotTypeId))]
     public SlotType SlotType { get; set; } = null!;
 
-    [HasDefaultValue(true)]
+    [Default(true)]
     public bool MainSlot { get; set; }
 }

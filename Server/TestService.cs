@@ -17,7 +17,8 @@ public class TestService(LootGenerator lootGenerator)
         //User user = db.Users.First(u => u.Id == userId);
         for (int i = 0; i < 0; i++)
         {
-            await lootGenerator.GenerateHeroAsync(userId, cancellationToken).ConfigureAwait(false);
+            // await lootGenerator.GenerateHeroAsync(userId, cancellationToken).ConfigureAwait(false);
+            await lootGenerator.GenerateEquipmentAsync(userId, General.SlotTypeName.None, cancellationToken).ConfigureAwait(false);
         }
        
 
