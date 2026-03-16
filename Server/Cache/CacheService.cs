@@ -46,12 +46,12 @@ public class CacheService()
 
         TableBaseEquipments = await db.BaseEquipments.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
         List<DtoBaseEquipment> baseEquipments = [.. TableBaseEquipments.Select(static h => new DtoBaseEquipment(
-            h.Id, h.Name, h.Rarity, h.IsUnique, h.EquipmentTypeId, h.Health_1000, h.Damage_1000)
+            h.Id, h.Name, h.Rarity, h.IsUnique, h.EquipmentTypeId)
             )];
 
         TableBaseHeroes = await db.BaseHeroes.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
         List<DtoBaseHero> baseHeroes = [.. TableBaseHeroes.Select(static h => new DtoBaseHero(
-            h.Id, h.Name, h.Rarity, h.IsUnique, h.MainStat, h.Health_1000, h.Damage_1000,h.Strength_1000,h.Agility_1000,h.Intelligence_1000,h.CritChance_1000, h.CritMultiplier_1000, h.Haste_1000, h.Versality_1000, h.EndurancePhysical_1000, h.EnduranceMagical_1000, h.Initiative_1000)
+            h.Id, h.Name, h.Rarity, h.IsUnique, h.MainStat, h.Health, h.Damage,h.Strength,h.Agility,h.Intelligence,h.CritChance, h.CritMultiplier, h.Haste, h.Versality, h.EndurancePhysical, h.EnduranceMagical, h.Initiative)
             )];
 
         TableCreatureTypes = await db.CreatureTypes.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);

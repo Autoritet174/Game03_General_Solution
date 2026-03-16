@@ -27,7 +27,7 @@ public class CollectionController(DbContextGame dbContext) : ControllerBaseApi
         List<DtoEquipment> equipments = await dbContext.Equipments.AsNoTracking().Where(a => a.UserId == userId).Select(a => new
             DtoEquipment(a.Id, a.UserId, a.BaseEquipmentId, a.GroupName, a.HeroId, a.SlotId)).ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
-        List<DtoHero> heroes = await dbContext.Heroes.AsNoTracking().Where(a => a.UserId == userId).Select(a => new DtoHero(a.Id, a.UserId, a.BaseHeroId, a.GroupName, a.Level, a.ExperienceNow, a.Strength_1000, a.Agility_1000, a.Intelligence_1000, a.CritChance_1000, a.CritMultiplier_1000, a.Haste_1000, a.Versality_1000, a.EndurancePhysical_1000, a.EnduranceMagical_1000, a.Health_1000, a.Initiative_1000)).ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+        List<DtoHero> heroes = await dbContext.Heroes.AsNoTracking().Where(a => a.UserId == userId).Select(a => new DtoHero(a.Id, a.UserId, a.BaseHeroId, a.GroupName, a.Level, a.Experience, a.Strength, a.Agility, a.Intelligence, a.CritChance, a.CritMultiplier, a.Haste, a.Versality, a.EndurancePhysical, a.EnduranceMagical, a.Health, a.Initiative)).ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
         DtoContainerCollection container = new(equipments, heroes);
         return Ok(JsonSerializer.Serialize(container, GlobalJsonOptions.jsonOptions));

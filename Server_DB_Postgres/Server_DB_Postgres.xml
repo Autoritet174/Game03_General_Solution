@@ -15,9 +15,7 @@
             </summary>
         </member>
         <member name="P:Server_DB_Postgres.Attributes.DefaultAttribute.Value">
-            <summary>
-            Значение.
-            </summary>
+            <summary> Значение. </summary>
         </member>
         <member name="T:Server_DB_Postgres.Attributes.JsonbAttribute">
             <summary>
@@ -96,12 +94,6 @@
         <member name="T:Server_DB_Postgres.Entities.Collection.Hero">
             <summary> Герой в коллекции пользователя. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Id">
-            <summary> Уникальный идентификатор. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.UserId">
-            <summary> Уникальный идентификатор владельца. </summary>
-        </member>
         <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Version">
             <summary> <inheritdoc/> </summary>
         </member>
@@ -123,7 +115,7 @@
         <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Level">
             <summary> Уровень героя. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.ExperienceNow">
+        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Experience">
             <summary> Текущий опыт. </summary>
         </member>
         <member name="T:Server_DB_Postgres.Entities.GameData.BaseEquipment">
@@ -1272,6 +1264,18 @@
             <inheritdoc />
         </member>
         <member name="M:Server_DB_Postgres.Migrations.Migration_20260315_223520.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.BigPatch1">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.BigPatch1.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.BigPatch1.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.BigPatch1.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Server_DB_Postgres.ModelBuilderExt">

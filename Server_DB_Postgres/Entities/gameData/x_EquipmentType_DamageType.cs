@@ -25,6 +25,5 @@ public class X_EquipmentType_DamageType
     public DamageType DamageType { get; set; } = null!;
 
     /// <summary> Коэффициент типа урона у оружия. </summary>
-    [Default(0)]
-    public int DamageCoef { get; set; }
+    [Default(0)] public int DamageCoef { get; set; }
 }

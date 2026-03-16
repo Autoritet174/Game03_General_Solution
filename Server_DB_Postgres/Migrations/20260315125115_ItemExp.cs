@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using General.DTO;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -14,7 +14,7 @@ namespace Server_DB_Postgres.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "initiative_1000",
+                name: "initiative",
                 schema: "collection",
                 table: "heroes");
 
@@ -29,139 +29,139 @@ namespace Server_DB_Postgres.Migrations
                 table: "base_equipments");
 
             migrationBuilder.RenameColumn(
-                name: "versality_1000",
+                name: "versality",
                 schema: "collection",
                 table: "heroes",
-                newName: "versality__1000");
+                newName: "versality_");
 
             migrationBuilder.RenameColumn(
-                name: "strength_1000",
+                name: "strength",
                 schema: "collection",
                 table: "heroes",
-                newName: "strength__1000");
+                newName: "strength_");
 
             migrationBuilder.RenameColumn(
-                name: "intelligence_1000",
+                name: "intelligence",
                 schema: "collection",
                 table: "heroes",
-                newName: "intelligence__1000");
+                newName: "intelligence_");
 
             migrationBuilder.RenameColumn(
-                name: "health_1000",
+                name: "health",
                 schema: "collection",
                 table: "heroes",
-                newName: "initiative__1000");
+                newName: "initiative_");
 
             migrationBuilder.RenameColumn(
-                name: "haste_1000",
+                name: "haste",
                 schema: "collection",
                 table: "heroes",
-                newName: "health__1000");
+                newName: "health_");
 
             migrationBuilder.RenameColumn(
-                name: "endurance_physical_1000",
+                name: "endurance_physical",
                 schema: "collection",
                 table: "heroes",
-                newName: "haste__1000");
+                newName: "haste_");
 
             migrationBuilder.RenameColumn(
-                name: "endurance_magical_1000",
+                name: "endurance_magical",
                 schema: "collection",
                 table: "heroes",
-                newName: "endurance_physical__1000");
+                newName: "endurance_physical_");
 
             migrationBuilder.RenameColumn(
-                name: "crit_power_1000",
+                name: "crit_power",
                 schema: "collection",
                 table: "heroes",
-                newName: "endurance_magical__1000");
+                newName: "endurance_magical_");
 
             migrationBuilder.RenameColumn(
-                name: "crit_chance_1000",
+                name: "crit_chance",
                 schema: "collection",
                 table: "heroes",
-                newName: "crit_multiplier__1000");
+                newName: "crit_multiplier_");
 
             migrationBuilder.RenameColumn(
-                name: "agility_1000",
+                name: "agility",
                 schema: "collection",
                 table: "heroes",
-                newName: "crit_chance__1000");
+                newName: "crit_chance_");
 
             migrationBuilder.RenameColumn(
-                name: "versality_1000",
+                name: "versality",
                 schema: "game_data",
                 table: "base_heroes",
-                newName: "versality__1000");
+                newName: "versality_");
 
             migrationBuilder.RenameColumn(
-                name: "strength_1000",
+                name: "strength",
                 schema: "game_data",
                 table: "base_heroes",
-                newName: "strength__1000");
+                newName: "strength_");
 
             migrationBuilder.RenameColumn(
-                name: "intelligence_1000",
+                name: "intelligence",
                 schema: "game_data",
                 table: "base_heroes",
-                newName: "intelligence__1000");
+                newName: "intelligence_");
 
             migrationBuilder.RenameColumn(
-                name: "initiative_1000",
+                name: "initiative",
                 schema: "game_data",
                 table: "base_heroes",
-                newName: "initiative__1000");
+                newName: "initiative_");
 
             migrationBuilder.RenameColumn(
-                name: "health_1000",
+                name: "health",
                 schema: "game_data",
                 table: "base_heroes",
-                newName: "health__1000");
+                newName: "health_");
 
             migrationBuilder.RenameColumn(
-                name: "haste_1000",
+                name: "haste",
                 schema: "game_data",
                 table: "base_heroes",
-                newName: "haste__1000");
+                newName: "haste_");
 
             migrationBuilder.RenameColumn(
-                name: "endurance_physical_1000",
+                name: "endurance_physical",
                 schema: "game_data",
                 table: "base_heroes",
-                newName: "endurance_physical__1000");
+                newName: "endurance_physical_");
 
             migrationBuilder.RenameColumn(
-                name: "endurance_magical_1000",
+                name: "endurance_magical",
                 schema: "game_data",
                 table: "base_heroes",
-                newName: "endurance_magical__1000");
+                newName: "endurance_magical_");
 
             migrationBuilder.RenameColumn(
-                name: "damage_1000",
+                name: "damage",
                 schema: "game_data",
                 table: "base_heroes",
-                newName: "damage__1000");
+                newName: "damage_");
 
             migrationBuilder.RenameColumn(
-                name: "crit_multiplier_1000",
+                name: "crit_multiplier",
                 schema: "game_data",
                 table: "base_heroes",
-                newName: "crit_multiplier__1000");
+                newName: "crit_multiplier_");
 
             migrationBuilder.RenameColumn(
-                name: "crit_chance_1000",
+                name: "crit_chance",
                 schema: "game_data",
                 table: "base_heroes",
-                newName: "crit_chance__1000");
+                newName: "crit_chance_");
 
             migrationBuilder.RenameColumn(
-                name: "agility_1000",
+                name: "agility",
                 schema: "game_data",
                 table: "base_heroes",
-                newName: "agility__1000");
+                newName: "agility_");
 
             migrationBuilder.AddColumn<long>(
-                name: "agility__1000",
+                name: "agility_",
                 schema: "collection",
                 table: "heroes",
                 type: "bigint",
@@ -169,35 +169,35 @@ namespace Server_DB_Postgres.Migrations
                 defaultValue: 0L);
 
             migrationBuilder.AddColumn<long>(
-                name: "agility__1000",
+                name: "agility_",
                 schema: "collection",
                 table: "equipments",
                 type: "bigint",
                 nullable: true);
 
             migrationBuilder.AddColumn<long>(
-                name: "crit_chance__1000",
+                name: "crit_chance_",
                 schema: "collection",
                 table: "equipments",
                 type: "bigint",
                 nullable: true);
 
             migrationBuilder.AddColumn<long>(
-                name: "crit_multiplier__1000",
+                name: "crit_multiplier_",
                 schema: "collection",
                 table: "equipments",
                 type: "bigint",
                 nullable: true);
 
             migrationBuilder.AddColumn<long>(
-                name: "endurance_magical__1000",
+                name: "endurance_magical_",
                 schema: "collection",
                 table: "equipments",
                 type: "bigint",
                 nullable: true);
 
             migrationBuilder.AddColumn<long>(
-                name: "endurance_physical__1000",
+                name: "endurance_physical_",
                 schema: "collection",
                 table: "equipments",
                 type: "bigint",
@@ -211,28 +211,28 @@ namespace Server_DB_Postgres.Migrations
                 nullable: false);
 
             migrationBuilder.AddColumn<long>(
-                name: "haste__1000",
+                name: "haste_",
                 schema: "collection",
                 table: "equipments",
                 type: "bigint",
                 nullable: true);
 
             migrationBuilder.AddColumn<long>(
-                name: "health__1000",
+                name: "health_",
                 schema: "collection",
                 table: "equipments",
                 type: "bigint",
                 nullable: true);
 
             migrationBuilder.AddColumn<long>(
-                name: "initiative__1000",
+                name: "initiative_",
                 schema: "collection",
                 table: "equipments",
                 type: "bigint",
                 nullable: true);
 
             migrationBuilder.AddColumn<long>(
-                name: "intelligence__1000",
+                name: "intelligence_",
                 schema: "collection",
                 table: "equipments",
                 type: "bigint",
@@ -240,21 +240,21 @@ namespace Server_DB_Postgres.Migrations
                 defaultValue: 0L);
 
             migrationBuilder.AddColumn<long>(
-                name: "strength__1000",
+                name: "strength_",
                 schema: "collection",
                 table: "equipments",
                 type: "bigint",
                 nullable: true);
 
             migrationBuilder.AddColumn<long>(
-                name: "versality__1000",
+                name: "versality_",
                 schema: "collection",
                 table: "equipments",
                 type: "bigint",
                 nullable: true);
 
             migrationBuilder.AddColumn<Dice>(
-                name: "agility__1000",
+                name: "agility_",
                 schema: "game_data",
                 table: "base_equipments",
                 type: "jsonb",
@@ -262,7 +262,7 @@ namespace Server_DB_Postgres.Migrations
                 defaultValueSql: "'{\"c\":0,\"s\":0}'::jsonb");
 
             migrationBuilder.AddColumn<Dice>(
-                name: "crit_chance__1000",
+                name: "crit_chance_",
                 schema: "game_data",
                 table: "base_equipments",
                 type: "jsonb",
@@ -270,7 +270,7 @@ namespace Server_DB_Postgres.Migrations
                 defaultValueSql: "'{\"c\":0,\"s\":0}'::jsonb");
 
             migrationBuilder.AddColumn<Dice>(
-                name: "crit_multiplier__1000",
+                name: "crit_multiplier_",
                 schema: "game_data",
                 table: "base_equipments",
                 type: "jsonb",
@@ -278,7 +278,7 @@ namespace Server_DB_Postgres.Migrations
                 defaultValueSql: "'{\"c\":0,\"s\":0}'::jsonb");
 
             migrationBuilder.AddColumn<Dice>(
-                name: "damage__1000",
+                name: "damage_",
                 schema: "game_data",
                 table: "base_equipments",
                 type: "jsonb",
@@ -286,7 +286,7 @@ namespace Server_DB_Postgres.Migrations
                 defaultValueSql: "'{\"c\":0,\"s\":0}'::jsonb");
 
             migrationBuilder.AddColumn<Dice>(
-                name: "endurance_magical__1000",
+                name: "endurance_magical_",
                 schema: "game_data",
                 table: "base_equipments",
                 type: "jsonb",
@@ -294,7 +294,7 @@ namespace Server_DB_Postgres.Migrations
                 defaultValueSql: "'{\"c\":0,\"s\":0}'::jsonb");
 
             migrationBuilder.AddColumn<Dice>(
-                name: "endurance_physical__1000",
+                name: "endurance_physical_",
                 schema: "game_data",
                 table: "base_equipments",
                 type: "jsonb",
@@ -302,7 +302,7 @@ namespace Server_DB_Postgres.Migrations
                 defaultValueSql: "'{\"c\":0,\"s\":0}'::jsonb");
 
             migrationBuilder.AddColumn<Dice>(
-                name: "haste__1000",
+                name: "haste_",
                 schema: "game_data",
                 table: "base_equipments",
                 type: "jsonb",
@@ -310,7 +310,7 @@ namespace Server_DB_Postgres.Migrations
                 defaultValueSql: "'{\"c\":0,\"s\":0}'::jsonb");
 
             migrationBuilder.AddColumn<Dice>(
-                name: "health__1000",
+                name: "health_",
                 schema: "game_data",
                 table: "base_equipments",
                 type: "jsonb",
@@ -318,7 +318,7 @@ namespace Server_DB_Postgres.Migrations
                 defaultValueSql: "'{\"c\":0,\"s\":0}'::jsonb");
 
             migrationBuilder.AddColumn<Dice>(
-                name: "initiative__1000",
+                name: "initiative_",
                 schema: "game_data",
                 table: "base_equipments",
                 type: "jsonb",
@@ -326,7 +326,7 @@ namespace Server_DB_Postgres.Migrations
                 defaultValueSql: "'{\"c\":0,\"s\":0}'::jsonb");
 
             migrationBuilder.AddColumn<Dice>(
-                name: "intelligence__1000",
+                name: "intelligence_",
                 schema: "game_data",
                 table: "base_equipments",
                 type: "jsonb",
@@ -334,7 +334,7 @@ namespace Server_DB_Postgres.Migrations
                 defaultValueSql: "'{\"c\":0,\"s\":0}'::jsonb");
 
             migrationBuilder.AddColumn<Dice>(
-                name: "strength__1000",
+                name: "strength_",
                 schema: "game_data",
                 table: "base_equipments",
                 type: "jsonb",
@@ -342,7 +342,7 @@ namespace Server_DB_Postgres.Migrations
                 defaultValueSql: "'{\"c\":0,\"s\":0}'::jsonb");
 
             migrationBuilder.AddColumn<Dice>(
-                name: "versality__1000",
+                name: "versality_",
                 schema: "game_data",
                 table: "base_equipments",
                 type: "jsonb",
@@ -354,32 +354,32 @@ namespace Server_DB_Postgres.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "agility__1000",
+                name: "agility_",
                 schema: "collection",
                 table: "heroes");
 
             migrationBuilder.DropColumn(
-                name: "agility__1000",
+                name: "agility_",
                 schema: "collection",
                 table: "equipments");
 
             migrationBuilder.DropColumn(
-                name: "crit_chance__1000",
+                name: "crit_chance_",
                 schema: "collection",
                 table: "equipments");
 
             migrationBuilder.DropColumn(
-                name: "crit_multiplier__1000",
+                name: "crit_multiplier_",
                 schema: "collection",
                 table: "equipments");
 
             migrationBuilder.DropColumn(
-                name: "endurance_magical__1000",
+                name: "endurance_magical_",
                 schema: "collection",
                 table: "equipments");
 
             migrationBuilder.DropColumn(
-                name: "endurance_physical__1000",
+                name: "endurance_physical_",
                 schema: "collection",
                 table: "equipments");
 
@@ -389,229 +389,229 @@ namespace Server_DB_Postgres.Migrations
                 table: "equipments");
 
             migrationBuilder.DropColumn(
-                name: "haste__1000",
+                name: "haste_",
                 schema: "collection",
                 table: "equipments");
 
             migrationBuilder.DropColumn(
-                name: "health__1000",
+                name: "health_",
                 schema: "collection",
                 table: "equipments");
 
             migrationBuilder.DropColumn(
-                name: "initiative__1000",
+                name: "initiative_",
                 schema: "collection",
                 table: "equipments");
 
             migrationBuilder.DropColumn(
-                name: "intelligence__1000",
+                name: "intelligence_",
                 schema: "collection",
                 table: "equipments");
 
             migrationBuilder.DropColumn(
-                name: "strength__1000",
+                name: "strength_",
                 schema: "collection",
                 table: "equipments");
 
             migrationBuilder.DropColumn(
-                name: "versality__1000",
+                name: "versality_",
                 schema: "collection",
                 table: "equipments");
 
             migrationBuilder.DropColumn(
-                name: "agility__1000",
+                name: "agility_",
                 schema: "game_data",
                 table: "base_equipments");
 
             migrationBuilder.DropColumn(
-                name: "crit_chance__1000",
+                name: "crit_chance_",
                 schema: "game_data",
                 table: "base_equipments");
 
             migrationBuilder.DropColumn(
-                name: "crit_multiplier__1000",
+                name: "crit_multiplier_",
                 schema: "game_data",
                 table: "base_equipments");
 
             migrationBuilder.DropColumn(
-                name: "damage__1000",
+                name: "damage_",
                 schema: "game_data",
                 table: "base_equipments");
 
             migrationBuilder.DropColumn(
-                name: "endurance_magical__1000",
+                name: "endurance_magical_",
                 schema: "game_data",
                 table: "base_equipments");
 
             migrationBuilder.DropColumn(
-                name: "endurance_physical__1000",
+                name: "endurance_physical_",
                 schema: "game_data",
                 table: "base_equipments");
 
             migrationBuilder.DropColumn(
-                name: "haste__1000",
+                name: "haste_",
                 schema: "game_data",
                 table: "base_equipments");
 
             migrationBuilder.DropColumn(
-                name: "health__1000",
+                name: "health_",
                 schema: "game_data",
                 table: "base_equipments");
 
             migrationBuilder.DropColumn(
-                name: "initiative__1000",
+                name: "initiative_",
                 schema: "game_data",
                 table: "base_equipments");
 
             migrationBuilder.DropColumn(
-                name: "intelligence__1000",
+                name: "intelligence_",
                 schema: "game_data",
                 table: "base_equipments");
 
             migrationBuilder.DropColumn(
-                name: "strength__1000",
+                name: "strength_",
                 schema: "game_data",
                 table: "base_equipments");
 
             migrationBuilder.DropColumn(
-                name: "versality__1000",
+                name: "versality_",
                 schema: "game_data",
                 table: "base_equipments");
 
             migrationBuilder.RenameColumn(
-                name: "versality__1000",
+                name: "versality_",
                 schema: "collection",
                 table: "heroes",
-                newName: "versality_1000");
+                newName: "versality");
 
             migrationBuilder.RenameColumn(
-                name: "strength__1000",
+                name: "strength_",
                 schema: "collection",
                 table: "heroes",
-                newName: "strength_1000");
+                newName: "strength");
 
             migrationBuilder.RenameColumn(
-                name: "intelligence__1000",
+                name: "intelligence_",
                 schema: "collection",
                 table: "heroes",
-                newName: "intelligence_1000");
+                newName: "intelligence");
 
             migrationBuilder.RenameColumn(
-                name: "initiative__1000",
+                name: "initiative_",
                 schema: "collection",
                 table: "heroes",
-                newName: "health_1000");
+                newName: "health");
 
             migrationBuilder.RenameColumn(
-                name: "health__1000",
+                name: "health_",
                 schema: "collection",
                 table: "heroes",
-                newName: "haste_1000");
+                newName: "haste");
 
             migrationBuilder.RenameColumn(
-                name: "haste__1000",
+                name: "haste_",
                 schema: "collection",
                 table: "heroes",
-                newName: "endurance_physical_1000");
+                newName: "endurance_physical");
 
             migrationBuilder.RenameColumn(
-                name: "endurance_physical__1000",
+                name: "endurance_physical_",
                 schema: "collection",
                 table: "heroes",
-                newName: "endurance_magical_1000");
+                newName: "endurance_magical");
 
             migrationBuilder.RenameColumn(
-                name: "endurance_magical__1000",
+                name: "endurance_magical_",
                 schema: "collection",
                 table: "heroes",
-                newName: "crit_power_1000");
+                newName: "crit_power");
 
             migrationBuilder.RenameColumn(
-                name: "crit_multiplier__1000",
+                name: "crit_multiplier_",
                 schema: "collection",
                 table: "heroes",
-                newName: "crit_chance_1000");
+                newName: "crit_chance");
 
             migrationBuilder.RenameColumn(
-                name: "crit_chance__1000",
+                name: "crit_chance_",
                 schema: "collection",
                 table: "heroes",
-                newName: "agility_1000");
+                newName: "agility");
 
             migrationBuilder.RenameColumn(
-                name: "versality__1000",
+                name: "versality_",
                 schema: "game_data",
                 table: "base_heroes",
-                newName: "versality_1000");
+                newName: "versality");
 
             migrationBuilder.RenameColumn(
-                name: "strength__1000",
+                name: "strength_",
                 schema: "game_data",
                 table: "base_heroes",
-                newName: "strength_1000");
+                newName: "strength");
 
             migrationBuilder.RenameColumn(
-                name: "intelligence__1000",
+                name: "intelligence_",
                 schema: "game_data",
                 table: "base_heroes",
-                newName: "intelligence_1000");
+                newName: "intelligence");
 
             migrationBuilder.RenameColumn(
-                name: "initiative__1000",
+                name: "initiative_",
                 schema: "game_data",
                 table: "base_heroes",
-                newName: "initiative_1000");
+                newName: "initiative");
 
             migrationBuilder.RenameColumn(
-                name: "health__1000",
+                name: "health_",
                 schema: "game_data",
                 table: "base_heroes",
-                newName: "health_1000");
+                newName: "health");
 
             migrationBuilder.RenameColumn(
-                name: "haste__1000",
+                name: "haste_",
                 schema: "game_data",
                 table: "base_heroes",
-                newName: "haste_1000");
+                newName: "haste");
 
             migrationBuilder.RenameColumn(
-                name: "endurance_physical__1000",
+                name: "endurance_physical_",
                 schema: "game_data",
                 table: "base_heroes",
-                newName: "endurance_physical_1000");
+                newName: "endurance_physical");
 
             migrationBuilder.RenameColumn(
-                name: "endurance_magical__1000",
+                name: "endurance_magical_",
                 schema: "game_data",
                 table: "base_heroes",
-                newName: "endurance_magical_1000");
+                newName: "endurance_magical");
 
             migrationBuilder.RenameColumn(
-                name: "damage__1000",
+                name: "damage_",
                 schema: "game_data",
                 table: "base_heroes",
-                newName: "damage_1000");
+                newName: "damage");
 
             migrationBuilder.RenameColumn(
-                name: "crit_multiplier__1000",
+                name: "crit_multiplier_",
                 schema: "game_data",
                 table: "base_heroes",
-                newName: "crit_multiplier_1000");
+                newName: "crit_multiplier");
 
             migrationBuilder.RenameColumn(
-                name: "crit_chance__1000",
+                name: "crit_chance_",
                 schema: "game_data",
                 table: "base_heroes",
-                newName: "crit_chance_1000");
+                newName: "crit_chance");
 
             migrationBuilder.RenameColumn(
-                name: "agility__1000",
+                name: "agility_",
                 schema: "game_data",
                 table: "base_heroes",
-                newName: "agility_1000");
+                newName: "agility");
 
             migrationBuilder.AddColumn<long>(
-                name: "initiative_1000",
+                name: "initiative",
                 schema: "collection",
                 table: "heroes",
                 type: "jsonb",

@@ -33,7 +33,7 @@ public class DamageType
     /// 2 - магический.
     /// </summary>
     [Default(0)]
-    public int Category {get; set; }
+    public int Category { get; set; }
 
     ///// <summary>// Типы оружия для этого типа урона. Вычисляемое свойство.
     ///// </summary>

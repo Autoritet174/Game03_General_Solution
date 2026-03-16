@@ -12,15 +12,19 @@
   <ItemGroup>
     <Compile Remove="DataBaseModels\**" />
     <Compile Remove="GameData\**" />
+    <Compile Remove="Game\Loot\**" />
     <Compile Remove="publish\**" />
     <Content Remove="DataBaseModels\**" />
     <Content Remove="GameData\**" />
+    <Content Remove="Game\Loot\**" />
     <Content Remove="publish\**" />
     <EmbeddedResource Remove="DataBaseModels\**" />
     <EmbeddedResource Remove="GameData\**" />
+    <EmbeddedResource Remove="Game\Loot\**" />
     <EmbeddedResource Remove="publish\**" />
     <None Remove="DataBaseModels\**" />
     <None Remove="GameData\**" />
+    <None Remove="Game\Loot\**" />
     <None Remove="publish\**" />
   </ItemGroup>
   <ItemGroup>
@@ -153,11 +157,6 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.16.0" />
     <PackageReference Include="UUIDNext" Version="4.2.3" />
 
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <Folder Include="Game\Loot\" />
   </ItemGroup>
 
 </Project>

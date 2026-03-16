@@ -15,11 +15,12 @@ public class TestService(LootGenerator lootGenerator)
         //019b7d31-93fd-703f-a582-c82e6bd40036
         var userId = Guid.Parse("019b7d31-93fd-703f-a582-c82e6bd40036");
         //User user = db.Users.First(u => u.Id == userId);
-        for (int i = 0; i < 0; i++)
+        for (int i = 0; i < 1; i++)
         {
-            // await lootGenerator.GenerateHeroAsync(userId, cancellationToken).ConfigureAwait(false);
-            await lootGenerator.GenerateEquipmentAsync(userId, General.SlotTypeName.None, cancellationToken).ConfigureAwait(false);
+            //await lootGenerator.GenerateHeroAsync(userId, 5, 5, cancellationToken).ConfigureAwait(false);
+            //await lootGenerator.GenerateEquipmentAsync(userId, General.SlotTypeName.None,4,4, cancellationToken).ConfigureAwait(false);
         }
+        
        
 
         //BaseHero Warrior = db.BaseHeroes.First(a => a.Id == 1);

@@ -129,9 +129,9 @@ public static class ModelBuilderExt
             foreach (IMutableProperty property in entity.GetProperties())
             {
                 string newName = property.GetColumnName().ToSnakeCase();
-                if (newName.EndsWith("1000") && !newName.EndsWith("_1000"))
+                if (newName.EndsWith("1000") && !newName.EndsWith(""))
                 {
-                    newName = $"{newName[..^4]}_1000";
+                    newName = $"{newName[..^4]}";
                 }
 
                 property.SetColumnName(newName);

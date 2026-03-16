@@ -300,7 +300,7 @@ namespace Server_DB_Postgres.Migrations
 
                     b.Property<long>("Agility1000")
                         .HasColumnType("bigint")
-                        .HasColumnName("agility_1000");
+                        .HasColumnName("agility");
 
                     b.Property<int>("BaseHeroId")
                         .HasColumnType("integer")
@@ -312,19 +312,19 @@ namespace Server_DB_Postgres.Migrations
 
                     b.Property<long>("CritChance1000")
                         .HasColumnType("bigint")
-                        .HasColumnName("crit_chance_1000");
+                        .HasColumnName("crit_chance");
 
                     b.Property<long>("CritPower1000")
                         .HasColumnType("bigint")
-                        .HasColumnName("crit_power_1000");
+                        .HasColumnName("crit_power");
 
                     b.Property<long>("EnduranceMagical1000")
                         .HasColumnType("bigint")
-                        .HasColumnName("endurance_magical_1000");
+                        .HasColumnName("endurance_magical");
 
                     b.Property<long>("EndurancePhysical1000")
                         .HasColumnType("bigint")
-                        .HasColumnName("endurance_physical_1000");
+                        .HasColumnName("endurance_physical");
 
                     b.Property<long>("ExperienceNow")
                         .ValueGeneratedOnAdd()
@@ -339,19 +339,19 @@ namespace Server_DB_Postgres.Migrations
 
                     b.Property<long>("Haste1000")
                         .HasColumnType("bigint")
-                        .HasColumnName("haste_1000");
+                        .HasColumnName("haste");
 
                     b.Property<long>("Health1000")
                         .HasColumnType("bigint")
-                        .HasColumnName("health_1000");
+                        .HasColumnName("health");
 
                     b.Property<long>("Initiative1000")
                         .HasColumnType("jsonb")
-                        .HasColumnName("initiative_1000");
+                        .HasColumnName("initiative");
 
                     b.Property<long>("Intelligence1000")
                         .HasColumnType("bigint")
-                        .HasColumnName("intelligence_1000");
+                        .HasColumnName("intelligence");
 
                     b.Property<int>("Level")
                         .ValueGeneratedOnAdd()
@@ -361,7 +361,7 @@ namespace Server_DB_Postgres.Migrations
 
                     b.Property<long>("Strength1000")
                         .HasColumnType("bigint")
-                        .HasColumnName("strength_1000");
+                        .HasColumnName("strength");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -373,7 +373,7 @@ namespace Server_DB_Postgres.Migrations
 
                     b.Property<long>("Versality1000")
                         .HasColumnType("bigint")
-                        .HasColumnName("versality_1000");
+                        .HasColumnName("versality");
 
                     b.Property<long>("Version")
                         .IsConcurrencyToken()
@@ -468,63 +468,63 @@ namespace Server_DB_Postgres.Migrations
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("jsonb")
-                        .HasColumnName("agility_1000")
+                        .HasColumnName("agility")
                         .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
 
                     b.Property<Dice>("CritChance1000")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("jsonb")
-                        .HasColumnName("crit_chance_1000")
+                        .HasColumnName("crit_chance")
                         .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
 
                     b.Property<Dice>("CritMultiplier1000")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("jsonb")
-                        .HasColumnName("crit_multiplier_1000")
+                        .HasColumnName("crit_multiplier")
                         .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
 
                     b.Property<Dice>("Damage1000")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("jsonb")
-                        .HasColumnName("damage_1000")
+                        .HasColumnName("damage")
                         .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
 
                     b.Property<Dice>("EnduranceMagical1000")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("jsonb")
-                        .HasColumnName("endurance_magical_1000")
+                        .HasColumnName("endurance_magical")
                         .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
 
                     b.Property<Dice>("EndurancePhysical1000")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("jsonb")
-                        .HasColumnName("endurance_physical_1000")
+                        .HasColumnName("endurance_physical")
                         .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
 
                     b.Property<Dice>("Haste1000")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("jsonb")
-                        .HasColumnName("haste_1000")
+                        .HasColumnName("haste")
                         .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
 
                     b.Property<Dice>("Health1000")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("jsonb")
-                        .HasColumnName("health_1000")
+                        .HasColumnName("health")
                         .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
 
                     b.Property<Dice>("Intelligence1000")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("jsonb")
-                        .HasColumnName("intelligence_1000")
+                        .HasColumnName("intelligence")
                         .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
 
                     b.Property<bool>("IsUnique")
@@ -553,14 +553,14 @@ namespace Server_DB_Postgres.Migrations
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("jsonb")
-                        .HasColumnName("strength_1000")
+                        .HasColumnName("strength")
                         .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
 
                     b.Property<Dice>("Versality1000")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("jsonb")
-                        .HasColumnName("versality_1000")
+                        .HasColumnName("versality")
                         .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
 
                     b.HasKey("Id")

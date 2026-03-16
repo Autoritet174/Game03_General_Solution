@@ -34,18 +34,18 @@ public class BaseHero
     //public IReadOnlyCollection<CreatureType> CreatureTypes => X_Hero_CreatureType?.Select(static x => x.CreatureTypes).ToList() ?? [];
 
     #region Характеристики
-    [Jsonb] public Dice Health_1000 { get; set; } = null!;
-    [Jsonb] public Dice Damage_1000 { get; set; } = null!;
-    [Jsonb] public Dice Strength_1000 { get; set; } = null!;
-    [Jsonb] public Dice Agility_1000 { get; set; } = null!;
-    [Jsonb] public Dice Intelligence_1000 { get; set; } = null!;
-    [Jsonb] public Dice CritChance_1000 { get; set; } = null!;
-    [Jsonb] public Dice CritMultiplier_1000 { get; set; } = null!;
-    [Jsonb] public Dice Haste_1000 { get; set; } = null!;
-    [Jsonb] public Dice Versality_1000 { get; set; } = null!;
-    [Jsonb] public Dice EndurancePhysical_1000 { get; set; } = null!;
-    [Jsonb] public Dice EnduranceMagical_1000 { get; set; } = null!;
-    [Jsonb] public Dice Initiative_1000 { get; set; } = null!;
+    [Jsonb] public Dice Health { get; set; } = null!;
+    [Jsonb] public Dice Damage { get; set; } = null!;
+    [Jsonb] public Dice Strength { get; set; } = null!;
+    [Jsonb] public Dice Agility { get; set; } = null!;
+    [Jsonb] public Dice Intelligence { get; set; } = null!;
+    [Jsonb] public Dice CritChance { get; set; } = null!;
+    [Jsonb] public Dice CritMultiplier { get; set; } = null!;
+    [Jsonb] public Dice Haste { get; set; } = null!;
+    [Jsonb] public Dice Versality { get; set; } = null!;
+    [Jsonb] public Dice EndurancePhysical { get; set; } = null!;
+    [Jsonb] public Dice EnduranceMagical { get; set; } = null!;
+    [Jsonb] public Dice Initiative { get; set; } = null!;
     #endregion Характеристики
 
 }

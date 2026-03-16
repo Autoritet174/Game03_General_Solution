@@ -23,30 +23,24 @@ public class EquipmentType
     //[NotMapped]
     //public IReadOnlyCollection<DamageType> DamageTypes => X_EquipmentType_DamageType.Select(static x => x.DamageType).ToList() ?? [];
 
-    [Default(0)]
-    public int MassPhysical { get; set; }
+    [Default(0)] public int MassPhysical { get; set; }
 
-    [Default(0)]
-    public int MassMagical { get; set; }
+    [Default(0)] public int MassMagical { get; set; }
 
     public int SlotTypeId { get; set; }
     /// <summary> Тип слота экипировки. Не индекс слота а его тип, то есть Кольцо или Браслет, а не Кольцо2 или Браслет1. </summary>
     [ForeignKey(nameof(SlotTypeId))]
     public SlotType SlotType { get; set; } = null!;
 
-    [Default(false)]
-    public bool CanCraftSmithing { get; set; }
+    [Default(false)] public bool CanCraftSmithing { get; set; }
 
-    [Default(false)]
-    public bool CanCraftJewelcrafting { get; set; }
+    [Default(false)] public bool CanCraftJewelcrafting { get; set; }
 
     /// <summary> Трата очков действия за удар. </summary>
-    [Default(0)]
-    public int SpendActionPoints { get; set; }
+    [Default(0)] public int SpendActionPoints { get; set; }
 
     /// <summary> Блокирует ли оружие другую руку, если это оружие. </summary>
     public bool? BlockOtherHand { get; set; }
 
-    [Jsonb]
-    public Dice? Damage { get; set; }
+    [Jsonb] public Dice? Damage { get; set; } // У оружия есть урон, а у брони нет и у других видов экипировки
 }

@@ -11,13 +11,11 @@ namespace Server_DB_Postgres.Entities.Collection;
 [Table(nameof(DbContextGame.Heroes), Schema = nameof(Collection))]
 public class Hero : IVersion, ICreatedAt, IUpdatedAt
 {
-    /// <summary> Уникальный идентификатор. </summary>
     public Guid Id { get; init; }
 
-    /// <summary> Уникальный идентификатор владельца. </summary>
     public Guid UserId { get; set; }
     [ForeignKey(nameof(UserId))]
-    public User? User { get; set; }
+    public User User { get; set; } = null!;
 
     /// <summary> <inheritdoc/> </summary>
     public long Version { get; set; }
@@ -32,9 +30,7 @@ public class Hero : IVersion, ICreatedAt, IUpdatedAt
     public int BaseHeroId { get; set; }
     /// <summary> Сущность <see cref="GameData.BaseHero"/>. </summary>
     [ForeignKey(nameof(BaseHeroId))]
-    public BaseHero? BaseHero { get; set; }
-
-    //public bool IsBaseHeroUnique { get; set; }
+    public BaseHero BaseHero { get; set; } = null!;
 
     /// <summary> Имя группы. </summary>
     [MaxLength(256)]
@@ -46,32 +42,32 @@ public class Hero : IVersion, ICreatedAt, IUpdatedAt
 
     /// <summary> Текущий опыт. </summary>
     [Default(0)]
-    public long ExperienceNow { get; set; }
+    public float Experience { get; set; }
 
 
 
     #region Характеристики
-    public long Health_1000 { get; set; }
-    public long Strength_1000 { get; set; }
-    public long Agility_1000 { get; set; }
-    public long Intelligence_1000 { get; set; }
-    public long CritChance_1000 { get; set; }
-    public long CritMultiplier_1000 { get; set; }
-    public long Haste_1000 { get; set; }
-    public long Versality_1000 { get; set; }
-    public long EndurancePhysical_1000 { get; set; }
-    public long EnduranceMagical_1000 { get; set; }
-    public long Initiative_1000 { get; set; }
+    public float Health { get; set; }
+    public float Strength { get; set; }
+    public float Agility { get; set; }
+    public float Intelligence { get; set; }
+    public float CritChance { get; set; }
+    public float CritMultiplier { get; set; }
+    public float Haste { get; set; }
+    public float Versality { get; set; }
+    public float EndurancePhysical { get; set; }
+    public float EnduranceMagical { get; set; }
+    public float Initiative { get; set; }
     #endregion Характеристики
 
 
     #region Resistances
 
     ///// <summary> Сопротивление физическому урону. Выражается числом которое преобразовывается в проценты. </summary>
-    //public long ResistDamagePhysical1000 { get; set; }
+    //public long ResistDamagePhysical { get; set; }
 
     ///// <summary> Сопротивление магическому урону. Выражается числом которое преобразовывается в проценты. </summary>
-    //public long ResistDamageMagical1000 { get; set; }
+    //public long ResistDamageMagical { get; set; }
 
     #endregion Resistances
 

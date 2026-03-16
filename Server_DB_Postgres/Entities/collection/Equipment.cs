@@ -17,7 +17,7 @@ public class Equipment : IVersion, ICreatedAt, IUpdatedAt
 
     public Guid UserId { get; set; }
     [ForeignKey(nameof(UserId))]
-    public User? User { get; set; }
+    public User User { get; set; } = null!;
 
     [MaxLength(256)]
     public string? GroupName { get; set; }
@@ -28,34 +28,20 @@ public class Equipment : IVersion, ICreatedAt, IUpdatedAt
 
     public int BaseEquipmentId { get; set; }
     [ForeignKey(nameof(BaseEquipmentId))]
-    public BaseEquipment? BaseEquipment { get; set; }
+    public BaseEquipment BaseEquipment { get; set; } = null!;
 
     /// <summary>
     /// Герой на которого экипирован предмет.
     /// </summary>
     public Guid? HeroId { get; set; }
     [ForeignKey(nameof(HeroId))]
-    public Hero? Hero { get; set; }
+    public Hero Hero { get; set; } = null!;
 
     public int? SlotId { get; set; }
     [ForeignKey(nameof(SlotId))]
-    public Slot? Slot { get; set; }
-
-
+    public Slot Slot { get; set; } = null!;
 
     [Jsonb] public Dictionary<Guid, ItemExp>? ExperienceHeroes { get; set; }
+    [Jsonb] public Dictionary<int, float>? Stats { get; set; }
 
-    #region Характеристики
-    public long? Health_1000 { get; set; }
-    public long? Strength_1000 { get; set; }
-    public long? Agility_1000 { get; set; }
-    public long Intelligence_1000 { get; set; }
-    public long? CritChance_1000 { get; set; }
-    public long? CritMultiplier_1000 { get; set; }
-    public long? Haste_1000 { get; set; }
-    public long? Versality_1000 { get; set; }
-    public long? EndurancePhysical_1000 { get; set; }
-    public long? EnduranceMagical_1000 { get; set; }
-    public long? Initiative_1000 { get; set; }
-    #endregion Характеристики
 }

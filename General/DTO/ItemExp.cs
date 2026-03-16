@@ -7,6 +7,6 @@ public class ItemExp
     [JsonPropertyName("l")]
     public int Level { get; set; }
 
-    [JsonPropertyName("e")]
-    public long Experience_1000 { get; set; }
+    [JsonPropertyName("x")] // названо этой буквой потому что postgres сортирует jsonb по алфавиту, сортировку задаём для наглядности
+    public float Experience { get; set; }
 }

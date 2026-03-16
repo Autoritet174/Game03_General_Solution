@@ -114,10 +114,10 @@ public class LootGenerator(
     /// <summary>
     /// Генерирует нового героя для пользователя, выбирая случайного базового героя с учетом редкости и наличия уникальных героев, которых пользователь уже имеет. Добавляет нового героя в базу данных и возвращает результат операции.
     /// </summary>
-    public async Task<Result> GenerateHeroAsync(Guid userId, CancellationToken cancellationToken)
+    public async Task<Result> GenerateHeroAsync(Guid userId, int minRarity = 1, int maxRarity = 6, CancellationToken cancellationToken = default)
     {
         await using DbContextGame db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        int raritySelected = SelectRandomRarity();
+        int raritySelected = SelectRandomRarity(minRarity, maxRarity);
         BaseHero? baseHero = await SelectRandomBaseHeroAsync(db, userId, raritySelected, cancellationToken).ConfigureAwait(false);
         if (baseHero == null)
         {
@@ -137,10 +137,10 @@ public class LootGenerator(
     /// Генерирует новую экипировку для пользователя, выбирая случайный базовый предмет с учетом редкости и наличия уникальных предметов, которых пользователь уже имеет. Добавляет новый предмет в базу данных и возвращает результат операции.
     /// </summary>
     /// <returns></returns>
-    public async Task<Result> GenerateEquipmentAsync(Guid userId, SlotTypeName slotTypeName, CancellationToken cancellationToken)
+    public async Task<Result> GenerateEquipmentAsync(Guid userId, SlotTypeName slotTypeName, int minRarity = 1, int maxRarity = 6, CancellationToken cancellationToken = default)
     {
         await using DbContextGame db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        int raritySelected = SelectRandomRarity();
+        int raritySelected = SelectRandomRarity(minRarity, maxRarity);
         BaseEquipment? baseEquipment = await SelectRandomBaseEquipmentAsync(db, userId, slotTypeName, raritySelected, cancellationToken).ConfigureAwait(false);
         if (baseEquipment == null)
         {
@@ -156,7 +156,7 @@ public class LootGenerator(
         return Result.Ok();
     }
 
-    private async Task<BaseHero?> SelectRandomBaseHeroAsync(DbContextGame db, Guid userId, int raritySelected, CancellationToken cancellationToken)
+    private async Task<BaseHero?> SelectRandomBaseHeroAsync(DbContextGame db, Guid userId, int raritySelected, CancellationToken cancellationToken = default)
     {
         if (cancellationToken.IsCancellationRequested)
         {
@@ -187,6 +187,7 @@ public class LootGenerator(
             if (heroesId.Count < 1)
             {
                 continue; // Если нет доступных героев с данной редкостью, переходим к редкости ниже уровнем
+                // фактически это заглушка, так как герои на всех редкостях должны быть доступны хотябы один
             }
 
             // Выбираем случайного героя из списка доступных
@@ -198,7 +199,7 @@ public class LootGenerator(
         return null;
     }
 
-    private async Task<BaseEquipment?> SelectRandomBaseEquipmentAsync(DbContextGame db, Guid userId, SlotTypeName slotTypeName, int raritySelected, CancellationToken cancellationToken)
+    private async Task<BaseEquipment?> SelectRandomBaseEquipmentAsync(DbContextGame db, Guid userId, SlotTypeName slotTypeName, int raritySelected, CancellationToken cancellationToken = default)
     {
         if (cancellationToken.IsCancellationRequested)
         {
@@ -240,7 +241,7 @@ public class LootGenerator(
         return null;
     }
 
-    private async Task<Result> AddNewHeroAsync(DbContextGame db, BaseHero baseHero, Guid userId, CancellationToken cancellationToken)
+    private async Task<Result> AddNewHeroAsync(DbContextGame db, BaseHero baseHero, Guid userId, CancellationToken cancellationToken = default)
     {
         if (cancellationToken.IsCancellationRequested)
         {
@@ -261,7 +262,7 @@ public class LootGenerator(
         return Result.Ok();
     }
 
-    private async Task<Result> AddNewEquipmentAsync(DbContextGame db, BaseEquipment baseEquipment, Guid userId, CancellationToken cancellationToken)
+    private async Task<Result> AddNewEquipmentAsync(DbContextGame db, BaseEquipment baseEquipment, Guid userId, CancellationToken cancellationToken = default)
     {
         if (cancellationToken.IsCancellationRequested)
         {
@@ -288,18 +289,18 @@ public class LootGenerator(
         {
             BaseHeroId = baseHero.Id,
             Level = 1,
-            ExperienceNow = 0,
-            Health_1000 = DiceHelper.GetRandomValue(baseHero.Health_1000),
-            Strength_1000 = DiceHelper.GetRandomValue(baseHero.Strength_1000),
-            Agility_1000 = DiceHelper.GetRandomValue(baseHero.Agility_1000),
-            Intelligence_1000 = DiceHelper.GetRandomValue(baseHero.Intelligence_1000),
-            CritChance_1000 = DiceHelper.GetRandomValue(baseHero.CritChance_1000),
-            CritMultiplier_1000 = DiceHelper.GetRandomValue(baseHero.CritMultiplier_1000),
-            Haste_1000 = DiceHelper.GetRandomValue(baseHero.Haste_1000),
-            Versality_1000 = DiceHelper.GetRandomValue(baseHero.Versality_1000),
-            EndurancePhysical_1000 = DiceHelper.GetRandomValue(baseHero.EndurancePhysical_1000),
-            EnduranceMagical_1000 = DiceHelper.GetRandomValue(baseHero.EnduranceMagical_1000),
-            Initiative_1000 = DiceHelper.GetRandomValue(baseHero.Initiative_1000)
+            Experience = 0,
+            Health = DiceHelper.GetRandomValue(baseHero.Health),
+            Strength = DiceHelper.GetRandomValue(baseHero.Strength),
+            Agility = DiceHelper.GetRandomValue(baseHero.Agility),
+            Intelligence = DiceHelper.GetRandomValue(baseHero.Intelligence),
+            CritChance = DiceHelper.GetRandomValue(baseHero.CritChance),
+            CritMultiplier = DiceHelper.GetRandomValue(baseHero.CritMultiplier),
+            Haste = DiceHelper.GetRandomValue(baseHero.Haste),
+            Versality = DiceHelper.GetRandomValue(baseHero.Versality),
+            EndurancePhysical = DiceHelper.GetRandomValue(baseHero.EndurancePhysical),
+            EnduranceMagical = DiceHelper.GetRandomValue(baseHero.EnduranceMagical),
+            Initiative = DiceHelper.GetRandomValue(baseHero.Initiative)
         };
     }
 
@@ -307,18 +308,7 @@ public class LootGenerator(
     {
         return new Equipment
         {
-            BaseEquipmentId = baseEquipment.Id,
-            Health_1000 = DiceHelper.GetRandomValue(baseEquipment.Health_1000),
-            Strength_1000 = DiceHelper.GetRandomValue(baseEquipment.Strength_1000),
-            Agility_1000 = DiceHelper.GetRandomValue(baseEquipment.Agility_1000),
-            Intelligence_1000 = DiceHelper.GetRandomValue(baseEquipment.Intelligence_1000),
-            CritChance_1000 = DiceHelper.GetRandomValue(baseEquipment.CritChance_1000),
-            CritMultiplier_1000 = DiceHelper.GetRandomValue(baseEquipment.CritMultiplier_1000),
-            Haste_1000 = DiceHelper.GetRandomValue(baseEquipment.Haste_1000),
-            Versality_1000 = DiceHelper.GetRandomValue(baseEquipment.Versality_1000),
-            EndurancePhysical_1000 = DiceHelper.GetRandomValue(baseEquipment.EndurancePhysical_1000),
-            EnduranceMagical_1000 = DiceHelper.GetRandomValue(baseEquipment.EnduranceMagical_1000),
-            Initiative_1000 = DiceHelper.GetRandomValue(baseEquipment.Initiative_1000)
+            BaseEquipmentId = baseEquipment.Id
         };
     }
 

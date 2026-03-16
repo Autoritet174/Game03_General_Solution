@@ -13,21 +13,21 @@ public record Dice
     public int Count { get; set; }
 
     /// <summary> Sides. Размер кубика (число граней). </summary>
-    [JsonPropertyName("s")]
+    [JsonPropertyName("d")] // названо этой буквой потому что postgres сортирует jsonb по алфавиту, сортировку задаём для наглядности
     public int Sides { get; set; }
 
-    /// <summary> Modificator. Модификатор к броску кубиков. Первые три знака, тысячные доли от единицы видимой игроку. </summary>
+    /// <summary> Modificator. Модификатор к броску кубиков. </summary>
     [JsonPropertyName("m")]
-    public long? Modificator_1000 { get; set; } = null;
+    public float? Modificator { get; set; } = null;
 
     /// <summary> Минимальное значение. </summary>
-    public long Min_1000 => (Count * 1000L) + (Modificator_1000 ?? 0L);
+    public float Min => Count + (Modificator ?? 0f);
 
     /// <summary> Максимальное значение. </summary>
-    public long Max_1000 => (1000L * (Count * Sides)) + (Modificator_1000 ?? 0L);
+    public float Max => (Count * Sides) + (Modificator ?? 0f);
 
     /// <summary> Ожидаемое значение. </summary>
-    public long Expected_1000 => (500L * (Count * (Sides + 1))) + (Modificator_1000 ?? 0L); // Count * (Sides + 1) / 2 * 1000
+    public float Expected => (Count * (Sides + 1) / 2f) + (Modificator ?? 0f);
 
     public Dice() { }
 
@@ -61,18 +61,18 @@ public record Dice
         {
             Sides = int.Parse(span[i_d1..(i_d + i_p)]);
 
-            int mod = int.Parse(span[(i_d + i_p + 1)..]);
+            float mod = int.Parse(span[(i_d + i_p + 1)..]);
             if (mod != 0)
             {
-                Modificator_1000 = mod;
+                Modificator = mod;
             }
         }
     }
 
-    public Dice(int count, int sides, long? modificator_1000 = null)
+    public Dice(int count, int sides, float? modificator = null)
     {
         Count = count;
         Sides = sides;
-        Modificator_1000 = modificator_1000;
+        Modificator = modificator;
     }
 }

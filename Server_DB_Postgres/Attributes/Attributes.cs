@@ -8,9 +8,7 @@ namespace Server_DB_Postgres.Attributes;
 [AttributeUsage(AttributeTargets.Property)]
 public class DefaultAttribute(object value) : Attribute
 {
-    /// <summary>
-    /// Значение.
-    /// </summary>
+    /// <summary> Значение. </summary>
     public object Value { get; } = value;
 }
 
@@ -24,3 +22,4 @@ public class JsonbAttribute : ColumnAttribute
         TypeName = "jsonb";
     }
 }
+

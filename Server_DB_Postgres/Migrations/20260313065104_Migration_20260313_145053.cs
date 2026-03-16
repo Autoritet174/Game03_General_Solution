@@ -1,4 +1,4 @@
-﻿using General.DTO;
+using General.DTO;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -12,7 +12,7 @@ namespace Server_DB_Postgres.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<Dice>(
-                name: "initiative_1000",
+                name: "initiative",
                 schema: "game_data",
                 table: "base_heroes",
                 type: "jsonb",
@@ -24,7 +24,7 @@ namespace Server_DB_Postgres.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "initiative_1000",
+                name: "initiative",
                 schema: "game_data",
                 table: "base_heroes");
         }
