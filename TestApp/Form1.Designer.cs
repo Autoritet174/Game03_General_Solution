@@ -35,11 +35,13 @@ partial class Form1
         // 
         // numericUpDown1
         // 
+        numericUpDown1.DecimalPlaces = 9;
         numericUpDown1.Font = new Font("Segoe UI", 16F);
         numericUpDown1.Location = new Point(52, 31);
-        numericUpDown1.Maximum = new decimal(new int[] { -727379968, 232, 0, 0 });
+        numericUpDown1.Maximum = new decimal(new int[] { 268435456, 1042612833, 542101086, 0 });
+        numericUpDown1.Minimum = new decimal(new int[] { 268435456, 1042612833, 542101086, int.MinValue });
         numericUpDown1.Name = "numericUpDown1";
-        numericUpDown1.Size = new Size(222, 36);
+        numericUpDown1.Size = new Size(469, 36);
         numericUpDown1.TabIndex = 0;
         numericUpDown1.TextAlign = HorizontalAlignment.Right;
         numericUpDown1.ValueChanged += numericUpDown1_ValueChanged;
@@ -49,7 +51,7 @@ partial class Form1
         textBox1.Font = new Font("Segoe UI", 16F);
         textBox1.Location = new Point(52, 90);
         textBox1.Name = "textBox1";
-        textBox1.Size = new Size(222, 36);
+        textBox1.Size = new Size(469, 36);
         textBox1.TabIndex = 1;
         // 
         // Form1

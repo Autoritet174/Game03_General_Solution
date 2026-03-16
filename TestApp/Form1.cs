@@ -42,43 +42,63 @@ end
      */
 
 
-    public static string NumberToShortString(double n)
+    private static readonly char[] suffix = ['K', 'M', 'B', 'T', 'Q'];
+    private static readonly int suffix_Length = suffix.Length;
+    public static string NumberToShortString(float n)
     {
-        if (n < 100)
-        {
-            return n.ToString().Substring(0, Math.Min(4, n.ToString().Length));
+        // Обработка специальных случаев
+        if (float.IsNaN(n) || float.IsInfinity(n)) return n.ToString();
+        if (n == 0f) return "0";
+
+        bool negative = n < 0f;
+        float value = negative ? -n : n;
+
+        if (value < 0.1f) {
+            string result = value.ToString("0.00e0").Replace("e+", "e").Replace("E+", "e");
+            return negative ? $"-{result}" : result;
         }
-        else if (n < 1000)
+
+        if (value < 1f)
         {
-            return n.ToString().Substring(0, Math.Min(3, n.ToString().Length));
+            string result = value.ToString("0.###");
+            return negative ? $"-{result}" : result;
         }
-        else if (n < 100000)
+
+        string formatted = "";
+        float originalValue = value; // Сохраняем для возможного научного формата
+        int i;
+        for (i = -1; i < suffix_Length; i++)
         {
-            return (n / 1000).ToString().Substring(0, Math.Min(4, (n / 1000).ToString().Length)) + "K";
+            if (value < 10f)
+            {
+                formatted = value.ToString("0.##");
+                break;
+            }
+            if (value < 100f)
+            {
+                formatted = value.ToString("0.#");
+                break;
+            }
+            if (value < 1000f)
+            {
+                formatted = value.ToString("0");
+                break;
+            }
+
+            value /= 1000f;
         }
-        else if (n < 1000000)
+
+        // Если число слишком большое для наших суффиксов
+        if (formatted == "")
         {
-            return (n / 1000).ToString().Substring(0, Math.Min(3, (n / 1000).ToString().Length)) + "K";
+            // Используем оригинальное значение для научной нотации
+            formatted = originalValue.ToString("0.00e0").Replace("e+", "e").Replace("E+", "e");
         }
-        else if (n < 100000000)
+        else if (i > -1 && i < suffix_Length)
         {
-            return (n / 1000000).ToString().Substring(0, Math.Min(4, (n / 1000000).ToString().Length)) + "M";
+            formatted += suffix[i];
         }
-        else if (n < 1000000000)
-        {
-            return (n / 1000000).ToString().Substring(0, Math.Min(3, (n / 1000000).ToString().Length)) + "M";
-        }
-        else if (n < 100000000000)
-        {
-            return (n / 1000000000).ToString().Substring(0, Math.Min(4, (n / 1000000000).ToString().Length)) + "B";
-        }
-        else if (n < 1000000000000)
-        {
-            return (n / 1000000000).ToString().Substring(0, Math.Min(3, (n / 1000000000).ToString().Length)) + "B";
-        }
-        else
-        {
-            return n.ToString("0.00e0").Replace("e+", "e");
-        }
+        
+        return negative ? $"-{formatted}" : formatted;
     }
 }
