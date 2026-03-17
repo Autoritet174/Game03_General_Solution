@@ -1278,6 +1278,18 @@
         <member name="M:Server_DB_Postgres.Migrations.BigPatch1.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:Server_DB_Postgres.Migrations.Migration_20260317_160908">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260317_160908.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260317_160908.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260317_160908.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
         <member name="T:Server_DB_Postgres.ModelBuilderExt">
             <summary>
             Класс расширяющих методов для Entity Framework Core ModelBuilder

@@ -10,7 +10,7 @@ namespace Server_DB_Postgres.Entities.GameData;
 public class SlotType
 {
     /// <summary> Уникальный идентификатор. </summary>
-    public int Id { get; init; }
+    public General.ESlotType Id { get; init; }
 
     /// <summary> Уникальное наименование на английском. </summary>
     [MaxLength(256)]

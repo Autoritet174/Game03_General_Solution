@@ -137,11 +137,11 @@ public class LootGenerator(
     /// Генерирует новую экипировку для пользователя, выбирая случайный базовый предмет с учетом редкости и наличия уникальных предметов, которых пользователь уже имеет. Добавляет новый предмет в базу данных и возвращает результат операции.
     /// </summary>
     /// <returns></returns>
-    public async Task<Result> GenerateEquipmentAsync(Guid userId, SlotTypeName slotTypeName, int minRarity = 1, int maxRarity = 6, CancellationToken cancellationToken = default)
+    public async Task<Result> GenerateEquipmentAsync(Guid userId, ESlotType slotTypeId, int minRarity = 1, int maxRarity = 6, CancellationToken cancellationToken = default)
     {
         await using DbContextGame db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
         int raritySelected = SelectRandomRarity(minRarity, maxRarity);
-        BaseEquipment? baseEquipment = await SelectRandomBaseEquipmentAsync(db, userId, slotTypeName, raritySelected, cancellationToken).ConfigureAwait(false);
+        BaseEquipment? baseEquipment = await SelectRandomBaseEquipmentAsync(db, userId, slotTypeId, raritySelected, cancellationToken).ConfigureAwait(false);
         if (baseEquipment == null)
         {
             logger.LogError("Failed to select random base equipment for user {UserId}", userId);
@@ -199,7 +199,7 @@ public class LootGenerator(
         return null;
     }
 
-    private async Task<BaseEquipment?> SelectRandomBaseEquipmentAsync(DbContextGame db, Guid userId, SlotTypeName slotTypeName, int raritySelected, CancellationToken cancellationToken = default)
+    private async Task<BaseEquipment?> SelectRandomBaseEquipmentAsync(DbContextGame db, Guid userId, ESlotType slotTypeId, int raritySelected, CancellationToken cancellationToken = default)
     {
         if (cancellationToken.IsCancellationRequested)
         {
@@ -207,15 +207,14 @@ public class LootGenerator(
         }
 
         Random rand = Random.Shared;
-        int slotTypeId = (int)slotTypeName;
         for (int r = raritySelected; r > 0; r--)
         {
             // Получаем id базовых предметов с выбранной редкостью, разделяя их на уникальных и неуникальных
             List<int> baseEquipmentUniqueIds = [.. cacheService.TableBaseEquipments
-                    .Where(a => a.Rarity == r && a.IsUnique && (slotTypeName == SlotTypeName.None || a.EquipmentType.SlotTypeId == slotTypeId))
+                    .Where(a => a.Rarity == r && a.IsUnique && (slotTypeId == ESlotType.None || a.EquipmentType.SlotTypeId == slotTypeId))
                     .Select(b => b.Id)];
             List<int> baseEquipmentNotUniqueIds = [.. cacheService.TableBaseEquipments
-                    .Where(a => a.Rarity == r && !a.IsUnique && (slotTypeName == SlotTypeName.None || a.EquipmentType.SlotTypeId == slotTypeId))
+                    .Where(a => a.Rarity == r && !a.IsUnique && (slotTypeId == ESlotType.None || a.EquipmentType.SlotTypeId == slotTypeId))
                     .Select(b => b.Id)];
 
             // Получаем список id базовых предметов с выбранной редкостью, которых уже имеет пользователь, из списка уникальных предметов
@@ -271,6 +270,10 @@ public class LootGenerator(
 
         Equipment equipment = CreateNewEquipmentByBase(baseEquipment);
         equipment.UserId = userId;
+        equipment.Stats = new Dictionary<EStatType, List<float>>
+        {
+            { EStatType.Health, [10000f, 15000f] }
+        };
 
         _ = await db.Equipments.AddAsync(equipment, cancellationToken).ConfigureAwait(false);
         int rowsChanged = await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

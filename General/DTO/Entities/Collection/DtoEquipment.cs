@@ -1,13 +1,15 @@
 using General.DTO.Entities.GameData;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace General.DTO.Entities.Collection;
 
 /// <summary>
 /// Предмет экипировки из коллекции игрока. (MongoDb).
 /// </summary>
-public class DtoEquipment(Guid id, Guid userId, int baseEquipmentId, string? groupName, Guid? heroId, int? slotId)
+public class DtoEquipment(Guid id, Guid userId, int baseEquipmentId, string? groupName, Guid? heroId, ESlot? slotId, Dictionary<EStatType, List<float>>? stats)
 {
     public Guid Id { get; } = id;
     public Guid UserId { get; } = userId;
@@ -15,5 +17,8 @@ public class DtoEquipment(Guid id, Guid userId, int baseEquipmentId, string? gro
     public DtoBaseEquipment? BaseEquipment { get; set; } = null;
     public string? GroupName { get; set; } = groupName;
     public Guid? HeroId { get; set; } = heroId;
-    public int? SlotId { get; set; } = slotId;
+    public ESlot? SlotId { get; set; } = slotId;
+
+    public Dictionary<Guid, ItemExp>? ExperienceHeroes { get; set; }
+    public Dictionary<EStatType, List<float>>? Stats { get; set; } = stats;
 }

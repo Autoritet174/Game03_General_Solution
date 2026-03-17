@@ -41,8 +41,8 @@ public partial class EquipmentManager(
     /// <summary>
     /// Скомпилированный запрос для поиска предмета, надетого в конкретный слот героя.
     /// </summary>
-    private static readonly Func<DbContextGame, Guid, int, CancellationToken, Task<Equipment?>> GetEquippedInSlotAsync =
-        EF.CompileAsyncQuery((DbContextGame db, Guid heroId, int slotId, CancellationToken ct) =>
+    private static readonly Func<DbContextGame, Guid, General.ESlot, CancellationToken, Task<Equipment?>> GetEquippedInSlotAsync =
+        EF.CompileAsyncQuery((DbContextGame db, Guid heroId, General.ESlot slotId, CancellationToken ct) =>
             db.Equipments.FirstOrDefault(e => e.HeroId == heroId && e.SlotId == slotId));
 
     private static readonly string _EquipmentTakeOnSql = "SELECT collection.equipment_take_on({0}, {1}, {2})";
@@ -110,7 +110,7 @@ public partial class EquipmentManager(
         }
 
         // Определение целевого слота
-        int slotId = GetSlotId(equipment.BaseEquipmentId, dto.InAltSlot ?? false);
+        General.ESlot slotId = GetSlotId(equipment.BaseEquipmentId, dto.InAltSlot ?? false);
 
         // Обработка конфликта(если слот занят — снимаем текущий предмет)
         Equipment? currentSlotItem = await GetEquippedInSlotAsync(db, heroId, slotId, cancellationToken).ConfigureAwait(false);
@@ -174,16 +174,16 @@ public partial class EquipmentManager(
     /// <param name="baseEquipmentId">ID базового шаблона предмета.</param>
     /// <param name="inAltSlot">Флаг использования альтернативного слота (например, второе кольцо).</param>
     /// <returns>ID конкретного слота из базы данных.</returns>
-    private int GetSlotId(int baseEquipmentId, bool inAltSlot)
+    private General.ESlot GetSlotId(int baseEquipmentId, bool inAltSlot)
     {
         BaseEquipment baseEquip = cacheService.TableBaseEquipments.First(a => a.Id == baseEquipmentId);
-        int slotTypeId = baseEquip.EquipmentType.SlotType.Id;
+        General.ESlotType slotTypeId = baseEquip.EquipmentType.SlotType.Id;
 
         return slotTypeId switch
         {
-            1 => inAltSlot ? 2 : 1,     // Оружие
-            14 => inAltSlot ? 9 : 8,    // Кольцо
-            16 => inAltSlot ? 11 : 10,  // Аксессуар
+            General.ESlotType.Weapon => inAltSlot ? General.ESlot.LeftHand : General.ESlot.RightHand,     // Оружие
+            General.ESlotType.Ring => inAltSlot ? General.ESlot.Ring2 : General.ESlot.Ring1,    // Кольцо
+            General.ESlotType.Trinket => inAltSlot ? General.ESlot.Trinket2 : General.ESlot.Trinket1,  // Аксессуар
             _ => cacheService.TableSlots.First(a => a.SlotTypeId == slotTypeId).Id
         };
     }

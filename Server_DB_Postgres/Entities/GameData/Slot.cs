@@ -10,13 +10,13 @@ namespace Server_DB_Postgres.Entities.GameData;
 public class Slot
 {
     /// <summary> Уникальный идентификатор. </summary>
-    public int Id { get; init; }
+    public General.ESlot Id { get; init; }
 
     /// <summary> Уникальное наименование на английском. </summary>
     [MaxLength(256)]
     public required string Name { get; set; }
 
-    public int SlotTypeId { get; set; }
+    public General.ESlotType SlotTypeId { get; set; }
     [ForeignKey(nameof(SlotTypeId))]
     public SlotType SlotType { get; set; } = null!;
 

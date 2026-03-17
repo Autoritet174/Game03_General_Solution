@@ -27,7 +27,7 @@ public class EquipmentType
 
     [Default(0)] public int MassMagical { get; set; }
 
-    public int SlotTypeId { get; set; }
+    public General.ESlotType SlotTypeId { get; set; }
     /// <summary> Тип слота экипировки. Не индекс слота а его тип, то есть Кольцо или Браслет, а не Кольцо2 или Браслет1. </summary>
     [ForeignKey(nameof(SlotTypeId))]
     public SlotType SlotType { get; set; } = null!;

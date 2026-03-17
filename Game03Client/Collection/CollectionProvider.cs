@@ -1,3 +1,4 @@
+using General;
 using General.DTO;
 using General.DTO.Entities;
 using General.DTO.Entities.Collection;
@@ -252,7 +253,7 @@ public class CollectionProvider
             if (response?.Success == true)
             {
                 DtoBaseEquipment? baseEquip = equipment.BaseEquipment;
-                int slotTypeId = baseEquip?.EquipmentType?.SlotType?.Id ?? 0;
+                ESlotType slotTypeId = baseEquip?.EquipmentType?.SlotType?.Id ?? 0;
 
                 // Обновляем локальное состояние
                 equipment.HeroId = heroId;
@@ -266,15 +267,24 @@ public class CollectionProvider
         return false;
     }
 
-    public static int GetSlotId(DtoEquipment equipment, bool? inAltSlot = null) {
-        int slotTypeId = equipment.BaseEquipment?.EquipmentType?.SlotType?.Id ?? 0;
+    public static General.ESlot GetSlotId(DtoEquipment equipment, bool? inAltSlot = null) {
+        General.ESlotType slotTypeId = equipment.BaseEquipment?.EquipmentType?.SlotType?.Id ?? 0;
         return slotTypeId switch
         {
-            1 => inAltSlot == true ? 2 : 1,     // Оружие
-            14 => inAltSlot == true ? 9 : 8,    // Кольцо
-            16 => inAltSlot == true ? 11 : 10,  // Аксессуар
+            General.ESlotType.Weapon => inAltSlot == true ? General.ESlot.LeftHand : General.ESlot.RightHand,     // Оружие
+            General.ESlotType.Ring => inAltSlot == true ? General.ESlot.Ring2 : General.ESlot.Ring1,    // Кольцо
+            General.ESlotType.Trinket => inAltSlot == true ? General.ESlot.Trinket2 : General.ESlot.Trinket1,  // Аксессуар
             _ => GameData.Container.Slots.First(a => a.SlotTypeId == slotTypeId).Id
         };
+        /*
+         return slotTypeId switch
+        {
+            General.SlotType.Weapon => inAltSlot ? General.Slot.LeftHand : General.Slot.RightHand,     // Оружие
+            General.SlotType.Ring => inAltSlot ? General.Slot.Ring2 : General.Slot.Ring1,    // Кольцо
+            General.SlotType.Trinket => inAltSlot ? General.Slot.Trinket2 : General.Slot.Trinket1,  // Аксессуар
+            _ => cacheService.TableSlots.First(a => a.SlotTypeId == slotTypeId).Id
+        };
+         */
     }
 
     public static async Task<bool> EquipmentTakeOffAsync(Guid equipmentId, CancellationToken cancellationToken)
@@ -305,7 +315,7 @@ public class CollectionProvider
             if (response?.Success == true)
             {
                 DtoBaseEquipment? baseEquip = equipment.BaseEquipment;
-                int slotTypeId = baseEquip?.EquipmentType?.SlotType?.Id ?? 0;
+                ESlotType slotTypeId = baseEquip?.EquipmentType?.SlotType?.Id ?? 0;
 
                 // Обновляем локальное состояние
                 equipment.HeroId = null;

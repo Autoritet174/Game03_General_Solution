@@ -1,3 +1,4 @@
+using General;
 using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using Server_DB_Postgres.Attributes;
@@ -37,11 +38,11 @@ public class Equipment : IVersion, ICreatedAt, IUpdatedAt
     [ForeignKey(nameof(HeroId))]
     public Hero Hero { get; set; } = null!;
 
-    public int? SlotId { get; set; }
+    public General.ESlot? SlotId { get; set; }
     [ForeignKey(nameof(SlotId))]
-    public Slot Slot { get; set; } = null!;
+    public GameData.Slot Slot { get; set; } = null!;
 
     [Jsonb] public Dictionary<Guid, ItemExp>? ExperienceHeroes { get; set; }
-    [Jsonb] public Dictionary<int, float>? Stats { get; set; }
+    [Jsonb] public Dictionary<EStatType, List<float>>? Stats { get; set; }
 
 }
