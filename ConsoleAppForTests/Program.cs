@@ -1,19 +1,12 @@
 using Game03Client;
-using System.Drawing;
-using System.Runtime.InteropServices;
 using UUIDNext;
-using System;
-using System.Drawing.Imaging;
-using System.Diagnostics;
-using General;
 namespace ConsoleAppForTests;
 
 internal class Program
 {
-
     // Фиксированный namespace для устройств вашей системы (сгенерирован как UUID v4)
     private static readonly Guid DeviceNamespace =
-        Guid.Parse("a1b2c3d4-e5f6-7890-abcd-ef1234567890");
+    Guid.Parse("a1b2c3d4-e5f6-7890-abcd-ef1234567890");
 
     public static Guid GenerateForDevice(string deviceUniqueId)
     {
@@ -25,7 +18,7 @@ internal class Program
 
     private static async Task Main()
     {
-      
+
 
         //if (string.Empty == "")
         //{

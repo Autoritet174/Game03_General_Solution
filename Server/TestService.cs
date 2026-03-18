@@ -21,7 +21,7 @@ public class TestService(LootGenerator lootGenerator)
             await lootGenerator.GenerateEquipmentAsync(userId, General.ESlotType.None, 1, 4, cancellationToken).ConfigureAwait(false);
         }
         
-       
+        
 
         //BaseHero Warrior = db.BaseHeroes.First(a => a.Id == 1);
         //Warrior.Health = new General.DTO.Dice(16, 24);
