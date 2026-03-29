@@ -9,7 +9,7 @@ namespace General.DTO.Entities.Collection;
 /// <summary>
 /// Предмет экипировки из коллекции игрока. (MongoDb).
 /// </summary>
-public class DtoEquipment(Guid id, Guid userId, int baseEquipmentId, string? groupName, Guid? heroId, ESlot? slotId, Dictionary<EStatType, List<float>>? stats)
+public class DtoEquipment(Guid id, Guid userId, int baseEquipmentId, string? groupName, Guid? heroId, ESlot? slotId, Dictionary<EStatType, List<float>>? stats, int level)
 {
     public Guid Id { get; } = id;
     public Guid UserId { get; } = userId;
@@ -19,6 +19,7 @@ public class DtoEquipment(Guid id, Guid userId, int baseEquipmentId, string? gro
     public Guid? HeroId { get; set; } = heroId;
     public ESlot? SlotId { get; set; } = slotId;
 
-    public Dictionary<Guid, ItemExp>? ExperienceHeroes { get; set; }
+    public int Level { get; set; } = level;
+
     public Dictionary<EStatType, List<float>>? Stats { get; set; } = stats;
 }

@@ -25,8 +25,8 @@ public enum ESlotType : int
     /// <summary> Ступни </summary>
     Feet = 9,
 
-    /// <summary> Пояс </summary>
-    Waist = 10,
+    /// <summary> Браслет </summary>
+    Bracelet = 10,
 
     /// <summary> Кольцо </summary>
     Ring = 14,
@@ -64,7 +64,7 @@ public enum ESlot : int
     Armor = 4,
     Hands = 5,
     Feet = 6,
-    Waist = 7,
+    Bracelet = 7,
     Ring1 = 8,
     Ring2 = 9,
     Trinket1 = 10,

@@ -1,5 +1,4 @@
 using General;
-using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using Server_DB_Postgres.Attributes;
 using Server_DB_Postgres.Entities.GameData;
@@ -42,7 +41,10 @@ public class Equipment : IVersion, ICreatedAt, IUpdatedAt
     [ForeignKey(nameof(SlotId))]
     public GameData.Slot Slot { get; set; } = null!;
 
-    [Jsonb] public Dictionary<Guid, ItemExp>? ExperienceHeroes { get; set; }
+    /// <summary> Уровень предмета. </summary>
+    [Default(1)]
+    public int Level { get; set; }
+
     [Jsonb] public Dictionary<EStatType, List<float>>? Stats { get; set; }
 
 }
