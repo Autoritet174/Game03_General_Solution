@@ -2,7 +2,6 @@ using FluentResults;
 using General;
 using General.DTO;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Linq;
 using Server.Cache;
 using Server.Utilities;
 using Server_DB_Postgres;
@@ -18,7 +17,7 @@ public class LootGenerator(
 {
     // ПАРАМЕТРЫ ГЕНЕРАТОРА
     private static readonly int rarity1 = 3125, rarity2 = 625, rarity3 = 125, rarity4 = 25, rarity5 = 5, rarity6 = 1;
-    private static readonly int[] countStatsByRarity = [1, 1, 2, 3, 5, 7];
+    private static readonly int[] countStatsByRarity = [7, 1, 2, 3, 5, 7];
 
 
     /// <summary>
@@ -276,7 +275,7 @@ public class LootGenerator(
 
         Equipment equipment = CreateNewEquipmentByBase(baseEquipment);
         equipment.UserId = userId;
-        
+
 
         _ = await db.Equipments.AddAsync(equipment, cancellationToken).ConfigureAwait(false);
         int rowsChanged = await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
@@ -321,11 +320,11 @@ public class LootGenerator(
         Dictionary<EStatType, Dice> pos = baseEquipment.PossibleStats ?? [];
         if (baseEquipment.EquipmentType.PossibleStats != null)
         {
-            foreach (var item in baseEquipment.EquipmentType.PossibleStats)
+            foreach (KeyValuePair<EStatType, Dice> item in baseEquipment.EquipmentType.PossibleStats)
             {
                 if (!pos.ContainsKey(item.Key))
                 {
-                    pos.Add(item.Key,item.Value);
+                    pos.Add(item.Key, item.Value);
                 }
             }
         }
@@ -338,10 +337,20 @@ public class LootGenerator(
             {
                 Random rand = Random.Shared;
                 e.Stats = [];
-                for (int i = countStatsByRarity[indexRarity]; i > 0; i--)
+                for (int i = /*countStatsByRarity[indexRarity]*/rand.Next(1, 8); i > 0; i--)
                 {
                     EStatType randomKey = pos.Keys.ElementAt(rand.Next(countPossibleStats));
-                    List<float> list = e.Stats.TryGetValue(randomKey, out List<float>? value) ? value : [];
+                    List<float> list;
+                    if (e.Stats.TryGetValue(randomKey, out List<float>? value))
+                    {
+                        list = value;
+                    }
+                    else
+                    {
+                        list = [];
+                        e.Stats.Add(randomKey, list);
+                    }
+
                     Dice dice = pos[randomKey];
                     float statValue = dice.GetRandom();
                     list.Add(statValue);
@@ -352,7 +361,7 @@ public class LootGenerator(
                 throw new Exception($"CreateNewEquipmentByBase indexRarity={indexRarity}");
             }
         }
-        
+
 
 
         return e;

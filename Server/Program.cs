@@ -549,11 +549,12 @@ internal partial class Program
     {
         using IServiceScope scope = app.Services.CreateScope();
         TestService service = scope.ServiceProvider.GetRequiredService<TestService>();
+        CacheService cacheService = scope.ServiceProvider.GetRequiredService<CacheService>();
         using DbContextGame db = scope.ServiceProvider.GetRequiredService<DbContextGame>();
         ILogger<Program> logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
         try
         {
-            await service.MainAsync(db, cancellationToken).ConfigureAwait(false);
+            await service.MainAsync(db, cacheService, cancellationToken).ConfigureAwait(false);
 
             logger.LogInformation("TestService loaded successfully");
         }
