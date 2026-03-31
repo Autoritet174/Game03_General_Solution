@@ -1,6 +1,8 @@
 using FluentResults;
 using General;
+using General.DTO;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using Server.Cache;
 using Server.Utilities;
 using Server_DB_Postgres;
@@ -14,6 +16,10 @@ public class LootGenerator(
     IDbContextFactory<DbContextGame> dbContextFactory,
     CacheService cacheService)
 {
+    // ПАРАМЕТРЫ ГЕНЕРАТОРА
+    private static readonly int rarity1 = 3125, rarity2 = 625, rarity3 = 125, rarity4 = 25, rarity5 = 5, rarity6 = 1;
+    private static readonly int[] countStatsByRarity = [1, 1, 2, 3, 5, 7];
+
 
     /// <summary>
     /// Возвращает список id базовых героев, которых уже имеет пользователь, из заданного списка id базовых героев.
@@ -31,7 +37,7 @@ public class LootGenerator(
             db.Equipments.Where(h => h.UserId == userId && baseEquipmentIds.Contains(h.BaseEquipmentId))
                 .Select(h => h.BaseEquipmentId).Distinct());
 
-    private static readonly int rarity1 = 3125, rarity2 = 625, rarity3 = 125, rarity4 = 25, rarity5 = 5, rarity6 = 1;
+
 
     private static int SelectRandomRarity(int minRarity = 1, int maxRarity = 6)
     {
@@ -261,7 +267,7 @@ public class LootGenerator(
         return Result.Ok();
     }
 
-    private async Task<Result> AddNewEquipmentAsync(DbContextGame db, BaseEquipment baseEquipment, Guid userId, CancellationToken cancellationToken = default)
+    public async Task<Result> AddNewEquipmentAsync(DbContextGame db, BaseEquipment baseEquipment, Guid userId, CancellationToken cancellationToken = default)
     {
         if (cancellationToken.IsCancellationRequested)
         {
@@ -270,10 +276,7 @@ public class LootGenerator(
 
         Equipment equipment = CreateNewEquipmentByBase(baseEquipment);
         equipment.UserId = userId;
-        equipment.Stats = new Dictionary<EStatType, List<float>>
-        {
-            { EStatType.Health, [10000f, 15000f] }
-        };
+        
 
         _ = await db.Equipments.AddAsync(equipment, cancellationToken).ConfigureAwait(false);
         int rowsChanged = await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
@@ -293,26 +296,66 @@ public class LootGenerator(
             BaseHeroId = baseHero.Id,
             Level = 1,
             Experience = 0,
-            Health = DiceHelper.GetRandomValue(baseHero.Health),
-            Strength = DiceHelper.GetRandomValue(baseHero.Strength),
-            Agility = DiceHelper.GetRandomValue(baseHero.Agility),
-            Intelligence = DiceHelper.GetRandomValue(baseHero.Intelligence),
-            CritChance = DiceHelper.GetRandomValue(baseHero.CritChance),
-            CritMultiplier = DiceHelper.GetRandomValue(baseHero.CritMultiplier),
-            Haste = DiceHelper.GetRandomValue(baseHero.Haste),
-            Versality = DiceHelper.GetRandomValue(baseHero.Versality),
-            EndurancePhysical = DiceHelper.GetRandomValue(baseHero.EndurancePhysical),
-            EnduranceMagical = DiceHelper.GetRandomValue(baseHero.EnduranceMagical),
-            Initiative = DiceHelper.GetRandomValue(baseHero.Initiative)
+            Health = baseHero.Health.GetRandom(),
+            Strength = baseHero.Strength.GetRandom(),
+            Agility = baseHero.Agility.GetRandom(),
+            Intelligence = baseHero.Intelligence.GetRandom(),
+            CritChance = baseHero.CritChance.GetRandom(),
+            CritMultiplier = baseHero.CritMultiplier.GetRandom(),
+            Haste = baseHero.Haste.GetRandom(),
+            Versality = baseHero.Versality.GetRandom(),
+            EndurancePhysical = baseHero.EndurancePhysical.GetRandom(),
+            EnduranceMagical = baseHero.EnduranceMagical.GetRandom(),
+            Initiative = baseHero.Initiative.GetRandom()
         };
     }
 
     private static Equipment CreateNewEquipmentByBase(BaseEquipment baseEquipment)
     {
-        return new Equipment
+        Equipment e = new()
         {
             BaseEquipmentId = baseEquipment.Id
         };
+
+        // Сгенерировать статы
+        Dictionary<EStatType, Dice> pos = baseEquipment.PossibleStats ?? [];
+        if (baseEquipment.EquipmentType.PossibleStats != null)
+        {
+            foreach (var item in baseEquipment.EquipmentType.PossibleStats)
+            {
+                if (!pos.ContainsKey(item.Key))
+                {
+                    pos.Add(item.Key,item.Value);
+                }
+            }
+        }
+
+        int countPossibleStats = pos.Count;
+        if (countPossibleStats > 0)
+        {
+            int indexRarity = baseEquipment.Rarity - 1;
+            if (indexRarity > -1 && indexRarity < countStatsByRarity.Length)
+            {
+                Random rand = Random.Shared;
+                e.Stats = [];
+                for (int i = countStatsByRarity[indexRarity]; i > 0; i--)
+                {
+                    EStatType randomKey = pos.Keys.ElementAt(rand.Next(countPossibleStats));
+                    List<float> list = e.Stats.TryGetValue(randomKey, out List<float>? value) ? value : [];
+                    Dice dice = pos[randomKey];
+                    float statValue = dice.GetRandom();
+                    list.Add(statValue);
+                }
+            }
+            else
+            {
+                throw new Exception($"CreateNewEquipmentByBase indexRarity={indexRarity}");
+            }
+        }
+        
+
+
+        return e;
     }
 
 }

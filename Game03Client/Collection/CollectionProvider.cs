@@ -74,28 +74,6 @@ public class CollectionProvider
                 return a.BaseHero.Name;
             })];
 
-        // Сортировка экипировки по редкости и имени
-
-        c.CollectionEquipments = [.. c.CollectionEquipments
-            .OrderByDescending(a =>
-            {
-                if (a.BaseEquipment == null)
-                {
-                    logger.LogError("a.DtoBaseEquipment is null");
-                    throw new Exception();
-                }
-                return a.BaseEquipment.Rarity;
-            })
-            .ThenBy(a =>
-            {
-                if (a.BaseEquipment == null)
-                {
-                    logger.LogError("a.DtoBaseEquipment is null");
-                    throw new Exception();
-                }
-                return a.BaseEquipment.Name;
-            })];
-
         return true;
     }
 
@@ -175,6 +153,7 @@ public class CollectionProvider
     public static IEnumerable<GroupCollectionElement> GetCollectionEquipmentesGroupByGroups(int page)
     {
         List<GroupCollectionElement> result = [];
+        collection.CollectionEquipments = collection.CollectionEquipments.OrderBy(x => x, DtoEquipmentComparer);
         IEnumerable<DtoEquipment> c = collection.CollectionEquipments;
         if (page > 0)
         {
@@ -267,7 +246,8 @@ public class CollectionProvider
         return false;
     }
 
-    public static General.ESlot GetSlotId(DtoEquipment equipment, bool? inAltSlot = null) {
+    public static General.ESlot GetSlotId(DtoEquipment equipment, bool? inAltSlot = null)
+    {
         General.ESlotType slotTypeId = equipment.BaseEquipment?.EquipmentType?.SlotType?.Id ?? 0;
         return slotTypeId switch
         {
@@ -277,7 +257,7 @@ public class CollectionProvider
             _ => GameData.Container.Slots.First(a => a.SlotTypeId == slotTypeId).Id
         };
         /*
-         return slotTypeId switch
+        return slotTypeId switch
         {
             General.SlotType.Weapon => inAltSlot ? General.Slot.LeftHand : General.Slot.RightHand,     // Оружие
             General.SlotType.Ring => inAltSlot ? General.Slot.Ring2 : General.Slot.Ring1,    // Кольцо
@@ -327,4 +307,45 @@ public class CollectionProvider
         return false;
     }
 
+
+    private static readonly Comparer<DtoEquipment> DtoEquipmentComparer = Comparer<DtoEquipment>.Create(static (a, b) =>
+    {
+        DtoBaseEquipment aBE = a.BaseEquipment ?? throw new Exception("a.BaseEquipment is null");
+        DtoBaseEquipment bBE = b.BaseEquipment ?? throw new Exception("b.BaseEquipment is null");
+        DtoEquipmentType aET = aBE.EquipmentType ?? throw new Exception("a.EquipmentType is null");
+        DtoEquipmentType bET = bBE.EquipmentType ?? throw new Exception("b.EquipmentType is null");
+        DtoSlotType aST = aET.SlotType ?? throw new Exception("a.SlotType is null");
+        DtoSlotType bST = bET.SlotType ?? throw new Exception("b.SlotType is null");
+
+        // Сортировка по SlotType.Sorting
+        int slotCompare = aST.Sorting.CompareTo(bST.Sorting);
+        if (slotCompare != 0)
+        {
+            return slotCompare;
+        }
+
+        // Сортировка по Rarity (по убыванию)
+        int rarityCompare = bBE.Rarity.CompareTo(aBE.Rarity);
+        if (rarityCompare != 0)
+        {
+            return rarityCompare;
+        }
+
+        // Сортировка по IsUnique. Сначала true, потом false
+        int uniqueCompare = bBE.IsUnique.CompareTo(aBE.IsUnique);
+        if (uniqueCompare != 0)
+        {
+            return uniqueCompare;
+        }
+
+        // Сортировка по уровню (от большего к меньшему)
+        int levelCompare = b.Level.CompareTo(a.Level);
+        if (levelCompare != 0)
+        {
+            return levelCompare;
+        }
+
+        // Сортировка по Name
+        return string.Compare(aBE.Name, bBE.Name, StringComparison.Ordinal);
+    });
 }

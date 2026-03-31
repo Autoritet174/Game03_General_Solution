@@ -1,3 +1,5 @@
+using General;
+using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using Server_DB_Postgres.Attributes;
 using System.ComponentModel.DataAnnotations;
@@ -33,4 +35,9 @@ public class BaseEquipment
     public int? SmithingMaterialId { get; set; }
     [ForeignKey(nameof(SmithingMaterialId))]
     public SmithingMaterial? SmithingMaterial { get; set; }
+
+    /// <summary>
+    /// Характеристики возможные при дропе экипировки.
+    /// </summary>
+    [Jsonb] public Dictionary<EStatType, Dice>? PossibleStats { get; set; }
 }

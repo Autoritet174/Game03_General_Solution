@@ -12,6 +12,7 @@ namespace Server;
 /// Сюда нужно добавлять все типы, которые сохраняются в jsonb или передаются по API.
 /// </summary>
 [JsonSerializable(typeof(Dice))]
+[JsonSerializable(typeof(Dictionary<int, List<float>>))]
 [JsonSerializable(typeof(DtoRequestAuthReg))]
 [JsonSerializable(typeof(DtoResponseAuthReg))]
 [JsonSerializable(typeof(BaseHero))]

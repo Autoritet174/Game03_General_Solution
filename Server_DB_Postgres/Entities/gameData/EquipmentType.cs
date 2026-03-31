@@ -1,3 +1,4 @@
+using General;
 using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using Server_DB_Postgres.Attributes;
@@ -43,4 +44,9 @@ public class EquipmentType
     public bool? BlockOtherHand { get; set; }
 
     [Jsonb] public Dice? Damage { get; set; } // У оружия есть урон, а у брони нет и у других видов экипировки
+
+    /// <summary>
+    /// Характеристики возможные при дропе экипировки.
+    /// </summary>
+    [Jsonb] public Dictionary<EStatType, Dice>? PossibleStats { get; set; }
 }

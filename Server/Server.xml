@@ -230,7 +230,17 @@
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
+        <member name="P:Server.GlobalJsonContext.DictionaryEStatTypeDice">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
         <member name="P:Server.GlobalJsonContext.DictionaryEStatTypeListSingle">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.DictionaryInt32ListSingle">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
@@ -677,6 +687,19 @@
         </member>
         <member name="M:Server.Program.LoadTestServiceAsync(Microsoft.AspNetCore.Builder.WebApplication,System.Threading.CancellationToken)">
             <summary> Загружаем в оперативную память константные серверные данные которые не меняются во время работы сервера. </summary>
+        </member>
+        <member name="F:Server.TestService.GetFirstEquipmentCompiled">
+            <summary>
+            Скомпилированный запрос для получения первой записи Equipment.
+            Позволяет избежать повторного парсинга LINQ-выражения.
+            </summary>
+        </member>
+        <member name="M:Server.TestService.PrintState(System.String,Microsoft.EntityFrameworkCore.EntityState)">
+            <summary>
+            Выводит текущее состояние сущности в консоль.
+            </summary>
+            <param name="stage">Описание этапа теста.</param>
+            <param name="state">Текущее состояние EntityState.</param>
         </member>
         <member name="T:Server.UserRegAuth_NS.OpenWebSocketController">
             <summary>

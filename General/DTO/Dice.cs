@@ -21,12 +21,15 @@ public record Dice
     public float? Modificator { get; set; } = null;
 
     /// <summary> Минимальное значение. </summary>
+    [JsonIgnore]
     public float Min => Count + (Modificator ?? 0f);
 
     /// <summary> Максимальное значение. </summary>
+    [JsonIgnore]
     public float Max => (Count * Sides) + (Modificator ?? 0f);
 
     /// <summary> Ожидаемое значение. </summary>
+    [JsonIgnore]
     public float Expected => (Count * (Sides + 1) / 2f) + (Modificator ?? 0f);
 
     public Dice() { }

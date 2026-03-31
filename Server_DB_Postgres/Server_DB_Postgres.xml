@@ -76,6 +76,33 @@
             <summary> <inheritdoc/> </summary>
             <returns></returns>
         </member>
+        <member name="M:Server_DB_Postgres.DbContextGameConfig.CompareDictionaries(System.Collections.Generic.Dictionary{General.EStatType,System.Collections.Generic.List{System.Single}},System.Collections.Generic.Dictionary{General.EStatType,System.Collections.Generic.List{System.Single}})">
+            <summary>
+            Сравнивает два словаря характеристик.
+            Оптимизировано за счет исключения деконструкции KeyValuePair и добавления проверок на пустые коллекции.
+            </summary>
+            <param name="d1">Первый словарь характеристик.</param>
+            <param name="d2">Второй словарь характеристик.</param>
+            <returns>True, если словари идентичны по составу и значениям.</returns>
+        </member>
+        <member name="M:Server_DB_Postgres.DbContextGameConfig.CompareLists(System.Collections.Generic.List{System.Single},System.Collections.Generic.List{System.Single})">
+            <summary>
+            Сравнивает два списка чисел через Span с использованием SIMD-инструкций.
+            Добавлен быстрый путь для пустых списков и кэширование размера.
+            </summary>
+        </member>
+        <member name="M:Server_DB_Postgres.DbContextGameConfig.GetDictionaryHashCode(System.Collections.Generic.Dictionary{General.EStatType,System.Collections.Generic.List{System.Single}})">
+            <summary>
+            Вычисляет хэш-код словаря. 
+            Использование Span позволяет избежать лишних обращений к свойствам списка в цикле.
+            </summary>
+        </member>
+        <member name="M:Server_DB_Postgres.DbContextGameConfig.CopyDictionary(System.Collections.Generic.Dictionary{General.EStatType,System.Collections.Generic.List{System.Single}})">
+            <summary>
+            Создает глубокую копию словаря.
+            Использование конструктора List(IEnumerable) эффективнее для List[T], так как он оптимизирован под ICollection.
+            </summary>
+        </member>
         <member name="P:Server_DB_Postgres.Entities.Collection.DropRate.Type">
             <summary>
             Тип вероятностей. 1 - Герой. 2 - Предмет.
@@ -142,6 +169,11 @@
         <member name="P:Server_DB_Postgres.Entities.GameData.BaseEquipment.EquipmentType">
             <summary> Сущность EquipmentType. </summary>
         </member>
+        <member name="P:Server_DB_Postgres.Entities.GameData.BaseEquipment.PossibleStats">
+            <summary>
+            Характеристики возможные при дропе экипировки.
+            </summary>
+        </member>
         <member name="T:Server_DB_Postgres.Entities.GameData.BaseHero">
             <summary> Базовая версия героя. </summary>
         </member>
@@ -200,6 +232,11 @@
         </member>
         <member name="P:Server_DB_Postgres.Entities.GameData.EquipmentType.BlockOtherHand">
             <summary> Блокирует ли оружие другую руку, если это оружие. </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.GameData.EquipmentType.PossibleStats">
+            <summary>
+            Характеристики возможные при дропе экипировки.
+            </summary>
         </member>
         <member name="T:Server_DB_Postgres.Entities.GameData.MaterialDamagePercent">
             <summary> Коэфициенты урона для материалов. </summary>
@@ -1303,6 +1340,42 @@
             <inheritdoc />
         </member>
         <member name="M:Server_DB_Postgres.Migrations.ItemAddStatLevel.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.EquipmentPossibleStatAdd">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.EquipmentPossibleStatAdd.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.EquipmentPossibleStatAdd.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.EquipmentPossibleStatAdd.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.EquipmentPossibleStatAdd2">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.EquipmentPossibleStatAdd2.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.EquipmentPossibleStatAdd2.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.EquipmentPossibleStatAdd2.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.SlotTypeSorting">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.SlotTypeSorting.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.SlotTypeSorting.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.SlotTypeSorting.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Server_DB_Postgres.ModelBuilderExt">

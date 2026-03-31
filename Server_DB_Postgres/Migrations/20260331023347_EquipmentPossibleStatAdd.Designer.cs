@@ -6,6 +6,7 @@ using General;
 using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server_DB_Postgres;
@@ -15,9 +16,11 @@ using Server_DB_Postgres;
 namespace Server_DB_Postgres.Migrations
 {
     [DbContext(typeof(DbContextGame))]
-    partial class DbContext_GameModelSnapshot : ModelSnapshot
+    [Migration("20260331023347_EquipmentPossibleStatAdd")]
+    partial class EquipmentPossibleStatAdd
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -701,10 +704,6 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnType("character varying(256)")
                         .HasColumnName("name_ru");
 
-                    b.Property<Dictionary<EStatType, Dice>>("PossibleStats")
-                        .HasColumnType("jsonb")
-                        .HasColumnName("possible_stats");
-
                     b.Property<int>("SlotTypeId")
                         .HasColumnType("integer")
                         .HasColumnName("slot_type_id");
@@ -816,10 +815,6 @@ namespace Server_DB_Postgres.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)")
                         .HasColumnName("name_ru");
-
-                    b.Property<int>("Sorting")
-                        .HasColumnType("integer")
-                        .HasColumnName("sorting");
 
                     b.HasKey("Id")
                         .HasName("slot_types__pkey");

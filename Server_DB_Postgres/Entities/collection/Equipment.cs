@@ -13,7 +13,7 @@ namespace Server_DB_Postgres.Entities.Collection;
 [Index(nameof(HeroId), nameof(SlotId))]
 public class Equipment : IVersion, ICreatedAt, IUpdatedAt
 {
-    public Guid Id { get; init; }
+    public Guid Id { get; set; }
 
     public Guid UserId { get; set; }
     [ForeignKey(nameof(UserId))]

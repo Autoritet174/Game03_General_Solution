@@ -46,7 +46,7 @@ public class CacheService()
 
         TableBaseEquipments = await db.BaseEquipments.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
         List<DtoBaseEquipment> baseEquipments = [.. TableBaseEquipments.Select(static h => new DtoBaseEquipment(
-            h.Id, h.Name, h.Rarity, h.IsUnique, h.EquipmentTypeId)
+            h.Id, h.Name, h.Rarity, h.IsUnique, h.EquipmentTypeId, null, h.PossibleStats)
             )];
 
         TableBaseHeroes = await db.BaseHeroes.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
@@ -66,8 +66,8 @@ public class CacheService()
 
         TableEquipmentTypes = await db.EquipmentTypes.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
         List<DtoEquipmentType> equipmentType = [..TableEquipmentTypes.Select(static h => new DtoEquipmentType(
-            h.Id, h.Name, h.MassPhysical, h.MassMagical, h.SlotTypeId, h.CanCraftSmithing, h.CanCraftJewelcrafting, h.SpendActionPoints, h.BlockOtherHand)
-           )];
+            h.Id, h.Name, h.MassPhysical, h.MassMagical, h.SlotTypeId, h.CanCraftSmithing, h.CanCraftJewelcrafting, h.SpendActionPoints, h.BlockOtherHand, null, h.PossibleStats)
+            )];
 
         TableMaterialDamagePercents = await db.MaterialDamagePercents.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
         List<DtoMaterialDamagePercent> materialDamagePercents = [..TableMaterialDamagePercents.Select(static h => new DtoMaterialDamagePercent(
@@ -76,28 +76,28 @@ public class CacheService()
 
         TableSlotTypes = await db.SlotTypes.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
         List<DtoSlotType> slotTypes = [..TableSlotTypes.Select(static h => new DtoSlotType(
-            h.Id, h.Name, h.HaveAltSlot)
-           )];
+            h.Id, h.Name, h.HaveAltSlot, h.Sorting)
+            )];
 
         TableSlots = await db.Slots.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
         List<DtoSlot> slots = [..TableSlots.Select(static h => new DtoSlot(
             h.Id, h.Name, h.SlotTypeId)
-           )];
+            )];
 
         TableSmithingMaterials = await db.SmithingMaterials.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
         List<DtoSmithingMaterial> smithingMaterials = [..TableSmithingMaterials.Select(static h => new DtoSmithingMaterial(
             h.Id, h.Name)
-           )];
+            )];
 
         TableX_EquipmentTypes_DamageTypes = await db.x_EquipmentTypes_DamageTypes.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
         List<DtoXEquipmentTypeDamageType> xEquipmentTypesDamageTypes = [..TableX_EquipmentTypes_DamageTypes.Select(static h => new DtoXEquipmentTypeDamageType(
             h.EquipmentTypeId, h.DamageTypeId, h.DamageCoef)
-           )];
+            )];
 
         TableX_Heroes_CreatureTypes = await db.x_Heroes_CreatureTypes.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
         List<DtoXHeroCreatureType> xHeroesCreatureTypes = [..TableX_Heroes_CreatureTypes.Select(static h => new DtoXHeroCreatureType(
             h.BaseHeroId, h.CreatureTypeId)
-           )];
+            )];
 
         DtoContainerGameData container = new(baseEquipments, baseHeroes, creatureTypes, damageTypes, equipmentType, materialDamagePercents, slotTypes, smithingMaterials, xEquipmentTypesDamageTypes, xHeroesCreatureTypes, slots);
 
@@ -112,7 +112,7 @@ public class CacheService()
         foreach (BaseEquipment i in TableBaseEquipments)
         {
             i.EquipmentType = TableEquipmentTypes.First(a => a.Id == i.EquipmentTypeId);
-            i.SmithingMaterial = TableSmithingMaterials.First(a => a.Id == i.SmithingMaterialId);
+            i.SmithingMaterial = i.SmithingMaterialId != null ? TableSmithingMaterials.FirstOrDefault(a => a.Id == i.SmithingMaterialId) : null;
         }
         foreach (BaseHero i in TableBaseHeroes)
         {

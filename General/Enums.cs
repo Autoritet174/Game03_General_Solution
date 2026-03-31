@@ -1,5 +1,3 @@
-using System.Runtime.Serialization;
-
 namespace General;
 
 
@@ -40,11 +38,8 @@ public enum ESlotType : int
 
 public enum EStatType : int
 {
-    [EnumMember(Value = "0")]
     None = 0,
-    [EnumMember(Value = "1")]
     Health = 1,
-    [EnumMember(Value = "2")]
     Damage = 2,
     Strength = 3,
     Agility = 4,

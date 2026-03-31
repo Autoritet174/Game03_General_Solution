@@ -1,4 +1,3 @@
-using General.DTO;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -12,8 +11,6 @@ using Server_DB_Postgres.Entities.Server;
 using Server_DB_Postgres.Entities.Users;
 using Server_DB_Postgres.Interfaces;
 using System.Collections.Concurrent;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Reflection;
 
 namespace Server_DB_Postgres;
 
@@ -121,6 +118,7 @@ public class DbContextGame(DbContextOptions<DbContextGame> options) : IdentityDb
         modelBuilder.AddConcurrencyTokenToVersion();
         modelBuilder.ApplyDefaultValues();
 
+        
 
         // Глобальное отключение каскадного удаления для всех сущностей
         IEnumerable<IMutableForeignKey> foreignKeys = modelBuilder.Model.GetEntityTypes().SelectMany(static e => e.GetForeignKeys());

@@ -1,8 +1,6 @@
 using General.DTO.Entities.GameData;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 
 namespace General.DTO.Entities.Collection;
 

@@ -2,9 +2,9 @@ using General.DTO;
 
 namespace Server.Utilities;
 
-public class DiceHelper
+public static class DiceHelper
 {
-    public static float GetRandomValue(Dice? dice)
+    public static float GetRandom(this Dice? dice)
     {
         if (dice == null)
         {
@@ -15,14 +15,19 @@ public class DiceHelper
         int sides = dice.Sides;
         if (count < 1 || sides < 1)
         {
-            return 0f;
+            return (dice.Modificator ?? 0f);
         }
 
-        int sum = 0;
-        Random rand = Random.Shared;
-        for (int i = count - 1; i > -1; i--)
+        if (sides == 1)
         {
-            sum += rand.Next(sides) + 1;
+            return count + (dice.Modificator ?? 0f);
+        }
+
+        Random rand = Random.Shared;
+        int sum = count;
+        for (int i = 0; i < count; i++)
+        {
+            sum += rand.Next(sides);
         }
 
         return sum + (dice.Modificator ?? 0f);
