@@ -6,7 +6,7 @@ namespace General.DTO.Entities.Collection;
 /// <summary>
 /// Герой из коллекции игрока.
 /// </summary>
-public class DtoHero(Guid id, Guid userId, int baseHeroId, string? groupName, int level, float experienceNow, float strength, float agility, float intelligence, float critChance, float critMultiplier, float haste, float versality, float edurancePhysical, float enduranceMagical, float health, float initiative, DtoBaseHero? dtoBaseHero = null)
+public class DtoHero(Guid id, Guid userId, int baseHeroId, string? groupName, int level, float experienceNow, float strength, float agility, float intelligence, float critChance, float critMultiplier, float haste, float versality, float edurancePhysical, float enduranceMagical, float health, float initiative, DtoBaseHero? dtoBaseHero)
 {
     public Guid Id { get; } = id;
     public Guid UserId { get; } = userId;

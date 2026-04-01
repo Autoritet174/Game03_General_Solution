@@ -96,7 +96,7 @@ public class CacheService()
 
         TableX_Heroes_CreatureTypes = await db.x_Heroes_CreatureTypes.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
         List<DtoXHeroCreatureType> xHeroesCreatureTypes = [..TableX_Heroes_CreatureTypes.Select(static h => new DtoXHeroCreatureType(
-            h.BaseHeroId, h.CreatureTypeId)
+            h.BaseHeroId, h.CreatureTypeId, null, null)
             )];
 
         DtoContainerGameData container = new(baseEquipments, baseHeroes, creatureTypes, damageTypes, equipmentType, materialDamagePercents, slotTypes, smithingMaterials, xEquipmentTypesDamageTypes, xHeroesCreatureTypes, slots);
