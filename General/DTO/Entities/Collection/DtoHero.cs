@@ -37,4 +37,8 @@ public class DtoHero(Guid id, Guid userId, int baseHeroId, string? groupName, in
 
     #endregion Resistances
 
+    public DtoHero CreateCopy()
+    {
+        return (DtoHero)MemberwiseClone();
+    }
 }

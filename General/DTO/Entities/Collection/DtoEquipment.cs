@@ -20,4 +20,10 @@ public class DtoEquipment(Guid id, Guid userId, int baseEquipmentId, string? gro
     public int Level { get; set; } = level;
 
     public Dictionary<EStatType, List<float>>? Stats { get; set; } = stats;
+
+
+    public DtoEquipment CreateCopy()
+    {
+        return (DtoEquipment)MemberwiseClone();
+    }
 }

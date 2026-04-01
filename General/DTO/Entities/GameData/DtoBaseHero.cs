@@ -23,5 +23,4 @@ public class DtoBaseHero(int id, string name, int rarity, bool isUnique, int mai
     public Dice EnduranceMagical { get; } = enduranceMagical;
     public Dice Initiative { get; } = initiative;
     #endregion Характеристики
-
 }
