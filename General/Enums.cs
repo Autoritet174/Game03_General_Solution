@@ -1,6 +1,5 @@
 namespace General;
 
-
 public enum ESlotType : int
 {
     None = 0,
@@ -65,4 +64,16 @@ public enum ESlot : int
     Trinket1 = 10,
     Trinket2 = 11,
     Neck = 12
+}
+
+public enum ERarity : int
+{
+    Common = 1,
+    Uncommon = 2,
+    Rare = 3,
+    Epic = 4,
+    Legendary = 5,
+    Mythic = 6,
+    Divine = 7,
+    Absolute = 8,
 }

@@ -34,6 +34,9 @@
         <member name="P:Server_DB_Postgres.DbContextGame.BaseHeroes">
             <summary> Данные героев. </summary>
         </member>
+        <member name="P:Server_DB_Postgres.DbContextGame.Npcs">
+            <summary> Не игровые персонажи. </summary>
+        </member>
         <member name="P:Server_DB_Postgres.DbContextGame.CreatureTypes">
             <summary> Типы существ. </summary>
         </member>
@@ -258,6 +261,18 @@
         </member>
         <member name="P:Server_DB_Postgres.Entities.GameData.MaterialDamagePercent.Percent">
             <summary> Усиление урона оружия в процентах сделанного из этого материала. </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.GameData.Npc.Name">
+            <summary> Наименование на английском языке. </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.GameData.Npc.Rarity">
+            <summary> Уровень редкости. </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.GameData.Npc.Rank">
+            <summary> Ранг: 0 - без ранга, 1 - элитный, 2 - босс. </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.GameData.Npc.MainStat">
+            <summary> Основной стат который повышает урон. Сила(1) или Ловкость(2) или Интеллект(3). </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.GameData.Slot.Id">
             <summary> Уникальный идентификатор. </summary>
