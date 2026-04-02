@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using static General.LocalizationKeys.UI;
 using static General.LocalizationKeys.UI.Label;
 
 namespace General;
@@ -85,6 +86,7 @@ public static class LocalizationKeys
             }
 
             public const string NoGroup = $"{_Label}{nameof(NoGroup)}";
+            public const string EndBattle = $"{_Label}{nameof(EndBattle)}";
         }
     }
 
