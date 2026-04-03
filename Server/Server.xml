@@ -78,12 +78,12 @@
             Возвращает список id базовых предметов, которых уже имеет пользователь, из заданного списка id базовых предметов.
             </summary>
         </member>
-        <member name="M:Server.Game.LootGenerator.GenerateHeroAsync(System.Guid,System.Int32,System.Int32,System.Threading.CancellationToken)">
+        <member name="M:Server.Game.LootGenerator.GenerateHeroAsync(System.Guid,General.ERarity,General.ERarity,System.Threading.CancellationToken)">
             <summary>
             Генерирует нового героя для пользователя, выбирая случайного базового героя с учетом редкости и наличия уникальных героев, которых пользователь уже имеет. Добавляет нового героя в базу данных и возвращает результат операции.
             </summary>
         </member>
-        <member name="M:Server.Game.LootGenerator.GenerateEquipmentAsync(System.Guid,General.ESlotType,System.Int32,System.Int32,System.Threading.CancellationToken)">
+        <member name="M:Server.Game.LootGenerator.GenerateEquipmentAsync(System.Guid,General.ESlotType,General.ERarity,General.ERarity,System.Threading.CancellationToken)">
             <summary>
             Генерирует новую экипировку для пользователя, выбирая случайный базовый предмет с учетом редкости и наличия уникальных предметов, которых пользователь уже имеет. Добавляет новый предмет в базу данных и возвращает результат операции.
             </summary>
@@ -201,6 +201,16 @@
             </summary>
         </member>
         <member name="P:Server.GlobalJsonContext.DtoResponseAuthReg">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.EMainStat">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.ERarity">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>

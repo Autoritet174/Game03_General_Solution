@@ -71,6 +71,7 @@ public static class LocalizationKeys
                 public const string Ring = $"{_Slots}{nameof(Ring)}";
                 public const string Trinket = $"{_Slots}{nameof(Trinket)}";
             }
+
             public static class Stat
             {
                 private const string _Stat = $"{_Label}{nameof(Stat)}.";

@@ -32,7 +32,7 @@ public enum ESlotType : int
     Trinket = 16,
 
     /// <summary> Шея </summary>
-    Neck = 17,
+    Neck = 17
 }
 
 public enum EStatType : int
@@ -47,7 +47,7 @@ public enum EStatType : int
     CritMultiplier = 7,
     Haste = 8,
     Versality = 9,
-    Initiative = 10,
+    Initiative = 10
 }
 
 public enum ESlot : int
@@ -75,5 +75,27 @@ public enum ERarity : int
     Legendary = 5,
     Mythic = 6,
     Divine = 7,
-    Absolute = 8,
+    Absolute = 8
+}
+
+public enum EMainStat : int
+{
+    Universal = 0,
+    Strength = 1,
+    Agility = 2,
+    Intelligence = 3
+}
+
+public enum ERank : int
+{
+    None = 0,
+    Elite = 1,
+    Boss = 2
+}
+
+public enum EDungeonDifficulty : int
+{
+    Normal = 0,
+    Hard = 1,
+    Boss = 2
 }

@@ -36,6 +36,8 @@ public class DbContextGame(DbContextOptions<DbContextGame> options) : IdentityDb
     /// <summary> Не игровые персонажи. </summary>
     public DbSet<Npc> Npcs { get; set; }
 
+    public DbSet<Dungeon> Dungeons { get; set; }
+
     /// <summary> Типы существ. </summary>
     public DbSet<CreatureType> CreatureTypes { get; set; }
 

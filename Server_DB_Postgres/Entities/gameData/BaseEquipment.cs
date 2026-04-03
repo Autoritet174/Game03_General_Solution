@@ -20,7 +20,7 @@ public class BaseEquipment
     public required string Name { get; set; }
 
     /// <summary> Редкость. </summary>
-    public int Rarity { get; set; }
+    public ERarity Rarity { get; set; }
 
     /// <summary> Уникальный для одного аккаунта. </summary>
     [Default(false)]

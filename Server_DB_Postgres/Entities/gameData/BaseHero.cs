@@ -1,3 +1,4 @@
+using General;
 using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using Server_DB_Postgres.Attributes;
@@ -18,15 +19,14 @@ public class BaseHero
     public required string Name { get; set; }
 
     /// <summary> Уровень редкости. </summary>
-    public int Rarity { get; set; }
+    public ERarity Rarity { get; set; }
 
     /// <summary> Уникальный для одного аккаунта. </summary>
     [Default(false)]
     public bool IsUnique { get; set; }
 
     /// <summary> Основной стат который повышает урон. Сила(1) или Ловкость(2) или Интеллект(3). </summary>
-    [Default(0)]
-    public int MainStat { get; set; }
+    public EMainStat MainStat { get; set; }
 
 
     ///// <summary> Типы существ героя. Вычисляемое свойство. </summary>

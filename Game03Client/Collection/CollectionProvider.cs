@@ -264,7 +264,7 @@ public class CollectionProvider
             General.SlotType.Trinket => inAltSlot ? General.Slot.Trinket2 : General.Slot.Trinket1,  // Аксессуар
             _ => cacheService.TableSlots.First(a => a.SlotTypeId == slotTypeId).Id
         };
-         */
+        */
     }
 
     public static async Task<bool> EquipmentTakeOffAsync(Guid equipmentId, CancellationToken cancellationToken)

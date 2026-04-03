@@ -37,9 +37,9 @@ public class Equipment : IVersion, ICreatedAt, IUpdatedAt
     [ForeignKey(nameof(HeroId))]
     public Hero Hero { get; set; } = null!;
 
-    public General.ESlot? SlotId { get; set; }
+    public ESlot? SlotId { get; set; }
     [ForeignKey(nameof(SlotId))]
-    public GameData.Slot Slot { get; set; } = null!;
+    public Slot Slot { get; set; } = null!;
 
     /// <summary> Уровень предмета. </summary>
     [Default(1)]

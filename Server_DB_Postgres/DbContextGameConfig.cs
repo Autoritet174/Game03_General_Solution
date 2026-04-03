@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Server_DB_Postgres.Entities.Collection;
+using Server_DB_Postgres.Entities.GameData;
 using Server_DB_Postgres.Entities.Logs;
 using Server_DB_Postgres.Entities.Users;
 using System.Runtime.CompilerServices;
@@ -18,24 +19,27 @@ public class DbContextGameConfig
         Configure(modelBuilder.Entity<AuthenticationLog>());
         Configure(modelBuilder.Entity<UserBan>());
         Configure(modelBuilder.Entity<Equipment>());
+        Configure(modelBuilder.Entity<Npc>());
+        Configure(modelBuilder.Entity<BaseHero>());
+        Configure(modelBuilder.Entity<BaseEquipment>());
     }
 
     private static void Configure(EntityTypeBuilder<UserBan> builder)
     {
         // Переопределение для каскадного удаления только для нужных связей
         // Настройка для UserBan: Cascade при удалении ApplicationUser
-        _ = builder.HasOne(b => b.User) // Навигационное свойство в UserBan
-            .WithMany(u => u.UserBans)      // Коллекция в ApplicationUser
-            .HasForeignKey(b => b.UserId) // FK в UserBan
+        _ = builder.HasOne(static b => b.User) // Навигационное свойство в UserBan
+            .WithMany(static u => u.UserBans)      // Коллекция в ApplicationUser
+            .HasForeignKey(static b => b.UserId) // FK в UserBan
             .OnDelete(DeleteBehavior.Cascade); // Включить каскад: удалять UserBan при удалении ApplicationUser
     }
 
     private static void Configure(EntityTypeBuilder<AuthenticationLog> builder)
     {
         // Настройка для UserAuthorization: Cascade при удалении ApplicationUser
-        _ = builder.HasOne(a => a.User) // Навигационное свойство в UserAuthorization
+        _ = builder.HasOne(static a => a.User) // Навигационное свойство в UserAuthorization
             .WithMany()                     // Нет коллекции в ApplicationUser (one-to-many без обратной коллекции, если не добавлена)
-            .HasForeignKey(a => a.UserId) // FK в UserAuthorization (nullable, но Cascade все равно сработает)
+            .HasForeignKey(static a => a.UserId) // FK в UserAuthorization (nullable, но Cascade все равно сработает)
             .OnDelete(DeleteBehavior.Cascade); // Включить каскад: удалять UserAuthorization при удалении ApplicationUser
     }
 
@@ -44,19 +48,36 @@ public class DbContextGameConfig
         //_ = builder.HasQueryFilter(s => !s.IsUsed && !s.IsRevoked);// Глобальный фильтр для выборок - только живые токены
 
         // Уникальный индекс на живые токены (неиспользованные и неаннулированные)
-        _ = builder.HasIndex(s => s.RefreshTokenHash).IsUnique().HasFilter($"{nameof(UserSession.IsUsed).ToSnakeCase()} = false AND {nameof(UserSession.IsRevoked).ToSnakeCase()} = false");
+        _ = builder.HasIndex(static s => s.RefreshTokenHash).IsUnique().HasFilter($"{nameof(UserSession.IsUsed).ToSnakeCase()} = false AND {nameof(UserSession.IsRevoked).ToSnakeCase()} = false");
     }
 
+    private static void Configure(EntityTypeBuilder<Npc> builder)
+    {
+        _ = builder.Property(static e => e.Rarity).HasDefaultValue(ERarity.Common).HasSentinel(ERarity.Common);
+        _ = builder.Property(static e => e.MainStat).HasDefaultValue(EMainStat.Universal).HasSentinel(EMainStat.Universal);
+        _ = builder.Property(static e => e.Rank).HasDefaultValue(ERank.None).HasSentinel(ERank.None);
+    }
+
+    private static void Configure(EntityTypeBuilder<BaseHero> builder)
+    {
+        _ = builder.Property(static e => e.Rarity).HasDefaultValue(ERarity.Common).HasSentinel(ERarity.Common);
+        _ = builder.Property(static e => e.MainStat).HasDefaultValue(EMainStat.Universal).HasSentinel(EMainStat.Universal);
+    }
+
+    private static void Configure(EntityTypeBuilder<BaseEquipment> builder)
+    {
+        _ = builder.Property(static e => e.Rarity).HasDefaultValue(ERarity.Common).HasSentinel(ERarity.Common);
+    }
 
     #region Equipment
     private static void Configure(EntityTypeBuilder<Equipment> builder)
     {
         //вручную делаем индексы так как EF не сделает автоматически изза следующих индексов
-        _ = builder.HasIndex(e => e.HeroId);
-        _ = builder.HasIndex(e => e.UserId);
+        _ = builder.HasIndex(static e => e.HeroId);
+        _ = builder.HasIndex(static e => e.UserId);
 
         // Уникальный индекс для надетых предметов. Гарантирует, что у героя в конкретном слоте только один предмет.
-        _ = builder.HasIndex(e => new { e.HeroId, e.SlotId }).IsUnique()
+        _ = builder.HasIndex(static e => new { e.HeroId, e.SlotId }).IsUnique()
             .HasFilter($"{nameof(Equipment.HeroId).ToSnakeCase()} IS NOT NULL AND {nameof(Equipment.SlotId).ToSnakeCase()} IS NOT NULL");
 
 
@@ -72,11 +93,11 @@ public class DbContextGameConfig
         );
 
         // Настраиваем свойство
-        PropertyBuilder<Dictionary<EStatType, List<float>>?> property = builder.Property(e => e.Stats)
+        PropertyBuilder<Dictionary<EStatType, List<float>>?> property = builder.Property(static e => e.Stats)
             .HasColumnType("jsonb")
             .HasConversion(
-                v => v == null ? null : v.ToDictionary(kvp => (int)kvp.Key, kvp => kvp.Value),
-                v => v == null ? null : v.ToDictionary(kvp => (EStatType)kvp.Key, kvp => kvp.Value)
+                static v => v == null ? null : v.ToDictionary(static kvp => (int)kvp.Key, static kvp => kvp.Value),
+                static v => v == null ? null : v.ToDictionary(static kvp => (EStatType)kvp.Key, static kvp => kvp.Value)
             );
 
         // Устанавливаем ValueComparer через Metadata
@@ -84,8 +105,8 @@ public class DbContextGameConfig
 
 
         /*
-         * Тут была попытка сделать частичный индекс на предметы пользователя только неодетые, 
-         * но их 95% и при таком сценарии частичный индекс теряет смысл, проще оставить обычный полный индекс по UserId
+            * Тут была попытка сделать частичный индекс на предметы пользователя только неодетые, 
+            * но их 95% и при таком сценарии частичный индекс теряет смысл, проще оставить обычный полный индекс по UserId
          
         // Неуникальные индексы для предметов в инвентаре.
         // только неодетые предметы
