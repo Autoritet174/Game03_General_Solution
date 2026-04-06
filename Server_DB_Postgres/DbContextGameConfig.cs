@@ -53,20 +53,20 @@ public class DbContextGameConfig
 
     private static void Configure(EntityTypeBuilder<Npc> builder)
     {
-        _ = builder.Property(static e => e.Rarity).HasDefaultValue(ERarity.Common).HasSentinel(ERarity.Common);
+        //_ = builder.Property(static e => e.Rarity).HasDefaultValue(int.Common).HasSentinel(int.Common);
         _ = builder.Property(static e => e.MainStat).HasDefaultValue(EMainStat.Universal).HasSentinel(EMainStat.Universal);
         _ = builder.Property(static e => e.Rank).HasDefaultValue(ERank.None).HasSentinel(ERank.None);
     }
 
     private static void Configure(EntityTypeBuilder<BaseHero> builder)
     {
-        _ = builder.Property(static e => e.Rarity).HasDefaultValue(ERarity.Common).HasSentinel(ERarity.Common);
+        //_ = builder.Property(static e => e.Rarity).HasDefaultValue(int.Common).HasSentinel(int.Common);
         _ = builder.Property(static e => e.MainStat).HasDefaultValue(EMainStat.Universal).HasSentinel(EMainStat.Universal);
     }
 
     private static void Configure(EntityTypeBuilder<BaseEquipment> builder)
     {
-        _ = builder.Property(static e => e.Rarity).HasDefaultValue(ERarity.Common).HasSentinel(ERarity.Common);
+        //_ = builder.Property(static e => e.Rarity).HasDefaultValue(int.Common).HasSentinel(int.Common);
     }
 
     #region Equipment

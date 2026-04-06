@@ -1,11 +1,11 @@
 namespace General.DTO.Entities.GameData;
 
 /// <summary> Data Transfer Object. Представляет базовую сущность игрового героя с основными характеристиками. </summary>
-public class DtoBaseHero(int id, string name, ERarity rarity, bool isUnique, EMainStat mainStat, Dice health, Dice damage, Dice strength, Dice agility, Dice intelligence, Dice critChance, Dice critMultiplier, Dice haste, Dice versality, Dice endurancePhysical, Dice enduranceMagical, Dice initiative)
+public class DtoBaseHero(int id, string name, int rarity, bool isUnique, EMainStat mainStat, Dice health, Dice damage, Dice strength, Dice agility, Dice intelligence, Dice critChance, Dice critMultiplier, Dice haste, Dice versality, Dice endurancePhysical, Dice enduranceMagical, Dice initiative)
 {
     public int Id { get; } = id;
     public string Name { get; } = name;
-    public ERarity Rarity { get; } = rarity;
+    public int Rarity { get; } = rarity;
     public bool IsUnique { get; } = isUnique;
     public EMainStat MainStat { get; } = mainStat;
 

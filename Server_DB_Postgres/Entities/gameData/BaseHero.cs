@@ -19,7 +19,7 @@ public class BaseHero
     public required string Name { get; set; }
 
     /// <summary> Уровень редкости. </summary>
-    public ERarity Rarity { get; set; }
+    public int Rarity { get; set; }
 
     /// <summary> Уникальный для одного аккаунта. </summary>
     [Default(false)]

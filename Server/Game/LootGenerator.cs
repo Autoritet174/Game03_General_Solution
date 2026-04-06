@@ -17,14 +17,14 @@ public class LootGenerator(
 {
     // ПАРАМЕТРЫ ГЕНЕРАТОРА
     private static readonly int rarity1 = 3125, rarity2 = 625, rarity3 = 125, rarity4 = 25, rarity5 = 5, rarity6 = 1;
-    private static readonly Dictionary<ERarity, int> countStatsByRarity = new()
+    private static readonly Dictionary<int, int> countStatsByRarity = new()
     {
-        [ERarity.Common] = 0,
-        [ERarity.Uncommon] = 1,
-        [ERarity.Rare] = 2,
-        [ERarity.Epic] = 3,
-        [ERarity.Legendary] = 5,
-        [ERarity.Mythic] = 7,
+        [1] = 0,
+        [2] = 1,
+        [3] = 2,
+        [4] = 3,
+        [5] = 5,
+        [6] = 7,
     };
 
 
@@ -46,7 +46,7 @@ public class LootGenerator(
 
 
 
-    private static ERarity SelectRandomRarity(ERarity minRarity = ERarity.Common, ERarity maxRarity = ERarity.Mythic)
+    private static int SelectRandomRarity(int minRarity = 1, int maxRarity = 6)
     {
         if (minRarity > maxRarity)
         {
@@ -59,43 +59,43 @@ public class LootGenerator(
             rarity4 = LootGenerator.rarity4,
             rarity5 = LootGenerator.rarity5,
             rarity6 = LootGenerator.rarity6;
-        if (minRarity > ERarity.Common)
+        if (minRarity > 1)
         {
             rarity1 = 0;
         }
-        if (minRarity > ERarity.Uncommon)
+        if (minRarity > 2)
         {
             rarity2 = 0;
         }
-        if (minRarity > ERarity.Rare)
+        if (minRarity > 3)
         {
             rarity3 = 0;
         }
-        if (minRarity > ERarity.Epic)
+        if (minRarity > 4)
         {
             rarity4 = 0;
         }
-        if (minRarity > ERarity.Legendary)
+        if (minRarity > 5)
         {
             rarity5 = 0;
         }
-        if (maxRarity < ERarity.Mythic)
+        if (maxRarity < 6)
         {
             rarity6 = 0;
         }
-        if (maxRarity < ERarity.Legendary)
+        if (maxRarity < 5)
         {
             rarity5 = 0;
         }
-        if (maxRarity < ERarity.Epic)
+        if (maxRarity < 4)
         {
             rarity4 = 0;
         }
-        if (maxRarity < ERarity.Rare)
+        if (maxRarity < 3)
         {
             rarity3 = 0;
         }
-        if (maxRarity < ERarity.Uncommon)
+        if (maxRarity < 2)
         {
             rarity2 = 0;
         }
@@ -107,20 +107,20 @@ public class LootGenerator(
 
         int raritySumm = rarity1 + raritySumFrom2;
         int rarityRandom = Random.Shared.Next(0, raritySumm);
-        return rarityRandom < rarity6 ? ERarity.Mythic
-            : rarityRandom < raritySumFrom5 ? ERarity.Legendary
-            : rarityRandom < raritySumFrom4 ? ERarity.Epic
-            : rarityRandom < raritySumFrom3 ? ERarity.Rare
-            : rarityRandom < raritySumFrom2 ? ERarity.Uncommon : ERarity.Common;
+        return rarityRandom < rarity6 ? 6
+            : rarityRandom < raritySumFrom5 ? 5
+            : rarityRandom < raritySumFrom4 ? 4
+            : rarityRandom < raritySumFrom3 ? 3
+            : rarityRandom < raritySumFrom2 ? 2 : 1;
     }
 
     /// <summary>
     /// Генерирует нового героя для пользователя, выбирая случайного базового героя с учетом редкости и наличия уникальных героев, которых пользователь уже имеет. Добавляет нового героя в базу данных и возвращает результат операции.
     /// </summary>
-    public async Task<Result> GenerateHeroAsync(Guid userId, ERarity minRarity = ERarity.Common, ERarity maxRarity = ERarity.Mythic, CancellationToken cancellationToken = default)
+    public async Task<Result> GenerateHeroAsync(Guid userId, int minRarity = 1, int maxRarity = 6, CancellationToken cancellationToken = default)
     {
         await using DbContextGame db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        ERarity raritySelected = SelectRandomRarity(minRarity, maxRarity);
+        int raritySelected = SelectRandomRarity(minRarity, maxRarity);
         BaseHero? baseHero = await SelectRandomBaseHeroAsync(db, userId, raritySelected, cancellationToken).ConfigureAwait(false);
         if (baseHero == null)
         {
@@ -140,10 +140,10 @@ public class LootGenerator(
     /// Генерирует новую экипировку для пользователя, выбирая случайный базовый предмет с учетом редкости и наличия уникальных предметов, которых пользователь уже имеет. Добавляет новый предмет в базу данных и возвращает результат операции.
     /// </summary>
     /// <returns></returns>
-    public async Task<Result> GenerateEquipmentAsync(Guid userId, ESlotType slotTypeId, ERarity minRarity = ERarity.Common, ERarity maxRarity = ERarity.Mythic, CancellationToken cancellationToken = default)
+    public async Task<Result> GenerateEquipmentAsync(Guid userId, ESlotType slotTypeId, int minRarity = 1, int maxRarity = 6, CancellationToken cancellationToken = default)
     {
         await using DbContextGame db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        ERarity raritySelected = SelectRandomRarity(minRarity, maxRarity);
+        int raritySelected = SelectRandomRarity(minRarity, maxRarity);
         BaseEquipment? baseEquipment = await SelectRandomBaseEquipmentAsync(db, userId, slotTypeId, raritySelected, cancellationToken).ConfigureAwait(false);
         if (baseEquipment == null)
         {
@@ -159,7 +159,7 @@ public class LootGenerator(
         return Result.Ok();
     }
 
-    private async Task<BaseHero?> SelectRandomBaseHeroAsync(DbContextGame db, Guid userId, ERarity raritySelected, CancellationToken cancellationToken = default)
+    private async Task<BaseHero?> SelectRandomBaseHeroAsync(DbContextGame db, Guid userId, int raritySelected, CancellationToken cancellationToken = default)
     {
         if (cancellationToken.IsCancellationRequested)
         {
@@ -168,9 +168,8 @@ public class LootGenerator(
 
         Random rand = Random.Shared;
 
-        for (int iR = (int)raritySelected; iR > 0; iR--)
+        for (int r = raritySelected; r > 0; r--)
         {
-            var r = (ERarity)iR;
             // Получаем id базовых героев с выбранной редкостью, разделяя их на уникальных и неуникальных
             List<int> baseHeroUniqueIds = [.. cacheService.TableBaseHeroes
                     .Where(a => a.Rarity == r && a.IsUnique)
@@ -203,7 +202,7 @@ public class LootGenerator(
         return null;
     }
 
-    private async Task<BaseEquipment?> SelectRandomBaseEquipmentAsync(DbContextGame db, Guid userId, ESlotType slotTypeId, ERarity raritySelected, CancellationToken cancellationToken = default)
+    private async Task<BaseEquipment?> SelectRandomBaseEquipmentAsync(DbContextGame db, Guid userId, ESlotType slotTypeId, int raritySelected, CancellationToken cancellationToken = default)
     {
         if (cancellationToken.IsCancellationRequested)
         {
@@ -213,7 +212,7 @@ public class LootGenerator(
         Random rand = Random.Shared;
         for (int iR = (int)raritySelected; iR > 0; iR--)
         {
-            var r = (ERarity)iR;
+            var r = (int)iR;
             // Получаем id базовых предметов с выбранной редкостью, разделяя их на уникальных и неуникальных
             List<int> baseEquipmentUniqueIds = [.. cacheService.TableBaseEquipments
                     .Where(a => a.Rarity == r && a.IsUnique && (slotTypeId == ESlotType.None || a.EquipmentType.SlotTypeId == slotTypeId))

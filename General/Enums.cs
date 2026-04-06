@@ -66,17 +66,17 @@ public enum ESlot : int
     Neck = 12
 }
 
-public enum ERarity : int
-{
-    Common = 1,
-    Uncommon = 2,
-    Rare = 3,
-    Epic = 4,
-    Legendary = 5,
-    Mythic = 6,
-    Divine = 7,
-    Absolute = 8
-}
+//public enum int : int
+//{
+//    Common = 1,
+//    Uncommon = 2,
+//    Rare = 3,
+//    Epic = 4,
+//    Legendary = 5,
+//    Mythic = 6,
+//    Divine = 7,
+//    Absolute = 8
+//}
 
 public enum EMainStat : int
 {

@@ -14,7 +14,7 @@ public class Npc
     [MaxLength(256)]
     public required string Name { get; set; }
 
-    public ERarity Rarity { get; set; }
+    public int Rarity { get; set; }
 
     public ERank Rank { get; set; }
 
