@@ -30,6 +30,8 @@ public class CacheService()
     public IEnumerable<SmithingMaterial> TableSmithingMaterials { get; private set; } = null!;
     public IEnumerable<X_EquipmentType_DamageType> TableX_EquipmentTypes_DamageTypes { get; private set; } = null!;
     public IEnumerable<X_Hero_CreatureType> TableX_Heroes_CreatureTypes { get; private set; } = null!;
+    public IEnumerable<Npc> TableNpcs { get; private set; } = null!;
+    public IEnumerable<Dungeon> TableDungeons { get; private set; } = null!;
 
     /// <summary>
     /// Загрузка константных данных в оперативную память. Эти данные меняются только при не работающем сервере.
@@ -98,6 +100,10 @@ public class CacheService()
         List<DtoXHeroCreatureType> xHeroesCreatureTypes = [..TableX_Heroes_CreatureTypes.Select(static h => new DtoXHeroCreatureType(
             h.BaseHeroId, h.CreatureTypeId, null, null)
             )];
+
+        TableNpcs = await db.Npcs.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
+        TableDungeons = await db.Dungeons.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
+
 
         DtoContainerGameData container = new(baseEquipments, baseHeroes, creatureTypes, damageTypes, equipmentType, materialDamagePercents, slotTypes, smithingMaterials, xEquipmentTypesDamageTypes, xHeroesCreatureTypes, slots);
 

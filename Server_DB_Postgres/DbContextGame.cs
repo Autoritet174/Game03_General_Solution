@@ -62,6 +62,7 @@ public class DbContextGame(DbContextOptions<DbContextGame> options) : IdentityDb
 
     /// <summary> Таблица связи многие ко мноким между WeaponTypes и DamageTypes. </summary>
     public DbSet<X_EquipmentType_DamageType> x_EquipmentTypes_DamageTypes { get; set; }
+    public DbSet<x_Dungeon_Npc> x_Dungeons_Npcs { get; set; }
 
     #endregion gameData
 

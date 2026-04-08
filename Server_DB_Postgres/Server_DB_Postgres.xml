@@ -292,6 +292,9 @@
         <member name="P:Server_DB_Postgres.Entities.GameData.SmithingMaterial.NameRu">
             <summary> Наименование на русском. </summary>
         </member>
+        <member name="T:Server_DB_Postgres.Entities.GameData.x_Dungeon_Npc">
+            <summary> Таблица для связи Hero и CreatureType. </summary>
+        </member>
         <member name="T:Server_DB_Postgres.Entities.GameData.X_EquipmentType_DamageType">
             <summary> Таблица для связи Hero и CreatureType. </summary>
         </member>
@@ -1382,6 +1385,30 @@
             <inheritdoc />
         </member>
         <member name="M:Server_DB_Postgres.Migrations.SlotTypeSorting.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Npc">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Npc.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Npc.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Npc.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Migration_20260407_112908">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260407_112908.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260407_112908.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260407_112908.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Server_DB_Postgres.ModelBuilderExt">

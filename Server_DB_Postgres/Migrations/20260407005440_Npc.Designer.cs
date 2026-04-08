@@ -6,6 +6,7 @@ using General;
 using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server_DB_Postgres;
@@ -15,9 +16,11 @@ using Server_DB_Postgres;
 namespace Server_DB_Postgres.Migrations
 {
     [DbContext(typeof(DbContextGame))]
-    partial class DbContext_GameModelSnapshot : ModelSnapshot
+    [Migration("20260407005440_Npc")]
+    partial class Npc
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -985,27 +988,6 @@ namespace Server_DB_Postgres.Migrations
                     b.ToTable("x_heroes_creature_types", "game_data");
                 });
 
-            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.x_Dungeon_Npc", b =>
-                {
-                    b.Property<int>("DungeonId")
-                        .HasColumnType("integer")
-                        .HasColumnName("dungeon_id")
-                        .HasColumnOrder(0);
-
-                    b.Property<int>("NpcId")
-                        .HasColumnType("integer")
-                        .HasColumnName("npc_id")
-                        .HasColumnOrder(1);
-
-                    b.HasKey("DungeonId", "NpcId")
-                        .HasName("x_dungeons_npcs__pkey");
-
-                    b.HasIndex("NpcId")
-                        .HasDatabaseName("x_dungeons_npcs__npc_id__idx");
-
-                    b.ToTable("x_dungeons_npcs", "game_data");
-                });
-
             modelBuilder.Entity("Server_DB_Postgres.Entities.Logs.AuthenticationLog", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1749,27 +1731,6 @@ namespace Server_DB_Postgres.Migrations
                     b.Navigation("BaseHero");
 
                     b.Navigation("CreatureType");
-                });
-
-            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.x_Dungeon_Npc", b =>
-                {
-                    b.HasOne("Server_DB_Postgres.Entities.GameData.Dungeon", "Dungeon")
-                        .WithMany()
-                        .HasForeignKey("DungeonId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("x_dungeons_npcs__dungeon_id__dungeons__fkey");
-
-                    b.HasOne("Server_DB_Postgres.Entities.GameData.Npc", "Npc")
-                        .WithMany()
-                        .HasForeignKey("NpcId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("x_dungeons_npcs__npc_id__npcs__fkey");
-
-                    b.Navigation("Dungeon");
-
-                    b.Navigation("Npc");
                 });
 
             modelBuilder.Entity("Server_DB_Postgres.Entities.Logs.AuthenticationLog", b =>
