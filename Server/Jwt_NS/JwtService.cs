@@ -17,7 +17,6 @@ public class JwtService
     private readonly JwtOptions _options;
     private readonly JwtSecurityTokenHandler _handler = new();
     private readonly SigningCredentials _signingCredentials;
-    private readonly Random _random = new();
     public SecurityKey IssuerSigningKey { get; private set; }
 
     /// <summary>
@@ -70,7 +69,7 @@ public class JwtService
             issuer: _options.Issuer,
             audience: _options.Audience,
             notBefore: now,
-            expires: now.Add(_options.Lifetime + TimeSpan.FromSeconds(_random.Next(-secondsRange, secondsRange + 1))),
+            expires: now.Add(_options.Lifetime + TimeSpan.FromSeconds(Random.Shared.Next(-secondsRange, secondsRange + 1))),
             claims: claims,
             signingCredentials: _signingCredentials);
 

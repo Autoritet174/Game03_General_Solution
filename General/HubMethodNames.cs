@@ -1,0 +1,23 @@
+namespace General;
+
+public static class HubMethodNames
+{
+    public const string PING = "Ping";
+    public const string EQUIPMENT_TAKE_ON = "EquipmentTakeOn";
+    public const string EQUIPMENT_TAKE_OFF = "EquipmentTakeOff";
+    public const string COMBAT_START = "BattleStart";
+
+    public enum EMethod { PING, EQUIPMENT_TAKE_ON, EQUIPMENT_TAKE_OFF, COMBAT_START }
+
+    public static string GetMethod(EMethod eMethod) {
+        return eMethod switch
+        {
+            EMethod.PING => PING,
+            EMethod.EQUIPMENT_TAKE_ON => EQUIPMENT_TAKE_ON,
+            EMethod.EQUIPMENT_TAKE_OFF => EQUIPMENT_TAKE_OFF,
+            EMethod.COMBAT_START => COMBAT_START,
+            _ => throw new System.Exception("HubMethodNames.GetMethod bad method"),
+        };
+    }
+
+}

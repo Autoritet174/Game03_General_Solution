@@ -1,60 +1,38 @@
-using General.DTO;
+using General;
+using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Buffers;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Net.WebSockets;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Game03Client;
 
 /// <summary>
-/// Провайдер WebSocket: Zero-Allocation (по возможности), защита от утечек и Buffer Bloat.
+/// Provider for communicating with the server via SignalR.
 /// </summary>
 public class WebSocketProvider
 {
     private static readonly Logger<WebSocketProvider> logger = new();
-    private const string SERVER_URL = "wss://localhost:7227/ws/";
+    private static HubConnection? _connection;
 
-    private static ClientWebSocket _webSocket = new();
-    private static readonly Uri _serverUri = new(SERVER_URL);
+    public static bool IsConnected => _connection?.State == HubConnectionState.Connected;
 
-    private static CancellationTokenSource? _internalDisconnectCts;
-    private static CancellationTokenSource? _linkedCts;
+    // Pre-allocated logging delegates
+    private static readonly Action<Logger<WebSocketProvider>, string, Exception?> _errorInvokeLogger =
+        (l, method, ex) => l.LogError($"Error invoking {method}");
 
-    // Структура для кэша ответов с меткой времени
-    private readonly struct CachedResponse(DtoWSResponseS2C response)
-    {
-        public readonly DtoWSResponseS2C Response = response;
-        public readonly long Timestamp = DateTime.UtcNow.Ticks; // Ticks
-    }
+    private static readonly Action<Logger<WebSocketProvider>, string, Exception?> _errorSendLogger =
+        (l, method, ex) => l.LogError($"Error sending {method}");
 
-    private static readonly ConcurrentDictionary<Guid, CachedResponse> _responseDictionary = new();
+    private static readonly Action<Logger<WebSocketProvider>, string, Exception?> _errorDisconnectLogger =
+        (l, msg, ex) => l.LogError($"Disconnect error: {msg}");
 
-    // TaskCreationOptions.RunContinuationsAsynchronously критичен для избежания дедлоков и блокировок цикла приема
-    private static readonly ConcurrentDictionary<Guid, TaskCompletionSource<DtoWSResponseS2C>> _pendingRequests = new();
+    private static readonly Action<Logger<WebSocketProvider>, Exception?> _errorConnectLogger =
+        (l, ex) => l.LogError("Connection error");
 
-    // Таймер для очистки "сиротских" ответов
-    private static Timer? _cleanupTimer;
-    private static readonly TimeSpan _responseTtl = TimeSpan.FromSeconds(30);
+    private static readonly Action<Logger<WebSocketProvider>, string, Exception?> _infoReceiveLogger =
+        (l, msg, ex) => l.LogInfo($"Server log: {msg}");
 
-    // Порог, после которого мы пересоздаем буфер приема, чтобы освободить память (64 KB)
-    private const int MAX_BUFFER_RETAIN_SIZE = 64 * 1024;
-    private const int INITIAL_BUFFER_SIZE = 8192;
-
-    /// <summary>
-    /// Извлекает ответ из очереди.
-    /// </summary>
-    public static DtoWSResponseS2C? GetIfExists(Guid messageId)
-    {
-        return _responseDictionary.TryRemove(messageId, out CachedResponse wrapper) ? wrapper.Response : null;
-    }
-
-    /// <summary>
-    /// Подключение к серверу.
-    /// </summary>
     public static async Task<bool> ConnectAsync(CancellationToken ctOpen, CancellationToken ctReceive)
     {
         if (ctOpen.IsCancellationRequested || ctReceive.IsCancellationRequested)
@@ -64,268 +42,154 @@ public class WebSocketProvider
 
         try
         {
-            _webSocket.Dispose();
-            _webSocket = new ClientWebSocket();
+            await DisconnectAsync().ConfigureAwait(false);
 
-            if (!string.IsNullOrWhiteSpace(Auth.AccessToken))
-            {
-                _webSocket.Options.SetRequestHeader("Authorization", $"Bearer {Auth.AccessToken}");
-            }
-
-            await _webSocket.ConnectAsync(_serverUri, ctOpen).ConfigureAwait(false);
-
-            if (_webSocket.State == WebSocketState.Open)
-            {
-                _internalDisconnectCts = new CancellationTokenSource();
-                _linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ctReceive, _internalDisconnectCts.Token);
-
-                // Запускаем таймер очистки (раз в минуту)
-                _ = (_cleanupTimer?.DisposeAsync());
-                _cleanupTimer = new Timer(CleanupExpiredResponses, null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
-
-                _ = Task.Run(() => ReceiveMessagesAsync(_linkedCts.Token), _linkedCts.Token);
-                return true;
-            }
-        }
-        catch (Exception ex)
-        {
-            logger.LogException(ex);
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// Удаление устаревших ответов.
-    /// </summary>
-    private static void CleanupExpiredResponses(object? state)
-    {
-        try
-        {
-            long threshold = DateTime.UtcNow.Ticks - _responseTtl.Ticks;
-            foreach (KeyValuePair<Guid, CachedResponse> kvp in _responseDictionary)
-            {
-                if (kvp.Value.Timestamp < threshold)
+            _connection = new HubConnectionBuilder()
+                .WithUrl(Parametrs.SignalR_Address, options =>
                 {
-                    _ = _responseDictionary.TryRemove(kvp.Key, out _);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            logger.LogError($"Ошибка очистки кэша ответов: {ex.Message}");
-        }
-    }
-
-    /// <summary>
-    /// Цикл приема сообщений с защитой от Buffer Bloat.
-    /// </summary>
-    private static async Task ReceiveMessagesAsync(CancellationToken ct)
-    {
-        // Буфер для чтения части сообщения из сокета
-        byte[] chunkBuffer = ArrayPool<byte>.Shared.Rent(INITIAL_BUFFER_SIZE);
-
-        // Буфер для накопления полного сообщения
-        byte[] accumulatorBuffer = ArrayPool<byte>.Shared.Rent(INITIAL_BUFFER_SIZE);
-        try
-        {
-            while (_webSocket.State == WebSocketState.Open && !ct.IsCancellationRequested)
-            {
-                int totalBytesReceived = 0;
-                WebSocketReceiveResult result;
-
-                do
-                {
-                    // 1. Читаем чанк
-                    result = await _webSocket.ReceiveAsync(new ArraySegment<byte>(chunkBuffer), ct).ConfigureAwait(false);
-
-                    if (result.MessageType == WebSocketMessageType.Close)
+                    if (!string.IsNullOrWhiteSpace(Auth.AccessToken))
                     {
-                        await DisconnectAsync().ConfigureAwait(false);
-                        return;
+                        options.AccessTokenProvider = () => Task.FromResult(Auth.AccessToken)!;
                     }
-
-                    // 2. Если чанк не влезает в аккумулятор -> расширяем аккумулятор
-                    if (totalBytesReceived + result.Count > accumulatorBuffer.Length)
-                    {
-                        int newSize = Math.Max(accumulatorBuffer.Length * 2, totalBytesReceived + result.Count);
-                        byte[] newBuffer = ArrayPool<byte>.Shared.Rent(newSize);
-
-                        Buffer.BlockCopy(accumulatorBuffer, 0, newBuffer, 0, totalBytesReceived);
-
-                        ArrayPool<byte>.Shared.Return(accumulatorBuffer);
-                        accumulatorBuffer = newBuffer;
-                    }
-
-                    // 3. Копируем данные
-                    Buffer.BlockCopy(chunkBuffer, 0, accumulatorBuffer, totalBytesReceived, result.Count);
-                    totalBytesReceived += result.Count;
-
-                } while (!result.EndOfMessage);
-
-                // 4. Обрабатываем
-                if (result.MessageType == WebSocketMessageType.Text && totalBytesReceived > 0)
+                })
+                .AddJsonProtocol(options =>
                 {
-                    ProcessMessageSpan(new ReadOnlySpan<byte>(accumulatorBuffer, 0, totalBytesReceived));
-                }
+                    options.PayloadSerializerOptions = JsonSettings.JsonOptions;
+                })
+                .WithAutomaticReconnect(new RetryPolicy())
+                .Build();
 
-                // 5. PROTECTION AGAINST BUFFER BLOAT
-                // Если буфер разросся (например, пришел 1MB), а обычно сообщения мелкие,
-                // возвращаем гиганта в пул и берем стандартный размер.
-                if (accumulatorBuffer.Length > MAX_BUFFER_RETAIN_SIZE)
-                {
-                    ArrayPool<byte>.Shared.Return(accumulatorBuffer);
-                    accumulatorBuffer = ArrayPool<byte>.Shared.Rent(INITIAL_BUFFER_SIZE);
-                }
-            }
+            RegisterServerEvents();
+
+            using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ctOpen, ctReceive);
+            await _connection.StartAsync(linkedCts.Token).ConfigureAwait(false);
+
+            return true;
         }
-        catch (OperationCanceledException) { }
+        catch (OperationCanceledException)
+        {
+            return false;
+        }
         catch (Exception ex)
         {
-            logger.LogException(ex);
-        }
-        finally
-        {
-            ArrayPool<byte>.Shared.Return(chunkBuffer);
-            ArrayPool<byte>.Shared.Return(accumulatorBuffer);
+            _errorConnectLogger(logger, ex);
+            return false;
         }
     }
 
     /// <summary>
-    /// Десериализация из Span (Zero-Allocation строки).
+    /// Registers server-to-client event handlers.
     /// </summary>
-    private static void ProcessMessageSpan(ReadOnlySpan<byte> data)
+    private static void RegisterServerEvents()
     {
+        if (_connection == null)
+        {
+            return;
+        }
+
+        _ = _connection.On<string>("ReceiveLog", message => _infoReceiveLogger(logger, message, null));
+
+        // Register new server events here as needed:
+        // _connection.On<SomeDto>("EventName", dto => { ... });
+    }
+
+    /// <summary>
+    /// Invokes a server hub method with a return value.
+    /// </summary>
+    public static async Task<TResponse?> InvokeAsync<TResponse>(
+        General.HubMethodNames.EMethod eMethod,
+        CancellationToken ct = default,
+        params object?[] args)
+    {
+        if (_connection == null || !IsConnected)
+        {
+            return default;
+        }
+
+        string methodName = General.HubMethodNames.GetMethod(eMethod);
+
         try
         {
-            DtoWS? dtoWS = JsonSerializer.Deserialize<DtoWS>(data, General.JsonSettings.JsonOptions);
-
-            switch (dtoWS)
+            return await (args.Length switch
             {
-                case DtoWSResponseS2C dtoWSResponseS2C:
-                    OnMessageReceived_DtoWSResponseS2C(dtoWSResponseS2C);
-                    break;
-                case DtoWSLogMessageS2C dtoWSLogMessageS2C:
-                    logger.LogInfo(dtoWSLogMessageS2C.Message);
-                    break;
-                default:
-                    break;
-            }
+                0 => _connection.InvokeAsync<TResponse>(methodName, ct),
+                1 => _connection.InvokeAsync<TResponse>(methodName, args[0], ct),
+                2 => _connection.InvokeAsync<TResponse>(methodName, args[0], args[1], ct),
+                3 => _connection.InvokeAsync<TResponse>(methodName, args[0], args[1], args[2], ct),
+                4 => _connection.InvokeAsync<TResponse>(methodName, args[0], args[1], args[2], args[3], ct),
+                5 => _connection.InvokeAsync<TResponse>(methodName, args[0], args[1], args[2], args[3], args[4], ct),
+                6 => _connection.InvokeAsync<TResponse>(methodName, args[0], args[1], args[2], args[3], args[4], args[5], ct),
+                7 => _connection.InvokeAsync<TResponse>(methodName, args[0], args[1], args[2], args[3], args[4], args[5], args[6], ct),
+                8 => _connection.InvokeAsync<TResponse>(methodName, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], ct),
+                9 => _connection.InvokeAsync<TResponse>(methodName, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], ct),
+                10 => _connection.InvokeAsync<TResponse>(methodName, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], ct),
+                _ => throw new ArgumentOutOfRangeException(nameof(args), "Too many arguments (max 10)")
+            }).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
-            logger.LogError($"Ошибка десериализации: {ex.Message}");
+            _errorInvokeLogger(logger, methodName, ex);
+            return default;
         }
     }
 
-    private static void OnMessageReceived_DtoWSResponseS2C(DtoWSResponseS2C response)
+    /// <summary>
+    /// Invokes a server hub method without a return value (fire-and-forget).
+    /// </summary>
+    public static async Task<bool> SendAsync(string methodName, CancellationToken ct = default, params object?[] args)
     {
-        // Убираем StartNew, так как TCS создан с RunContinuationsAsynchronously.
-        // Это минимизирует Latency и убирает лишние аллокации Task.
-        if (_pendingRequests.TryRemove(response.InReplyTo, out TaskCompletionSource<DtoWSResponseS2C>? tcs))
-        {
-            _ = tcs.TrySetResult(response);
-        }
-        else
-        {
-            // Сохраняем "сиротский" ответ с текущим Timestamp
-            _ = _responseDictionary.TryAdd(response.InReplyTo, new CachedResponse(response));
-        }
-    }
-
-    public static async Task<bool> SendMessageAsync<T>(T message, CancellationToken ct)
-    where T : DtoWS  // Ограничение: T должен быть наследником DtoWS
-    {
-        if (_webSocket.State != WebSocketState.Open)
+        if (_connection == null || !IsConnected)
         {
             return false;
         }
 
         try
         {
-            // Сериализация напрямую в байты
-            byte[] jsonBytes = JsonSerializer.SerializeToUtf8Bytes<DtoWS>(message);
-
-            await _webSocket.SendAsync(
-                new ArraySegment<byte>(jsonBytes),
-                WebSocketMessageType.Text,
-                true,
-                ct
-            ).ConfigureAwait(false);
-
+            await _connection.InvokeAsync(methodName, args, ct).ConfigureAwait(false);
             return true;
         }
         catch (Exception ex)
         {
-            logger.LogError($"Ошибка отправки: {ex.Message}");
+            _errorSendLogger(logger, methodName, ex);
             return false;
         }
     }
 
-    public static async Task<DtoWSResponseS2C?> WaitForResponseAsync(Guid messageId, TimeSpan timeout, CancellationToken ct = default)
-    {
-        if (_responseDictionary.TryRemove(messageId, out CachedResponse existing))
-        {
-            return existing.Response;
-        }
-
-        var tcs = new TaskCompletionSource<DtoWSResponseS2C>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-        if (!_pendingRequests.TryAdd(messageId, tcs))
-        {
-            throw new InvalidOperationException($"Duplicate wait for {messageId}");
-        }
-
-        // Double-Check
-        if (_responseDictionary.TryRemove(messageId, out CachedResponse missed))
-        {
-            _ = _pendingRequests.TryRemove(messageId, out _);
-            return missed.Response;
-        }
-
-        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
-        var timeoutTask = Task.Delay(timeout, linkedCts.Token);
-
-        Task completedTask = await Task.WhenAny(tcs.Task, timeoutTask).ConfigureAwait(false);
-
-        _ = _pendingRequests.TryRemove(messageId, out _);
-
-        if (completedTask == tcs.Task)
-        {
-            linkedCts.Cancel();
-            return await tcs.Task.ConfigureAwait(false);
-        }
-
-        return null;
-    }
-
+    /// <summary>
+    /// Disconnects from the server.
+    /// </summary>
     public static async Task DisconnectAsync()
     {
+        if (_connection == null)
+        {
+            return;
+        }
+
         try
         {
-            _internalDisconnectCts?.Cancel();
-            _ = (_cleanupTimer?.DisposeAsync());
-
-            if (_webSocket.State is WebSocketState.Open or WebSocketState.CloseReceived)
-            {
-                using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
-                await _webSocket.CloseAsync(
-                    WebSocketCloseStatus.NormalClosure,
-                    "Client disconnect",
-                    timeoutCts.Token).ConfigureAwait(false);
-            }
+            await _connection.StopAsync().ConfigureAwait(false);
+            await _connection.DisposeAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
         {
-            logger.LogError($"Disconnection error: {ex.Message}");
+            _errorDisconnectLogger(logger, ex.Message, ex);
         }
         finally
         {
-            _webSocket.Dispose();
-            _linkedCts?.Dispose();
-            _internalDisconnectCts?.Dispose();
-            _linkedCts = null;
-            _internalDisconnectCts = null;
+            _connection = null;
         }
     }
+}
+
+/// <summary>
+/// Custom retry policy for automatic reconnection.
+/// </summary>
+internal class RetryPolicy : IRetryPolicy
+{
+    public TimeSpan? NextRetryDelay(RetryContext retryContext) => retryContext.PreviousRetryCount switch
+    {
+        < 3 => TimeSpan.Zero,
+        < 10 => TimeSpan.FromSeconds(5),
+        _ => TimeSpan.FromSeconds(30)
+    };
 }

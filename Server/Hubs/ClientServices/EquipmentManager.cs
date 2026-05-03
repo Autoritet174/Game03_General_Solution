@@ -2,7 +2,7 @@ using FluentResults;
 using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using Server.Cache;
-using Server.WebSocket_NS;
+using Server.Hubs;
 using Server_DB_Postgres;
 using Server_DB_Postgres.Entities.Collection;
 using Server_DB_Postgres.Entities.GameData;
@@ -19,7 +19,7 @@ namespace Server.Collection;
 public partial class EquipmentManager(
     Guid userId,
     IDbContextFactory<DbContextGame> dbContextFactory,
-    ILogger<WebSocketConnection> logger,
+    ILogger<Client> logger,
     CacheService cacheService)
 {
     #region Compiled Queries
@@ -68,14 +68,9 @@ public partial class EquipmentManager(
     /// <summary>
     /// Надевает предмет экипировки на указанного героя.
     /// </summary>
-    /// <param name="dto">Объект передачи данных, содержащий ID героя и предмета.</param>
-    /// <param name="cancellationToken">Токен отмены асинхронной операции.</param>
     /// <returns>Результат операции: Ok — успешно, Fail — ошибка валидации или БД.</returns>
-    public async Task<Result> TakeOnAsync(DtoWSEquipmentTakeOnC2S dto, CancellationToken cancellationToken)
+    public async Task<Result> TakeOnAsync(Guid heroId, Guid equipmentId, bool? inAltSlot, CancellationToken cancellationToken)
     {
-        Guid heroId = dto.HeroId;
-        Guid equipmentId = dto.EquipmentId;
-
         await using DbContextGame db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         // Проверка экипировки (существование и принадлежность)
@@ -110,7 +105,7 @@ public partial class EquipmentManager(
         }
 
         // Определение целевого слота
-        General.ESlot slotId = GetSlotId(equipment.BaseEquipmentId, dto.InAltSlot ?? false);
+        General.ESlot slotId = GetSlotId(equipment.BaseEquipmentId, inAltSlot ?? false);
 
         // Обработка конфликта(если слот занят — снимаем текущий предмет)
         Equipment? currentSlotItem = await GetEquippedInSlotAsync(db, heroId, slotId, cancellationToken).ConfigureAwait(false);
@@ -136,13 +131,9 @@ public partial class EquipmentManager(
     /// <summary>
     /// Снимает указанный предмет экипировки с героя.
     /// </summary>
-    /// <param name="dto">Объект передачи данных, содержащий ID предмета.</param>
-    /// <param name="cancellationToken">Токен отмены асинхронной операции.</param>
     /// <returns>Результат операции: Ok — предмет снят или уже был не надет.</returns>
-    public async Task<Result> TakeOffAsync(DtoWSEquipmentTakeOffC2S dto, CancellationToken cancellationToken)
+    public async Task<Result> TakeOffAsync(Guid equipmentId, CancellationToken cancellationToken)
     {
-        Guid equipmentId = dto.EquipmentId;
-
         await using DbContextGame db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         Equipment? equipment = await GetEquipmentByIdAsync(db, equipmentId, cancellationToken).ConfigureAwait(false);

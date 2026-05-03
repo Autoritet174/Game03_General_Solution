@@ -99,3 +99,5 @@ public enum EDungeonDifficulty : int
     Hard = 1,
     Boss = 2
 }
+
+public enum EBattleFiled { Polygon = 1 }

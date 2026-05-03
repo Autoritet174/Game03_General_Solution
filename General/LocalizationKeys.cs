@@ -88,6 +88,16 @@ public static class LocalizationKeys
 
             public const string NoGroup = $"{_Label}{nameof(NoGroup)}";
             public const string EndBattle = $"{_Label}{nameof(EndBattle)}";
+
+            public const string BattleField = $"{_Label}{nameof(BattleField)}";
+
+            //public const string BattleField_TestPlatforms = $"{_Label}{nameof(BattleField_TestPlatforms)}";
+            //public const string BattleField_TestPlatforms_Polygon = $"{_Label}{nameof(BattleField_TestPlatforms_Polygon)}";
+
+            //public const string BattleField_Mines = $"{_Label}{nameof(BattleField_Mines)}";
+            //public const string BattleField_Mines_Iron = $"{_Label}{nameof(BattleField_Mines_Iron)}";
+
+            //public const string BattleField_Dungeons = $"{_Label}{nameof(BattleField_Dungeons)}";
         }
     }
 
@@ -159,7 +169,7 @@ public static class LocalizationKeys
     /// <summary>
     /// Ключ-заполнитель для указания даты и времени истечения срока действия.
     /// </summary>
-    public const string DATE_TIME_EXPIRES_AT = nameof(DATE_TIME_EXPIRES_AT);
+    //public const string DATE_TIME_EXPIRES_AT = nameof(DATE_TIME_EXPIRES_AT);
 
     /// <summary>
     /// Ключ-заполнитель для указания даты и времени истечения срока.

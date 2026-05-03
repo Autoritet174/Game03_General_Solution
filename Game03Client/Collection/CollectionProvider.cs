@@ -1,5 +1,3 @@
-using General;
-using General.DTO;
 using General.DTO.Entities;
 using General.DTO.Entities.Collection;
 using General.DTO.Entities.GameData;
@@ -215,32 +213,31 @@ public class CollectionProvider
             return false;
         }
 
-        var guid = Guid.NewGuid();
-        DtoWSEquipmentTakeOnC2S equipmentTakeOnMessage = new(heroId, equipmentId, inAltSlot, guid);
-        bool result = await WebSocketProvider.SendMessageAsync(equipmentTakeOnMessage, cancellationToken).ConfigureAwait(false);
-        if (result)
+        try
         {
-            // тут мы знаем только то что сообщение ушло на сервер, но пока что понятие не имеем что сделал сервер
-            // ждём сообщение по веб сокету от сервера о том была ли фактически одета экипировка
-            // Ждем ответ не более 5 секунд
+            bool success = await WebSocketProvider.InvokeAsync<bool>(
+                General.HubMethodNames.EMethod.EQUIPMENT_TAKE_ON,
+                cancellationToken,
+                heroId,
+                equipmentId,
+                inAltSlot
+            ).ConfigureAwait(false);
 
-            DtoWSResponseS2C? response = await WebSocketProvider.WaitForResponseAsync(
-                guid,
-                TimeSpan.FromSeconds(5),
-                cancellationToken).ConfigureAwait(false);
-
-            if (response?.Success == true)
+            if (success)
             {
-                DtoBaseEquipment? baseEquip = equipment.BaseEquipment;
-                ESlotType slotTypeId = baseEquip?.EquipmentType?.SlotType?.Id ?? 0;
-
-                // Обновляем локальное состояние
                 equipment.HeroId = heroId;
                 equipment.SlotId = GetSlotId(equipment, inAltSlot);
-                //logger.LogInfo(equipment.HeroId);
-                //logger.LogInfo(equipment.SlotId);
                 return true;
             }
+        }
+        catch (OperationCanceledException)
+        {
+            // отмена операции
+        }
+        catch (Exception)
+        {
+            // Обработка ошибок (таймаут, разрыв соединения, ошибка хаба)
+            // Логирование и проброс дальше или возврат false
         }
 
         return false;
@@ -282,28 +279,29 @@ public class CollectionProvider
             return true;
         }
 
-        var guid = Guid.NewGuid();
-        DtoWSEquipmentTakeOffC2S equipmentTakeOnMessage = new(equipmentId, guid);
-        bool result = await WebSocketProvider.SendMessageAsync(equipmentTakeOnMessage, cancellationToken).ConfigureAwait(false);
-        if (result)
+        try
         {
-            DtoWSResponseS2C? response = await WebSocketProvider.WaitForResponseAsync(
-                guid,
-                TimeSpan.FromSeconds(5),
-                cancellationToken).ConfigureAwait(false);
-
-            if (response?.Success == true)
+            bool success = await WebSocketProvider.InvokeAsync<bool>(
+                General.HubMethodNames.EMethod.EQUIPMENT_TAKE_OFF,
+                cancellationToken,
+                equipmentId
+                ).ConfigureAwait(false);
+            if (success)
             {
-                DtoBaseEquipment? baseEquip = equipment.BaseEquipment;
-                ESlotType slotTypeId = baseEquip?.EquipmentType?.SlotType?.Id ?? 0;
-
-                // Обновляем локальное состояние
                 equipment.HeroId = null;
                 equipment.SlotId = null;
                 return true;
             }
         }
-
+        catch (OperationCanceledException)
+        {
+            // отмена операции
+        }
+        catch (Exception)
+        {
+            // Обработка ошибок (таймаут, разрыв соединения, ошибка хаба)
+            // Логирование и проброс дальше или возврат false
+        }
         return false;
     }
 

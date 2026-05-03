@@ -18,8 +18,7 @@ internal class Program
 
     private static async Task Main()
     {
-
-
+       
         //if (string.Empty == "")
         //{
         //    return;
@@ -281,4 +280,7 @@ internal class Program
             Console.WriteLine($"Отключено {disconnectedCount}/{clients.Count} клиентов");
         }
     }
+
+
+
 }

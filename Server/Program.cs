@@ -1,9 +1,11 @@
+using General;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 using Serilog;
@@ -11,19 +13,28 @@ using Serilog.Events;
 using Server.Cache;
 using Server.Game;
 using Server.Http_NS.Middleware_NS;
+using Server.Hubs;
 using Server.Jwt_NS;
 using Server.Users;
 using Server.Users.Authentication;
 using Server.Users.Registration;
-using Server.WebSocket_NS;
 using Server_DB_Postgres;
 using Server_DB_Postgres.Entities.Users;
 using Server_DB_Postgres.Repositories;
 using System.IO.Compression;
-using System.Net;
 using System.Threading.RateLimiting;
 
 namespace Server;
+
+/*
+export DB_HOST=your-db-host
+export DB_PORT=5432
+export DB_NAME=Game
+export DB_USER=postgres
+export DB_PASSWORD=SecretPassword123
+dotnet Server.dll
+ */
+
 
 /// <summary> Класс содержит точку входа приложения и настройки сервисов, аутентификации, middleware, маршрутов и баз данных. </summary>
 internal partial class Program
@@ -47,6 +58,7 @@ internal partial class Program
 
         IMvcBuilder iMvcBuilder = services.AddControllers();// Добавление контроллеров
         _ = services.AddHttpLogging();
+
 
         string connectionString = CreateConnectionString(builder);
 
@@ -81,7 +93,8 @@ internal partial class Program
 
         _ = services.AddSingleton<CacheService>();
         _ = services.AddSingleton<TestService>();
-
+        _ = services.AddSingleton<ClientManager>();
+        _ = services.AddSingleton<IClientFactory, ClientFactory>();
 
         //// Настройки "MongoDb"
         //IConfigurationSection mongoSection = builder.Configuration.GetSection("MongoDb");
@@ -89,7 +102,7 @@ internal partial class Program
         //// Регистрация репозитория
         //_ = services.AddSingleton<MongoRepository>();
 
-        _ = services.AddSingleton<WebSocketConnectionHandler>();
+        //_ = services.AddSingleton<WebSocketConnectionHandler>();
 
         // Ограничение размера тела
         _ = services.Configure<FormOptions>(options =>
@@ -116,9 +129,14 @@ internal partial class Program
         _ = services.AddScoped<AuthService>();
         _ = services.AddScoped<RegService>();
         _ = services.AddScoped<SessionService>();
-
-
-
+        _ = services.AddSignalR(options =>
+            {
+                options.EnableDetailedErrors = !builder.Environment.IsProduction();
+            })
+            .AddJsonProtocol(options =>
+            {
+                options.PayloadSerializerOptions = General.JsonSettings.JsonOptions;
+            });
 
         // установить Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore
         // если надо. сейчас нет кубернетес или сервисов проверки работоспособности
@@ -149,21 +167,23 @@ internal partial class Program
             options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2);
             options.SignIn.RequireConfirmedAccount = false;
         })
-        .AddSignInManager<SignInManager<User>>()  // Добавьте эту строку для регистрации SignInManager
-        .AddRoles<IdentityRole<Guid>>()  // Если используете роли; иначе удалите
+        .AddSignInManager<SignInManager<User>>()
+        //.AddRoles<IdentityRole<Guid>>()  // Если используете роли; иначе удалите
         .AddEntityFrameworkStores<DbContextGame>()
         .AddDefaultTokenProviders();
 
-        _ = services.AddFido2(options =>
-        {
-            options.ServerDomain = "your-game-domain.com";
-            options.ServerName = "Your Game Name";
-            options.Origins = new HashSet<string>
-            {
-                "https://your-game-domain.com"
-            };
-        });
+        //_ = services.AddFido2(options =>
+        //{
+        //    options.ServerDomain = "your-game-domain.com";
+        //    options.ServerName = "Your Game Name";
+        //    options.Origins = new HashSet<string>
+        //    {
+        //        "https://your-game-domain.com"
+        //    };
+        //});
 
+        string domain = builder.Configuration.GetValue<string>("Kestrel:Endpoints:Https:Url") ?? throw new Exception("Kestrel HTTPS URL is not configured");
+        Url.Init(domain.TrimEnd('/'));
 
 
         _ = services.ConfigureApplicationCookie(options =>
@@ -181,6 +201,7 @@ internal partial class Program
             options.Limits.MaxConcurrentConnections = null; // unlimited
             options.Limits.MaxConcurrentUpgradedConnections = null; // unlimited для WebSockets
         });
+
 
         WebApplication app = builder.Build();
 
@@ -201,8 +222,8 @@ internal partial class Program
 
         // Разрешение WebSocket соединений
         _ = app.UseWebSockets();//WebSockets (ДО маршрутизации)
-
-        InitWebSocket(app);
+        _ = app.MapHub<GameHub>(Parametrs.SignalR_Address);
+        //InitWebSocket(app);
 
         // Подключение кастомного WebSocket middleware
         //_ = app.UseMiddleware<WebSocketMiddleware>();
@@ -224,8 +245,7 @@ internal partial class Program
 
         await ConnectionsIsCorrectAsync(app, cancellationToken).ConfigureAwait(false);
 
-        // на этом момент есть гарантия что соединения со всеми СУБД корректно.
-        // иначе где то сработает один из throw.
+        // На этом момент есть 100% гарантия что соединения со всеми СУБД корректно, иначе где то сработает один из throw.
 
         await LoadServerCacheAsync(app, cancellationToken).ConfigureAwait(false);
         await LoadTestServiceAsync(app, cancellationToken).ConfigureAwait(false);
@@ -307,15 +327,100 @@ internal partial class Program
     }
 
     /// <summary> Добавление аутентификации с использованием JWT. </summary>
+    //private static void InitJwt(WebApplicationBuilder builder)
+    //{
+    //    IServiceCollection services = builder.Services;
+    //    _ = services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
+    //    _ = services.AddSingleton<JwtService>();
+    //    _ = services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    //        .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, _ => { }); // Пустая конфигурация, чтобы зарегистрировать схему
+
+    //    // Добавляем пост-конфигурацию с использованием DI
+    //    _ = services.AddSingleton<IPostConfigureOptions<JwtBearerOptions>>(sp =>
+    //        new PostConfigureOptions<JwtBearerOptions>(
+    //            JwtBearerDefaults.AuthenticationScheme,
+    //            options =>
+    //            {
+    //                JwtOptions jwtOptions = sp.GetRequiredService<IOptions<JwtOptions>>().Value;
+    //                JwtService jwtService = sp.GetRequiredService<JwtService>();
+
+    //                options.TokenValidationParameters = new TokenValidationParameters
+    //                {
+    //                    ValidateIssuer = true,
+    //                    ValidIssuer = jwtOptions.Issuer,
+    //                    ValidateAudience = true,
+    //                    ValidAudience = jwtOptions.Audience,
+    //                    ValidateLifetime = true,
+    //                    ClockSkew = JwtService.ClockSkew,
+    //                    ValidateIssuerSigningKey = true,
+    //                    IssuerSigningKey = jwtService.IssuerSigningKey
+    //                };
+
+    //                // Добавляем обработку событий
+    //                options.Events = new JwtBearerEvents
+    //                {
+    //                    OnMessageReceived = context =>
+    //                    {
+    //                        // SignalR передаёт access_token в query string
+    //                        StringValues accessToken = context.Request.Query["access_token"];
+    //                        PathString path = context.HttpContext.Request.Path;
+
+    //                        if (!string.IsNullOrWhiteSpace(accessToken) && path.StartsWithSegments(Url.SignalRAddress))
+    //                        {
+    //                            context.Token = accessToken;
+    //                        }
+    //                        return Task.CompletedTask;
+    //                    }
+    //                };
+
+    //                //// Логируем ошибки валидации для отладки
+    //                //options.Events = new JwtBearerEvents
+    //                //{
+    //                //    OnAuthenticationFailed = context =>
+    //                //    {
+    //                //        Console.WriteLine("JWT валидация провалилась");
+    //                //        return Task.CompletedTask;
+    //                //    },
+    //                //    OnTokenValidated = context => {
+    //                //        Console.WriteLine("OnTokenValidated");
+    //                //        return Task.CompletedTask;
+    //                //    },
+    //                //    OnMessageReceived = context => {
+    //                //        Console.WriteLine("OnMessageReceived");
+    //                //        return Task.CompletedTask;
+    //                //    },
+    //                //    OnChallenge = context => {
+    //                //        Console.WriteLine("OnChallenge");
+    //                //        return Task.CompletedTask;
+    //                //    },
+    //                //    OnForbidden = context => {
+    //                //        Console.WriteLine("OnForbidden");
+    //                //        return Task.CompletedTask;
+    //                //    }
+    //                //};
+    //            }));
+    //}
+
     private static void InitJwt(WebApplicationBuilder builder)
     {
         IServiceCollection services = builder.Services;
-        _ = services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
+
+        // Сохраняем для использования в JWT
+        string issuer = Url.UrlDomain;
+        string audience = Url.UrlDomain;
+
+        _ = services.Configure<JwtOptions>(options =>
+        {
+            // Переопределяем Issuer и Audience из конфига значениями из URL
+            options.Issuer = issuer;
+            options.Audience = audience;
+            // Lifetime оставляем из appsettings.json
+        });
+
         _ = services.AddSingleton<JwtService>();
         _ = services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, _ => { }); // Пустая конфигурация, чтобы зарегистрировать схему
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, _ => { });
 
-        // Добавляем пост-конфигурацию с использованием DI
         _ = services.AddSingleton<IPostConfigureOptions<JwtBearerOptions>>(sp =>
             new PostConfigureOptions<JwtBearerOptions>(
                 JwtBearerDefaults.AuthenticationScheme,
@@ -336,34 +441,23 @@ internal partial class Program
                         IssuerSigningKey = jwtService.IssuerSigningKey
                     };
 
-                    //// Логируем ошибки валидации для отладки
-                    //options.Events = new JwtBearerEvents
-                    //{
-                    //    OnAuthenticationFailed = context =>
-                    //    {
-                    //        Console.WriteLine("JWT валидация провалилась");
-                    //        return Task.CompletedTask;
-                    //    },
-                    //    OnTokenValidated = context => {
-                    //        Console.WriteLine("OnTokenValidated");
-                    //        return Task.CompletedTask;
-                    //    },
-                    //    OnMessageReceived = context => {
-                    //        Console.WriteLine("OnMessageReceived");
-                    //        return Task.CompletedTask;
-                    //    },
-                    //    OnChallenge = context => {
-                    //        Console.WriteLine("OnChallenge");
-                    //        return Task.CompletedTask;
-                    //    },
-                    //    OnForbidden = context => {
-                    //        Console.WriteLine("OnForbidden");
-                    //        return Task.CompletedTask;
-                    //    }
-                    //};
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            StringValues accessToken = context.Request.Query["access_token"];
+                            PathString path = context.HttpContext.Request.Path;
+
+                            if (!string.IsNullOrWhiteSpace(accessToken) &&
+                                path.StartsWithSegments(Parametrs.SignalR_Address))
+                            {
+                                context.Token = accessToken;
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
                 }));
     }
-
     /// <summary> Получение строки подключения из настройек и дополнительные корректировки. </summary>
     private static string CreateConnectionString(WebApplicationBuilder builder)
     {
@@ -386,7 +480,6 @@ internal partial class Program
     /// <summary> Добавляем Rate Limiting с учётом IP. </summary>
     private static void InitRateLimite(IServiceCollection services)
     {
-        _ = 0;
         _ = services.AddRateLimiter(static options =>
         {
             _ = options.AddPolicy(Consts.RATE_LIMITER_POLICY_AUTH, static context =>
@@ -419,82 +512,6 @@ internal partial class Program
                         PermitLimit = 1,
                         QueueLimit = 0
                     });
-            });
-        });
-    }
-
-    //private static void InitNewtonsoftJson(IMvcBuilder iMvcBuilder)
-    //{
-    //    _ = 0;
-    //    _ = iMvcBuilder.AddNewtonsoftJson(static options =>
-    //    {
-    //        // 1. Обработка ссылок
-    //        options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore; // Обработка циклических ссылок
-    //        options.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.None; // Сохранение ссылок на объекты
-
-    //        //// 2. Null значения
-    //        options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-    //        //options.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Populate;
-
-    //        //// 3. Именование (camelCase для JSON)
-    //        //options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-
-    //        //// 4. Даты в UTC ISO формате
-    //        //options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-    //        //options.SerializerSettings.DateFormatString = "yyyy-MM-ddTHH:mm:ss.fffZ";
-
-    //        //// 5. Конвертеры
-    //        //options.SerializerSettings.Converters.Add(new StringEnumConverter());
-
-    //        //// 6. Форматирование
-    //        //options.SerializerSettings.Formatting = Formatting.Indented;
-
-    //        //// 8. Дополнительные настройки
-    //        //options.SerializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
-    //        //options.SerializerSettings.TypeNameHandling = TypeNameHandling.None;
-    //        //options.SerializerSettings.MaxDepth = 32;
-    //    });
-    //}
-
-    /// <summary> Подключение WebSocket-обработчика через маршрутизацию ASP.NET Core. Запросы по адресу /ws будут направляться в ProcessKestrelWebSocketRequest. </summary>
-    private static void InitWebSocket(WebApplication app)
-    {
-        _ = 0;
-        // Маршрут для WebSocket соединений
-        _ = app.Map("/ws", static appBuilder =>
-        {
-            appBuilder.Run(static async context =>
-            {
-                // НОВОЕ: Проверка, что это GET-запрос. 
-                // WebSocket-хендшейк всегда использует метод GET.
-                if (context.Request.Method != "GET")
-                {
-                    context.Response.StatusCode = (int)HttpStatusCode.MethodNotAllowed; // 405 Method Not Allowed
-                    await context.Response.WriteAsync("Для WebSocket-хендшейка разрешен только метод GET.", cancellationToken).ConfigureAwait(false);
-                    return;
-                }
-                if (context.WebSockets.IsWebSocketRequest)
-                {
-                    try
-                    {
-                        // Получаем Singleton-экземпляр обработчика из DI
-                        WebSocketConnectionHandler handler = context.RequestServices.GetRequiredService<WebSocketConnectionHandler>();
-
-                        // Запускаем обработку WebSocket
-                        // Используем CancellationToken из контекста приложения
-                        await handler.ProcessKestrelWebSocketRequestAsync(context, context.RequestAborted).ConfigureAwait(false);
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        // Корректное завершение при отмене
-                        Log.Information("WebSocket соединение было отменено");
-                    }
-                }
-                else
-                {
-                    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    await context.Response.WriteAsync("Запрос должен быть WebSocket-запросом.", cancellationToken).ConfigureAwait(false);
-                }
             });
         });
     }

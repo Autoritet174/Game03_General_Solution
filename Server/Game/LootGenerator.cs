@@ -19,7 +19,7 @@ public class LootGenerator(
     private static readonly int rarity1 = 3125, rarity2 = 625, rarity3 = 125, rarity4 = 25, rarity5 = 5, rarity6 = 1;
     private static readonly Dictionary<int, int> countStatsByRarity = new()
     {
-        [1] = 0,
+        [1] = 7,
         [2] = 1,
         [3] = 2,
         [4] = 3,

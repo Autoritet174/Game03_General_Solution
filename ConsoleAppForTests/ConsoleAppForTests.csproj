@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Game03Client\Game03Client.csproj" />
+    <ProjectReference Include="..\TestLibrary1\TestLibrary1.csproj" />
   </ItemGroup>
 
 </Project>

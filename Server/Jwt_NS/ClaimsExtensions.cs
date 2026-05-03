@@ -43,6 +43,6 @@ public static class ClaimsExtensions
         string? id = user.FindFirst("sub")?.Value
                      ?? user.FindFirst("id")?.Value
                      ?? user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        return string.IsNullOrEmpty(id) ? null : Guid.TryParse(id, out Guid guid) ? guid : null;
+        return string.IsNullOrWhiteSpace(id) ? null : Guid.TryParse(id, out Guid guid) ? guid : null;
     }
 }

@@ -578,6 +578,59 @@
             </list>
             </remarks>
         </member>
+        <member name="T:Server.Collection.EquipmentManager">
+            <summary>
+            Менеджер управления экипировкой персонажей.
+            </summary>
+            <param name="userId">Идентификатор владельца (текущего пользователя).</param>
+            <param name="dbContextFactory">Фабрика для создания контекста базы данных.</param>
+            <param name="logger">Интерфейс логирования.</param>
+            <param name="cacheService">Сервис для работы с кэшированными игровыми таблицами.</param>
+        </member>
+        <member name="M:Server.Collection.EquipmentManager.#ctor(System.Guid,Microsoft.EntityFrameworkCore.IDbContextFactory{Server_DB_Postgres.DbContextGame},Microsoft.Extensions.Logging.ILogger{Server.Hubs.Client},Server.Cache.CacheService)">
+            <summary>
+            Менеджер управления экипировкой персонажей.
+            </summary>
+            <param name="userId">Идентификатор владельца (текущего пользователя).</param>
+            <param name="dbContextFactory">Фабрика для создания контекста базы данных.</param>
+            <param name="logger">Интерфейс логирования.</param>
+            <param name="cacheService">Сервис для работы с кэшированными игровыми таблицами.</param>
+        </member>
+        <member name="F:Server.Collection.EquipmentManager.GetHeroByIdAsync">
+            <summary>
+            Скомпилированный запрос для получения героя по ID (без отслеживания изменений).
+            </summary>
+        </member>
+        <member name="F:Server.Collection.EquipmentManager.GetEquipmentByIdAsync">
+            <summary>
+            Скомпилированный запрос для получения предмета экипировки по ID.
+            </summary>
+        </member>
+        <member name="F:Server.Collection.EquipmentManager.GetEquippedInSlotAsync">
+            <summary>
+            Скомпилированный запрос для поиска предмета, надетого в конкретный слот героя.
+            </summary>
+        </member>
+        <member name="M:Server.Collection.EquipmentManager.TakeOnAsync(System.Guid,System.Guid,System.Nullable{System.Boolean},System.Threading.CancellationToken)">
+            <summary>
+            Надевает предмет экипировки на указанного героя.
+            </summary>
+            <returns>Результат операции: Ok — успешно, Fail — ошибка валидации или БД.</returns>
+        </member>
+        <member name="M:Server.Collection.EquipmentManager.TakeOffAsync(System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Снимает указанный предмет экипировки с героя.
+            </summary>
+            <returns>Результат операции: Ok — предмет снят или уже был не надет.</returns>
+        </member>
+        <member name="M:Server.Collection.EquipmentManager.GetSlotId(System.Int32,System.Boolean)">
+            <summary>
+            Вычисляет ID слота на основе базового типа оборудования и флага альтернативного слота.
+            </summary>
+            <param name="baseEquipmentId">ID базового шаблона предмета.</param>
+            <param name="inAltSlot">Флаг использования альтернативного слота (например, второе кольцо).</param>
+            <returns>ID конкретного слота из базы данных.</returns>
+        </member>
         <member name="T:Server.Jwt_NS.ClaimsExtensions">
             <summary>
             Предоставляет расширяющие методы для работы с утверждениями (claims) пользователя.
@@ -679,9 +732,6 @@
         <member name="M:Server.Program.InitRateLimite(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary> Добавляем Rate Limiting с учётом IP. </summary>
         </member>
-        <member name="M:Server.Program.InitWebSocket(Microsoft.AspNetCore.Builder.WebApplication)">
-            <summary> Подключение WebSocket-обработчика через маршрутизацию ASP.NET Core. Запросы по адресу /ws будут направляться в ProcessKestrelWebSocketRequest. </summary>
-        </member>
         <member name="M:Server.Program.ConnectionsIsCorrectAsync(Microsoft.AspNetCore.Builder.WebApplication,System.Threading.CancellationToken)">
             <summary>
             Выполняет проверку соединения с базой данных.
@@ -698,28 +748,6 @@
             Скомпилированный запрос для получения первой записи Equipment.
             Позволяет избежать повторного парсинга LINQ-выражения.
             </summary>
-        </member>
-        <member name="T:Server.UserRegAuth_NS.OpenWebSocketController">
-            <summary>
-            Контроллер для аутентификации пользователей.
-            </summary>
-            <remarks>
-            Конструктор контроллера.
-            </remarks>
-        </member>
-        <member name="M:Server.UserRegAuth_NS.OpenWebSocketController.#ctor">
-            <summary>
-            Контроллер для аутентификации пользователей.
-            </summary>
-            <remarks>
-            Конструктор контроллера.
-            </remarks>
-        </member>
-        <member name="M:Server.UserRegAuth_NS.OpenWebSocketController.Login">
-            <summary>
-            Выполняет аутентификацию и возвращает JWT токен.
-            </summary>
-            <returns>JWT токен при успешной аутентификации или ошибка 401.</returns>
         </member>
         <member name="T:Server.Users.Authentication.AuthController">
             <summary>
@@ -1042,151 +1070,6 @@
             <returns>
             Булево значение или <c>null</c>, если ключ не найден, значение <c>null</c> или не удаётся интерпретировать.
             </returns>
-        </member>
-        <member name="T:Server.Collection.EquipmentManager">
-            <summary>
-            Менеджер управления экипировкой персонажей.
-            </summary>
-            <param name="userId">Идентификатор владельца (текущего пользователя).</param>
-            <param name="dbContextFactory">Фабрика для создания контекста базы данных.</param>
-            <param name="logger">Интерфейс логирования.</param>
-            <param name="cacheService">Сервис для работы с кэшированными игровыми таблицами.</param>
-        </member>
-        <member name="M:Server.Collection.EquipmentManager.#ctor(System.Guid,Microsoft.EntityFrameworkCore.IDbContextFactory{Server_DB_Postgres.DbContextGame},Microsoft.Extensions.Logging.ILogger{Server.WebSocket_NS.WebSocketConnection},Server.Cache.CacheService)">
-            <summary>
-            Менеджер управления экипировкой персонажей.
-            </summary>
-            <param name="userId">Идентификатор владельца (текущего пользователя).</param>
-            <param name="dbContextFactory">Фабрика для создания контекста базы данных.</param>
-            <param name="logger">Интерфейс логирования.</param>
-            <param name="cacheService">Сервис для работы с кэшированными игровыми таблицами.</param>
-        </member>
-        <member name="F:Server.Collection.EquipmentManager.GetHeroByIdAsync">
-            <summary>
-            Скомпилированный запрос для получения героя по ID (без отслеживания изменений).
-            </summary>
-        </member>
-        <member name="F:Server.Collection.EquipmentManager.GetEquipmentByIdAsync">
-            <summary>
-            Скомпилированный запрос для получения предмета экипировки по ID.
-            </summary>
-        </member>
-        <member name="F:Server.Collection.EquipmentManager.GetEquippedInSlotAsync">
-            <summary>
-            Скомпилированный запрос для поиска предмета, надетого в конкретный слот героя.
-            </summary>
-        </member>
-        <member name="M:Server.Collection.EquipmentManager.TakeOnAsync(General.DTO.DtoWSEquipmentTakeOnC2S,System.Threading.CancellationToken)">
-            <summary>
-            Надевает предмет экипировки на указанного героя.
-            </summary>
-            <param name="dto">Объект передачи данных, содержащий ID героя и предмета.</param>
-            <param name="cancellationToken">Токен отмены асинхронной операции.</param>
-            <returns>Результат операции: Ok — успешно, Fail — ошибка валидации или БД.</returns>
-        </member>
-        <member name="M:Server.Collection.EquipmentManager.TakeOffAsync(General.DTO.DtoWSEquipmentTakeOffC2S,System.Threading.CancellationToken)">
-            <summary>
-            Снимает указанный предмет экипировки с героя.
-            </summary>
-            <param name="dto">Объект передачи данных, содержащий ID предмета.</param>
-            <param name="cancellationToken">Токен отмены асинхронной операции.</param>
-            <returns>Результат операции: Ok — предмет снят или уже был не надет.</returns>
-        </member>
-        <member name="M:Server.Collection.EquipmentManager.GetSlotId(System.Int32,System.Boolean)">
-            <summary>
-            Вычисляет ID слота на основе базового типа оборудования и флага альтернативного слота.
-            </summary>
-            <param name="baseEquipmentId">ID базового шаблона предмета.</param>
-            <param name="inAltSlot">Флаг использования альтернативного слота (например, второе кольцо).</param>
-            <returns>ID конкретного слота из базы данных.</returns>
-        </member>
-        <member name="T:Server.WebSocket_NS.WebSocketConnection">
-            <summary>
-            Представляет одно WebSocket подключение клиента.
-            Обрабатывает прием и отправку сообщений, аутентификацию и управление жизненным циклом подключения.
-            </summary>
-        </member>
-        <member name="M:Server.WebSocket_NS.WebSocketConnection.#ctor(System.Net.WebSockets.WebSocket,Microsoft.Extensions.Logging.ILogger{Server.WebSocket_NS.WebSocketConnection},Microsoft.Extensions.Configuration.IConfiguration,Server.WebSocket_NS.WebSocketConnectionHandler,System.Guid,Microsoft.EntityFrameworkCore.IDbContextFactory{Server_DB_Postgres.DbContextGame},Server.Cache.CacheService)">
-            <summary>
-            Представляет одно WebSocket подключение клиента.
-            Обрабатывает прием и отправку сообщений, аутентификацию и управление жизненным циклом подключения.
-            </summary>
-        </member>
-        <member name="P:Server.WebSocket_NS.WebSocketConnection.Id">
-            <summary>
-            Уникальный идентификатор подключения.
-            </summary>
-        </member>
-        <member name="F:Server.WebSocket_NS.WebSocketConnection._ReceiveBufferSize">
-            <summary>
-            Размер буфера для приема сообщений из конфигурации.
-            </summary>
-        </member>
-        <member name="M:Server.WebSocket_NS.WebSocketConnection.HandleAsync(System.Threading.CancellationToken)">
-            <summary>
-            Обрабатывает WebSocket подключение клиента.
-            </summary>
-            <param name="cancellationToken">Токен отмены для прерывания обработки.</param>
-            <returns>Задача, представляющая асинхронную обработку подключения.</returns>
-            <exception cref="T:System.OperationCanceledException">
-            Возникает при отмене операции через cancellationToken.
-            </exception>
-            <exception cref="T:System.Net.WebSockets.WebSocketException">
-            Возникает при ошибках WebSocket соединения.
-            </exception>
-        </member>
-        <member name="M:Server.WebSocket_NS.WebSocketConnection.IsExpectedDisconnectException(System.Exception)">
-            <summary>
-            Проверяет, является ли исключение ожидаемым при разрыве соединения.
-            </summary>
-            <param name="ex">Исключение для проверки.</param>
-            <returns>
-            true - если исключение связано с нормальным разрывом соединения;
-            false - если это неожиданная ошибка.
-            </returns>
-        </member>
-        <member name="M:Server.WebSocket_NS.WebSocketConnection.SendMessageSafeAsync``1(``0,System.Threading.CancellationToken)">
-            <summary>
-            Безопасно отправляет сообщение клиенту.
-            </summary>
-            <param name="dtoWS">Текст сообщения для отправки.</param>
-            <param name="cancellationToken">Токен отмены операции отправки.</param>
-            <returns>Задача, представляющая асинхронную отправку сообщения.</returns>
-        </member>
-        <member name="M:Server.WebSocket_NS.WebSocketConnection.CloseSocketAsync(System.Net.WebSockets.WebSocketCloseStatus,System.String,System.Threading.CancellationToken)">
-            <summary>
-            Корректно закрывает WebSocket соединение.
-            </summary>
-            <param name="closeStatus">Статус закрытия соединения.</param>
-            <param name="statusDescription">Описание причины закрытия.</param>
-            <param name="cancellationToken">Токен отмены операции закрытия.</param>
-            <returns>Задача, представляющая асинхронное закрытие соединения.</returns>
-        </member>
-        <member name="M:Server.WebSocket_NS.WebSocketConnection.CleanupSocketAsync">
-            <summary>
-            Очищает ресурсы WebSocket соединения.
-            </summary>
-            <returns>Задача, представляющая асинхронную очистку ресурсов.</returns>
-        </member>
-        <member name="T:Server.WebSocket_NS.WebSocketConnectionHandler">
-            <summary>
-            Обработчик подключений WebSocket. Работает как Singleton-сервис и интегрирован 
-            в пайплайн ASP.NET Core Middleware через app.Map().
-            </summary>
-        </member>
-        <member name="M:Server.WebSocket_NS.WebSocketConnectionHandler.#ctor(Microsoft.Extensions.Logging.ILogger{Server.WebSocket_NS.WebSocketConnectionHandler},System.IServiceProvider,Microsoft.Extensions.Configuration.IConfiguration,Server.Jwt_NS.JwtService,Microsoft.EntityFrameworkCore.IDbContextFactory{Server_DB_Postgres.DbContextGame},Server.Cache.CacheService,Server.Game.LootGenerator)">
-            <summary>
-            Инициализирует новый экземпляр <see cref="T:Server.WebSocket_NS.WebSocketConnectionHandler"/>.
-            </summary>
-        </member>
-        <member name="M:Server.WebSocket_NS.WebSocketConnectionHandler.ProcessKestrelWebSocketRequestAsync(Microsoft.AspNetCore.Http.HttpContext,System.Threading.CancellationToken)">
-            <summary>
-            Вызывается при запросе открытия веб сокета от клиента через пайплайн ASP.NET Core.
-            </summary>
-            <param name="context">Контекст HTTP-запроса от Kestrel.</param>
-            <param name="stoppingToken">Токен отмены.</param>
-            <returns>Асинхронная задача обработки соединения.</returns>
-            <exception cref="T:System.ArgumentNullException">Если контекст равен null.</exception>
         </member>
     </members>
 </doc>
