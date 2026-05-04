@@ -31,12 +31,12 @@ public class TestService(LootGenerator lootGenerator)
             // await lootGenerator.GenerateHeroAsync(userId, 5, 5, cancellationToken).ConfigureAwait(false);
             // await lootGenerator.GenerateEquipmentAsync(userId, General.ESlotType.None, 1, 4, cancellationToken).ConfigureAwait(false);
 
-            _ = await lootGenerator.AddNewEquipmentAsync(db, cacheService.TableBaseEquipments.First(a => a.Name == "Silver bracelet"), userId, cancellationToken).ConfigureAwait(false);
-            _ = await lootGenerator.AddNewEquipmentAsync(db, cacheService.TableBaseEquipments.First(a => a.Name == "Iron boots"), userId, cancellationToken).ConfigureAwait(false);
-            _ = await lootGenerator.AddNewEquipmentAsync(db, cacheService.TableBaseEquipments.First(a => a.Name == "Iron helmet"), userId, cancellationToken).ConfigureAwait(false);
-            _ = await lootGenerator.AddNewEquipmentAsync(db, cacheService.TableBaseEquipments.First(a => a.Name == "Iron gloves"), userId, cancellationToken).ConfigureAwait(false);
-            _ = await lootGenerator.AddNewEquipmentAsync(db, cacheService.TableBaseEquipments.First(a => a.Name == "Iron armor"), userId, cancellationToken).ConfigureAwait(false);
-            _ = await lootGenerator.AddNewEquipmentAsync(db, cacheService.TableBaseEquipments.First(a => a.Name == "Iron sword"), userId, cancellationToken).ConfigureAwait(false);
+            _ = await lootGenerator.AddNewEquipmentAsync(db, cacheService.TableBaseEquipmentsByName["Silver bracelet"], userId, cancellationToken).ConfigureAwait(false);
+            _ = await lootGenerator.AddNewEquipmentAsync(db, cacheService.TableBaseEquipmentsByName["Iron boots"], userId, cancellationToken).ConfigureAwait(false);
+            _ = await lootGenerator.AddNewEquipmentAsync(db, cacheService.TableBaseEquipmentsByName["Iron helmet"], userId, cancellationToken).ConfigureAwait(false);
+            _ = await lootGenerator.AddNewEquipmentAsync(db, cacheService.TableBaseEquipmentsByName["Iron gloves"], userId, cancellationToken).ConfigureAwait(false);
+            _ = await lootGenerator.AddNewEquipmentAsync(db, cacheService.TableBaseEquipmentsByName["Iron armor"], userId, cancellationToken).ConfigureAwait(false);
+            _ = await lootGenerator.AddNewEquipmentAsync(db, cacheService.TableBaseEquipmentsByName["Iron sword"], userId, cancellationToken).ConfigureAwait(false);
         }
         //_ = await lootGenerator.AddNewEquipmentAsync(db, cacheService.TableBaseEquipments.First(a => a.Name == "Thunderfury"), userId, cancellationToken).ConfigureAwait(false);
 

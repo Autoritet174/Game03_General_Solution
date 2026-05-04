@@ -1,3 +1,4 @@
+using General;
 using General.DTO.Entities;
 using General.DTO.Entities.GameData;
 using Microsoft.EntityFrameworkCore;
@@ -17,189 +18,196 @@ public class CacheService()
     /// </exception>
     public string GameDataJson { get => field!; private set; }
 
-    public IEnumerable<UserBanReason> TableUserBanReasons { get; private set; } = null!;
-    public IEnumerable<UserSessionInactivationReason> TableUserSessionInactivationReasons { get; private set; } = null!;
-    public IEnumerable<BaseEquipment> TableBaseEquipments { get; private set; } = null!;
-    public IEnumerable<BaseHero> TableBaseHeroes { get; private set; } = null!;
-    public IEnumerable<CreatureType> TableCreatureTypes { get; private set; } = null!;
-    public IEnumerable<DamageType> TableDamageTypes { get; private set; } = null!;
-    public IEnumerable<EquipmentType> TableEquipmentTypes { get; private set; } = null!;
-    public IEnumerable<MaterialDamagePercent> TableMaterialDamagePercents { get; private set; } = null!;
-    public IEnumerable<SlotType> TableSlotTypes { get; private set; } = null!;
-    public IEnumerable<Slot> TableSlots { get; private set; } = null!;
-    public IEnumerable<SmithingMaterial> TableSmithingMaterials { get; private set; } = null!;
-    public IEnumerable<X_EquipmentType_DamageType> TableX_EquipmentTypes_DamageTypes { get; private set; } = null!;
-    public IEnumerable<X_Hero_CreatureType> TableX_Heroes_CreatureTypes { get; private set; } = null!;
-    public IEnumerable<Npc> TableNpcs { get; private set; } = null!;
-    public IEnumerable<Dungeon> TableDungeons { get; private set; } = null!;
+    public Dictionary<int, UserBanReason> TableUserBanReasons { get; private set; } = null!;
+    public Dictionary<int, UserSessionInactivationReason> TableUserSessionInactivationReasons { get; private set; } = null!;
+    public Dictionary<int, BaseEquipment> TableBaseEquipments { get; private set; } = null!;
+    public Dictionary<string, BaseEquipment> TableBaseEquipmentsByName { get; private set; } = null!;
+    public Dictionary<int, BaseHero> TableBaseHeroes { get; private set; } = null!;
+    public Dictionary<int, CreatureType> TableCreatureTypes { get; private set; } = null!;
+    public Dictionary<int, DamageType> TableDamageTypes { get; private set; } = null!;
+    public Dictionary<int, EquipmentType> TableEquipmentTypes { get; private set; } = null!;
+    public Dictionary<int, MaterialDamagePercent> TableMaterialDamagePercents { get; private set; } = null!;
+    public Dictionary<ESlotType, SlotType> TableSlotTypes { get; private set; } = null!;
+    public Dictionary<ESlot, Slot> TableSlots { get; private set; } = null!;
+    public Dictionary<int, SmithingMaterial> TableSmithingMaterials { get; private set; } = null!;
+    public Dictionary<int, X_EquipmentType_DamageType> TableX_EquipmentTypes_DamageTypes { get; private set; } = null!;
+    public Dictionary<int, X_Hero_CreatureType> TableX_Heroes_CreatureTypes { get; private set; } = null!;
+    public Dictionary<int, X_Battlefield_BaseNpc> TableX_Battlefields_Npcs { get; private set; } = null!;
+    public Dictionary<int, BaseNpc> TableBaseNpcs { get; private set; } = null!;
+    public Dictionary<int, Battlefield> TableBattlefields { get; private set; } = null!;
 
     /// <summary>
     /// Загрузка константных данных в оперативную память. Эти данные меняются только при не работающем сервере.
     /// </summary>
     /// <param name="db"></param>
-    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task LoadServerDataAsync(DbContextGame db, CancellationToken cancellationToken)
+    public void LoadServerData(DbContextGame db)
     {
-        TableUserBanReasons = await db.UserBanReasons.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
+        TableUserBanReasons = db.UserBanReasons.AsNoTracking().ToDictionary(a => a.Id);
 
-        await LoadTableUserSessionInactivationReasonsAsync(db, cancellationToken).ConfigureAwait(false);
+        LoadTableUserSessionInactivationReasons(db);
 
+        TableBaseEquipments = db.BaseEquipments.AsNoTracking().ToDictionary(a => a.Id);
+        foreach (KeyValuePair<int, BaseEquipment> kv in TableBaseEquipments)
+        {
+            BaseEquipment v = kv.Value;
+            TableBaseEquipmentsByName.Add(v.Name, v);
+        }
 
-        TableBaseEquipments = await db.BaseEquipments.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
-        List<DtoBaseEquipment> baseEquipments = [.. TableBaseEquipments.Select(static h => new DtoBaseEquipment(
-            h.Id, h.Name, h.Rarity, h.IsUnique, h.EquipmentTypeId, null, h.PossibleStats)
-            )];
-
-        TableBaseHeroes = await db.BaseHeroes.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
-        List<DtoBaseHero> baseHeroes = [.. TableBaseHeroes.Select(static h => new DtoBaseHero(
-            h.Id, h.Name, h.Rarity, h.IsUnique, h.MainStat, h.Health, h.Damage,h.Strength,h.Agility,h.Intelligence,h.CritChance, h.CritMultiplier, h.Haste, h.Versality, h.EndurancePhysical, h.EnduranceMagical, h.Initiative)
-            )];
-
-        TableCreatureTypes = await db.CreatureTypes.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
-        List<DtoCreatureType> creatureTypes = [..TableCreatureTypes.Select(static h => new DtoCreatureType(
-            h.Id, h.Name)
-            )];
-
-        TableDamageTypes = await db.DamageTypes.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
-        List<DtoDamageType> damageTypes = [..TableDamageTypes.Select(static h => new DtoDamageType(
-            h.Id, h.Name)
-            )];
-
-        TableEquipmentTypes = await db.EquipmentTypes.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
-        List<DtoEquipmentType> equipmentType = [..TableEquipmentTypes.Select(static h => new DtoEquipmentType(
-            h.Id, h.Name, h.MassPhysical, h.MassMagical, h.SlotTypeId, h.CanCraftSmithing, h.CanCraftJewelcrafting, h.SpendActionPoints, h.BlockOtherHand, null, h.PossibleStats)
-            )];
-
-        TableMaterialDamagePercents = await db.MaterialDamagePercents.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
-        List<DtoMaterialDamagePercent> materialDamagePercents = [..TableMaterialDamagePercents.Select(static h => new DtoMaterialDamagePercent(
-            h.Id, h.SmithingMaterialsId, h.DamageTypeId, h.Percent)
-            )];
-
-        TableSlotTypes = await db.SlotTypes.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
-        List<DtoSlotType> slotTypes = [..TableSlotTypes.Select(static h => new DtoSlotType(
-            h.Id, h.Name, h.HaveAltSlot, h.Sorting)
-            )];
-
-        TableSlots = await db.Slots.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
-        List<DtoSlot> slots = [..TableSlots.Select(static h => new DtoSlot(
-            h.Id, h.Name, h.SlotTypeId)
-            )];
-
-        TableSmithingMaterials = await db.SmithingMaterials.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
-        List<DtoSmithingMaterial> smithingMaterials = [..TableSmithingMaterials.Select(static h => new DtoSmithingMaterial(
-            h.Id, h.Name)
-            )];
-
-        TableX_EquipmentTypes_DamageTypes = await db.x_EquipmentTypes_DamageTypes.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
-        List<DtoXEquipmentTypeDamageType> xEquipmentTypesDamageTypes = [..TableX_EquipmentTypes_DamageTypes.Select(static h => new DtoXEquipmentTypeDamageType(
-            h.EquipmentTypeId, h.DamageTypeId, h.DamageCoef)
-            )];
-
-        TableX_Heroes_CreatureTypes = await db.x_Heroes_CreatureTypes.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
-        List<DtoXHeroCreatureType> xHeroesCreatureTypes = [..TableX_Heroes_CreatureTypes.Select(static h => new DtoXHeroCreatureType(
-            h.BaseHeroId, h.CreatureTypeId, null, null)
-            )];
-
-        TableNpcs = await db.Npcs.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
-        TableDungeons = await db.Dungeons.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
+        TableBaseHeroes = db.BaseHeroes.AsNoTracking().ToDictionary(a => a.Id);
+        TableCreatureTypes = db.CreatureTypes.AsNoTracking().ToDictionary(a => a.Id);
+        TableDamageTypes = db.DamageTypes.AsNoTracking().ToDictionary(a => a.Id);
+        TableEquipmentTypes = db.EquipmentTypes.AsNoTracking().ToDictionary(a => a.Id);
+        TableMaterialDamagePercents = db.MaterialDamagePercents.AsNoTracking().ToDictionary(a => a.Id);
+        TableSlotTypes = db.SlotTypes.AsNoTracking().ToDictionary(a => a.Id);
+        TableSlots = db.Slots.AsNoTracking().ToDictionary(a => a.Id);
+        TableSmithingMaterials = db.SmithingMaterials.AsNoTracking().ToDictionary(a => a.Id);
+        TableX_EquipmentTypes_DamageTypes = db.x_EquipmentTypes_DamageTypes.AsNoTracking().ToDictionary(a => a.Id);
+        TableX_Heroes_CreatureTypes = db.x_Heroes_CreatureTypes.AsNoTracking().ToDictionary(a => a.Id);
+        TableBaseNpcs = db.BaseNpcs.AsNoTracking().ToDictionary(a => a.Id);
+        TableBattlefields = db.Battlefields.AsNoTracking().ToDictionary(a => a.Id);
+        TableX_Battlefields_Npcs = db.x_Battlefields_BaseNpcs.AsNoTracking().ToDictionary(a => a.Id);
 
 
-        DtoContainerGameData container = new(baseEquipments, baseHeroes, creatureTypes, damageTypes, equipmentType, materialDamagePercents, slotTypes, smithingMaterials, xEquipmentTypesDamageTypes, xHeroesCreatureTypes, slots);
+        DtoContainerGameData container = new(
+            baseEquipments: TableBaseEquipments.Values.Select(static h => new DtoBaseEquipment(h.Id, h.Name, h.Rarity, h.IsUnique, h.EquipmentTypeId, null, h.PossibleStats)),
 
-        //GameDataJson = Newtonsoft.Json.JsonConvert.SerializeObject(container, General.GlobalHelper.JsonSerializerSettings);
-        //GameDataJson = JsonSerializer.Serialize(container, GlobalJsonOptions.jsonOptions);
+            baseHeroes: TableBaseHeroes.Values.Select(static h => new DtoBaseHero(h.Id, h.Name, h.Rarity, h.IsUnique, h.MainStat, h.Health, h.Damage, h.Strength, h.Agility, h.Intelligence, h.CritChance, h.CritMultiplier, h.Haste, h.Versality, h.EndurancePhysical, h.EnduranceMagical, h.Initiative)),
+
+            creatureTypes: TableCreatureTypes.Values.Select(static h => new DtoCreatureType(h.Id, h.Name)),
+
+            damageTypes: TableDamageTypes.Values.Select(static h => new DtoDamageType(h.Id, h.Name)),
+
+            equipmentTypes: TableEquipmentTypes.Values.Select(static h => new DtoEquipmentType(h.Id, h.Name, h.MassPhysical, h.MassMagical, h.SlotTypeId, h.CanCraftSmithing, h.CanCraftJewelcrafting, h.SpendActionPoints, h.BlockOtherHand, null, h.PossibleStats)),
+
+            materialDamagePercents: TableMaterialDamagePercents.Values.Select(static h => new DtoMaterialDamagePercent(h.Id, h.SmithingMaterialsId, h.DamageTypeId, h.Percent)),
+
+            slotTypes: TableSlotTypes.Values.Select(static h => new DtoSlotType(h.Id, h.Name, h.HaveAltSlot, h.Sorting)),
+
+            smithingMaterials: TableSmithingMaterials.Values.Select(static h => new DtoSmithingMaterial(h.Id, h.Name)),
+
+            xEquipmentTypesDamageTypes: TableX_EquipmentTypes_DamageTypes.Values.Select(static h => new DtoXEquipmentTypeDamageType(h.EquipmentTypeId, h.DamageTypeId, h.DamageCoef)),
+
+            xHeroesCreatureTypes: TableX_Heroes_CreatureTypes.Values.Select(static h => new DtoXHeroCreatureType(h.BaseHeroId, h.CreatureTypeId, null, null)),
+
+            slots: TableSlots.Values.Select(static h => new DtoSlot(h.Id, h.Name, h.SlotTypeId)),
+
+            xBattlefieldNpc: TableX_Battlefields_Npcs.Values.Select(static h => new DtoXBattlefieldNpc(h.Id, h.BattlefieldId, h.BaseNpcId, h.GuarantSpawn, h.ProbabilitySpawn, h.PossibleRank))
+            );
+
         GameDataJson = JsonSerializer.Serialize(container, GlobalJsonContext.Default.DtoContainerGameData);
+
         if (string.IsNullOrWhiteSpace(GameDataJson))
         {
             throw new InvalidOperationException("Кэш не инициализирован.");
         }
 
-        foreach (BaseEquipment i in TableBaseEquipments)
+        foreach (KeyValuePair<int, BaseEquipment> kv in TableBaseEquipments)
         {
-            i.EquipmentType = TableEquipmentTypes.First(a => a.Id == i.EquipmentTypeId);
-            i.SmithingMaterial = i.SmithingMaterialId != null ? TableSmithingMaterials.FirstOrDefault(a => a.Id == i.SmithingMaterialId) : null;
+            BaseEquipment i = kv.Value;
+            i.EquipmentType = TableEquipmentTypes[i.EquipmentTypeId];
+            i.SmithingMaterial = i.SmithingMaterialId != null ? TableSmithingMaterials[i.SmithingMaterialId.Value] : null;
         }
-        foreach (BaseHero i in TableBaseHeroes)
-        {
 
-        }
-        foreach (CreatureType i in TableCreatureTypes)
+        foreach (KeyValuePair<int, EquipmentType> kv in TableEquipmentTypes)
         {
+            EquipmentType i = kv.Value;
+            i.SlotType = TableSlotTypes[i.SlotTypeId];
+        }
 
-        }
-        foreach (DamageType i in TableDamageTypes)
+        foreach (KeyValuePair<int, MaterialDamagePercent> kv in TableMaterialDamagePercents)
         {
+            MaterialDamagePercent i = kv.Value;
+            i.SmithingMaterials = TableSmithingMaterials[i.SmithingMaterialsId];
+            i.DamageType = TableDamageTypes[i.DamageTypeId];
+        }
 
-        }
-        foreach (EquipmentType i in TableEquipmentTypes)
+        foreach (KeyValuePair<ESlot, Slot> kv in TableSlots)
         {
-            i.SlotType = TableSlotTypes.First(a => a.Id == i.SlotTypeId);
+            Slot i = kv.Value;
+            i.SlotType = TableSlotTypes[i.SlotTypeId];
         }
-        foreach (MaterialDamagePercent i in TableMaterialDamagePercents)
-        {
-            i.SmithingMaterials = TableSmithingMaterials.First(a => a.Id == i.SmithingMaterialsId);
-            i.DamageType = TableDamageTypes.First(a => a.Id == i.DamageTypeId);
-        }
-        foreach (SlotType i in TableSlotTypes)
-        {
 
-        }
-        foreach (Slot i in TableSlots)
+        foreach (KeyValuePair<int, X_EquipmentType_DamageType> kv in TableX_EquipmentTypes_DamageTypes)
         {
-            i.SlotType = TableSlotTypes.First(a => a.Id == i.SlotTypeId);
+            X_EquipmentType_DamageType i = kv.Value;
+            i.EquipmentType = TableEquipmentTypes[i.EquipmentTypeId];
+            i.DamageType = TableDamageTypes[i.DamageTypeId];
         }
-        foreach (SmithingMaterial i in TableSmithingMaterials)
-        {
 
-        }
-        foreach (X_EquipmentType_DamageType i in TableX_EquipmentTypes_DamageTypes)
+        foreach (KeyValuePair<int, X_Hero_CreatureType> kv in TableX_Heroes_CreatureTypes)
         {
-            i.EquipmentType = TableEquipmentTypes.First(a => a.Id == i.EquipmentTypeId);
-            i.DamageType = TableDamageTypes.First(a => a.Id == i.DamageTypeId);
+            X_Hero_CreatureType i = kv.Value;
+            i.BaseHero = TableBaseHeroes[i.BaseHeroId];
+            i.CreatureType = TableCreatureTypes[i.CreatureTypeId];
         }
-        foreach (X_Hero_CreatureType i in TableX_Heroes_CreatureTypes)
+
+        foreach (KeyValuePair<int, X_Battlefield_BaseNpc> kv in TableX_Battlefields_Npcs)
         {
-            i.BaseHero = TableBaseHeroes.First(a => a.Id == i.BaseHeroId);
-            i.CreatureType = TableCreatureTypes.First(a => a.Id == i.CreatureTypeId);
+            X_Battlefield_BaseNpc i = kv.Value;
+            i.BaseNpc = TableBaseNpcs[i.BaseNpcId];
+            i.Battlefield = TableBattlefields[i.BattlefieldId];
         }
 
 
     }
 
-    private async Task LoadTableUserSessionInactivationReasonsAsync(DbContextGame db, CancellationToken cancellationToken)
+    /// <summary>
+    /// Синхронизирует таблицу <see cref="UserSessionInactivationReason"/> с перечислением <see cref="InactivationReason"/>.
+    /// Если в таблице отсутствуют записи для каких-либо значений enum — добавляет их,
+    /// после чего повторно загружает кешированный список.
+    /// </summary>
+    /// <param name="db">Контекст базы данных игры.</param>
+    private void LoadTableUserSessionInactivationReasons(DbContextGame db)
     {
+        // Флаг, указывающий, были ли добавлены новые записи в БД.
+        // Если true — после сохранения потребуется повторная загрузка кеша.
         bool reload = false;
 
-        async Task LoadAsync()
+        // Локальная функция: загружает все записи из таблицы UserSessionInactivationReasons
+        // и сохраняет их в кеширующее свойство TableUserSessionInactivationReasons.
+        // AsNoTracking используется, так как данные нужны только для чтения.
+        void Load()
         {
-            TableUserSessionInactivationReasons = await db.UserSessionInactivationReasons.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
+            TableUserSessionInactivationReasons = db.UserSessionInactivationReasons.AsNoTracking().ToDictionary(a => a.Id);
         }
 
-        await LoadAsync().ConfigureAwait(false);
+        // Первичная загрузка текущего состояния таблицы в кеш
+        Load();
+
+        // Перебираем все значения перечисления InactivationReason
         foreach (InactivationReason item in Enum.GetValues<InactivationReason>())
         {
-            if (!TableUserSessionInactivationReasons.Any(a => a.Code == item))
+            // Если в загруженных данных нет записи с текущим кодом enum —
+            // значит, этого значения ещё нет в таблице
+            if (!TableUserSessionInactivationReasons.Any(a => a.Value.Code == item))
             {
+                // Создаём новую сущность: Name — строковое представление enum, Code — само значение enum
                 var entity = new UserSessionInactivationReason
                 {
                     Name = item.ToString(),
                     Code = item
                 };
-                _ = await db.UserSessionInactivationReasons.AddAsync(entity, cancellationToken).ConfigureAwait(false);
+
+                // Добавляем сущность в контекст для последующей вставки в БД.
+                _ = db.UserSessionInactivationReasons.Add(entity);
+
+                // Поднимаем флаг, чтобы после цикла сохранить изменения и перезагрузить кеш
                 reload = true;
             }
         }
 
+        // Если были добавлены новые записи — сохраняем изменения в БД
+        // и заново загружаем кеш (чтобы подтянуть сгенерированные базой ID и прочие поля)
         if (reload)
         {
-            _ = await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-            await LoadAsync().ConfigureAwait(false);
+            _ = db.SaveChanges();
+            Load();
         }
     }
 
     public int GetInactivationReasonIdByCode(InactivationReason code)
     {
-        return TableUserSessionInactivationReasons.First(a => a.Code == code).Id;
+        return TableUserSessionInactivationReasons.First(a => a.Value.Code == code).Value.Id;
     }
 }

@@ -5,9 +5,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Server_DB_Postgres.Entities.GameData;
 
-[Table(nameof(DbContextGame.Npcs), Schema = nameof(GameData))]
+[Table(nameof(DbContextGame.BaseNpcs), Schema = nameof(GameData))]
 [Index(nameof(Name), IsUnique = true)]
-public class Npc
+public class BaseNpc
 {
     public int Id { get; init; }
 
@@ -16,8 +16,8 @@ public class Npc
 
     public int Rarity { get; set; }
 
-    public ERank Rank { get; set; }
-
     /// <summary> Основной стат который повышает урон. Сила(1) или Ловкость(2) или Интеллект(3). </summary>
     public EMainStat MainStat { get; set; }
+
+    public float Health { get; set; }
 }

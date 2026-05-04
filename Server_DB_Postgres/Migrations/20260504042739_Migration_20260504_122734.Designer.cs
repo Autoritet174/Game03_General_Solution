@@ -6,6 +6,7 @@ using General;
 using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server_DB_Postgres;
@@ -15,9 +16,11 @@ using Server_DB_Postgres;
 namespace Server_DB_Postgres.Migrations
 {
     [DbContext(typeof(DbContextGame))]
-    partial class DbContext_GameModelSnapshot : ModelSnapshot
+    [Migration("20260504042739_Migration_20260504_122734")]
+    partial class Migration_20260504_122734
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -611,13 +614,13 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnName("rarity");
 
                     b.HasKey("Id")
-                        .HasName("base_npcs__pkey");
+                        .HasName("npcs__pkey");
 
                     b.HasIndex("Name")
                         .IsUnique()
-                        .HasDatabaseName("base_npcs__name__idx");
+                        .HasDatabaseName("npcs__name__idx");
 
-                    b.ToTable("base_npcs", "game_data");
+                    b.ToTable("npcs", "game_data");
                 });
 
             modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.Battlefield", b =>
@@ -1766,7 +1769,7 @@ namespace Server_DB_Postgres.Migrations
                         .HasForeignKey("BaseNpcId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("x_battlefields_base_npcs__base_npc_id__base_npcs__fkey");
+                        .HasConstraintName("x_battlefields_base_npcs__base_npc_id__npcs__fkey");
 
                     b.HasOne("Server_DB_Postgres.Entities.GameData.Battlefield", "Battlefield")
                         .WithMany()

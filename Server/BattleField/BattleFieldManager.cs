@@ -20,13 +20,7 @@ public class BattleFieldManager(Guid userId,
             return false;
         }
         int id = (int)eBattleFiled;
-        Dungeon? dungeon = cacheService.TableDungeons.FirstOrDefault(d => d.Id == id);
-        if (dungeon == null)
-        {
-            return false;
-        }
-
-
+        Battlefield dungeon = cacheService.TableBattlefields[id];
 
         inCombat = true;
         return true;

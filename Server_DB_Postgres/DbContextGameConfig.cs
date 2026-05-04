@@ -19,7 +19,7 @@ public class DbContextGameConfig
         Configure(modelBuilder.Entity<AuthenticationLog>());
         Configure(modelBuilder.Entity<UserBan>());
         Configure(modelBuilder.Entity<Equipment>());
-        Configure(modelBuilder.Entity<Npc>());
+        Configure(modelBuilder.Entity<BaseNpc>());
         Configure(modelBuilder.Entity<BaseHero>());
         Configure(modelBuilder.Entity<BaseEquipment>());
     }
@@ -51,11 +51,11 @@ public class DbContextGameConfig
         _ = builder.HasIndex(static s => s.RefreshTokenHash).IsUnique().HasFilter($"{nameof(UserSession.IsUsed).ToSnakeCase()} = false AND {nameof(UserSession.IsRevoked).ToSnakeCase()} = false");
     }
 
-    private static void Configure(EntityTypeBuilder<Npc> builder)
+    private static void Configure(EntityTypeBuilder<BaseNpc> builder)
     {
         //_ = builder.Property(static e => e.Rarity).HasDefaultValue(int.Common).HasSentinel(int.Common);
         _ = builder.Property(static e => e.MainStat).HasDefaultValue(EMainStat.Universal).HasSentinel(EMainStat.Universal);
-        _ = builder.Property(static e => e.Rank).HasDefaultValue(ERank.None).HasSentinel(ERank.None);
+        //_ = builder.Property(static e => e.Rank).HasDefaultValue(ERank.None).HasSentinel(ERank.None);
     }
 
     private static void Configure(EntityTypeBuilder<BaseHero> builder)

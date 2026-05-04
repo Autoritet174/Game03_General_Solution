@@ -6,6 +6,7 @@ using General;
 using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server_DB_Postgres;
@@ -15,9 +16,11 @@ using Server_DB_Postgres;
 namespace Server_DB_Postgres.Migrations
 {
     [DbContext(typeof(DbContextGame))]
-    partial class DbContext_GameModelSnapshot : ModelSnapshot
+    [Migration("20260504042329_Migration_20260504_122321")]
+    partial class Migration_20260504_122321
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -581,45 +584,6 @@ namespace Server_DB_Postgres.Migrations
                     b.ToTable("base_heroes", "game_data");
                 });
 
-            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.BaseNpc", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<float>("Health")
-                        .HasColumnType("real")
-                        .HasColumnName("health");
-
-                    b.Property<int>("MainStat")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0)
-                        .HasColumnName("main_stat");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("name");
-
-                    b.Property<int>("Rarity")
-                        .HasColumnType("integer")
-                        .HasColumnName("rarity");
-
-                    b.HasKey("Id")
-                        .HasName("base_npcs__pkey");
-
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasDatabaseName("base_npcs__name__idx");
-
-                    b.ToTable("base_npcs", "game_data");
-                });
-
             modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.Battlefield", b =>
                 {
                     b.Property<int>("Id")
@@ -825,6 +789,45 @@ namespace Server_DB_Postgres.Migrations
                     b.ToTable("material_damage_percents", "game_data");
                 });
 
+            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.Npc", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<float>("HealthBase")
+                        .HasColumnType("real")
+                        .HasColumnName("health_base");
+
+                    b.Property<int>("MainStat")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("main_stat");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("Rarity")
+                        .HasColumnType("integer")
+                        .HasColumnName("rarity");
+
+                    b.HasKey("Id")
+                        .HasName("npcs__pkey");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("npcs__name__idx");
+
+                    b.ToTable("npcs", "game_data");
+                });
+
             modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.Slot", b =>
                 {
                     b.Property<int>("Id")
@@ -973,7 +976,7 @@ namespace Server_DB_Postgres.Migrations
                     b.ToTable("x_heroes_creature_types", "game_data");
                 });
 
-            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.x_Battlefield_BaseNpc", b =>
+            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.x_Battlefield_Npc", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -982,10 +985,6 @@ namespace Server_DB_Postgres.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BaseNpcId")
-                        .HasColumnType("integer")
-                        .HasColumnName("base_npc_id");
-
                     b.Property<int>("BattlefieldId")
                         .HasColumnType("integer")
                         .HasColumnName("battlefield_id");
@@ -993,6 +992,10 @@ namespace Server_DB_Postgres.Migrations
                     b.Property<bool>("GuarantSpawn")
                         .HasColumnType("boolean")
                         .HasColumnName("guarant_spawn");
+
+                    b.Property<int>("NpcId")
+                        .HasColumnType("integer")
+                        .HasColumnName("npc_id");
 
                     b.Property<bool>("PossibleRank")
                         .HasColumnType("boolean")
@@ -1003,15 +1006,15 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnName("probability_spawn");
 
                     b.HasKey("Id")
-                        .HasName("x_battlefields_base_npcs__pkey");
-
-                    b.HasIndex("BaseNpcId")
-                        .HasDatabaseName("x_battlefields_base_npcs__base_npc_id__idx");
+                        .HasName("x_battlefields_npcs__pkey");
 
                     b.HasIndex("BattlefieldId")
-                        .HasDatabaseName("x_battlefields_base_npcs__battlefield_id__idx");
+                        .HasDatabaseName("x_battlefields_npcs__battlefield_id__idx");
 
-                    b.ToTable("x_battlefields_base_npcs", "game_data");
+                    b.HasIndex("NpcId")
+                        .HasDatabaseName("x_battlefields_npcs__npc_id__idx");
+
+                    b.ToTable("x_battlefields_npcs", "game_data");
                 });
 
             modelBuilder.Entity("Server_DB_Postgres.Entities.Logs.AuthenticationLog", b =>
@@ -1759,21 +1762,21 @@ namespace Server_DB_Postgres.Migrations
                     b.Navigation("CreatureType");
                 });
 
-            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.x_Battlefield_BaseNpc", b =>
+            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.x_Battlefield_Npc", b =>
                 {
-                    b.HasOne("Server_DB_Postgres.Entities.GameData.BaseNpc", "Npc")
-                        .WithMany()
-                        .HasForeignKey("BaseNpcId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("x_battlefields_base_npcs__base_npc_id__base_npcs__fkey");
-
                     b.HasOne("Server_DB_Postgres.Entities.GameData.Battlefield", "Battlefield")
                         .WithMany()
                         .HasForeignKey("BattlefieldId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("x_battlefields_base_npcs__battlefield_id__battlefields__fkey");
+                        .HasConstraintName("x_battlefields_npcs__battlefield_id__battlefields__fkey");
+
+                    b.HasOne("Server_DB_Postgres.Entities.GameData.Npc", "Npc")
+                        .WithMany()
+                        .HasForeignKey("NpcId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("x_battlefields_npcs__npc_id__npcs__fkey");
 
                     b.Navigation("Battlefield");
 

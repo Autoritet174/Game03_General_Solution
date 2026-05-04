@@ -89,15 +89,18 @@ public enum EMainStat : int
 public enum ERank : int
 {
     None = 0,
-    Elite = 1,
-    Boss = 2
+    Amplified = 1,
+    Elite = 2
 }
 
-public enum EDungeonDifficulty : int
+//public enum EBattlefieldDifficulty : int
+//{
+//    Normal = 0,
+//    Hard = 1,
+//    Boss = 2
+//}
+
+public enum EBattleFiled
 {
-    Normal = 0,
-    Hard = 1,
-    Boss = 2
+    Polygon = 1
 }
-
-public enum EBattleFiled { Polygon = 1 }

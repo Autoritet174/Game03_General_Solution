@@ -34,9 +34,9 @@ public class DbContextGame(DbContextOptions<DbContextGame> options) : IdentityDb
     public DbSet<BaseHero> BaseHeroes { get; set; }
 
     /// <summary> Не игровые персонажи. </summary>
-    public DbSet<Npc> Npcs { get; set; }
+    public DbSet<BaseNpc> BaseNpcs { get; set; }
 
-    public DbSet<Dungeon> Dungeons { get; set; }
+    public DbSet<Battlefield> Battlefields { get; set; }
 
     /// <summary> Типы существ. </summary>
     public DbSet<CreatureType> CreatureTypes { get; set; }
@@ -62,7 +62,7 @@ public class DbContextGame(DbContextOptions<DbContextGame> options) : IdentityDb
 
     /// <summary> Таблица связи многие ко мноким между WeaponTypes и DamageTypes. </summary>
     public DbSet<X_EquipmentType_DamageType> x_EquipmentTypes_DamageTypes { get; set; }
-    public DbSet<x_Dungeon_Npc> x_Dungeons_Npcs { get; set; }
+    public DbSet<X_Battlefield_BaseNpc> x_Battlefields_BaseNpcs { get; set; }
 
     #endregion gameData
 

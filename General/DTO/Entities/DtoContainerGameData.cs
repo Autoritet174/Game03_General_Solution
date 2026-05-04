@@ -7,17 +7,19 @@ namespace General.DTO.Entities;
 /// Data Transfer Object. Корневой контейнер для данных.
 /// </summary>
 public class DtoContainerGameData(
-    List<DtoBaseEquipment> baseEquipments,
-    List<DtoBaseHero> baseHeroes,
-    List<DtoCreatureType> creatureTypes,
-    List<DtoDamageType> damageTypes,
-    List<DtoEquipmentType> equipmentTypes,
-    List<DtoMaterialDamagePercent> materialDamagePercents,
-    List<DtoSlotType> slotTypes,
-    List<DtoSmithingMaterial> smithingMaterials,
-    List<DtoXEquipmentTypeDamageType> xEquipmentTypesDamageTypes,
-    List<DtoXHeroCreatureType> xHeroesCreatureTypes,
-    List<DtoSlot> slots)
+    IEnumerable<DtoBaseEquipment> baseEquipments,
+    IEnumerable<DtoBaseHero> baseHeroes,
+    IEnumerable<DtoCreatureType> creatureTypes,
+    IEnumerable<DtoDamageType> damageTypes,
+    IEnumerable<DtoEquipmentType> equipmentTypes,
+    IEnumerable<DtoMaterialDamagePercent> materialDamagePercents,
+    IEnumerable<DtoSlotType> slotTypes,
+    IEnumerable<DtoSmithingMaterial> smithingMaterials,
+    IEnumerable<DtoXEquipmentTypeDamageType> xEquipmentTypesDamageTypes,
+    IEnumerable<DtoXHeroCreatureType> xHeroesCreatureTypes,
+    IEnumerable<DtoSlot> slots,
+    IEnumerable<DtoXBattlefieldNpc> xBattlefieldNpc
+    )
 {
     public IEnumerable<DtoBaseEquipment> BaseEquipments { get; } = baseEquipments;
     public IEnumerable<DtoBaseHero> BaseHeroes { get; } = baseHeroes;
@@ -30,5 +32,6 @@ public class DtoContainerGameData(
     public IEnumerable<DtoXEquipmentTypeDamageType> XEquipmentTypesDamageTypes { get; } = xEquipmentTypesDamageTypes;
     public IEnumerable<DtoXHeroCreatureType> XHeroesCreatureTypes { get; } = xHeroesCreatureTypes;
     public IEnumerable<DtoSlot> Slots { get; } = slots;
+    public IEnumerable<DtoXBattlefieldNpc> XBattlefieldNpc { get; } = xBattlefieldNpc;
 
 }

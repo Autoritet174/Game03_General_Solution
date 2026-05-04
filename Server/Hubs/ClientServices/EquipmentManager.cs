@@ -167,7 +167,7 @@ public partial class EquipmentManager(
     /// <returns>ID конкретного слота из базы данных.</returns>
     private General.ESlot GetSlotId(int baseEquipmentId, bool inAltSlot)
     {
-        BaseEquipment baseEquip = cacheService.TableBaseEquipments.First(a => a.Id == baseEquipmentId);
+        BaseEquipment baseEquip = cacheService.TableBaseEquipments[baseEquipmentId];
         General.ESlotType slotTypeId = baseEquip.EquipmentType.SlotType.Id;
 
         return slotTypeId switch
@@ -175,7 +175,7 @@ public partial class EquipmentManager(
             General.ESlotType.Weapon => inAltSlot ? General.ESlot.LeftHand : General.ESlot.RightHand,     // Оружие
             General.ESlotType.Ring => inAltSlot ? General.ESlot.Ring2 : General.ESlot.Ring1,    // Кольцо
             General.ESlotType.Trinket => inAltSlot ? General.ESlot.Trinket2 : General.ESlot.Trinket1,  // Аксессуар
-            _ => cacheService.TableSlots.First(a => a.SlotTypeId == slotTypeId).Id
+            _ => cacheService.TableSlots.Values.First(a => a.SlotTypeId == slotTypeId).Id
         };
     }
 }

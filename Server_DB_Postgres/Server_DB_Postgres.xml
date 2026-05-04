@@ -34,7 +34,7 @@
         <member name="P:Server_DB_Postgres.DbContextGame.BaseHeroes">
             <summary> Данные героев. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.DbContextGame.Npcs">
+        <member name="P:Server_DB_Postgres.DbContextGame.BaseNpcs">
             <summary> Не игровые персонажи. </summary>
         </member>
         <member name="P:Server_DB_Postgres.DbContextGame.CreatureTypes">
@@ -192,6 +192,9 @@
         <member name="P:Server_DB_Postgres.Entities.GameData.BaseHero.MainStat">
             <summary> Основной стат который повышает урон. Сила(1) или Ловкость(2) или Интеллект(3). </summary>
         </member>
+        <member name="P:Server_DB_Postgres.Entities.GameData.BaseNpc.MainStat">
+            <summary> Основной стат который повышает урон. Сила(1) или Ловкость(2) или Интеллект(3). </summary>
+        </member>
         <member name="T:Server_DB_Postgres.Entities.GameData.CreatureType">
             <summary> Тип существа. </summary>
         </member>
@@ -262,9 +265,6 @@
         <member name="P:Server_DB_Postgres.Entities.GameData.MaterialDamagePercent.Percent">
             <summary> Усиление урона оружия в процентах сделанного из этого материала. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.Npc.MainStat">
-            <summary> Основной стат который повышает урон. Сила(1) или Ловкость(2) или Интеллект(3). </summary>
-        </member>
         <member name="P:Server_DB_Postgres.Entities.GameData.Slot.Id">
             <summary> Уникальный идентификатор. </summary>
         </member>
@@ -292,41 +292,26 @@
         <member name="P:Server_DB_Postgres.Entities.GameData.SmithingMaterial.NameRu">
             <summary> Наименование на русском. </summary>
         </member>
-        <member name="T:Server_DB_Postgres.Entities.GameData.x_Dungeon_Npc">
+        <member name="T:Server_DB_Postgres.Entities.GameData.X_Battlefield_BaseNpc">
             <summary> Таблица для связи Hero и CreatureType. </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.GameData.X_Battlefield_BaseNpc.GuarantSpawn">
+            <summary> Гарантированное появление на поле боя. </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.GameData.X_Battlefield_BaseNpc.ProbabilitySpawn">
+            <summary> Вероятность появления на поле боя. Чем выше число тем выше шанс. Игнорируется при GuarantSpawn=true. </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.GameData.X_Battlefield_BaseNpc.PossibleRank">
+            <summary> При респауне может иметь ранг. </summary>
         </member>
         <member name="T:Server_DB_Postgres.Entities.GameData.X_EquipmentType_DamageType">
             <summary> Таблица для связи Hero и CreatureType. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.X_EquipmentType_DamageType.EquipmentTypeId">
-            <summary> Идентификатор <see cref="T:Server_DB_Postgres.Entities.GameData.EquipmentType"/>. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.X_EquipmentType_DamageType.EquipmentType">
-            <summary> Сущность <see cref="T:Server_DB_Postgres.Entities.GameData.EquipmentType"/>. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.X_EquipmentType_DamageType.DamageTypeId">
-            <summary> Идентификатор <see cref="T:Server_DB_Postgres.Entities.GameData.DamageType"/>. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.X_EquipmentType_DamageType.DamageType">
-            <summary> Сущность <see cref="T:Server_DB_Postgres.Entities.GameData.DamageType"/>. </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.GameData.X_EquipmentType_DamageType.DamageCoef">
             <summary> Коэффициент типа урона у оружия. </summary>
         </member>
         <member name="T:Server_DB_Postgres.Entities.GameData.X_Hero_CreatureType">
             <summary> Таблица для связи Hero и CreatureType. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.X_Hero_CreatureType.BaseHeroId">
-            <summary> Идентификатор <see cref="T:Server_DB_Postgres.Entities.GameData.BaseHero"/>. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.X_Hero_CreatureType.BaseHero">
-            <summary> Сущность <see cref="T:Server_DB_Postgres.Entities.GameData.BaseHero"/>. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.X_Hero_CreatureType.CreatureTypeId">
-            <summary> Идентификатор <see cref="T:Server_DB_Postgres.Entities.GameData.CreatureType"/>. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.X_Hero_CreatureType.CreatureType">
-            <summary> Сущность <see cref="T:Server_DB_Postgres.Entities.GameData.CreatureType"/>. </summary>
         </member>
         <member name="T:Server_DB_Postgres.Entities.Logs.AuthenticationLog">
             <summary> Лог авторизации пользователей. </summary>
@@ -1409,6 +1394,138 @@
             <inheritdoc />
         </member>
         <member name="M:Server_DB_Postgres.Migrations.Migration_20260407_112908.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Battlefield">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Battlefield.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Battlefield.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Battlefield.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Migration_20260504_110735">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260504_110735.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260504_110735.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260504_110735.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Migration_20260504_113602">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260504_113602.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260504_113602.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260504_113602.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Migration_20260504_113720">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260504_113720.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260504_113720.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260504_113720.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Migration_20260504_113805">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260504_113805.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260504_113805.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260504_113805.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Migration_20260504_113850">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260504_113850.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260504_113850.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260504_113850.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Migration_20260504_113921">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260504_113921.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260504_113921.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260504_113921.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Migration_20260504_121332">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260504_121332.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260504_121332.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260504_121332.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Migration_20260504_122321">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260504_122321.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260504_122321.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260504_122321.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Migration_20260504_122734">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260504_122734.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260504_122734.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260504_122734.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Migration_20260504_122914">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260504_122914.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260504_122914.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260504_122914.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Server_DB_Postgres.ModelBuilderExt">

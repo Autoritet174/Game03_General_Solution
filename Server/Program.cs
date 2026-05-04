@@ -247,7 +247,7 @@ internal partial class Program
 
         // На этом момент есть 100% гарантия что соединения со всеми СУБД корректно, иначе где то сработает один из throw.
 
-        await LoadServerCacheAsync(app, cancellationToken).ConfigureAwait(false);
+        LoadServerCache(app);
         await LoadTestServiceAsync(app, cancellationToken).ConfigureAwait(false);
 
         IHostApplicationLifetime lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
@@ -543,7 +543,7 @@ internal partial class Program
     }
 
     /// <summary> Загружаем в оперативную память константные серверные данные которые не меняются во время работы сервера. </summary>
-    private static async Task LoadServerCacheAsync(WebApplication app, CancellationToken cancellationToken)
+    private static void LoadServerCache(WebApplication app)
     {
         using IServiceScope scope = app.Services.CreateScope();
         CacheService service = scope.ServiceProvider.GetRequiredService<CacheService>();
@@ -551,7 +551,7 @@ internal partial class Program
         ILogger<Program> logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
         try
         {
-            await service.LoadServerDataAsync(db, cancellationToken).ConfigureAwait(false);
+            service.LoadServerData(db);
 
             logger.LogInformation("Server cache loaded successfully");
         }

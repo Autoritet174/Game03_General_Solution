@@ -171,10 +171,10 @@ public class LootGenerator(
         for (int r = raritySelected; r > 0; r--)
         {
             // Получаем id базовых героев с выбранной редкостью, разделяя их на уникальных и неуникальных
-            List<int> baseHeroUniqueIds = [.. cacheService.TableBaseHeroes
+            List<int> baseHeroUniqueIds = [.. cacheService.TableBaseHeroes.Values
                     .Where(a => a.Rarity == r && a.IsUnique)
                     .Select(b => b.Id)];
-            List<int> baseHeroNotUniqueIds = [.. cacheService.TableBaseHeroes
+            List<int> baseHeroNotUniqueIds = [.. cacheService.TableBaseHeroes.Values
                     .Where(a => a.Rarity == r && !a.IsUnique)
                     .Select(b => b.Id)];
 
@@ -196,7 +196,7 @@ public class LootGenerator(
             // Выбираем случайного героя из списка доступных
             int randomIndex = rand.Next(heroesId.Count);
             int selectedBaseHeroId = heroesId[randomIndex];
-            return cacheService.TableBaseHeroes.FirstOrDefault(b => b.Id == selectedBaseHeroId);
+            return cacheService.TableBaseHeroes[selectedBaseHeroId];
         }
 
         return null;
@@ -214,10 +214,10 @@ public class LootGenerator(
         {
             var r = (int)iR;
             // Получаем id базовых предметов с выбранной редкостью, разделяя их на уникальных и неуникальных
-            List<int> baseEquipmentUniqueIds = [.. cacheService.TableBaseEquipments
+            List<int> baseEquipmentUniqueIds = [.. cacheService.TableBaseEquipments.Values
                     .Where(a => a.Rarity == r && a.IsUnique && (slotTypeId == ESlotType.None || a.EquipmentType.SlotTypeId == slotTypeId))
                     .Select(b => b.Id)];
-            List<int> baseEquipmentNotUniqueIds = [.. cacheService.TableBaseEquipments
+            List<int> baseEquipmentNotUniqueIds = [.. cacheService.TableBaseEquipments.Values
                     .Where(a => a.Rarity == r && !a.IsUnique && (slotTypeId == ESlotType.None || a.EquipmentType.SlotTypeId == slotTypeId))
                     .Select(b => b.Id)];
 
@@ -238,7 +238,7 @@ public class LootGenerator(
             // Выбираем случайный предмет из списка доступных
             int randomIndex = rand.Next(EquipmentsId.Count);
             int selectedBaseEquipmentId = EquipmentsId[randomIndex];
-            return cacheService.TableBaseEquipments.FirstOrDefault(b => b.Id == selectedBaseEquipmentId);
+            return cacheService.TableBaseEquipments[selectedBaseEquipmentId];
         }
 
         return null;
