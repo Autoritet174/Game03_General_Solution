@@ -90,7 +90,8 @@ public enum ERank : int
 {
     None = 0,
     Amplified = 1,
-    Elite = 2
+    Elite = 2,
+    Champion = 3,
 }
 
 //public enum EBattlefieldDifficulty : int

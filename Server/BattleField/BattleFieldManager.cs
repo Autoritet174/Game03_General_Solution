@@ -21,6 +21,8 @@ public class BattleFieldManager(Guid userId,
         }
         int id = (int)eBattleFiled;
         Battlefield dungeon = cacheService.TableBattlefields[id];
+        List<X_Battlefield_BaseNpc> npcs = [.. cacheService.TableX_Battlefields_Npcs.Values.Where(x => x.BattlefieldId == id)];
+
 
         inCombat = true;
         return true;
