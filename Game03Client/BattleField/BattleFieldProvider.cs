@@ -9,30 +9,35 @@ namespace Game03Client.BattleField;
 
 public class BattleFieldProvider
 {
-    public static async Task<bool> LoadBattleFieldAsync(EBattleFiled eBattleFiled, CancellationToken cancellationToken)
+    public static async Task<bool> LoadBattleFieldAsync(EBattleFiled eBattleFiled, Guid[] spawnedHeroesId, CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
         {
             return false;
         }
+        try
+        {
+            bool success = await WebSocketProvider.InvokeAsync<bool>(
+                HubMethodNames.EMethod.COMBAT_START,
+                cancellationToken,
+                eBattleFiled,
+                spawnedHeroesId
+            ).ConfigureAwait(false);
 
-        //var guid = Guid.NewGuid();
-        //DtoWSLoadBattleFiledC2S equipmentLoadBattleFiled = new(eBattleFiled, guid);
-        //bool result = await WebSocketProvider.SendMessageAsync(equipmentLoadBattleFiled, cancellationToken).ConfigureAwait(false);
-        //if (result) {
-        //    DtoWSResponseS2C? response = await WebSocketProvider.WaitForResponseAsync(guid, cancellationToken).ConfigureAwait(false);
-
-        //    if (response?.Success == true)
-        //    {
-        //        //DtoBaseEquipment? baseEquip = equipment.BaseEquipment;
-        //        //ESlotType slotTypeId = baseEquip?.EquipmentType?.SlotType?.Id ?? 0;
-
-        //        //// Обновляем локальное состояние
-        //        //equipment.HeroId = null;
-        //        //equipment.SlotId = null;
-        //        //return true;
-        //    }
-        //}
+            if (success)
+            {
+                return true;
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // отмена операции
+        }
+        catch (Exception)
+        {
+            // Обработка ошибок (таймаут, разрыв соединения, ошибка хаба)
+            // Логирование и проброс дальше или возврат false
+        }
 
         return false;
     }

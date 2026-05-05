@@ -48,6 +48,7 @@ public class CacheService()
         LoadTableUserSessionInactivationReasons(db);
 
         TableBaseEquipments = db.BaseEquipments.AsNoTracking().ToDictionary(a => a.Id);
+        TableBaseEquipmentsByName = [];
         foreach (KeyValuePair<int, BaseEquipment> kv in TableBaseEquipments)
         {
             BaseEquipment v = kv.Value;

@@ -43,9 +43,10 @@ public class WebSocketProvider
         try
         {
             await DisconnectAsync().ConfigureAwait(false);
+            string url = Url.UrlDomain + Parametrs.SignalR_Address;
 
             _connection = new HubConnectionBuilder()
-                .WithUrl(Parametrs.SignalR_Address, options =>
+                .WithUrl(url, options =>
                 {
                     if (!string.IsNullOrWhiteSpace(Auth.AccessToken))
                     {

@@ -102,9 +102,9 @@ public class GameHub(ClientManager clientManager, IClientFactory clientFactory, 
     }
 
     [HubMethodName(HubMethodNames.COMBAT_START)]
-    public async Task<bool> CombatStartAsync(EBattleFiled eBattleFiled)
+    public async Task<bool> CombatStartAsync(EBattleFiled eBattleFiled, Guid[] spawnedHeroesId)
     {
         Client? client = GetClientOrLog();
-        return client != null && await client.CombatStartAsync(eBattleFiled, Context.ConnectionAborted).ConfigureAwait(false);
+        return client != null && (await client.CombatStartAsync(eBattleFiled, spawnedHeroesId, Context.ConnectionAborted).ConfigureAwait(false)).IsSuccess;
     }
 }

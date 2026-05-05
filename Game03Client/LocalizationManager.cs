@@ -100,7 +100,7 @@ public static class LocalizationManager
         if (keyError == L.Error.Server.AccountBannedUntil)
         {
             // Извлечение строки с датой и временем окончания бана.
-            string dateTimeExpiresAtString = (jObject[L.DATE_TIME_EXPIRES_AT]?.ToString() ?? string.Empty).Trim();
+            string dateTimeExpiresAtString = (jObject[L.DATETIME_EXPIRATION]?.ToString() ?? string.Empty).Trim();
 
             if (dateTimeExpiresAtString != string.Empty)
             {

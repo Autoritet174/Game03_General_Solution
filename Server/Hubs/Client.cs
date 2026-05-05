@@ -52,8 +52,8 @@ public class Client(Guid userId, ILogger<Client> logger, IDbContextFactory<DbCon
         return result.IsSuccess;
     }
 
-    public async Task<bool> CombatStartAsync(EBattleFiled eBattleFiled, CancellationToken cancellationToken)
+    public async Task<Result> CombatStartAsync(EBattleFiled eBattleFiled, Guid[] spawnedHeroesId, CancellationToken cancellationToken)
     {
-        return battleFieldManager.CombatStart(eBattleFiled, cancellationToken);
+        return await battleFieldManager.CombatStartAsync(eBattleFiled, spawnedHeroesId, cancellationToken).ConfigureAwait(false);
     }
 }
