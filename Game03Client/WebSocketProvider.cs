@@ -99,7 +99,7 @@ public class WebSocketProvider
     /// </summary>
     public static async Task<TResponse?> InvokeAsync<TResponse>(
         General.HubMethodNames.EMethod eMethod,
-        CancellationToken ct = default,
+        CancellationToken ct,
         params object?[] args)
     {
         if (_connection == null || !IsConnected)
