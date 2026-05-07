@@ -1,3 +1,4 @@
+using General;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Server_DB_Postgres.Entities.GameData;
@@ -8,7 +9,7 @@ public class X_Battlefield_BaseNpc
 {
     public int Id { get; init; }
 
-    public int BattlefieldId { get; set; }
+    public EBattleFiled BattlefieldId { get; set; }
     [ForeignKey(nameof(BattlefieldId))]
     public Battlefield Battlefield { get; set; } = null!;
 

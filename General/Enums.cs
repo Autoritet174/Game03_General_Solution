@@ -103,5 +103,6 @@ public enum ERank : int
 
 public enum EBattleFiled
 {
-    Polygon = 1
+    Polygon,
+    Iron,
 }

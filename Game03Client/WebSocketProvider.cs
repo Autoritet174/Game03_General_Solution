@@ -98,7 +98,7 @@ public class WebSocketProvider
     /// Invokes a server hub method with a return value.
     /// </summary>
     public static async Task<TResponse?> InvokeAsync<TResponse>(
-        General.HubMethodNames.EMethod eMethod,
+        HubMethodNames.EMethod eMethod,
         CancellationToken ct,
         params object?[] args)
     {
@@ -107,7 +107,7 @@ public class WebSocketProvider
             return default;
         }
 
-        string methodName = General.HubMethodNames.GetMethod(eMethod);
+        string methodName = HubMethodNames.GetMethod(eMethod);
 
         try
         {

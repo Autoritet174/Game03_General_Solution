@@ -2,9 +2,10 @@ using System;
 
 namespace General.DTO.Battlefield;
 
-public class SpawnedHero(Guid heroId)
+public class SpawnedHero(Guid heroId, Guid spawnedId)
 {
     public Guid HeroId { get; } = heroId;
+    public Guid SpawnedId { get; } = spawnedId;
 
     #region Характеристики
     public float Health { get; set; }
