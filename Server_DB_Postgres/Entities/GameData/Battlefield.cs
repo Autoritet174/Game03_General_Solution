@@ -14,6 +14,9 @@ public class Battlefield
     [MaxLength(256)]
     public required string Name { get; init; }
 
+    [MaxLength(256)]
+    public required string EnumName { get; init; }
+
     //[Default(100)]
     //public int LevelMax { get; init; }
 

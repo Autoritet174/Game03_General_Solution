@@ -18,14 +18,6 @@
             <param name="db"></param>
             <returns></returns>
         </member>
-        <member name="M:Server.Cache.CacheService.LoadTableUserSessionInactivationReasons(Server_DB_Postgres.DbContextGame)">
-            <summary>
-            Синхронизирует таблицу <see cref="T:Server_DB_Postgres.Entities.Server.UserSessionInactivationReason"/> с перечислением <see cref="T:Server_DB_Postgres.Entities.Server.InactivationReason"/>.
-            Если в таблице отсутствуют записи для каких-либо значений enum — добавляет их,
-            после чего повторно загружает кешированный список.
-            </summary>
-            <param name="db">Контекст базы данных игры.</param>
-        </member>
         <member name="T:Server.Cache.GameDataController">
             <summary>
             Контроллер с общими методами.
@@ -223,6 +215,11 @@
             </summary>
         </member>
         <member name="P:Server.GlobalJsonContext.DtoResponseAuthReg">
+            <summary>
+            Defines the source generated JSON serialization contract metadata for a given type.
+            </summary>
+        </member>
+        <member name="P:Server.GlobalJsonContext.EBattleFiled">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>

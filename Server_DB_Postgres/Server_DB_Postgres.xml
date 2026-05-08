@@ -1540,6 +1540,42 @@
         <member name="M:Server_DB_Postgres.Migrations.Migration_20260505_123259.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:Server_DB_Postgres.Migrations.Migration_20260508_085249">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260508_085249.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260508_085249.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260508_085249.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Migration_20260508_085820">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260508_085820.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260508_085820.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260508_085820.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Migration_20260508_135341">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260508_135341.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260508_135341.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260508_135341.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
         <member name="T:Server_DB_Postgres.ModelBuilderExt">
             <summary>
             Класс расширяющих методов для Entity Framework Core ModelBuilder

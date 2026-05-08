@@ -1,4 +1,5 @@
 using General;
+using General.DTO.Battlefield;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
@@ -102,9 +103,13 @@ public class GameHub(ClientManager clientManager, IClientFactory clientFactory, 
     }
 
     [HubMethodName(HubMethodNames.COMBAT_START)]
-    public async Task<bool> CombatStartAsync(EBattleFiled eBattleFiled, Guid[] spawnedHeroesId)
+    public async Task<SpawnedBattlefield?> CombatStartAsync(EBattleFiled eBattleFiled, Guid[] spawnedHeroesId)
     {
         Client? client = GetClientOrLog();
-        return client != null && (await client.CombatStartAsync(eBattleFiled, spawnedHeroesId, Context.ConnectionAborted).ConfigureAwait(false)).IsSuccess;
+        if (client == null)
+        {
+            return null;
+        }
+        return await client.CombatStartAsync(eBattleFiled, spawnedHeroesId, Context.ConnectionAborted).ConfigureAwait(false);
     }
 }

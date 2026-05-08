@@ -2,11 +2,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace General.DTO.Entities.GameData;
 
-public class DtoXBattlefieldNpc(int id, int battlefieldId, int baseNpcId, bool guarantSpawn, int probabilitySpawn, bool possibleRank)
+public class DtoXBattlefieldNpc(int id, EBattleFiled battlefieldId, int baseNpcId, bool guarantSpawn, int probabilitySpawn, bool possibleRank)
 {
     public int Id { get; } = id;
 
-    public int BattlefieldId { get; } = battlefieldId;
+    public EBattleFiled BattlefieldId { get; } = battlefieldId;
     [ForeignKey(nameof(BattlefieldId))]
     public DtoBattlefield Battlefield { get; set; } = null!;
 

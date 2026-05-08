@@ -45,8 +45,8 @@ public class CacheService()
     {
         TableUserBanReasons = db.UserBanReasons.AsNoTracking().ToDictionary(a => a.Id);
 
-        LoadTableUserSessionInactivationReasons(db);
-
+        //LoadTableUserSessionInactivationReasons(db);
+        TableUserSessionInactivationReasons = db.UserSessionInactivationReasons.AsNoTracking().ToDictionary(a => a.Id);
         TableBaseEquipments = db.BaseEquipments.AsNoTracking().ToDictionary(a => a.Id);
         TableBaseEquipmentsByName = [];
         foreach (KeyValuePair<int, BaseEquipment> kv in TableBaseEquipments)
@@ -69,6 +69,7 @@ public class CacheService()
         TableBattlefields = db.Battlefields.AsNoTracking().ToDictionary(a => a.Id);
         TableX_Battlefields_Npcs = db.x_Battlefields_BaseNpcs.AsNoTracking().ToDictionary(a => a.Id);
 
+        ThrowIfDataNotCorrect();
 
         DtoContainerGameData container = new(
             baseEquipments: TableBaseEquipments.Values.Select(static h => new DtoBaseEquipment(h.Id, h.Name, h.Rarity, h.IsUnique, h.EquipmentTypeId, null, h.PossibleStats)),
@@ -153,6 +154,7 @@ public class CacheService()
 
     }
 
+    /*
     /// <summary>
     /// Синхронизирует таблицу <see cref="UserSessionInactivationReason"/> с перечислением <see cref="InactivationReason"/>.
     /// Если в таблице отсутствуют записи для каких-либо значений enum — добавляет их,
@@ -206,9 +208,21 @@ public class CacheService()
             Load();
         }
     }
-
+    
     public int GetInactivationReasonIdByCode(InactivationReason code)
     {
         return TableUserSessionInactivationReasons.First(a => a.Value.Code == code).Value.Id;
+    }
+    */
+
+    public void ThrowIfDataNotCorrect()
+    {
+        foreach (EBattleFiled i in Enum.GetValues<EBattleFiled>())
+        {
+            if (!TableBattlefields.Values.Any(a => a.EnumName == i.ToString()))
+            {
+                throw new Exception("Not correct data in table Battlefields and enum EBattleFiled");
+            }
+        }
     }
 }

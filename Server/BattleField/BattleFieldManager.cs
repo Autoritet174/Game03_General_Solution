@@ -1,4 +1,3 @@
-using FluentResults;
 using General;
 using General.DTO.Battlefield;
 using Microsoft.EntityFrameworkCore;
@@ -16,8 +15,8 @@ public class BattleFieldManager(Guid userId,
 {
     private bool inCombat = false;
 
-    SpawnedBattlefield? spawnedBattlefield = null;
-    DateTime dateTimeStartCombat = DateTime.MinValue;
+    private SpawnedBattlefield? spawnedBattlefield = null;
+    private DateTime dateTimeStartCombat = DateTime.MinValue;
 
     public async Task<SpawnedBattlefield?> CombatStartAsync(EBattleFiled eBattleFiled, Guid[] spawnedHeroesId, CancellationToken cancellationToken)
     {
@@ -47,7 +46,8 @@ public class BattleFieldManager(Guid userId,
 
 
             // спаун героев
-            List<SpawnedHero> spawnedHeroes = await db.Heroes.AsNoTracking().Where(a => a.UserId == userId && spawnedHeroesId.Contains(a.Id)).Select(a => new SpawnedHero(a.Id, Guid.CreateVersion7())).ToListAsync(cancellationToken).ConfigureAwait(false);
+            List<SpawnedHero> spawnedHeroes = await db.Heroes.AsNoTracking().Where(a => a.UserId == userId //&& spawnedHeroesId.Contains(a.Id)
+            ).Take(8).Select(a => new SpawnedHero(a.Id, Guid.CreateVersion7())).ToListAsync(cancellationToken).ConfigureAwait(false);
             if (spawnedHeroes.Count < 1)
             {
                 //return Result.Fail("zero heroes spawned");
@@ -62,9 +62,14 @@ public class BattleFieldManager(Guid userId,
 
             // спаун врагов
             List<SpawnedNpc> spawnedNpcs = [];
-            spawnedNpcs.AddRange(npcs.Select(i => new SpawnedNpc(i.BaseNpcId, Guid.CreateVersion7())));
-
-
+            foreach (X_Battlefield_BaseNpc npc in npcs)
+            {
+                for (int i = npc.Count - 1; i > -1; i--)
+                {
+                    spawnedNpcs.Add(new SpawnedNpc(npc.BaseNpcId, Guid.CreateVersion7()));
+                }
+            }
+            
             spawnedBattlefield = new SpawnedBattlefield(eBattleFiled, spawnedHeroes, spawnedNpcs);
             dateTimeStartCombat = DateTime.UtcNow;
             inCombat = true;

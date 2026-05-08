@@ -1,5 +1,6 @@
 using FluentResults;
 using General;
+using General.DTO.Battlefield;
 using Microsoft.EntityFrameworkCore;
 using Server.Cache;
 using Server_DB_Postgres;
@@ -52,7 +53,7 @@ public class Client(Guid userId, ILogger<Client> logger, IDbContextFactory<DbCon
         return result.IsSuccess;
     }
 
-    public async Task<Result> CombatStartAsync(EBattleFiled eBattleFiled, Guid[] spawnedHeroesId, CancellationToken cancellationToken)
+    public async Task<SpawnedBattlefield?> CombatStartAsync(EBattleFiled eBattleFiled, Guid[] spawnedHeroesId, CancellationToken cancellationToken)
     {
         return await battleFieldManager.CombatStartAsync(eBattleFiled, spawnedHeroesId, cancellationToken).ConfigureAwait(false);
     }

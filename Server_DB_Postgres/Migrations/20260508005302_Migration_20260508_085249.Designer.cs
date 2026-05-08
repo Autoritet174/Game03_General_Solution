@@ -6,6 +6,7 @@ using General;
 using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server_DB_Postgres;
@@ -15,9 +16,11 @@ using Server_DB_Postgres;
 namespace Server_DB_Postgres.Migrations
 {
     [DbContext(typeof(DbContextGame))]
-    partial class DbContext_GameModelSnapshot : ModelSnapshot
+    [Migration("20260508005302_Migration_20260508_085249")]
+    partial class Migration_20260508_085249
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -626,12 +629,6 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("id");
 
-                    b.Property<string>("EnumName")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("enum_name");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -944,12 +941,6 @@ namespace Server_DB_Postgres.Migrations
                     b.Property<int>("BattlefieldId")
                         .HasColumnType("integer")
                         .HasColumnName("battlefield_id");
-
-                    b.Property<int>("Count")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(1)
-                        .HasColumnName("count");
 
                     b.Property<bool>("GuarantSpawn")
                         .HasColumnType("boolean")

@@ -1,4 +1,5 @@
 using General;
+using Server_DB_Postgres.Attributes;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Server_DB_Postgres.Entities.GameData;
@@ -25,4 +26,7 @@ public class X_Battlefield_BaseNpc
 
     /// <summary> При респауне может иметь ранг. </summary>
     public bool PossibleRank { get; set; }
+
+    [Default(1)]
+    public int Count { get; set; }
 }

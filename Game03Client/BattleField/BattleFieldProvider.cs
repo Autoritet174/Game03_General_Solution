@@ -1,6 +1,5 @@
 using General;
-using General.DTO;
-using General.DTO.Entities.GameData;
+using General.DTO.Battlefield;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,25 +8,23 @@ namespace Game03Client.BattleField;
 
 public class BattleFieldProvider
 {
-    public static async Task<bool> LoadBattleFieldAsync(EBattleFiled eBattleFiled, Guid[] spawnedHeroesId, CancellationToken cancellationToken)
+    public static async Task<SpawnedBattlefield?> LoadBattleFieldAsync(EBattleFiled eBattleFiled, Guid[] spawnedHeroesId, CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
         {
-            return false;
+            return null;
         }
         try
         {
-            bool success = await WebSocketProvider.InvokeAsync<bool>(
+            SpawnedBattlefield? spawnedBattlefield = await WebSocketProvider.InvokeAsync<SpawnedBattlefield?>(
                 HubMethodNames.EMethod.COMBAT_START,
                 cancellationToken,
                 eBattleFiled,
                 spawnedHeroesId
             ).ConfigureAwait(false);
 
-            if (success)
-            {
-                return true;
-            }
+            return spawnedBattlefield;
+
         }
         catch (OperationCanceledException)
         {
@@ -39,6 +36,6 @@ public class BattleFieldProvider
             // Логирование и проброс дальше или возврат false
         }
 
-        return false;
+        return null;
     }
 }

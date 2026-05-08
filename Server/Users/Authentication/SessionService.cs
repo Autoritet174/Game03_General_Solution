@@ -28,10 +28,10 @@ public sealed partial class SessionService(
     private const int BASE_64_TOKEN_LENGTH = 44;
     private static readonly TimeSpan RefreshTokenLifeTime = TimeSpan.FromDays(14);
 
-    private readonly int inactivationReasonIdRotation = cacheService.GetInactivationReasonIdByCode(InactivationReason.Rotation);
-    private readonly int inactivationReasonIdUserLogout = cacheService.GetInactivationReasonIdByCode(InactivationReason.UserLogout);
-    private readonly int inactivationReasonIdServerRevoke = cacheService.GetInactivationReasonIdByCode(InactivationReason.ServerRevoke);
-    private readonly int inactivationReasonIdExpired = cacheService.GetInactivationReasonIdByCode(InactivationReason.Expired);
+    private readonly int inactivationReasonIdRotation = cacheService.TableUserSessionInactivationReasons.Values.First(a=>a.Name == "ROTATION").Id;
+    private readonly int inactivationReasonIdUserLogout = cacheService.TableUserSessionInactivationReasons.Values.First(a => a.Name == "USER_LOGOUT").Id;
+    private readonly int inactivationReasonIdServerRevoke = cacheService.TableUserSessionInactivationReasons.Values.First(a => a.Name == "SERVER_REVOKE").Id;
+    private readonly int inactivationReasonIdExpired = cacheService.TableUserSessionInactivationReasons.Values.First(a => a.Name == "EXPIRED").Id;
 
     #region Compiled Queries
     // Предварительно скомпилированный запрос для поиска сессии по хешу
