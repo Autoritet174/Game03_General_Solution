@@ -1,14 +1,11 @@
-using Server_DB_Postgres.Interfaces;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using General.DTO.Interfaces;
 
 namespace Server_DB_Postgres.Entities.Users;
 
 /// <summary>
 /// Представляет публичный ключ Passkey, привязанный к аккаунту пользователя.
 /// </summary>
-[Table(nameof(DbContextGame.UserAccesskeys), Schema = nameof(Users))]
-public sealed class UserAccesskey : ICreatedAt, IUpdatedAt
+public sealed class UserAccesskey : ICreatedAt, IUpdatedAt, IVersion
 {
     public Guid Id { get; init; }
 
@@ -33,10 +30,13 @@ public sealed class UserAccesskey : ICreatedAt, IUpdatedAt
     /// <summary>
     /// Тип устройства или дружественное имя (например, "My iPhone 15").
     /// </summary>
-    [MaxLength(256)]
     public string? DeviceName { get; init; }
 
+    /// <summary> <inheritdoc/> </summary>
     public DateTimeOffset CreatedAt { get; set; }
+
+
+    /// <summary> <inheritdoc/> </summary>
     public DateTimeOffset UpdatedAt { get; set; }
 
     /// <summary> <inheritdoc/> </summary>

@@ -1,14 +1,10 @@
+using General.DTO.Interfaces;
 using Microsoft.AspNetCore.Identity;
-using Server_DB_Postgres.Interfaces;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Server_DB_Postgres.Entities.Users;
 
-[Table(nameof(DbContextGame.Users))]
 public class User : IdentityUser<Guid>, IVersion, ICreatedAt, IUpdatedAt
 {
-    [MaxLength(256)]
     public string? TimeZone { get; set; }
 
     public ICollection<UserBan> UserBans { get; set; } = [];

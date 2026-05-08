@@ -31,21 +31,21 @@ public static class GameData
             return false;
         }
 
-        foreach (DtoBaseEquipment i in c.BaseEquipments)
+        foreach (BaseEquipment i in c.BaseEquipments)
         {
             i.EquipmentType = c.EquipmentTypes.FirstOrDefault(a => a.Id == i.EquipmentTypeId);
         }
 
-        foreach (DtoEquipmentType i in c.EquipmentTypes)
+        foreach (EquipmentType i in c.EquipmentTypes)
         {
             i.SlotType = c.SlotTypes.FirstOrDefault(a => a.Id == i.SlotTypeId);
         }
-        foreach (DtoMaterialDamagePercent i in c.MaterialDamagePercents)
+        foreach (MaterialDamagePercent i in c.MaterialDamagePercents)
         {
-            i.SmithingMaterial = c.SmithingMaterials.FirstOrDefault(a => a.Id == i.SmithingMaterialId);
+            i.SmithingMaterials = c.SmithingMaterials.FirstOrDefault(a => a.Id == i.SmithingMaterialsId);
             i.DamageType = c.DamageTypes.FirstOrDefault(a => a.Id == i.DamageTypeId);
         }
-        foreach (DtoSlot i in c.Slots)
+        foreach (Slot i in c.Slots)
         {
             i.SlotType = c.SlotTypes.FirstOrDefault(a => a.Id == i.SlotTypeId);
         }

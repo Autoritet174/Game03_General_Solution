@@ -1,11 +1,10 @@
 using FluentResults;
-using General.DTO;
+using General.DTO.Entities.Collection;
+using General.DTO.Entities.GameData;
 using Microsoft.EntityFrameworkCore;
 using Server.Cache;
 using Server.Hubs;
 using Server_DB_Postgres;
-using Server_DB_Postgres.Entities.Collection;
-using Server_DB_Postgres.Entities.GameData;
 
 namespace Server.Collection;
 

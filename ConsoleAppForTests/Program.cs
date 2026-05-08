@@ -1,4 +1,5 @@
 using Game03Client;
+using System.Diagnostics;
 using UUIDNext;
 namespace ConsoleAppForTests;
 
@@ -18,11 +19,10 @@ internal class Program
 
     private static async Task Main()
     {
-       
-        //if (string.Empty == "")
-        //{
-        //    return;
-        //}
+        if (string.Empty == "")
+        {
+            return;
+        }
 
 
         //List<int> list = new() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
@@ -280,7 +280,6 @@ internal class Program
             Console.WriteLine($"Отключено {disconnectedCount}/{clients.Count} клиентов");
         }
     }
-
 
 
 }

@@ -1,21 +1,15 @@
+using General.DTO.Interfaces;
 using Server_DB_Postgres.Entities.Server;
-using Server_DB_Postgres.Interfaces;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Server_DB_Postgres.Entities.Users;
 
 /// <summary> Представляет запись о блокировке (бане) пользователя. </summary>
-[Table(nameof(DbContextGame.UserBans), Schema = nameof(Users))]
 public class UserBan : IVersion, ICreatedAt, IUpdatedAt
 {
-    /// <summary> Уникальный идентификатор. </summary>
     public Guid Id { get; init; }
-
 
     /// <summary> Идентификатор пользователя, к которому применена блокировка. </summary>
     public required Guid UserId { get; set; }
-    /// <summary> Навигационное свойство к <see cref="Users.User"/>. </summary>
-    [ForeignKey(nameof(UserId))]
     public User? User { get; set; }
 
 
@@ -34,8 +28,6 @@ public class UserBan : IVersion, ICreatedAt, IUpdatedAt
 
     /// <summary> Идентификатор причины блокировки. </summary>
     public int UserBanReasonId { get; set; }
-    /// <summary> Навигационное свойство к <see cref="Server.UserBanReason"/>. </summary>
-    [ForeignKey(nameof(UserBanReasonId))]
     public UserBanReason? UserBanReason { get; set; }
 
 }

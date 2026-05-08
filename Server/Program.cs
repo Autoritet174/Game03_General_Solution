@@ -20,7 +20,6 @@ using Server.Users.Authentication;
 using Server.Users.Registration;
 using Server_DB_Postgres;
 using Server_DB_Postgres.Entities.Users;
-using Server_DB_Postgres.Repositories;
 using System.IO.Compression;
 using System.Threading.RateLimiting;
 
@@ -88,8 +87,6 @@ internal partial class Program
         //_ = services.AddScoped(sp => new DbContext_Game(DbContext_Game.DbContextOptions));
 
 
-        // РЕПОЗИТОРИИ
-        _ = services.AddScoped<CollectionHeroRepository>();
 
         _ = services.AddSingleton<CacheService>();
         _ = services.AddSingleton<TestService>();

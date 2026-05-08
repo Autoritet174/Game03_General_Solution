@@ -1,3 +1,7 @@
+using General.DTO;
+using General.DTO.Entities.Collection;
+using General.DTO.Entities.GameData;
+using General.DTO.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -5,11 +9,9 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Npgsql;
 using Server_DB_Postgres.Entities.Collection;
-using Server_DB_Postgres.Entities.GameData;
 using Server_DB_Postgres.Entities.Logs;
 using Server_DB_Postgres.Entities.Server;
 using Server_DB_Postgres.Entities.Users;
-using Server_DB_Postgres.Interfaces;
 using System.Collections.Concurrent;
 
 namespace Server_DB_Postgres;
@@ -34,7 +36,7 @@ public class DbContextGame(DbContextOptions<DbContextGame> options) : IdentityDb
     public DbSet<BaseHero> BaseHeroes { get; set; }
 
     /// <summary> Не игровые персонажи. </summary>
-    public DbSet<BaseNpc> BaseNpcs { get; set; }
+    public DbSet<BaseHero> BaseHeroNpcs { get; set; }
 
     public DbSet<Battlefield> Battlefields { get; set; }
 
@@ -62,7 +64,7 @@ public class DbContextGame(DbContextOptions<DbContextGame> options) : IdentityDb
 
     /// <summary> Таблица связи многие ко мноким между WeaponTypes и DamageTypes. </summary>
     public DbSet<X_EquipmentType_DamageType> x_EquipmentTypes_DamageTypes { get; set; }
-    public DbSet<X_Battlefield_BaseNpc> x_Battlefields_BaseNpcs { get; set; }
+    public DbSet<X_Battlefield_BaseHero> x_Battlefields_BaseHeroes { get; set; }
 
     #endregion gameData
 
@@ -109,22 +111,14 @@ public class DbContextGame(DbContextOptions<DbContextGame> options) : IdentityDb
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Ignore<Dice>();
 
-        _ = modelBuilder.Ignore<Microsoft.AspNetCore.Identity.IdentityPasskeyData>();
-        // Переопределение имен таблиц Identity
-        string shema = nameof(Server_DB_Postgres.Entities.Users).ToSnakeCase();
-        _ = modelBuilder.Entity<User>().ToTable("identity_users", shema);
-        _ = modelBuilder.Entity<IdentityRole<Guid>>().ToTable("identity_roles", shema);
-        _ = modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("identity_user_roles", shema);
-        _ = modelBuilder.Entity<IdentityUserClaim<Guid>>().ToTable("identity_user_claims", shema);
-        _ = modelBuilder.Entity<IdentityRoleClaim<Guid>>().ToTable("identity_role_claims", shema);
-        _ = modelBuilder.Entity<IdentityUserLogin<Guid>>().ToTable("identity_user_logins", shema);
-        _ = modelBuilder.Entity<IdentityUserToken<Guid>>().ToTable("identity_user_tokens", shema);
-
+        _ = modelBuilder.Ignore<IdentityPasskeyData>();
+        
         modelBuilder.AddConcurrencyTokenToVersion();
         modelBuilder.ApplyDefaultValues();
 
-        
+        DbContextGameConfig.ConfigureAll(modelBuilder);
 
         // Глобальное отключение каскадного удаления для всех сущностей
         IEnumerable<IMutableForeignKey> foreignKeys = modelBuilder.Model.GetEntityTypes().SelectMany(static e => e.GetForeignKeys());
@@ -134,7 +128,18 @@ public class DbContextGame(DbContextOptions<DbContextGame> options) : IdentityDb
             foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
         }
 
-        DbContextGameConfig.ConfigureAll(modelBuilder);
+        DbContextGameConfig.ConfigureAll2(modelBuilder);
+
+        // Переопределение имен таблиц Identity
+        string shema = nameof(Entities.Users).ToSnakeCase();
+        _ = modelBuilder.Entity<User>().ToTable("identity_users", shema);
+        _ = modelBuilder.Entity<IdentityRole<Guid>>().ToTable("identity_roles", shema);
+        _ = modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("identity_user_roles", shema);
+        _ = modelBuilder.Entity<IdentityUserClaim<Guid>>().ToTable("identity_user_claims", shema);
+        _ = modelBuilder.Entity<IdentityRoleClaim<Guid>>().ToTable("identity_role_claims", shema);
+        _ = modelBuilder.Entity<IdentityUserLogin<Guid>>().ToTable("identity_user_logins", shema);
+        _ = modelBuilder.Entity<IdentityUserToken<Guid>>().ToTable("identity_user_tokens", shema);
+
         modelBuilder.CorrectNames();
 
 

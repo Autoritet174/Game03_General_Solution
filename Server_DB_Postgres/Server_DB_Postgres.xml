@@ -34,7 +34,7 @@
         <member name="P:Server_DB_Postgres.DbContextGame.BaseHeroes">
             <summary> Данные героев. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.DbContextGame.BaseNpcs">
+        <member name="P:Server_DB_Postgres.DbContextGame.BaseHeroNpcs">
             <summary> Не игровые персонажи. </summary>
         </member>
         <member name="P:Server_DB_Postgres.DbContextGame.CreatureTypes">
@@ -116,203 +116,6 @@
             Абстрактое количество из которого сервер вычислит вероятность.
             </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Equipment.HeroId">
-            <summary>
-            Герой на которого экипирован предмет.
-            </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Equipment.Level">
-            <summary> Уровень предмета. </summary>
-        </member>
-        <member name="T:Server_DB_Postgres.Entities.Collection.Hero">
-            <summary> Герой в коллекции пользователя. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Version">
-            <summary> <inheritdoc/> </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.CreatedAt">
-            <summary> <inheritdoc/> </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.UpdatedAt">
-            <summary> <inheritdoc/> </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.BaseHeroId">
-            <summary> Идентификатор базовой версии героя. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.BaseHero">
-            <summary> Сущность <see cref="T:Server_DB_Postgres.Entities.GameData.BaseHero"/>. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.GroupName">
-            <summary> Имя группы. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Level">
-            <summary> Уровень героя. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.Hero.Experience">
-            <summary> Текущий опыт. </summary>
-        </member>
-        <member name="T:Server_DB_Postgres.Entities.GameData.BaseEquipment">
-            <summary> Экипировка. Базовые болванки. Мечи, топоры, шлемы, щиты, кольцо, браслеты, амулеты и так далее. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.BaseEquipment.Id">
-            <summary> Уникальный идентификатор. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.BaseEquipment.Name">
-            <summary> Уникальное наименование на английском. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.BaseEquipment.Rarity">
-            <summary> Редкость. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.BaseEquipment.IsUnique">
-            <summary> Уникальный для одного аккаунта. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.BaseEquipment.EquipmentTypeId">
-            <summary> Идентификатор EquipmentType. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.BaseEquipment.EquipmentType">
-            <summary> Сущность EquipmentType. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.BaseEquipment.PossibleStats">
-            <summary>
-            Характеристики возможные при дропе экипировки.
-            </summary>
-        </member>
-        <member name="T:Server_DB_Postgres.Entities.GameData.BaseHero">
-            <summary> Базовая версия героя. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.BaseHero.Name">
-            <summary> Наименование на английском языке. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.BaseHero.Rarity">
-            <summary> Уровень редкости. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.BaseHero.IsUnique">
-            <summary> Уникальный для одного аккаунта. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.BaseHero.MainStat">
-            <summary> Основной стат который повышает урон. Сила(1) или Ловкость(2) или Интеллект(3). </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.BaseNpc.MainStat">
-            <summary> Основной стат который повышает урон. Сила(1) или Ловкость(2) или Интеллект(3). </summary>
-        </member>
-        <member name="T:Server_DB_Postgres.Entities.GameData.CreatureType">
-            <summary> Тип существа. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.CreatureType.Id">
-            <summary> Уникальный идентификатор. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.CreatureType.Name">
-            <summary> Уникальное наименование на английском. </summary>
-        </member>
-        <member name="T:Server_DB_Postgres.Entities.GameData.DamageType">
-            <summary> Тип урона. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.DamageType.Id">
-            <summary> Уникальный идентификатор. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.DamageType.Name">
-            <summary> Уникальное наименование на английском. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.DamageType.NameRu">
-            <summary> Наименование на русском. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.DamageType.DevHintRu">
-            <summary> Подсказка для разработчика. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.DamageType.Category">
-            <summary>
-            Категория типа урона.
-            0 - без категории.
-            1 - физический.
-            2 - магический.
-            </summary>
-        </member>
-        <member name="T:Server_DB_Postgres.Entities.GameData.EquipmentType">
-            <summary> Тип экипировки. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.EquipmentType.SlotType">
-            <summary> Тип слота экипировки. Не индекс слота а его тип, то есть Кольцо или Браслет, а не Кольцо2 или Браслет1. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.EquipmentType.SpendActionPoints">
-            <summary> Трата очков действия за удар. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.EquipmentType.BlockOtherHand">
-            <summary> Блокирует ли оружие другую руку, если это оружие. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.EquipmentType.PossibleStats">
-            <summary>
-            Характеристики возможные при дропе экипировки.
-            </summary>
-        </member>
-        <member name="T:Server_DB_Postgres.Entities.GameData.MaterialDamagePercent">
-            <summary> Коэфициенты урона для материалов. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.MaterialDamagePercent.Id">
-            <summary> Уникальный идентификатор. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.MaterialDamagePercent.SmithingMaterialsId">
-            <summary> Возвращает или задает идентификатор <see cref="T:Server_DB_Postgres.Entities.GameData.SmithingMaterial"/>, связанного с данным объектом. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.MaterialDamagePercent.SmithingMaterials">
-            <summary> Навигационное свойство к <see cref="T:Server_DB_Postgres.Entities.GameData.SmithingMaterial"/>. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.MaterialDamagePercent.DamageTypeId">
-            <summary> Возвращает или задает идентификатор <see cref="T:Server_DB_Postgres.Entities.GameData.DamageType"/>, связанного с данным объектом. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.MaterialDamagePercent.DamageType">
-            <summary> Навигационное свойство к <see cref="T:Server_DB_Postgres.Entities.GameData.DamageType"/>. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.MaterialDamagePercent.Percent">
-            <summary> Усиление урона оружия в процентах сделанного из этого материала. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.Slot.Id">
-            <summary> Уникальный идентификатор. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.Slot.Name">
-            <summary> Уникальное наименование на английском. </summary>
-        </member>
-        <member name="T:Server_DB_Postgres.Entities.GameData.SlotType">
-            <summary> Тип слота экипировки. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.SlotType.Id">
-            <summary> Уникальный идентификатор. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.SlotType.Name">
-            <summary> Уникальное наименование на английском. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.SlotType.NameRu">
-            <summary> Наименование на русском. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.SmithingMaterial.Id">
-            <summary> Уникальный идентификатор. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.SmithingMaterial.Name">
-            <summary> Уникальное наименование на английском. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.SmithingMaterial.NameRu">
-            <summary> Наименование на русском. </summary>
-        </member>
-        <member name="T:Server_DB_Postgres.Entities.GameData.X_Battlefield_BaseNpc">
-            <summary> Таблица для связи Hero и CreatureType. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.X_Battlefield_BaseNpc.GuarantSpawn">
-            <summary> Гарантированное появление на поле боя. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.X_Battlefield_BaseNpc.ProbabilitySpawn">
-            <summary> Вероятность появления на поле боя. Чем выше число тем выше шанс. Игнорируется при GuarantSpawn=true. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.X_Battlefield_BaseNpc.PossibleRank">
-            <summary> При респауне может иметь ранг. </summary>
-        </member>
-        <member name="T:Server_DB_Postgres.Entities.GameData.X_EquipmentType_DamageType">
-            <summary> Таблица для связи Hero и CreatureType. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.GameData.X_EquipmentType_DamageType.DamageCoef">
-            <summary> Коэффициент типа урона у оружия. </summary>
-        </member>
-        <member name="T:Server_DB_Postgres.Entities.GameData.X_Hero_CreatureType">
-            <summary> Таблица для связи Hero и CreatureType. </summary>
-        </member>
         <member name="T:Server_DB_Postgres.Entities.Logs.AuthenticationLog">
             <summary> Лог авторизации пользователей. </summary>
         </member>
@@ -339,9 +142,6 @@
         </member>
         <member name="T:Server_DB_Postgres.Entities.Server.UserBanReason">
             <summary> Причины блокировки пользователя </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Server.UserBanReason.Id">
-            <summary> Уникальный идентификатор. </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.Server.UserBanReason.Name">
             <summary> Наименование причины блокировки. </summary>
@@ -383,20 +183,20 @@
             Тип устройства или дружественное имя (например, "My iPhone 15").
             </summary>
         </member>
+        <member name="P:Server_DB_Postgres.Entities.Users.UserAccesskey.CreatedAt">
+            <summary> <inheritdoc/> </summary>
+        </member>
+        <member name="P:Server_DB_Postgres.Entities.Users.UserAccesskey.UpdatedAt">
+            <summary> <inheritdoc/> </summary>
+        </member>
         <member name="P:Server_DB_Postgres.Entities.Users.UserAccesskey.Version">
             <summary> <inheritdoc/> </summary>
         </member>
         <member name="T:Server_DB_Postgres.Entities.Users.UserBan">
             <summary> Представляет запись о блокировке (бане) пользователя. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserBan.Id">
-            <summary> Уникальный идентификатор. </summary>
-        </member>
         <member name="P:Server_DB_Postgres.Entities.Users.UserBan.UserId">
             <summary> Идентификатор пользователя, к которому применена блокировка. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserBan.User">
-            <summary> Навигационное свойство к <see cref="T:Server_DB_Postgres.Entities.Users.User"/>. </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.Users.UserBan.Version">
             <summary> <inheritdoc/> </summary>
@@ -413,14 +213,8 @@
         <member name="P:Server_DB_Postgres.Entities.Users.UserBan.UserBanReasonId">
             <summary> Идентификатор причины блокировки. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserBan.UserBanReason">
-            <summary> Навигационное свойство к <see cref="T:Server_DB_Postgres.Entities.Server.UserBanReason"/>. </summary>
-        </member>
         <member name="T:Server_DB_Postgres.Entities.Users.UserDevice">
             <summary> Представляет пользователя системы. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.Id">
-            <summary> Уникальный идентификатор. </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.CreatedAt">
             <summary> <inheritdoc/> </summary>
@@ -478,47 +272,28 @@
             <value>Строка, описывающая уровень поддержки NPOT (например, 'Full', 'Restricted', 'None').</value>
         </member>
         <member name="P:Server_DB_Postgres.Entities.Users.UserSession.RefreshTokenHash">
-            <summary>
-            Токен сессии. Имеет индекс уникальности для живых токенов.
-            </summary>
+            <summary> Токен сессии. Имеет индекс уникальности для живых токенов. </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.Users.UserSession.IsUsed">
-            <summary>
-            Токен использован.
-            </summary>
+            <summary> Токен использован. </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.Users.UserSession.IsRevoked">
-            <summary>
-            Токен анулирован.
-            </summary>
+            <summary> Токен анулирован. </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.Users.UserSession.InactivatedAt">
-            <summary>
-            Когда сессия была фактически завершена (для истории)
-            </summary>
+            <summary> Когда сессия была фактически завершена (для истории). </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.Users.UserSession.UserSessionInactivationReasonId">
-            <summary>
-            Причина деактивации (например: "Rotation", "Logout", "SystemLock")
-            </summary>
+            <summary> Причина деактивации (например: "Rotation", "Logout", "SystemLock") </summary>
         </member>
-        <member name="T:Server_DB_Postgres.Interfaces.ICreatedAt">
-            <summary> Интерфейс для времени создания. </summary>
+        <member name="P:Server_DB_Postgres.Entities.Users.UserSession.CreatedAt">
+            <summary> <inheritdoc/> </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Interfaces.ICreatedAt.CreatedAt">
-            <summary> UTC дата время создания. Контролируется на уровне EF автоматически при сохранении по интерфейсу <see cref="T:Server_DB_Postgres.Interfaces.ICreatedAt"/>. </summary>
+        <member name="P:Server_DB_Postgres.Entities.Users.UserSession.UpdatedAt">
+            <summary> <inheritdoc/> </summary>
         </member>
-        <member name="T:Server_DB_Postgres.Interfaces.IUpdatedAt">
-            <summary> Интерфейс для времени обновления. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Interfaces.IUpdatedAt.UpdatedAt">
-            <summary> UTC дата время обновления. Контролируется на уровне EF автоматически при сохранении по интерфейсу <see cref="T:Server_DB_Postgres.Interfaces.IUpdatedAt"/>. </summary>
-        </member>
-        <member name="T:Server_DB_Postgres.Interfaces.IVersion">
-            <summary> Интерфейс для переменной Version используемой для оптимистической блокировки. </summary>
-        </member>
-        <member name="P:Server_DB_Postgres.Interfaces.IVersion.Version">
-            <summary> Версия записи для оптимистической блокировки. </summary>
+        <member name="P:Server_DB_Postgres.Entities.Users.UserSession.Version">
+            <summary> <inheritdoc/> </summary>
         </member>
         <member name="T:Server_DB_Postgres.Migrations.Init">
             <inheritdoc />
@@ -1576,6 +1351,42 @@
         <member name="M:Server_DB_Postgres.Migrations.Migration_20260508_135341.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:Server_DB_Postgres.Migrations.Migration_20260508_173702">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260508_173702.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260508_173702.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260508_173702.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Migration_20260508_190500">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260508_190500.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260508_190500.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260508_190500.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Server_DB_Postgres.Migrations.Migration_20260508_232329">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260508_232329.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260508_232329.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Server_DB_Postgres.Migrations.Migration_20260508_232329.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
         <member name="T:Server_DB_Postgres.ModelBuilderExt">
             <summary>
             Класс расширяющих методов для Entity Framework Core ModelBuilder
@@ -1639,31 +1450,6 @@
             </summary>
             <param name="fk">Внешний ключ EF Core.</param>
             <returns>true, если имя внешнего ключа явно указано; иначе false.</returns>
-        </member>
-        <member name="T:Server_DB_Postgres.Repositories.CollectionEquipmentRepository">
-            <summary> Репозиторий для управления пользователями. </summary>
-        </member>
-        <member name="M:Server_DB_Postgres.Repositories.CollectionEquipmentRepository.#ctor(Server_DB_Postgres.DbContextGame)">
-            <summary> Репозиторий для управления пользователями. </summary>
-        </member>
-        <member name="M:Server_DB_Postgres.Repositories.CollectionEquipmentRepository.GetCoolectionEquipments(System.Guid)">
-            <summary> Получить всю экипировку из коллекции игрока. </summary>
-        </member>
-        <member name="T:Server_DB_Postgres.Repositories.CollectionHeroRepository">
-            <summary> Репозиторий для управления пользователями. </summary>
-        </member>
-        <member name="M:Server_DB_Postgres.Repositories.CollectionHeroRepository.#ctor">
-            <summary> Репозиторий для управления пользователями. </summary>
-        </member>
-        <member name="T:Server_DB_Postgres.Repositories.UserRepository">
-            <summary>
-            Репозиторий для управления пользователями.
-            </summary>
-        </member>
-        <member name="M:Server_DB_Postgres.Repositories.UserRepository.#ctor">
-            <summary>
-            Репозиторий для управления пользователями.
-            </summary>
         </member>
     </members>
 </doc>

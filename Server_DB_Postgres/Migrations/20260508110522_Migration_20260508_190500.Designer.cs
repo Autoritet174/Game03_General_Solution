@@ -6,6 +6,7 @@ using General;
 using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server_DB_Postgres;
@@ -15,9 +16,11 @@ using Server_DB_Postgres;
 namespace Server_DB_Postgres.Migrations
 {
     [DbContext(typeof(DbContextGame))]
-    partial class DbContext_GameModelSnapshot : ModelSnapshot
+    [Migration("20260508110522_Migration_20260508_190500")]
+    partial class Migration_20260508_190500
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,788 +28,6 @@ namespace Server_DB_Postgres.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("General.DTO.Entities.Collection.Equipment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<int>("BaseEquipmentId")
-                        .HasColumnType("integer")
-                        .HasColumnName("base_equipment_id");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<string>("GroupName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("group_name");
-
-                    b.Property<Guid?>("HeroId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("hero_id");
-
-                    b.Property<int>("Level")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(1)
-                        .HasColumnName("level");
-
-                    b.Property<int?>("SlotId")
-                        .HasColumnType("integer")
-                        .HasColumnName("slot_id");
-
-                    b.Property<Dictionary<int, List<float>>>("Stats")
-                        .HasColumnType("jsonb")
-                        .HasColumnName("stats");
-
-                    b.Property<DateTimeOffset>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.Property<long>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasDefaultValue(1L)
-                        .HasColumnName("version");
-
-                    b.HasKey("Id")
-                        .HasName("equipments__pkey");
-
-                    b.HasIndex("BaseEquipmentId")
-                        .HasDatabaseName("equipments__base_equipment_id__idx");
-
-                    b.HasIndex("HeroId")
-                        .HasDatabaseName("equipments__hero_id__idx");
-
-                    b.HasIndex("SlotId")
-                        .HasDatabaseName("equipments__slot_id__idx");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("equipments__user_id__idx");
-
-                    b.HasIndex("HeroId", "SlotId")
-                        .IsUnique()
-                        .HasDatabaseName("equipments__hero_id__slot_id__idx")
-                        .HasFilter("hero_id IS NOT NULL AND slot_id IS NOT NULL");
-
-                    b.ToTable("equipments", "collection");
-                });
-
-            modelBuilder.Entity("General.DTO.Entities.Collection.Hero", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<float>("Agility")
-                        .HasColumnType("real")
-                        .HasColumnName("agility");
-
-                    b.Property<int>("BaseHeroId")
-                        .HasColumnType("integer")
-                        .HasColumnName("base_hero_id");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<float>("CritChance")
-                        .HasColumnType("real")
-                        .HasColumnName("crit_chance");
-
-                    b.Property<float>("CritMultiplier")
-                        .HasColumnType("real")
-                        .HasColumnName("crit_multiplier");
-
-                    b.Property<float>("EnduranceMagical")
-                        .HasColumnType("real")
-                        .HasColumnName("endurance_magical");
-
-                    b.Property<float>("EndurancePhysical")
-                        .HasColumnType("real")
-                        .HasColumnName("endurance_physical");
-
-                    b.Property<float>("Experience")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("real")
-                        .HasDefaultValue(0f)
-                        .HasColumnName("experience");
-
-                    b.Property<string>("GroupName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("group_name");
-
-                    b.Property<float>("Haste")
-                        .HasColumnType("real")
-                        .HasColumnName("haste");
-
-                    b.Property<float>("Health")
-                        .HasColumnType("real")
-                        .HasColumnName("health");
-
-                    b.Property<float>("Initiative")
-                        .HasColumnType("real")
-                        .HasColumnName("initiative");
-
-                    b.Property<float>("Intelligence")
-                        .HasColumnType("real")
-                        .HasColumnName("intelligence");
-
-                    b.Property<int>("Level")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(1)
-                        .HasColumnName("level");
-
-                    b.Property<float>("Strength")
-                        .HasColumnType("real")
-                        .HasColumnName("strength");
-
-                    b.Property<DateTimeOffset>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.Property<float>("Versality")
-                        .HasColumnType("real")
-                        .HasColumnName("versality");
-
-                    b.Property<long>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasDefaultValue(1L)
-                        .HasColumnName("version");
-
-                    b.HasKey("Id")
-                        .HasName("heroes__pkey");
-
-                    b.HasIndex("BaseHeroId")
-                        .HasDatabaseName("heroes__base_hero_id__idx");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("heroes__user_id__idx");
-
-                    b.ToTable("heroes", "collection");
-                });
-
-            modelBuilder.Entity("General.DTO.Entities.GameData.BaseEquipment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("EquipmentTypeId")
-                        .HasColumnType("integer")
-                        .HasColumnName("equipment_type_id");
-
-                    b.Property<bool>("IsUnique")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_unique");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("name");
-
-                    b.Property<Dictionary<EStatType, Dice>>("PossibleStats")
-                        .HasColumnType("jsonb")
-                        .HasColumnName("possible_stats");
-
-                    b.Property<int>("Rarity")
-                        .HasColumnType("integer")
-                        .HasColumnName("rarity");
-
-                    b.Property<int?>("SmithingMaterialId")
-                        .HasColumnType("integer")
-                        .HasColumnName("smithing_material_id");
-
-                    b.HasKey("Id")
-                        .HasName("base_equipments__pkey");
-
-                    b.HasIndex("EquipmentTypeId")
-                        .HasDatabaseName("base_equipments__equipment_type_id__idx");
-
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasDatabaseName("base_equipments__name__idx");
-
-                    b.HasIndex("SmithingMaterialId")
-                        .HasDatabaseName("base_equipments__smithing_material_id__idx");
-
-                    b.ToTable("base_equipments", "game_data");
-                });
-
-            modelBuilder.Entity("General.DTO.Entities.GameData.BaseHero", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<Dice>("Agility")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("agility")
-                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
-
-                    b.Property<Dice>("CritChance")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("crit_chance")
-                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
-
-                    b.Property<Dice>("CritMultiplier")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("crit_multiplier")
-                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
-
-                    b.Property<Dice>("Damage")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("damage")
-                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
-
-                    b.Property<Dice>("EnduranceMagical")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("endurance_magical")
-                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
-
-                    b.Property<Dice>("EndurancePhysical")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("endurance_physical")
-                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
-
-                    b.Property<Dice>("Haste")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("haste")
-                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
-
-                    b.Property<Dice>("Health")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("health")
-                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
-
-                    b.Property<Dice>("Initiative")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("initiative")
-                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
-
-                    b.Property<Dice>("Intelligence")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("intelligence")
-                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
-
-                    b.Property<bool>("IsPlayable")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true)
-                        .HasColumnName("is_playable");
-
-                    b.Property<bool>("IsUnique")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_unique");
-
-                    b.Property<int>("MainStat")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0)
-                        .HasColumnName("main_stat");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("name");
-
-                    b.Property<int>("Rarity")
-                        .HasColumnType("integer")
-                        .HasColumnName("rarity");
-
-                    b.Property<Dice>("Strength")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("strength")
-                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
-
-                    b.Property<Dice>("Versality")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("versality")
-                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
-
-                    b.HasKey("Id")
-                        .HasName("base_heroes__pkey");
-
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasDatabaseName("base_heroes__name__idx");
-
-                    b.ToTable("base_heroes", "game_data");
-                });
-
-            modelBuilder.Entity("General.DTO.Entities.GameData.Battlefield", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    b.Property<string>("EnumName")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("enum_name");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("name");
-
-                    b.HasKey("Id")
-                        .HasName("battlefields__pkey");
-
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasDatabaseName("battlefields__name__idx");
-
-                    b.ToTable("battlefields", "game_data");
-                });
-
-            modelBuilder.Entity("General.DTO.Entities.GameData.CreatureType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("name");
-
-                    b.HasKey("Id")
-                        .HasName("creature_types__pkey");
-
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasDatabaseName("creature_types__name__idx");
-
-                    b.ToTable("creature_types", "game_data");
-                });
-
-            modelBuilder.Entity("General.DTO.Entities.GameData.DamageType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Category")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0)
-                        .HasColumnName("category");
-
-                    b.Property<string>("DevHintRu")
-                        .HasColumnType("text")
-                        .HasColumnName("dev_hint_ru");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("name");
-
-                    b.Property<string>("NameRu")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("name_ru");
-
-                    b.HasKey("Id")
-                        .HasName("damage_types__pkey");
-
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasDatabaseName("damage_types__name__idx");
-
-                    b.ToTable("damage_types", "game_data");
-                });
-
-            modelBuilder.Entity("General.DTO.Entities.GameData.EquipmentType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool?>("BlockOtherHand")
-                        .HasColumnType("boolean")
-                        .HasColumnName("block_other_hand");
-
-                    b.Property<bool>("CanCraftJewelcrafting")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("can_craft_jewelcrafting");
-
-                    b.Property<bool>("CanCraftSmithing")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("can_craft_smithing");
-
-                    b.Property<Dice>("Damage")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("damage")
-                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
-
-                    b.Property<int>("MassMagical")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0)
-                        .HasColumnName("mass_magical");
-
-                    b.Property<int>("MassPhysical")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0)
-                        .HasColumnName("mass_physical");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("name");
-
-                    b.Property<string>("NameRu")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("name_ru");
-
-                    b.Property<Dictionary<EStatType, Dice>>("PossibleStats")
-                        .HasColumnType("jsonb")
-                        .HasColumnName("possible_stats");
-
-                    b.Property<int>("SlotTypeId")
-                        .HasColumnType("integer")
-                        .HasColumnName("slot_type_id");
-
-                    b.Property<int>("SpendActionPoints")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0)
-                        .HasColumnName("spend_action_points");
-
-                    b.HasKey("Id")
-                        .HasName("equipment_types__pkey");
-
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasDatabaseName("equipment_types__name__idx");
-
-                    b.HasIndex("SlotTypeId")
-                        .HasDatabaseName("equipment_types__slot_type_id__idx");
-
-                    b.ToTable("equipment_types", "game_data");
-                });
-
-            modelBuilder.Entity("General.DTO.Entities.GameData.MaterialDamagePercent", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("DamageTypeId")
-                        .HasColumnType("integer")
-                        .HasColumnName("damage_type_id");
-
-                    b.Property<int>("Percent")
-                        .HasColumnType("integer")
-                        .HasColumnName("percent");
-
-                    b.Property<int>("SmithingMaterialsId")
-                        .HasColumnType("integer")
-                        .HasColumnName("smithing_materials_id");
-
-                    b.HasKey("Id")
-                        .HasName("material_damage_percents__pkey");
-
-                    b.HasIndex("DamageTypeId")
-                        .HasDatabaseName("material_damage_percents__damage_type_id__idx");
-
-                    b.HasIndex("SmithingMaterialsId")
-                        .HasDatabaseName("material_damage_percents__smithing_materials_id__idx");
-
-                    b.ToTable("material_damage_percents", "game_data");
-                });
-
-            modelBuilder.Entity("General.DTO.Entities.GameData.Slot", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    b.Property<bool>("MainSlot")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true)
-                        .HasColumnName("main_slot");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("name");
-
-                    b.Property<int>("SlotTypeId")
-                        .HasColumnType("integer")
-                        .HasColumnName("slot_type_id");
-
-                    b.HasKey("Id")
-                        .HasName("slots__pkey");
-
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasDatabaseName("slots__name__idx");
-
-                    b.HasIndex("SlotTypeId")
-                        .HasDatabaseName("slots__slot_type_id__idx");
-
-                    b.ToTable("slots", "game_data");
-                });
-
-            modelBuilder.Entity("General.DTO.Entities.GameData.SlotType", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    b.Property<bool>("HaveAltSlot")
-                        .HasColumnType("boolean")
-                        .HasColumnName("have_alt_slot");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("name");
-
-                    b.Property<string>("NameRu")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("name_ru");
-
-                    b.Property<int>("Sorting")
-                        .HasColumnType("integer")
-                        .HasColumnName("sorting");
-
-                    b.HasKey("Id")
-                        .HasName("slot_types__pkey");
-
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasDatabaseName("slot_types__name__idx");
-
-                    b.ToTable("slot_types", "game_data");
-                });
-
-            modelBuilder.Entity("General.DTO.Entities.GameData.SmithingMaterial", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("name");
-
-                    b.Property<string>("NameRu")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("name_ru");
-
-                    b.HasKey("Id")
-                        .HasName("smithing_materials__pkey");
-
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasDatabaseName("smithing_materials__name__idx");
-
-                    b.ToTable("smithing_materials", "game_data");
-                });
-
-            modelBuilder.Entity("General.DTO.Entities.GameData.X_Battlefield_BaseHero", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("BaseHeroId")
-                        .HasColumnType("integer")
-                        .HasColumnName("base_hero_id");
-
-                    b.Property<int>("BattlefieldId")
-                        .HasColumnType("integer")
-                        .HasColumnName("battlefield_id");
-
-                    b.Property<int>("Count")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(1)
-                        .HasColumnName("count");
-
-                    b.Property<bool>("GuarantSpawn")
-                        .HasColumnType("boolean")
-                        .HasColumnName("guarant_spawn");
-
-                    b.Property<bool>("PossibleRank")
-                        .HasColumnType("boolean")
-                        .HasColumnName("possible_rank");
-
-                    b.Property<int>("ProbabilitySpawn")
-                        .HasColumnType("integer")
-                        .HasColumnName("probability_spawn");
-
-                    b.HasKey("Id")
-                        .HasName("x_battlefields_base_heroes__pkey");
-
-                    b.HasIndex("BaseHeroId")
-                        .HasDatabaseName("x_battlefields_base_heroes__base_hero_id__idx");
-
-                    b.HasIndex("BattlefieldId")
-                        .HasDatabaseName("x_battlefields_base_heroes__battlefield_id__idx");
-
-                    b.ToTable("x_battlefields_base_heroes", "game_data");
-                });
-
-            modelBuilder.Entity("General.DTO.Entities.GameData.X_EquipmentType_DamageType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("DamageCoef")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0)
-                        .HasColumnName("damage_coef");
-
-                    b.Property<int>("DamageTypeId")
-                        .HasColumnType("integer")
-                        .HasColumnName("damage_type_id");
-
-                    b.Property<int>("EquipmentTypeId")
-                        .HasColumnType("integer")
-                        .HasColumnName("equipment_type_id");
-
-                    b.HasKey("Id")
-                        .HasName("x_equipment_types_damage_types__pkey");
-
-                    b.HasIndex("DamageTypeId")
-                        .HasDatabaseName("x_equipment_types_damage_types__damage_type_id__idx");
-
-                    b.HasIndex("EquipmentTypeId")
-                        .HasDatabaseName("x_equipment_types_damage_types__equipment_type_id__idx");
-
-                    b.ToTable("x_equipment_types_damage_types", "game_data");
-                });
-
-            modelBuilder.Entity("General.DTO.Entities.GameData.X_Hero_CreatureType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("BaseHeroId")
-                        .HasColumnType("integer")
-                        .HasColumnName("base_hero_id");
-
-                    b.Property<int>("CreatureTypeId")
-                        .HasColumnType("integer")
-                        .HasColumnName("creature_type_id");
-
-                    b.HasKey("Id")
-                        .HasName("x_heroes_creature_types__pkey");
-
-                    b.HasIndex("BaseHeroId")
-                        .HasDatabaseName("x_heroes_creature_types__base_hero_id__idx");
-
-                    b.HasIndex("CreatureTypeId")
-                        .HasDatabaseName("x_heroes_creature_types__creature_type_id__idx");
-
-                    b.ToTable("x_heroes_creature_types", "game_data");
-                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
                 {
@@ -1004,6 +225,788 @@ namespace Server_DB_Postgres.Migrations
                         .HasDatabaseName("drop_rates__user_id__idx");
 
                     b.ToTable("drop_rates", "collection");
+                });
+
+            modelBuilder.Entity("Server_DB_Postgres.Entities.Collection.Equipment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<int>("BaseEquipmentId")
+                        .HasColumnType("integer")
+                        .HasColumnName("base_equipment_id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("GroupName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("group_name");
+
+                    b.Property<Guid?>("HeroId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("hero_id");
+
+                    b.Property<int>("Level")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1)
+                        .HasColumnName("level");
+
+                    b.Property<int?>("SlotId")
+                        .HasColumnType("integer")
+                        .HasColumnName("slot_id");
+
+                    b.Property<Dictionary<int, List<float>>>("Stats")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("stats");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.Property<long>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasDefaultValue(1L)
+                        .HasColumnName("version");
+
+                    b.HasKey("Id")
+                        .HasName("equipments__pkey");
+
+                    b.HasIndex("BaseEquipmentId")
+                        .HasDatabaseName("equipments__base_equipment_id__idx");
+
+                    b.HasIndex("HeroId")
+                        .HasDatabaseName("equipments__hero_id__idx");
+
+                    b.HasIndex("SlotId")
+                        .HasDatabaseName("equipments__slot_id__idx");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("equipments__user_id__idx");
+
+                    b.HasIndex("HeroId", "SlotId")
+                        .IsUnique()
+                        .HasDatabaseName("equipments__hero_id__slot_id__idx")
+                        .HasFilter("hero_id IS NOT NULL AND slot_id IS NOT NULL");
+
+                    b.ToTable("equipments", "collection");
+                });
+
+            modelBuilder.Entity("Server_DB_Postgres.Entities.Collection.Hero", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<float>("Agility")
+                        .HasColumnType("real")
+                        .HasColumnName("agility");
+
+                    b.Property<int>("BaseHeroId")
+                        .HasColumnType("integer")
+                        .HasColumnName("base_hero_id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<float>("CritChance")
+                        .HasColumnType("real")
+                        .HasColumnName("crit_chance");
+
+                    b.Property<float>("CritMultiplier")
+                        .HasColumnType("real")
+                        .HasColumnName("crit_multiplier");
+
+                    b.Property<float>("EnduranceMagical")
+                        .HasColumnType("real")
+                        .HasColumnName("endurance_magical");
+
+                    b.Property<float>("EndurancePhysical")
+                        .HasColumnType("real")
+                        .HasColumnName("endurance_physical");
+
+                    b.Property<float>("Experience")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("real")
+                        .HasDefaultValue(0f)
+                        .HasColumnName("experience");
+
+                    b.Property<string>("GroupName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("group_name");
+
+                    b.Property<float>("Haste")
+                        .HasColumnType("real")
+                        .HasColumnName("haste");
+
+                    b.Property<float>("Health")
+                        .HasColumnType("real")
+                        .HasColumnName("health");
+
+                    b.Property<float>("Initiative")
+                        .HasColumnType("real")
+                        .HasColumnName("initiative");
+
+                    b.Property<float>("Intelligence")
+                        .HasColumnType("real")
+                        .HasColumnName("intelligence");
+
+                    b.Property<int>("Level")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1)
+                        .HasColumnName("level");
+
+                    b.Property<float>("Strength")
+                        .HasColumnType("real")
+                        .HasColumnName("strength");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.Property<float>("Versality")
+                        .HasColumnType("real")
+                        .HasColumnName("versality");
+
+                    b.Property<long>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasDefaultValue(1L)
+                        .HasColumnName("version");
+
+                    b.HasKey("Id")
+                        .HasName("heroes__pkey");
+
+                    b.HasIndex("BaseHeroId")
+                        .HasDatabaseName("heroes__base_hero_id__idx");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("heroes__user_id__idx");
+
+                    b.ToTable("heroes", "collection");
+                });
+
+            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.BaseEquipment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EquipmentTypeId")
+                        .HasColumnType("integer")
+                        .HasColumnName("equipment_type_id");
+
+                    b.Property<bool>("IsUnique")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_unique");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("name");
+
+                    b.Property<Dictionary<EStatType, Dice>>("PossibleStats")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("possible_stats");
+
+                    b.Property<int>("Rarity")
+                        .HasColumnType("integer")
+                        .HasColumnName("rarity");
+
+                    b.Property<int?>("SmithingMaterialId")
+                        .HasColumnType("integer")
+                        .HasColumnName("smithing_material_id");
+
+                    b.HasKey("Id")
+                        .HasName("base_equipments__pkey");
+
+                    b.HasIndex("EquipmentTypeId")
+                        .HasDatabaseName("base_equipments__equipment_type_id__idx");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("base_equipments__name__idx");
+
+                    b.HasIndex("SmithingMaterialId")
+                        .HasDatabaseName("base_equipments__smithing_material_id__idx");
+
+                    b.ToTable("base_equipments", "game_data");
+                });
+
+            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.BaseHero", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<Dice>("Agility")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("agility")
+                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
+
+                    b.Property<Dice>("CritChance")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("crit_chance")
+                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
+
+                    b.Property<Dice>("CritMultiplier")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("crit_multiplier")
+                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
+
+                    b.Property<Dice>("Damage")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("damage")
+                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
+
+                    b.Property<Dice>("EnduranceMagical")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("endurance_magical")
+                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
+
+                    b.Property<Dice>("EndurancePhysical")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("endurance_physical")
+                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
+
+                    b.Property<Dice>("Haste")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("haste")
+                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
+
+                    b.Property<Dice>("Health")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("health")
+                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
+
+                    b.Property<Dice>("Initiative")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("initiative")
+                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
+
+                    b.Property<Dice>("Intelligence")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("intelligence")
+                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
+
+                    b.Property<bool>("IsPlayable")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_playable");
+
+                    b.Property<bool>("IsUnique")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_unique");
+
+                    b.Property<int>("MainStat")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("main_stat");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("Rarity")
+                        .HasColumnType("integer")
+                        .HasColumnName("rarity");
+
+                    b.Property<Dice>("Strength")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("strength")
+                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
+
+                    b.Property<Dice>("Versality")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("versality")
+                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
+
+                    b.HasKey("Id")
+                        .HasName("base_heroes__pkey");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("base_heroes__name__idx");
+
+                    b.ToTable("base_heroes", "game_data");
+                });
+
+            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.Battlefield", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    b.Property<string>("EnumName")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("enum_name");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id")
+                        .HasName("battlefields__pkey");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("battlefields__name__idx");
+
+                    b.ToTable("battlefields", "game_data");
+                });
+
+            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.CreatureType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id")
+                        .HasName("creature_types__pkey");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("creature_types__name__idx");
+
+                    b.ToTable("creature_types", "game_data");
+                });
+
+            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.DamageType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Category")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("category");
+
+                    b.Property<string>("DevHintRu")
+                        .HasColumnType("text")
+                        .HasColumnName("dev_hint_ru");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("NameRu")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("name_ru");
+
+                    b.HasKey("Id")
+                        .HasName("damage_types__pkey");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("damage_types__name__idx");
+
+                    b.ToTable("damage_types", "game_data");
+                });
+
+            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.EquipmentType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool?>("BlockOtherHand")
+                        .HasColumnType("boolean")
+                        .HasColumnName("block_other_hand");
+
+                    b.Property<bool>("CanCraftJewelcrafting")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("can_craft_jewelcrafting");
+
+                    b.Property<bool>("CanCraftSmithing")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("can_craft_smithing");
+
+                    b.Property<Dice>("Damage")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("damage")
+                        .HasDefaultValueSql("'{\"c\":0,\"s\":0}'::jsonb");
+
+                    b.Property<int>("MassMagical")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("mass_magical");
+
+                    b.Property<int>("MassPhysical")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("mass_physical");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("NameRu")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("name_ru");
+
+                    b.Property<Dictionary<EStatType, Dice>>("PossibleStats")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("possible_stats");
+
+                    b.Property<int>("SlotTypeId")
+                        .HasColumnType("integer")
+                        .HasColumnName("slot_type_id");
+
+                    b.Property<int>("SpendActionPoints")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("spend_action_points");
+
+                    b.HasKey("Id")
+                        .HasName("equipment_types__pkey");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("equipment_types__name__idx");
+
+                    b.HasIndex("SlotTypeId")
+                        .HasDatabaseName("equipment_types__slot_type_id__idx");
+
+                    b.ToTable("equipment_types", "game_data");
+                });
+
+            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.MaterialDamagePercent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DamageTypeId")
+                        .HasColumnType("integer")
+                        .HasColumnName("damage_type_id");
+
+                    b.Property<int>("Percent")
+                        .HasColumnType("integer")
+                        .HasColumnName("percent");
+
+                    b.Property<int>("SmithingMaterialsId")
+                        .HasColumnType("integer")
+                        .HasColumnName("smithing_materials_id");
+
+                    b.HasKey("Id")
+                        .HasName("material_damage_percents__pkey");
+
+                    b.HasIndex("DamageTypeId")
+                        .HasDatabaseName("material_damage_percents__damage_type_id__idx");
+
+                    b.HasIndex("SmithingMaterialsId")
+                        .HasDatabaseName("material_damage_percents__smithing_materials_id__idx");
+
+                    b.ToTable("material_damage_percents", "game_data");
+                });
+
+            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.Slot", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    b.Property<bool>("MainSlot")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("main_slot");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("SlotTypeId")
+                        .HasColumnType("integer")
+                        .HasColumnName("slot_type_id");
+
+                    b.HasKey("Id")
+                        .HasName("slots__pkey");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("slots__name__idx");
+
+                    b.HasIndex("SlotTypeId")
+                        .HasDatabaseName("slots__slot_type_id__idx");
+
+                    b.ToTable("slots", "game_data");
+                });
+
+            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.SlotType", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    b.Property<bool>("HaveAltSlot")
+                        .HasColumnType("boolean")
+                        .HasColumnName("have_alt_slot");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("NameRu")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("name_ru");
+
+                    b.Property<int>("Sorting")
+                        .HasColumnType("integer")
+                        .HasColumnName("sorting");
+
+                    b.HasKey("Id")
+                        .HasName("slot_types__pkey");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("slot_types__name__idx");
+
+                    b.ToTable("slot_types", "game_data");
+                });
+
+            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.SmithingMaterial", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("NameRu")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("name_ru");
+
+                    b.HasKey("Id")
+                        .HasName("smithing_materials__pkey");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("smithing_materials__name__idx");
+
+                    b.ToTable("smithing_materials", "game_data");
+                });
+
+            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.X_Battlefield_BaseHero", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BaseHeroId")
+                        .HasColumnType("integer")
+                        .HasColumnName("base_hero_id");
+
+                    b.Property<int>("BattlefieldId")
+                        .HasColumnType("integer")
+                        .HasColumnName("battlefield_id");
+
+                    b.Property<int>("Count")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1)
+                        .HasColumnName("count");
+
+                    b.Property<bool>("GuarantSpawn")
+                        .HasColumnType("boolean")
+                        .HasColumnName("guarant_spawn");
+
+                    b.Property<bool>("PossibleRank")
+                        .HasColumnType("boolean")
+                        .HasColumnName("possible_rank");
+
+                    b.Property<int>("ProbabilitySpawn")
+                        .HasColumnType("integer")
+                        .HasColumnName("probability_spawn");
+
+                    b.HasKey("Id")
+                        .HasName("x_battlefields_base_heroes__pkey");
+
+                    b.HasIndex("BaseHeroId")
+                        .HasDatabaseName("x_battlefields_base_heroes__base_hero_id__idx");
+
+                    b.HasIndex("BattlefieldId")
+                        .HasDatabaseName("x_battlefields_base_heroes__battlefield_id__idx");
+
+                    b.ToTable("x_battlefields_base_heroes", "game_data");
+                });
+
+            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.X_EquipmentType_DamageType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DamageCoef")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("damage_coef");
+
+                    b.Property<int>("DamageTypeId")
+                        .HasColumnType("integer")
+                        .HasColumnName("damage_type_id");
+
+                    b.Property<int>("EquipmentTypeId")
+                        .HasColumnType("integer")
+                        .HasColumnName("equipment_type_id");
+
+                    b.HasKey("Id")
+                        .HasName("x_equipment_types_damage_types__pkey");
+
+                    b.HasIndex("DamageTypeId")
+                        .HasDatabaseName("x_equipment_types_damage_types__damage_type_id__idx");
+
+                    b.HasIndex("EquipmentTypeId")
+                        .HasDatabaseName("x_equipment_types_damage_types__equipment_type_id__idx");
+
+                    b.ToTable("x_equipment_types_damage_types", "game_data");
+                });
+
+            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.X_Hero_CreatureType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BaseHeroId")
+                        .HasColumnType("integer")
+                        .HasColumnName("base_hero_id");
+
+                    b.Property<int>("CreatureTypeId")
+                        .HasColumnType("integer")
+                        .HasColumnName("creature_type_id");
+
+                    b.HasKey("Id")
+                        .HasName("x_heroes_creature_types__pkey");
+
+                    b.HasIndex("BaseHeroId")
+                        .HasDatabaseName("x_heroes_creature_types__base_hero_id__idx");
+
+                    b.HasIndex("CreatureTypeId")
+                        .HasDatabaseName("x_heroes_creature_types__creature_type_id__idx");
+
+                    b.ToTable("x_heroes_creature_types", "game_data");
                 });
 
             modelBuilder.Entity("Server_DB_Postgres.Entities.Logs.AuthenticationLog", b =>
@@ -1513,188 +1516,6 @@ namespace Server_DB_Postgres.Migrations
                     b.ToTable("user_sessions", "users");
                 });
 
-            modelBuilder.Entity("General.DTO.Entities.Collection.Equipment", b =>
-                {
-                    b.HasOne("General.DTO.Entities.GameData.BaseEquipment", "BaseEquipment")
-                        .WithMany()
-                        .HasForeignKey("BaseEquipmentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("equipments__base_equipment_id__base_equipments__fkey");
-
-                    b.HasOne("General.DTO.Entities.Collection.Hero", "Hero")
-                        .WithMany()
-                        .HasForeignKey("HeroId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("equipments__hero_id__heroes__fkey");
-
-                    b.HasOne("General.DTO.Entities.GameData.Slot", "Slot")
-                        .WithMany()
-                        .HasForeignKey("SlotId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("equipments__slot_id__slots__fkey");
-
-                    b.HasOne("Server_DB_Postgres.Entities.Users.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("equipments__user_id__identity_users__fkey");
-
-                    b.Navigation("BaseEquipment");
-
-                    b.Navigation("Hero");
-
-                    b.Navigation("Slot");
-                });
-
-            modelBuilder.Entity("General.DTO.Entities.Collection.Hero", b =>
-                {
-                    b.HasOne("General.DTO.Entities.GameData.BaseHero", "BaseHero")
-                        .WithMany()
-                        .HasForeignKey("BaseHeroId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("heroes__base_hero_id__base_heroes__fkey");
-
-                    b.HasOne("Server_DB_Postgres.Entities.Users.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("heroes__user_id__identity_users__fkey");
-
-                    b.Navigation("BaseHero");
-                });
-
-            modelBuilder.Entity("General.DTO.Entities.GameData.BaseEquipment", b =>
-                {
-                    b.HasOne("General.DTO.Entities.GameData.EquipmentType", "EquipmentType")
-                        .WithMany()
-                        .HasForeignKey("EquipmentTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("base_equipments__equipment_type_id__equipment_types__fkey");
-
-                    b.HasOne("General.DTO.Entities.GameData.SmithingMaterial", "SmithingMaterial")
-                        .WithMany()
-                        .HasForeignKey("SmithingMaterialId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("base_equipments__smithing_material_id__smithing_materials__fkey");
-
-                    b.Navigation("EquipmentType");
-
-                    b.Navigation("SmithingMaterial");
-                });
-
-            modelBuilder.Entity("General.DTO.Entities.GameData.EquipmentType", b =>
-                {
-                    b.HasOne("General.DTO.Entities.GameData.SlotType", "SlotType")
-                        .WithMany()
-                        .HasForeignKey("SlotTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("equipment_types__slot_type_id__slot_types__fkey");
-
-                    b.Navigation("SlotType");
-                });
-
-            modelBuilder.Entity("General.DTO.Entities.GameData.MaterialDamagePercent", b =>
-                {
-                    b.HasOne("General.DTO.Entities.GameData.DamageType", "DamageType")
-                        .WithMany()
-                        .HasForeignKey("DamageTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("material_damage_percents__damage_type_id__damage_types__fkey");
-
-                    b.HasOne("General.DTO.Entities.GameData.SmithingMaterial", "SmithingMaterials")
-                        .WithMany()
-                        .HasForeignKey("SmithingMaterialsId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("material_damage_percents__smithing_materials_id__smithing_materials__fkey");
-
-                    b.Navigation("DamageType");
-
-                    b.Navigation("SmithingMaterials");
-                });
-
-            modelBuilder.Entity("General.DTO.Entities.GameData.Slot", b =>
-                {
-                    b.HasOne("General.DTO.Entities.GameData.SlotType", "SlotType")
-                        .WithMany()
-                        .HasForeignKey("SlotTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("slots__slot_type_id__slot_types__fkey");
-
-                    b.Navigation("SlotType");
-                });
-
-            modelBuilder.Entity("General.DTO.Entities.GameData.X_Battlefield_BaseHero", b =>
-                {
-                    b.HasOne("General.DTO.Entities.GameData.BaseHero", "BaseHero")
-                        .WithMany()
-                        .HasForeignKey("BaseHeroId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("x_battlefields_base_heroes__base_hero_id__base_heroes__fkey");
-
-                    b.HasOne("General.DTO.Entities.GameData.Battlefield", "Battlefield")
-                        .WithMany()
-                        .HasForeignKey("BattlefieldId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("x_battlefields_base_heroes__battlefield_id__battlefields__fkey");
-
-                    b.Navigation("BaseHero");
-
-                    b.Navigation("Battlefield");
-                });
-
-            modelBuilder.Entity("General.DTO.Entities.GameData.X_EquipmentType_DamageType", b =>
-                {
-                    b.HasOne("General.DTO.Entities.GameData.DamageType", "DamageType")
-                        .WithMany()
-                        .HasForeignKey("DamageTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("x_equipment_types_damage_types__damage_type_id__damage_types__fkey");
-
-                    b.HasOne("General.DTO.Entities.GameData.EquipmentType", "EquipmentType")
-                        .WithMany()
-                        .HasForeignKey("EquipmentTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("x_equipment_types_damage_types__equipment_type_id__equipment_types__fkey");
-
-                    b.Navigation("DamageType");
-
-                    b.Navigation("EquipmentType");
-                });
-
-            modelBuilder.Entity("General.DTO.Entities.GameData.X_Hero_CreatureType", b =>
-                {
-                    b.HasOne("General.DTO.Entities.GameData.BaseHero", "BaseHero")
-                        .WithMany()
-                        .HasForeignKey("BaseHeroId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("x_heroes_creature_types__base_hero_id__base_heroes__fkey");
-
-                    b.HasOne("General.DTO.Entities.GameData.CreatureType", "CreatureType")
-                        .WithMany()
-                        .HasForeignKey("CreatureTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("x_heroes_creature_types__creature_type_id__creature_types__fkey");
-
-                    b.Navigation("BaseHero");
-
-                    b.Navigation("CreatureType");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
@@ -1764,6 +1585,192 @@ namespace Server_DB_Postgres.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Server_DB_Postgres.Entities.Collection.Equipment", b =>
+                {
+                    b.HasOne("Server_DB_Postgres.Entities.GameData.BaseEquipment", "BaseEquipment")
+                        .WithMany()
+                        .HasForeignKey("BaseEquipmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("equipments__base_equipment_id__base_equipments__fkey");
+
+                    b.HasOne("Server_DB_Postgres.Entities.Collection.Hero", "Hero")
+                        .WithMany()
+                        .HasForeignKey("HeroId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("equipments__hero_id__heroes__fkey");
+
+                    b.HasOne("Server_DB_Postgres.Entities.GameData.Slot", "Slot")
+                        .WithMany()
+                        .HasForeignKey("SlotId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("equipments__slot_id__slots__fkey");
+
+                    b.HasOne("Server_DB_Postgres.Entities.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("equipments__user_id__identity_users__fkey");
+
+                    b.Navigation("BaseEquipment");
+
+                    b.Navigation("Hero");
+
+                    b.Navigation("Slot");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Server_DB_Postgres.Entities.Collection.Hero", b =>
+                {
+                    b.HasOne("Server_DB_Postgres.Entities.GameData.BaseHero", "BaseHero")
+                        .WithMany()
+                        .HasForeignKey("BaseHeroId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("heroes__base_hero_id__base_heroes__fkey");
+
+                    b.HasOne("Server_DB_Postgres.Entities.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("heroes__user_id__identity_users__fkey");
+
+                    b.Navigation("BaseHero");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.BaseEquipment", b =>
+                {
+                    b.HasOne("Server_DB_Postgres.Entities.GameData.EquipmentType", "EquipmentType")
+                        .WithMany()
+                        .HasForeignKey("EquipmentTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("base_equipments__equipment_type_id__equipment_types__fkey");
+
+                    b.HasOne("Server_DB_Postgres.Entities.GameData.SmithingMaterial", "SmithingMaterial")
+                        .WithMany()
+                        .HasForeignKey("SmithingMaterialId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("base_equipments__smithing_material_id__smithing_materials__fkey");
+
+                    b.Navigation("EquipmentType");
+
+                    b.Navigation("SmithingMaterial");
+                });
+
+            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.EquipmentType", b =>
+                {
+                    b.HasOne("Server_DB_Postgres.Entities.GameData.SlotType", "SlotType")
+                        .WithMany()
+                        .HasForeignKey("SlotTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("equipment_types__slot_type_id__slot_types__fkey");
+
+                    b.Navigation("SlotType");
+                });
+
+            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.MaterialDamagePercent", b =>
+                {
+                    b.HasOne("Server_DB_Postgres.Entities.GameData.DamageType", "DamageType")
+                        .WithMany()
+                        .HasForeignKey("DamageTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("material_damage_percents__damage_type_id__damage_types__fkey");
+
+                    b.HasOne("Server_DB_Postgres.Entities.GameData.SmithingMaterial", "SmithingMaterials")
+                        .WithMany()
+                        .HasForeignKey("SmithingMaterialsId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("material_damage_percents__smithing_materials_id__smithing_materials__fkey");
+
+                    b.Navigation("DamageType");
+
+                    b.Navigation("SmithingMaterials");
+                });
+
+            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.Slot", b =>
+                {
+                    b.HasOne("Server_DB_Postgres.Entities.GameData.SlotType", "SlotType")
+                        .WithMany()
+                        .HasForeignKey("SlotTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("slots__slot_type_id__slot_types__fkey");
+
+                    b.Navigation("SlotType");
+                });
+
+            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.X_Battlefield_BaseHero", b =>
+                {
+                    b.HasOne("Server_DB_Postgres.Entities.GameData.BaseHero", "BaseHero")
+                        .WithMany()
+                        .HasForeignKey("BaseHeroId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("x_battlefields_base_heroes__base_hero_id__base_heroes__fkey");
+
+                    b.HasOne("Server_DB_Postgres.Entities.GameData.Battlefield", "Battlefield")
+                        .WithMany()
+                        .HasForeignKey("BattlefieldId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("x_battlefields_base_heroes__battlefield_id__battlefields__fkey");
+
+                    b.Navigation("BaseHero");
+
+                    b.Navigation("Battlefield");
+                });
+
+            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.X_EquipmentType_DamageType", b =>
+                {
+                    b.HasOne("Server_DB_Postgres.Entities.GameData.DamageType", "DamageType")
+                        .WithMany()
+                        .HasForeignKey("DamageTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("x_equipment_types_damage_types__damage_type_id__damage_types__fkey");
+
+                    b.HasOne("Server_DB_Postgres.Entities.GameData.EquipmentType", "EquipmentType")
+                        .WithMany()
+                        .HasForeignKey("EquipmentTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("x_equipment_types_damage_types__equipment_type_id__equipment_types__fkey");
+
+                    b.Navigation("DamageType");
+
+                    b.Navigation("EquipmentType");
+                });
+
+            modelBuilder.Entity("Server_DB_Postgres.Entities.GameData.X_Hero_CreatureType", b =>
+                {
+                    b.HasOne("Server_DB_Postgres.Entities.GameData.BaseHero", "BaseHero")
+                        .WithMany()
+                        .HasForeignKey("BaseHeroId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("x_heroes_creature_types__base_hero_id__base_heroes__fkey");
+
+                    b.HasOne("Server_DB_Postgres.Entities.GameData.CreatureType", "CreatureType")
+                        .WithMany()
+                        .HasForeignKey("CreatureTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("x_heroes_creature_types__creature_type_id__creature_types__fkey");
+
+                    b.Navigation("BaseHero");
+
+                    b.Navigation("CreatureType");
+                });
+
             modelBuilder.Entity("Server_DB_Postgres.Entities.Logs.AuthenticationLog", b =>
                 {
                     b.HasOne("Server_DB_Postgres.Entities.Users.UserDevice", "UserDevice")
@@ -1802,7 +1809,7 @@ namespace Server_DB_Postgres.Migrations
                     b.HasOne("Server_DB_Postgres.Entities.Users.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("registration_logs__user_id__identity_users__fkey");
 
                     b.Navigation("User");

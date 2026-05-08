@@ -119,12 +119,12 @@
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.DtoEquipment">
+        <member name="P:Server.GlobalJsonContext.Equipment">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.DtoHero">
+        <member name="P:Server.GlobalJsonContext.Hero">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
@@ -139,72 +139,67 @@
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.DtoBaseEquipment">
+        <member name="P:Server.GlobalJsonContext.BaseEquipment">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.DtoBaseHero">
+        <member name="P:Server.GlobalJsonContext.BaseHero">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.DtoBaseNpc">
+        <member name="P:Server.GlobalJsonContext.Battlefield">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.DtoBattlefield">
+        <member name="P:Server.GlobalJsonContext.CreatureType">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.DtoCreatureType">
+        <member name="P:Server.GlobalJsonContext.DamageType">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.DtoDamageType">
+        <member name="P:Server.GlobalJsonContext.EquipmentType">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.DtoEquipmentType">
+        <member name="P:Server.GlobalJsonContext.MaterialDamagePercent">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.DtoMaterialDamagePercent">
+        <member name="P:Server.GlobalJsonContext.Slot">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.DtoSlot">
+        <member name="P:Server.GlobalJsonContext.SlotType">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.DtoSlotType">
+        <member name="P:Server.GlobalJsonContext.SmithingMaterial">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.DtoSmithingMaterial">
+        <member name="P:Server.GlobalJsonContext.X_Battlefield_BaseHero">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.DtoXBattlefieldNpc">
+        <member name="P:Server.GlobalJsonContext.X_EquipmentType_DamageType">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.DtoXEquipmentTypeDamageType">
-            <summary>
-            Defines the source generated JSON serialization contract metadata for a given type.
-            </summary>
-        </member>
-        <member name="P:Server.GlobalJsonContext.DtoXHeroCreatureType">
+        <member name="P:Server.GlobalJsonContext.X_Hero_CreatureType">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
@@ -249,11 +244,6 @@
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.BaseHero">
-            <summary>
-            Defines the source generated JSON serialization contract metadata for a given type.
-            </summary>
-        </member>
         <member name="P:Server.GlobalJsonContext.DictionaryEStatTypeDice">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
@@ -269,72 +259,72 @@
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.IEnumerableDtoEquipment">
+        <member name="P:Server.GlobalJsonContext.IEnumerableEquipment">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.IEnumerableDtoHero">
+        <member name="P:Server.GlobalJsonContext.IEnumerableHero">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.IEnumerableDtoBaseEquipment">
+        <member name="P:Server.GlobalJsonContext.IEnumerableBaseEquipment">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.IEnumerableDtoBaseHero">
+        <member name="P:Server.GlobalJsonContext.IEnumerableBaseHero">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.IEnumerableDtoCreatureType">
+        <member name="P:Server.GlobalJsonContext.IEnumerableCreatureType">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.IEnumerableDtoDamageType">
+        <member name="P:Server.GlobalJsonContext.IEnumerableDamageType">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.IEnumerableDtoEquipmentType">
+        <member name="P:Server.GlobalJsonContext.IEnumerableEquipmentType">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.IEnumerableDtoMaterialDamagePercent">
+        <member name="P:Server.GlobalJsonContext.IEnumerableMaterialDamagePercent">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.IEnumerableDtoSlot">
+        <member name="P:Server.GlobalJsonContext.IEnumerableSlot">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.IEnumerableDtoSlotType">
+        <member name="P:Server.GlobalJsonContext.IEnumerableSlotType">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.IEnumerableDtoSmithingMaterial">
+        <member name="P:Server.GlobalJsonContext.IEnumerableSmithingMaterial">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.IEnumerableDtoXBattlefieldNpc">
+        <member name="P:Server.GlobalJsonContext.IEnumerableX_Battlefield_BaseHero">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.IEnumerableDtoXEquipmentTypeDamageType">
+        <member name="P:Server.GlobalJsonContext.IEnumerableX_EquipmentType_DamageType">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.IEnumerableDtoXHeroCreatureType">
+        <member name="P:Server.GlobalJsonContext.IEnumerableX_Hero_CreatureType">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
@@ -344,12 +334,12 @@
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.ListDtoEquipment">
+        <member name="P:Server.GlobalJsonContext.ListEquipment">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>
         </member>
-        <member name="P:Server.GlobalJsonContext.ListDtoHero">
+        <member name="P:Server.GlobalJsonContext.ListHero">
             <summary>
             Defines the source generated JSON serialization contract metadata for a given type.
             </summary>

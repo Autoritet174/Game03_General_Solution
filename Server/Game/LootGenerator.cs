@@ -1,12 +1,12 @@
 using FluentResults;
 using General;
 using General.DTO;
+using General.DTO.Entities.Collection;
+using General.DTO.Entities.GameData;
 using Microsoft.EntityFrameworkCore;
 using Server.Cache;
 using Server.Utilities;
 using Server_DB_Postgres;
-using Server_DB_Postgres.Entities.Collection;
-using Server_DB_Postgres.Entities.GameData;
 
 namespace Server.Game;
 
@@ -171,10 +171,10 @@ public class LootGenerator(
         for (int r = raritySelected; r > 0; r--)
         {
             // Получаем id базовых героев с выбранной редкостью, разделяя их на уникальных и неуникальных
-            List<int> baseHeroUniqueIds = [.. cacheService.TableBaseHeroes.Values
+            List<int> baseHeroUniqueIds = [.. cacheService.TableBaseHeroesOnlyPlayable.Values
                     .Where(a => a.Rarity == r && a.IsUnique)
                     .Select(b => b.Id)];
-            List<int> baseHeroNotUniqueIds = [.. cacheService.TableBaseHeroes.Values
+            List<int> baseHeroNotUniqueIds = [.. cacheService.TableBaseHeroesOnlyPlayable.Values
                     .Where(a => a.Rarity == r && !a.IsUnique)
                     .Select(b => b.Id)];
 
@@ -196,7 +196,7 @@ public class LootGenerator(
             // Выбираем случайного героя из списка доступных
             int randomIndex = rand.Next(heroesId.Count);
             int selectedBaseHeroId = heroesId[randomIndex];
-            return cacheService.TableBaseHeroes[selectedBaseHeroId];
+            return cacheService.TableBaseHeroesOnlyPlayable[selectedBaseHeroId];
         }
 
         return null;

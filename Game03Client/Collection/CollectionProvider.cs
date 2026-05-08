@@ -41,14 +41,14 @@ public class CollectionProvider
             return false;
         }
 
-        IEnumerable<DtoBaseEquipment> baseEquipments = GameData.Container.BaseEquipments;
-        foreach (DtoEquipment i in c.CollectionEquipments)
+        IEnumerable<BaseEquipment> baseEquipments = GameData.Container.BaseEquipments;
+        foreach (Equipment i in c.CollectionEquipments)
         {
             i.BaseEquipment = baseEquipments.FirstOrDefault(a => a.Id == i.BaseEquipmentId);
         }
 
-        IEnumerable<DtoBaseHero> baseHeroes = GameData.Container.BaseHeroes;
-        foreach (DtoHero i in c.CollectionHeroes)
+        IEnumerable<BaseHero> baseHeroes = GameData.Container.BaseHeroes;
+        foreach (Hero i in c.CollectionHeroes)
         {
             i.BaseHero = baseHeroes.FirstOrDefault(a => a.Id == i.BaseHeroId);
         }
@@ -80,7 +80,7 @@ public class CollectionProvider
         List<string> list = listGroupNameHero;
         list.Clear();
         list.Add(string.Empty);
-        foreach (DtoHero i in collection.CollectionHeroes)
+        foreach (Hero i in collection.CollectionHeroes)
         {
             string group_name = i.GroupName ?? string.Empty;
             if (!list.Contains(group_name))
@@ -95,7 +95,7 @@ public class CollectionProvider
         List<string> list = listGroupNameEquipment;
         list.Clear();
         list.Add(string.Empty);
-        foreach (DtoEquipment i in collection.CollectionEquipments)
+        foreach (Equipment i in collection.CollectionEquipments)
         {
             string group_name = i.GroupName ?? string.Empty;
             if (!list.Contains(group_name))
@@ -105,8 +105,8 @@ public class CollectionProvider
         }
     }
 
-    public static IEnumerable<DtoHero> GetCollectionHeroesFromCache() => collection.CollectionHeroes;
-    public static IEnumerable<DtoEquipment> GetCollectionEquipmentsFromCache() => collection.CollectionEquipments;
+    public static IEnumerable<Hero> GetCollectionHeroesFromCache() => collection.CollectionHeroes;
+    public static IEnumerable<Equipment> GetCollectionEquipmentsFromCache() => collection.CollectionEquipments;
 
     public static int GetCountHeroes() => collection.CollectionHeroes.Count();
     public static int GetCountEquipments() => collection.CollectionEquipments.Count();
@@ -117,7 +117,7 @@ public class CollectionProvider
     public static IEnumerable<GroupCollectionElement> GetCollectionHeroesGroupedByGroupNames(int page)
     {
         List<GroupCollectionElement> result = [];
-        IEnumerable<DtoHero> c = collection.CollectionHeroes;
+        IEnumerable<Hero> c = collection.CollectionHeroes;
         if (page > 0)
         {
             c = [.. c.Skip((page - 1) * PAGE_SIZE).Take(PAGE_SIZE)];
@@ -125,9 +125,9 @@ public class CollectionProvider
 
         foreach (string groupName in listGroupNameHero)
         {
-            IEnumerable<DtoHero> heroes = groupName == string.Empty ? c.Where(a => a.GroupName is null or "") : c.Where(a => a.GroupName == groupName);
+            IEnumerable<Hero> heroes = groupName == string.Empty ? c.Where(a => a.GroupName is null or "") : c.Where(a => a.GroupName == groupName);
             List<CollectionElement> collectionElements = [];
-            foreach (DtoHero hero in heroes)
+            foreach (Hero hero in heroes)
             {
                 if (hero.BaseHero == null)
                 {
@@ -152,16 +152,16 @@ public class CollectionProvider
     {
         List<GroupCollectionElement> result = [];
         collection.CollectionEquipments = collection.CollectionEquipments.OrderBy(x => x, DtoEquipmentComparer);
-        IEnumerable<DtoEquipment> c = collection.CollectionEquipments;
+        IEnumerable<Equipment> c = collection.CollectionEquipments;
         if (page > 0)
         {
             c = [.. c.Skip((page - 1) * PAGE_SIZE).Take(PAGE_SIZE)];
         }
         foreach (string groupName in listGroupNameEquipment)
         {
-            IEnumerable<DtoEquipment> equipments = groupName == string.Empty ? c.Where(a => a.GroupName is null or "") : c.Where(a => a.GroupName == groupName);
+            IEnumerable<Equipment> equipments = groupName == string.Empty ? c.Where(a => a.GroupName is null or "") : c.Where(a => a.GroupName == groupName);
             List<CollectionElement> collectionElements = [];
-            foreach (DtoEquipment equipment in equipments)
+            foreach (Equipment equipment in equipments)
             {
                 if (equipment.BaseEquipment == null)
                 {
@@ -183,7 +183,7 @@ public class CollectionProvider
 
     public static bool EquipmentIsEquipped(Guid equipmentId)
     {
-        DtoEquipment? equipment = collection.CollectionEquipments.FirstOrDefault(a => a.Id == equipmentId);
+        Equipment? equipment = collection.CollectionEquipments.FirstOrDefault(a => a.Id == equipmentId);
         if (equipment == null)
         {
             logger.LogError("Equipment not found in collection. Id: {EquipmentId}", equipmentId.ToString());
@@ -194,13 +194,13 @@ public class CollectionProvider
 
     public static async Task<bool> EquipmentTakeOnAsync(Guid equipmentId, Guid heroId, bool? inAltSlot, CancellationToken cancellationToken)
     {
-        DtoEquipment? equipment = collection.CollectionEquipments.FirstOrDefault(a => a.Id == equipmentId);
+        Equipment? equipment = collection.CollectionEquipments.FirstOrDefault(a => a.Id == equipmentId);
         if (equipment == null)
         {
             logger.LogError("Equipment not found in collection. Id: {EquipmentId}", equipmentId.ToString());
             return false;
         }
-        DtoHero? hero = collection.CollectionHeroes.FirstOrDefault(a => a.Id == heroId);
+        Hero? hero = collection.CollectionHeroes.FirstOrDefault(a => a.Id == heroId);
         if (hero == null)
         {
             logger.LogError("Hero not found in collection. Id: {heroId}", heroId.ToString());
@@ -243,7 +243,7 @@ public class CollectionProvider
         return false;
     }
 
-    public static General.ESlot GetSlotId(DtoEquipment equipment, bool? inAltSlot = null)
+    public static General.ESlot GetSlotId(Equipment equipment, bool? inAltSlot = null)
     {
         General.ESlotType slotTypeId = equipment.BaseEquipment?.EquipmentType?.SlotType?.Id ?? 0;
         return slotTypeId switch
@@ -266,7 +266,7 @@ public class CollectionProvider
 
     public static async Task<bool> EquipmentTakeOffAsync(Guid equipmentId, CancellationToken cancellationToken)
     {
-        DtoEquipment? equipment = collection.CollectionEquipments.FirstOrDefault(a => a.Id == equipmentId);
+        Equipment? equipment = collection.CollectionEquipments.FirstOrDefault(a => a.Id == equipmentId);
         if (equipment == null)
         {
             logger.LogError("Equipment not found in collection. Id: {EquipmentId}", equipmentId.ToString());
@@ -306,14 +306,14 @@ public class CollectionProvider
     }
 
 
-    private static readonly Comparer<DtoEquipment> DtoEquipmentComparer = Comparer<DtoEquipment>.Create(static (a, b) =>
+    private static readonly Comparer<Equipment> DtoEquipmentComparer = Comparer<Equipment>.Create(static (a, b) =>
     {
-        DtoBaseEquipment aBE = a.BaseEquipment ?? throw new Exception("a.BaseEquipment is null");
-        DtoBaseEquipment bBE = b.BaseEquipment ?? throw new Exception("b.BaseEquipment is null");
-        DtoEquipmentType aET = aBE.EquipmentType ?? throw new Exception("a.EquipmentType is null");
-        DtoEquipmentType bET = bBE.EquipmentType ?? throw new Exception("b.EquipmentType is null");
-        DtoSlotType aST = aET.SlotType ?? throw new Exception("a.SlotType is null");
-        DtoSlotType bST = bET.SlotType ?? throw new Exception("b.SlotType is null");
+        BaseEquipment aBE = a.BaseEquipment ?? throw new Exception("a.BaseEquipment is null");
+        BaseEquipment bBE = b.BaseEquipment ?? throw new Exception("b.BaseEquipment is null");
+        EquipmentType aET = aBE.EquipmentType ?? throw new Exception("a.EquipmentType is null");
+        EquipmentType bET = bBE.EquipmentType ?? throw new Exception("b.EquipmentType is null");
+        SlotType aST = aET.SlotType ?? throw new Exception("a.SlotType is null");
+        SlotType bST = bET.SlotType ?? throw new Exception("b.SlotType is null");
 
         // Сортировка по SlotType.Sorting
         int slotCompare = aST.Sorting.CompareTo(bST.Sorting);

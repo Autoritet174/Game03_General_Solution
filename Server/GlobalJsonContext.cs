@@ -1,8 +1,8 @@
 using General.DTO;
 using General.DTO.Entities;
+using General.DTO.Entities.GameData;
 using General.DTO.RestRequest;
 using General.DTO.RestResponse;
-using Server_DB_Postgres.Entities.GameData;
 using System.Text.Json.Serialization;
 
 namespace Server;
