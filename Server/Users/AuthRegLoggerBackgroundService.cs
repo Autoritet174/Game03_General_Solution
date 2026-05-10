@@ -1,3 +1,4 @@
+using General;
 using General.DTO.RestRequest;
 using Microsoft.EntityFrameworkCore;
 using Server.Utilities;
@@ -234,7 +235,7 @@ public sealed class AuthRegLoggerBackgroundService(
             {
                 _ = db.AuthenticationLogs.Add(new Server_DB_Postgres.Entities.Logs.AuthenticationLog
                 {
-                    Id = UuidHelper.NewV7(),
+                    Id = UUID.CreateV7(),
                     Email = item.dto.Email,
                     Success = item.Success,
                     UserId = item.UserId,

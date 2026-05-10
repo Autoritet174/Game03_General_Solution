@@ -4,6 +4,7 @@ using General.DTO.Entities.Collection;
 using General.DTO.Entities.GameData;
 using Microsoft.EntityFrameworkCore;
 using Server.Cache;
+using Server.DTO.Battlefield;
 using Server.Hubs;
 using Server_DB_Postgres;
 
@@ -23,7 +24,6 @@ public class BattleFieldManager(Guid userId,
     {
         if (!inCombat)
         {
-            Battlefield battlefield = cacheService.TableBattlefields[eBattleFiled];
 
             // Проверки количества героев для спауна
             if (spawnedHeroesId.Length < 1)
@@ -32,21 +32,38 @@ public class BattleFieldManager(Guid userId,
                 return null;
             }
 
-            if (spawnedHeroesId.Length > 8)
+            Battlefield battlefield = cacheService.TableBattlefields[eBattleFiled];
+            if (spawnedHeroesId.Length > battlefield.MaxHeroCount)
             {
-                //return Result.Fail("too many heroes, max 8");
+                //return Result.Fail($"too many heroes, max {battlefield.MaxHeroCount}");
                 return null;
             }
 
 
-            List<X_Battlefield_BaseHero> npcs = [.. cacheService.TableX_Battlefields_BaseHeroes.Values.Where(x => x.BattlefieldId == eBattleFiled)];
+            // Все герои которые могут сгенерироваться на этом поле боя как ВРАГИ.
+            List<X_Battlefield_BaseHero> enemyList = [.. cacheService.TableX_Battlefields_BaseHeroes.Values.Where(x => x.BattlefieldId == eBattleFiled).Select(a => a.Copy())];
+
             List<SpawnedHero> spawnedHeroesEnemy = [];
-            foreach (var i in spawnedHeroesEnemy)
+            for (int c = 0; c < battlefield.MaxEnemyCount; c++)
             {
-                //DtoHero hero = new DtoHero();
-                //spawnedHeroesEnemy.Add(new SpawnedHero());
+                if (enemyList.Count < 1)
+                {
+                    break;
+                }
+
+                List<X_Battlefield_BaseHero> enemies = [.. enemyList.Where(a => a.Count > 0 && a.GuarantSpawn)];
+                if (enemies.Count < 1)
+                {
+                    enemies = [.. enemyList.Where(a => a.Count > 0 && a.ProbabilitySpawn > 0)];
+                    if (enemies.Count < 1)
+                    {
+                        break;
+                    }
+                }
+
+                X_Battlefield_BaseHero randomEnemy = enemies[Random.Shared.Next(enemies.Count)];
+                spawnedHeroesEnemy.Add(SpawnedHeroFactory.CreateFromBaseHero(randomEnemy.BaseHero));
             }
-            // тут подразумевается что лист npcs уже содержит всех нпс которых нужно заспавнить
 
 
             DbContextGame db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
@@ -54,10 +71,10 @@ public class BattleFieldManager(Guid userId,
 
             // спаун героев
             List<SpawnedHero> spawnedHeroesPlayer = [];
-            foreach (Hero? hero in db.Heroes.AsNoTracking().Where(a => a.UserId == userId //&& spawnedHeroesId.Contains(a.Id)
-            ).Take(8))
+            foreach (Hero hero in db.Heroes.AsNoTracking().Where(a => a.UserId == userId //&& spawnedHeroesId.Contains(a.Id)
+            ).OrderBy(a=>a.Id).Take(8))
             {
-                //spawnedHeroesPlayer.Add(new SpawnedHero(hero.Id, Guid.CreateVersion7()));
+                spawnedHeroesPlayer.Add(SpawnedHeroFactory.CreateFromHero(hero));
             }
 
             if (spawnedHeroesPlayer.Count < 1)
@@ -65,7 +82,7 @@ public class BattleFieldManager(Guid userId,
                 //return Result.Fail("zero heroes spawned");
                 return null;
             }
-            if (spawnedHeroesPlayer.Count > 8)
+            if (spawnedHeroesPlayer.Count > battlefield.MaxHeroCount)
             {
                 // return Result.Fail("too many heroes spawned, max 8");
                 return null;

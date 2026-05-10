@@ -1,25 +1,24 @@
-using General.DTO.Entities.Collection;
+using General.DTO.Entities.GameData;
 using System;
 
 namespace General.DTO.Battlefield;
 
-public class SpawnedHero(Hero hero, Guid spawnedId)
+public class SpawnedHero
 {
-    public Guid SpawnedId { get; } = spawnedId;
-
-    public Hero Hero { get; set; } = hero;
+    public required Guid SpawnedId { get; init; } 
+    public required int BaseHeroId { get; init; }
 
     #region Характеристики
-    public float Health { get; set; }
-    public float Strength { get; set; }
-    public float Agility { get; set; }
-    public float Intelligence { get; set; }
-    public float CritChance { get; set; }
-    public float CritMultiplier { get; set; }
-    public float Haste { get; set; }
-    public float Versality { get; set; }
-    public float EndurancePhysical { get; set; }
-    public float EnduranceMagical { get; set; }
-    public float Initiative { get; set; }
-    #endregion Характеристики
+    public required float Health { get; set; }
+    public required float Strength { get; set; }
+    public required float Agility { get; set; }
+    public required float Intelligence { get; set; }
+    public required float CritChance { get; set; }
+    public required float CritMultiplier { get; set; }
+    public required float Haste { get; set; }
+    public required float Versality { get; set; }
+    public required float EndurancePhysical { get; set; }
+    public required float EnduranceMagical { get; set; }
+    public required float Initiative { get; set; }
+    #endregion Характеристики   
 }

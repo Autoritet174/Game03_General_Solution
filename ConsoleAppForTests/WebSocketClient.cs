@@ -1,8 +1,7 @@
-using Newtonsoft.Json;
+using General;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Encodings.Web;
-using System.Text.Json;
 
 public class WebSocketClient(string serverUrl)
 {
@@ -105,13 +104,7 @@ public class WebSocketClient(string serverUrl)
         }
     }
 
-    public JsonSerializerOptions GetOptions() => new()
-    {
-        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-        WriteIndented = true
-    };
-
-    public async Task StartSendingMessagesAsync(JsonSerializerOptions options, Action<int>? onMessagesSent = null)
+    public async Task StartSendingMessagesAsync(Action<int>? onMessagesSent = null)
     {
         while (!_cts.Token.IsCancellationRequested && _webSocket.State == WebSocketState.Open)
         {
@@ -137,7 +130,7 @@ public class WebSocketClient(string serverUrl)
                 };
 
                 // Просто сериализуйте - Newtonsoft.Json по умолчанию не экранирует Unicode
-                string json = JsonConvert.SerializeObject(data, Formatting.Indented);
+                string json = JSON.Serialize(data);
                 Console.WriteLine(json);
                 await SendMessageAsync(json).ConfigureAwait(false);
 

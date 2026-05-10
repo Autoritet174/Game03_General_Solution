@@ -443,9 +443,6 @@ namespace Server_DB_Postgres.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("rarity");
 
-                    b.Property<Stats>("Stats")
-                        .HasColumnType("jsonb")
-                        .HasColumnName("stats");
 
                     b.HasKey("Id")
                         .HasName("base_heroes__pkey");

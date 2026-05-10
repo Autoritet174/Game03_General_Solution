@@ -67,7 +67,7 @@ internal partial class Program
         var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
 
         _ = dataSourceBuilder.EnableDynamicJson();
-        _ = dataSourceBuilder.ConfigureJsonOptions(GlobalJsonOptions.jsonOptions);
+        _ = dataSourceBuilder.ConfigureJsonOptions(JSON.Options);
 
 
 
@@ -132,7 +132,7 @@ internal partial class Program
             })
             .AddJsonProtocol(options =>
             {
-                options.PayloadSerializerOptions = General.JsonSettings.JsonOptions;
+                options.PayloadSerializerOptions = JSON.Options;
             });
 
         // установить Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore

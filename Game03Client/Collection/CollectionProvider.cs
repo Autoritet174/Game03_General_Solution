@@ -1,7 +1,7 @@
+using General;
 using General.DTO.Entities;
 using General.DTO.Entities.Collection;
 using General.DTO.Entities.GameData;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +33,7 @@ public class CollectionProvider
             logger.LogError("response is null or empty");
             return false;
         }
-        DtoContainerCollection? c = JsonConvert.DeserializeObject<DtoContainerCollection>(response);
+        DtoContainerCollection? c = JSON.Deserialize<DtoContainerCollection>(response);
 
         if (c == null)
         {
@@ -59,18 +59,25 @@ public class CollectionProvider
         RefreshListGroupNameEquipment();
 
         // Сортировка героев по редкости, уровню и имени
-        c.CollectionHeroes = [.. c.CollectionHeroes
-            .OrderByDescending(a => a.BaseHero!.Rarity)
-            .ThenBy(a => a.Level)
-            .ThenBy(a =>
+        c.CollectionHeroes.Sort((a, b) =>
+        {
+            // Сначала по Rarity (убывание)
+            int result = b.BaseHero!.Rarity.CompareTo(a.BaseHero!.Rarity);
+            if (result != 0) return result;
+
+            // Затем по Level (возрастание)
+            result = a.Level.CompareTo(b.Level);
+            if (result != 0) return result;
+
+            // Затем по Name (возрастание)
+            if (a.BaseHero == null || b.BaseHero == null)
             {
-                if (a.BaseHero == null)
-                {
-                    logger.LogError("a.DtoBaseHero is null");
-                    throw new Exception();
-                }
-                return a.BaseHero.Name;
-            })];
+                logger.LogError("BaseHero is null");
+                throw new Exception();
+            }
+
+            return string.Compare(a.BaseHero.Name, b.BaseHero.Name, StringComparison.Ordinal);
+        });
 
         return true;
     }
@@ -151,7 +158,7 @@ public class CollectionProvider
     public static IEnumerable<GroupCollectionElement> GetCollectionEquipmentesGroupByGroups(int page)
     {
         List<GroupCollectionElement> result = [];
-        collection.CollectionEquipments = collection.CollectionEquipments.OrderBy(x => x, DtoEquipmentComparer);
+        collection.CollectionEquipments.Sort(DtoEquipmentComparer);
         IEnumerable<Equipment> c = collection.CollectionEquipments;
         if (page > 0)
         {

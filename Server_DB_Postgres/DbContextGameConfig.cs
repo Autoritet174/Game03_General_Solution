@@ -152,6 +152,8 @@ public class DbContextGameConfig
         builder.HasIndex(e => e.Name).IsUnique();
         builder.Property(e => e.Name).HasMaxLength(256);
         builder.Property(e => e.EnumName).HasMaxLength(256);
+        builder.Property(e => e.MaxEnemyCount).HasDefaultValue(12);
+        builder.Property(e => e.MaxHeroCount).HasDefaultValue(12);
     }
     private static void Configure(EntityTypeBuilder<CreatureType> builder)
     {

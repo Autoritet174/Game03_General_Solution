@@ -1,6 +1,5 @@
 using Game03Client;
 using System.Diagnostics;
-using UUIDNext;
 namespace ConsoleAppForTests;
 
 internal class Program
@@ -9,16 +8,10 @@ internal class Program
     private static readonly Guid DeviceNamespace =
     Guid.Parse("a1b2c3d4-e5f6-7890-abcd-ef1234567890");
 
-    public static Guid GenerateForDevice(string deviceUniqueId)
-    {
-        // Генерация детерминированного UUID v5
-        Guid deviceUuid = Uuid.NewNameBased(DeviceNamespace, deviceUniqueId);
-        return deviceUuid; // Тип System.Guid, готов для PostgreSQL
-    }
-
 
     private static async Task Main()
     {
+        Test();
         if (string.Empty == "")
         {
             return;
@@ -281,5 +274,14 @@ internal class Program
         }
     }
 
-
+    public static long Field1 { get; set; } = 20000000000L;
+    public static long field2  = 1000000000L;
+    static void Test() {
+        Stopwatch stopwatch = Stopwatch.StartNew();
+        for (long i = 0; i < Field1-1; i++) { }//33,3sec //33,3sec // 2,35sec
+        //for (long i = 0; i < field2-1; i++) { }//21,8sec //21,8sec // 2,35sec
+        //for (long i = 0; i < 10000000000L; i++) { }//8,06sec //8,06sec //2,35sec
+        stopwatch.Stop();
+        Console.WriteLine($"Время выполнения цикла: {stopwatch.Elapsed.TotalSeconds} секунд");
+    }
 }

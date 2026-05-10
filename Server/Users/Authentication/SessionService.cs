@@ -1,4 +1,5 @@
 using FluentResults;
+using General;
 using General.DTO.RestRequest;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -7,7 +8,6 @@ using Npgsql;
 using Server.Cache;
 using Server.Utilities;
 using Server_DB_Postgres;
-using Server_DB_Postgres.Entities.Server;
 using Server_DB_Postgres.Entities.Users;
 using System.Security.Cryptography;
 
@@ -28,7 +28,7 @@ public sealed partial class SessionService(
     private const int BASE_64_TOKEN_LENGTH = 44;
     private static readonly TimeSpan RefreshTokenLifeTime = TimeSpan.FromDays(14);
 
-    private readonly int inactivationReasonIdRotation = cacheService.TableUserSessionInactivationReasons.Values.First(a=>a.Name == "ROTATION").Id;
+    private readonly int inactivationReasonIdRotation = cacheService.TableUserSessionInactivationReasons.Values.First(a => a.Name == "ROTATION").Id;
     private readonly int inactivationReasonIdUserLogout = cacheService.TableUserSessionInactivationReasons.Values.First(a => a.Name == "USER_LOGOUT").Id;
     private readonly int inactivationReasonIdServerRevoke = cacheService.TableUserSessionInactivationReasons.Values.First(a => a.Name == "SERVER_REVOKE").Id;
     private readonly int inactivationReasonIdExpired = cacheService.TableUserSessionInactivationReasons.Values.First(a => a.Name == "EXPIRED").Id;
@@ -89,7 +89,7 @@ public sealed partial class SessionService(
 
         UserSession session = new()
         {
-            Id = UuidHelper.NewV7(),
+            Id = UUID.CreateV7(),
             UserId = userId,
             RefreshTokenHash = hash,
             ExpiresAt = expiresAt,
@@ -183,7 +183,7 @@ public sealed partial class SessionService(
 
             UserSession nextSession = new()
             {
-                Id = UuidHelper.NewV7(),
+                Id = UUID.CreateV7(),
                 UserId = session.UserId,
                 RefreshTokenHash = nextTokenHash,
                 ExpiresAt = nextExpiry,

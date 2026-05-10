@@ -4,8 +4,6 @@ using General.DTO.Entities.GameData;
 using Microsoft.EntityFrameworkCore;
 using Server_DB_Postgres;
 using Server_DB_Postgres.Entities.Server;
-using System.Text.Json;
-using System.Xml.Linq;
 
 namespace Server.Cache;
 
@@ -82,7 +80,8 @@ public class CacheService()
 
         ThrowIfDataNotCorrect();
 
-        DtoContainerGameData container = new(){
+        DtoContainerGameData container = new()
+        {
             BaseEquipments = TableBaseEquipments.Values.AsEnumerable(),
             BaseHeroes = TableBaseHeroesOnlyPlayable.Values.AsEnumerable(),
 
@@ -108,7 +107,7 @@ public class CacheService()
         };
 
 
-        GameDataJson = JsonSerializer.Serialize(container, GlobalJsonContext.Default.DtoContainerGameData);
+        GameDataJson = JSON.Serialize(container);
 
         if (string.IsNullOrWhiteSpace(GameDataJson))
         {

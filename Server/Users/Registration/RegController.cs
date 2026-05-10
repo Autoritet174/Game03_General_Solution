@@ -1,9 +1,9 @@
+using General;
 using General.DTO.RestRequest;
 using General.DTO.RestResponse;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Server.Http_NS.Controllers_NS;
-using System.Text.Json;
 
 namespace Server.Users.Registration;
 
@@ -18,7 +18,7 @@ public class RegController(RegService _regService) : ControllerBaseApi
     {
         DtoResponseAuthReg dtoResult = await _regService.RegisterAsync(dtoRequest, HttpContext.Connection.RemoteIpAddress, cancellationToken).ConfigureAwait(false);
 
-        string jsonResult = JsonSerializer.Serialize(dtoResult, GlobalJsonOptions.jsonOptions);
+        string jsonResult = JSON.Serialize(dtoResult);
         return dtoResult.ErrorKey == null ? Ok(jsonResult) : BadRequest(jsonResult);
     }
 }

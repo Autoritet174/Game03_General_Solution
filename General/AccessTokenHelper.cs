@@ -1,5 +1,6 @@
-using Newtonsoft.Json.Linq;
 using System;
+using System.Text;
+using JsonElement = System.Text.Json.JsonElement;
 
 namespace General;
 
@@ -22,7 +23,7 @@ public static class AccessTokenHelper
             string[] parts = accessToken.Split('.');
             if (parts.Length != 3)
             {
-                return false; // Некорректный JWT
+                return false;
             }
 
             string payload = parts[1];
@@ -34,43 +35,41 @@ public static class AccessTokenHelper
                 case 3: payload += "="; break;
             }
 
-            // Декодируем payload в JSON
             byte[] jsonBytes = Convert.FromBase64String(payload);
-            string json = System.Text.Encoding.UTF8.GetString(jsonBytes);
+            string json = Encoding.UTF8.GetString(jsonBytes);
 
-            var payloadObj = JObject.Parse(json);
+            using var doc = JSON.Parse(json);
+            JsonElement root = doc.RootElement;
 
             long currentUnix = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
             // Проверяем exp (expiration) — обязательно
-            if (payloadObj["exp"] is JToken expToken && long.TryParse(expToken.ToString(), out long exp))
-            {
-                if (currentUnix - exp > -30)//истечет через 30 секунд, приравниваем к истекшему
-                {
-                    return false; // Истёк
-                }
-            }
-            else
+            if (!root.TryGetProperty("exp", out JsonElement expElement) ||
+                !expElement.TryGetInt64(out long exp))
             {
                 return false; // Нет exp — считаем недействительным
             }
 
-            // Проверяем nbf (not before) — опционально, но рекомендуется
-            if (payloadObj["nbf"] is JToken nbfToken && long.TryParse(nbfToken.ToString(), out long nbf))
+            if (currentUnix - exp > -30) // истечёт через 30 секунд — считаем истекшим
+            {
+                return false;
+            }
+
+            // Проверяем nbf (not before) — опционально
+            if (root.TryGetProperty("nbf", out JsonElement nbfElement) &&
+                nbfElement.TryGetInt64(out long nbf))
             {
                 if (currentUnix < nbf)
                 {
-                    return false; // Ещё не начал действовать
+                    return false;
                 }
             }
 
-            return true; // Валиден по времени
+            return true;
         }
         catch
         {
-            // Любая ошибка парсинга — токен считаем недействительным
             return false;
         }
     }
-
 }

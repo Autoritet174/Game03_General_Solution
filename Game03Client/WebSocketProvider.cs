@@ -18,19 +18,19 @@ public class WebSocketProvider
     public static bool IsConnected => _connection?.State == HubConnectionState.Connected;
 
     // Pre-allocated logging delegates
-    private static readonly Action<Logger<WebSocketProvider>, string, Exception?> _errorInvokeLogger =
+    private static readonly Action<Logger<WebSocketProvider>, string, Exception> _errorInvokeLogger =
         (l, method, ex) => l.LogError($"Error invoking {method}");
 
-    private static readonly Action<Logger<WebSocketProvider>, string, Exception?> _errorSendLogger =
+    private static readonly Action<Logger<WebSocketProvider>, string, Exception> _errorSendLogger =
         (l, method, ex) => l.LogError($"Error sending {method}");
 
-    private static readonly Action<Logger<WebSocketProvider>, string, Exception?> _errorDisconnectLogger =
+    private static readonly Action<Logger<WebSocketProvider>, string, Exception> _errorDisconnectLogger =
         (l, msg, ex) => l.LogError($"Disconnect error: {msg}");
 
-    private static readonly Action<Logger<WebSocketProvider>, Exception?> _errorConnectLogger =
-        (l, ex) => l.LogError("Connection error");
+    private static readonly Action<Logger<WebSocketProvider>, Exception> _errorConnectLogger =
+        (l, ex) => l.LogError($"Connection error: Exception: {ex}");
 
-    private static readonly Action<Logger<WebSocketProvider>, string, Exception?> _infoReceiveLogger =
+    private static readonly Action<Logger<WebSocketProvider>, string, Exception> _infoReceiveLogger =
         (l, msg, ex) => l.LogInfo($"Server log: {msg}");
 
     public static async Task<bool> ConnectAsync(CancellationToken ctOpen, CancellationToken ctReceive)
@@ -55,7 +55,7 @@ public class WebSocketProvider
                 })
                 .AddJsonProtocol(options =>
                 {
-                    options.PayloadSerializerOptions = JsonSettings.JsonOptions;
+                    options.PayloadSerializerOptions = JSON.Options;
                 })
                 .WithAutomaticReconnect(new RetryPolicy())
                 .Build();

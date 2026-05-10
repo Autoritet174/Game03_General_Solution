@@ -6,9 +6,9 @@ namespace General.DTO.Entities;
 /// <summary>
 /// Data Transfer Object. Корневой контейнер для данных.
 /// </summary>
-public class DtoContainerCollection(List<Equipment> collectionEquipments, List<Hero> collectionHeroes)
+public class DtoContainerCollection
 {
-    public IEnumerable<Equipment> CollectionEquipments { get; set; } = collectionEquipments;
-    public IEnumerable<Hero> CollectionHeroes { get; set; } = collectionHeroes;
+    public required List<Equipment> CollectionEquipments { get; init; }
+    public required List<Hero> CollectionHeroes { get; init; }
 
 }

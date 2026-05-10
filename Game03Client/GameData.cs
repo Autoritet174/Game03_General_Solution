@@ -1,8 +1,6 @@
 using General;
 using General.DTO.Entities;
 using General.DTO.Entities.GameData;
-using Newtonsoft.Json;
-using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,7 +23,7 @@ public static class GameData
         {
             return false;
         }
-        DtoContainerGameData? c = JsonConvert.DeserializeObject<DtoContainerGameData>(response);
+        DtoContainerGameData? c = JSON.Deserialize<DtoContainerGameData>(response);
         if (c == null)
         {
             return false;
@@ -40,11 +38,13 @@ public static class GameData
         {
             i.SlotType = c.SlotTypes.FirstOrDefault(a => a.Id == i.SlotTypeId);
         }
+
         foreach (MaterialDamagePercent i in c.MaterialDamagePercents)
         {
             i.SmithingMaterials = c.SmithingMaterials.FirstOrDefault(a => a.Id == i.SmithingMaterialsId);
             i.DamageType = c.DamageTypes.FirstOrDefault(a => a.Id == i.DamageTypeId);
         }
+
         foreach (Slot i in c.Slots)
         {
             i.SlotType = c.SlotTypes.FirstOrDefault(a => a.Id == i.SlotTypeId);

@@ -78,4 +78,25 @@ public record Dice
         Sides = sides;
         Modificator = modificator;
     }
+
+    public float GetRandom()
+    {
+        if (Count < 1 || Sides < 1)
+        {
+            return Modificator ?? 0f;
+        }
+
+        if (Sides == 1)
+        {
+            return Count + (Modificator ?? 0f);
+        }
+
+        int sum = Count;
+        for (int i = Count - 1; i > -1; i--)
+        {
+            sum += RandomShared.Next(Sides);
+        }
+
+        return sum + (Modificator ?? 0f);
+    }
 }

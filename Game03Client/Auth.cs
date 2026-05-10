@@ -1,7 +1,6 @@
 using General;
 using General.DTO.RestRequest;
 using General.DTO.RestResponse;
-using Newtonsoft.Json;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,14 +30,14 @@ public class Auth
         }
         string url = authType == AuthType.Login ? Url.AUTH_LOGIN : Url.AUTH_REFRESH_TOKENS;
 
-        string? response = await HttpRequester.GetResponseAsync(url, JsonConvert.SerializeObject(dto), cancellationToken).ConfigureAwait(false);
+        string? response = await HttpRequester.GetResponseAsync(url, JSON.Serialize(dto), cancellationToken).ConfigureAwait(false);
         if (response == null)
         {
             logger.LogError("response is null", L.Error.Server.InvalidResponse);
             return false;
         }
 
-        DtoResponseAuthReg? dtoResponse = JsonConvert.DeserializeObject<DtoResponseAuthReg>(response);
+        DtoResponseAuthReg? dtoResponse = JSON.Deserialize<DtoResponseAuthReg>(response);
         if (dtoResponse == null)
         {
             logger.LogError("dtoResponse is null", L.Error.Server.InvalidResponse);

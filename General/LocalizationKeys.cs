@@ -1,7 +1,3 @@
-using Newtonsoft.Json;
-using static General.LocalizationKeys.UI;
-using static General.LocalizationKeys.UI.Label;
-
 namespace General;
 
 /// <summary>
@@ -104,7 +100,8 @@ public static class LocalizationKeys
     /// <summary>
     /// Группа ключей, относящихся к сообщениям об ошибках.
     /// </summary>
-    public static class Error {
+    public static class Error
+    {
         private const string _Error = $"{nameof(Error)}.";
 
         public const string UnknownError = $"{_Error}{nameof(UnknownError)}";
@@ -112,7 +109,8 @@ public static class LocalizationKeys
         /// <summary>
         /// Ключи для ошибок, связанных с взаимодействием с сервером.
         /// </summary>
-        public static class Server {
+        public static class Server
+        {
             private const string _Server = $"{_Error}{nameof(Server)}.";
 
             public const string Timeout = $"{_Server}{nameof(Timeout)}";
@@ -134,7 +132,8 @@ public static class LocalizationKeys
         /// <summary>
         /// Ключи для ошибок, связанных с некорректным вводом данных пользователем.
         /// </summary>
-        public static class User {
+        public static class User
+        {
             private const string _User = $"{_Error}{nameof(User)}.";
 
             public const string NotEmail = $"{_User}{nameof(NotEmail)}";

@@ -17,4 +17,9 @@ public class X_Battlefield_BaseHero
     /// <summary> При респауне может иметь ранг. </summary>
     public bool PossibleRank { get; set; }
     public int Count { get; set; } = 1;
+
+    public X_Battlefield_BaseHero Copy()
+    {
+        return (X_Battlefield_BaseHero)MemberwiseClone();
+    }
 }

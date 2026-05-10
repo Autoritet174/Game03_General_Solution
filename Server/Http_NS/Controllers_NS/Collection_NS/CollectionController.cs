@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Server.Jwt_NS;
 using Server_DB_Postgres;
-using System.Text.Json;
 
 namespace Server.Http_NS.Controllers_NS.Collection_NS;
 
@@ -27,8 +26,12 @@ public class CollectionController(DbContextGame dbContext) : ControllerBaseApi
 
         List<Hero> heroes = [.. dbContext.Heroes.AsNoTracking().Where(a => a.UserId == userId)];
 
-        DtoContainerCollection container = new(equipments, heroes);
-        return Ok(JsonSerializer.Serialize(container, GlobalJsonOptions.jsonOptions));
+        DtoContainerCollection container = new()
+        {
+            CollectionEquipments = equipments,
+            CollectionHeroes = heroes
+        };
+        return Ok(JSON.Serialize(container));
     }
 
 }
