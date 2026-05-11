@@ -219,8 +219,8 @@ public class DbContextGameConfig
 
         builder.Property(e => e.GroupName).HasMaxLength(256);
         builder.HasOne(e => e.BaseEquipment).WithMany().HasForeignKey(e => e.BaseEquipmentId);
-        builder.HasOne(e => e.Hero).WithMany().HasForeignKey(e => e.HeroId).IsRequired(false);
-        builder.HasOne(e => e.Slot).WithMany().HasForeignKey(e => e.SlotId).IsRequired(false);
+        builder.HasOne<Hero>().WithMany().HasForeignKey(e => e.HeroId).IsRequired(false);
+        builder.HasOne<Slot>().WithMany().HasForeignKey(e => e.SlotId).IsRequired(false);
         builder.Property(e => e.Level).HasDefaultValue(1);
         builder.Property(e => e.Stats).HasColumnType("jsonb");
 

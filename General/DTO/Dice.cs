@@ -79,7 +79,7 @@ public record Dice
         Modificator = modificator;
     }
 
-    public float GetRandom()
+    public float NewRandomDice()
     {
         if (Count < 1 || Sides < 1)
         {

@@ -11,17 +11,17 @@ public static class SpawnedHeroFactory
     {
         SpawnedId = UUID.CreateV7(),
         BaseHeroId = bh.Id,
-        Health = bh.Health.GetRandom(),
-        Strength = bh.Strength.GetRandom(),
-        Agility = bh.Agility.GetRandom(),
-        Intelligence = bh.Intelligence.GetRandom(),
-        CritChance = bh.CritChance.GetRandom(),
-        CritMultiplier = bh.CritMultiplier.GetRandom(),
-        EnduranceMagical = bh.EnduranceMagical.GetRandom(),
-        EndurancePhysical = bh.EndurancePhysical.GetRandom(),
-        Haste = bh.Haste.GetRandom(),
-        Initiative = bh.Initiative.GetRandom(),
-        Versality = bh.Versality.GetRandom()
+        Health = bh.Health.NewRandomDice(),
+        Strength = bh.Strength.NewRandomDice(),
+        Agility = bh.Agility.NewRandomDice(),
+        Intelligence = bh.Intelligence.NewRandomDice(),
+        CritChance = bh.CritChance.NewRandomDice(),
+        CritMultiplier = bh.CritMultiplier.NewRandomDice(),
+        EnduranceMagical = bh.EnduranceMagical.NewRandomDice(),
+        EndurancePhysical = bh.EndurancePhysical.NewRandomDice(),
+        Haste = bh.Haste.NewRandomDice(),
+        Initiative = bh.Initiative.NewRandomDice(),
+        Versality = bh.Versality.NewRandomDice()
     };
 
     public static SpawnedHero CreateFromHero(Hero h) => new()

@@ -1,11 +1,10 @@
 using FluentResults;
 using General;
-using General.DTO;
 using General.DTO.Entities.Collection;
 using General.DTO.Entities.GameData;
 using Microsoft.EntityFrameworkCore;
 using Server.Cache;
-using Server.Utilities;
+using Server.DTO.Collection;
 using Server_DB_Postgres;
 
 namespace Server.Game;
@@ -17,15 +16,7 @@ public class LootGenerator(
 {
     // ПАРАМЕТРЫ ГЕНЕРАТОРА
     private static readonly int rarity1 = 3125, rarity2 = 625, rarity3 = 125, rarity4 = 25, rarity5 = 5, rarity6 = 1;
-    private static readonly Dictionary<int, int> countStatsByRarity = new()
-    {
-        [1] = 7,
-        [2] = 1,
-        [3] = 2,
-        [4] = 3,
-        [5] = 5,
-        [6] = 7,
-    };
+
 
 
     /// <summary>
@@ -209,10 +200,9 @@ public class LootGenerator(
             return null;
         }
 
-        Random rand = Random.Shared;
-        for (int iR = (int)raritySelected; iR > 0; iR--)
+        for (int iR = raritySelected; iR > 0; iR--)
         {
-            var r = (int)iR;
+            int r = iR;
             // Получаем id базовых предметов с выбранной редкостью, разделяя их на уникальных и неуникальных
             List<int> baseEquipmentUniqueIds = [.. cacheService.TableBaseEquipments.Values
                     .Where(a => a.Rarity == r && a.IsUnique && (slotTypeId == ESlotType.None || a.EquipmentType.SlotTypeId == slotTypeId))
@@ -236,7 +226,7 @@ public class LootGenerator(
             }
 
             // Выбираем случайный предмет из списка доступных
-            int randomIndex = rand.Next(EquipmentsId.Count);
+            int randomIndex = Random.Shared.Next(EquipmentsId.Count);
             int selectedBaseEquipmentId = EquipmentsId[randomIndex];
             return cacheService.TableBaseEquipments[selectedBaseEquipmentId];
         }
@@ -251,8 +241,7 @@ public class LootGenerator(
             return Result.Fail("IsCancellationRequested");
         }
 
-        Hero hero = CreateNewHeroByBase(baseHero);
-        hero.UserId = userId;
+        Hero hero = HeroFactory.CreateFromBaseHero(baseHero, userId);
 
         _ = await db.Heroes.AddAsync(hero, cancellationToken).ConfigureAwait(false);
         int rowsChanged = await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
@@ -265,16 +254,14 @@ public class LootGenerator(
         return Result.Ok();
     }
 
-    public async Task<Result> AddNewEquipmentAsync(DbContextGame db, BaseEquipment baseEquipment, Guid userId, CancellationToken cancellationToken = default)
+    public async Task<Result> AddNewEquipmentAsync(DbContextGame db, BaseEquipment baseEquipment, Guid userId, CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
         {
             return Result.Fail("IsCancellationRequested");
         }
 
-        Equipment equipment = CreateNewEquipmentByBase(baseEquipment);
-        equipment.UserId = userId;
-
+        Equipment equipment = EquipmentFactory.CreateFromBaseEquipment(baseEquipment, userId);
 
         _ = await db.Equipments.AddAsync(equipment, cancellationToken).ConfigureAwait(false);
         int rowsChanged = await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
@@ -287,76 +274,6 @@ public class LootGenerator(
         return Result.Ok();
     }
 
-    private static Hero CreateNewHeroByBase(BaseHero baseHero)
-    {
-        return new Hero
-        {
-            BaseHeroId = baseHero.Id,
-            Level = 1,
-            Experience = 0,
-            Health = baseHero.Health.GetRandom(),
-            Strength = baseHero.Strength.GetRandom(),
-            Agility = baseHero.Agility.GetRandom(),
-            Intelligence = baseHero.Intelligence.GetRandom(),
-            CritChance = baseHero.CritChance.GetRandom(),
-            CritMultiplier = baseHero.CritMultiplier.GetRandom(),
-            Haste = baseHero.Haste.GetRandom(),
-            Versality = baseHero.Versality.GetRandom(),
-            EndurancePhysical = baseHero.EndurancePhysical.GetRandom(),
-            EnduranceMagical = baseHero.EnduranceMagical.GetRandom(),
-            Initiative = baseHero.Initiative.GetRandom()
-        };
-    }
 
-    private static Equipment CreateNewEquipmentByBase(BaseEquipment baseEquipment)
-    {
-        Equipment e = new()
-        {
-            BaseEquipmentId = baseEquipment.Id
-        };
-
-        // Сгенерировать статы
-        Dictionary<EStatType, Dice> pos = baseEquipment.PossibleStats ?? [];
-        if (baseEquipment.EquipmentType.PossibleStats != null)
-        {
-            foreach (KeyValuePair<EStatType, Dice> item in baseEquipment.EquipmentType.PossibleStats)
-            {
-                if (!pos.ContainsKey(item.Key))
-                {
-                    pos.Add(item.Key, item.Value);
-                }
-            }
-        }
-
-        int countPossibleStats = pos.Count;
-        if (countPossibleStats > 0)
-        {
-            Random rand = Random.Shared;
-            e.Stats = [];
-            for (int i = countStatsByRarity[baseEquipment.Rarity]; i > 0; i--)
-            {
-                EStatType randomKey = pos.Keys.ElementAt(rand.Next(countPossibleStats));
-                List<float> list;
-                if (e.Stats.TryGetValue(randomKey, out List<float>? value))
-                {
-                    list = value;
-                }
-                else
-                {
-                    list = [];
-                    e.Stats.Add(randomKey, list);
-                }
-
-                Dice dice = pos[randomKey];
-                float statValue = dice.GetRandom();
-                list.Add(statValue);
-            }
-            
-        }
-
-
-
-        return e;
-    }
 
 }
