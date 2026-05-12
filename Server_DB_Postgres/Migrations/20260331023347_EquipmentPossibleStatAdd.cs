@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using General;
+using System.Collections.Generic;
+
 using General.DTO;
 using Microsoft.EntityFrameworkCore.Migrations;
 

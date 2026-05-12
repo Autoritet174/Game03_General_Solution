@@ -1,4 +1,4 @@
-using General;
+
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -14,8 +14,11 @@ public class WebSocketProvider
 {
     private static readonly Logger<WebSocketProvider> logger = new();
     private static HubConnection? _connection;
+    public static RetryPolicy? retryPolicy = null;
 
     public static bool IsConnected => _connection?.State == HubConnectionState.Connected;
+
+    public static HubConnectionState State => _connection?.State ?? HubConnectionState.Disconnected;
 
     // Pre-allocated logging delegates
     private static readonly Action<Logger<WebSocketProvider>, string, Exception> _errorInvokeLogger =
@@ -42,6 +45,7 @@ public class WebSocketProvider
 
         try
         {
+            retryPolicy = new();
             await DisconnectAsync().ConfigureAwait(false);
             string url = Url.UrlDomain + Parametrs.SignalR_Address;
 
@@ -57,7 +61,7 @@ public class WebSocketProvider
                 {
                     options.PayloadSerializerOptions = JSON.Options;
                 })
-                .WithAutomaticReconnect(new RetryPolicy())
+                .WithAutomaticReconnect(retryPolicy)
                 .Build();
 
             RegisterServerEvents();
@@ -166,6 +170,7 @@ public class WebSocketProvider
             return;
         }
 
+        retryPolicy = null;
         try
         {
             await _connection.StopAsync().ConfigureAwait(false);
@@ -185,12 +190,42 @@ public class WebSocketProvider
 /// <summary>
 /// Custom retry policy for automatic reconnection.
 /// </summary>
-internal class RetryPolicy : IRetryPolicy
+public class RetryPolicy : IRetryPolicy
 {
-    public TimeSpan? NextRetryDelay(RetryContext retryContext) => retryContext.PreviousRetryCount switch
+    public long CurrentAttemptCount { get; private set; }
+    public TimeSpan? CurrentDelay { get; private set; }
+
+    // Свойство: идет ли попытка переподключения прямо сейчас
+    public bool IsReconnecting { get; private set; }
+
+    private DateTime _nextAttemptTime;
+
+    public double SecondsUntilNextAttempt
     {
-        < 3 => TimeSpan.Zero,
-        < 10 => TimeSpan.FromSeconds(5),
-        _ => TimeSpan.FromSeconds(30)
-    };
+        get
+        {
+            TimeSpan remaining = _nextAttemptTime - DateTime.UtcNow;
+            return remaining.TotalSeconds > 0 ? remaining.TotalSeconds : 0;
+        }
+    }
+
+    public TimeSpan? NextRetryDelay(RetryContext retryContext)
+    {
+        // Начинаем попытку переподключения
+        IsReconnecting = true;
+
+        CurrentAttemptCount = retryContext.PreviousRetryCount + 1;
+
+        CurrentDelay = retryContext.PreviousRetryCount switch
+        {
+            < 1 => TimeSpan.FromSeconds(0.2),
+            < 10 => TimeSpan.FromSeconds(5),
+            _ => TimeSpan.FromSeconds(30)
+        };
+
+        // Устанавливаем время следующей попытки
+        _nextAttemptTime = DateTime.UtcNow + (CurrentDelay ?? TimeSpan.Zero);
+
+        return CurrentDelay;
+    }
 }

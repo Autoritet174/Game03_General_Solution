@@ -1,4 +1,4 @@
-using General;
+
 using General.DTO;
 using General.DTO.Entities.Collection;
 using General.DTO.Entities.GameData;
@@ -41,11 +41,10 @@ public static class EquipmentFactory
         int countPossibleStats = pos.Count;
         if (countPossibleStats > 0)
         {
-            Random rand = Random.Shared;
             e.Stats = [];
             for (int i = countStatsByRarity[baseEquipment.Rarity]; i > 0; i--)
             {
-                EStatType randomKey = pos.Keys.ElementAt(rand.Next(countPossibleStats));
+                EStatType randomKey = pos.Keys.ElementAt(Random.Shared.Next(countPossibleStats));
                 List<float> list;
                 if (e.Stats.TryGetValue(randomKey, out List<float>? value))
                 {

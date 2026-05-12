@@ -38,6 +38,7 @@ public static class LocalizationKeys
             public const string TakeOnAlt = $"{_Button}{nameof(TakeOnAlt)}";
             public const string Sell = $"{_Button}{nameof(Sell)}";
             public const string ShowHero = $"{_Button}{nameof(ShowHero)}";
+            public const string Cancel = $"{_Button}Cancel";
         }
 
         /// <summary>
@@ -50,6 +51,15 @@ public static class LocalizationKeys
             public const string ExitGame = $"{_Label}{nameof(ExitGame)}";
             public const string Email = $"{_Label}{nameof(Email)}";
             public const string Password = $"{_Label}{nameof(Password)}";
+
+            public const string NoGroup = $"{_Label}{nameof(NoGroup)}";
+            public const string EndBattle = $"{_Label}{nameof(EndBattle)}";
+
+            public const string BattleField = $"{_Label}{nameof(BattleField)}";
+            public static readonly string ConnectionLost = $"{_Label}ConnectionLost";
+            public static readonly string Reconnecting = $"{_Label}Reconnecting";
+            public static readonly string Try = $"{_Label}Try";
+            public static readonly string After = $"{_Label}After";
 
             public static class Slot
             {
@@ -82,10 +92,6 @@ public static class LocalizationKeys
                 public const string CritMultiplier = $"{_Stat}{nameof(CritMultiplier)}";
             }
 
-            public const string NoGroup = $"{_Label}{nameof(NoGroup)}";
-            public const string EndBattle = $"{_Label}{nameof(EndBattle)}";
-
-            public const string BattleField = $"{_Label}{nameof(BattleField)}";
 
             //public const string BattleField_TestPlatforms = $"{_Label}{nameof(BattleField_TestPlatforms)}";
             //public const string BattleField_TestPlatforms_Polygon = $"{_Label}{nameof(BattleField_TestPlatforms_Polygon)}";

@@ -20,14 +20,13 @@ public sealed class RegService(
     AuthRegLoggerBackgroundService backgroundLoggerAuthentificationService,
     ILogger<RegService> logger)
 {
-    private static readonly Random _Random = new(); // Генератор случайных задержек для защиты от timing-атак
     private static readonly TimeSpan _LockoutPeriod = TimeSpan.FromMinutes(2); // Период блокировки при неудачных попытках
 
     public async Task<DtoResponseAuthReg> RegisterAsync(DtoRequestAuthReg dto, IPAddress? ip, CancellationToken cancellationToken)
     {
         // Инициализация времени для задержек
         DateTimeOffset now = DateTimeOffset.UtcNow;
-        DateTimeOffset dtEndCheck = now.AddMilliseconds(_Random.Next(600, 800));
+        DateTimeOffset dtEndCheck = now.AddMilliseconds(Random.Shared.Next(500, 900));
 
         Guid? userId = null; // ID пользователя для логирования
         bool success = false;

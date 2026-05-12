@@ -1,4 +1,5 @@
-using System;
+global using System;
+
 
 namespace General;
 

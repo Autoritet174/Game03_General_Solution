@@ -22,7 +22,8 @@ public class ExceptionLoggingMiddleware(RequestDelegate next, ILogger<ExceptionL
         {
             if (!context.Response.HasStarted)
             {
-                logger.LogError(ex, "");
+                logger.LogError("{Message}", ex.Message);
+
                 //await WriterExceptionInLogFile.LogToFileAsync(ex);
 
                 // Минимальный JSON-ответ

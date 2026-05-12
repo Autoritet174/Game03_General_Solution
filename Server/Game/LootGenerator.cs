@@ -1,5 +1,4 @@
 using FluentResults;
-using General;
 using General.DTO.Entities.Collection;
 using General.DTO.Entities.GameData;
 using Microsoft.EntityFrameworkCore;
@@ -157,7 +156,6 @@ public class LootGenerator(
             return null;
         }
 
-        Random rand = Random.Shared;
 
         for (int r = raritySelected; r > 0; r--)
         {
@@ -185,7 +183,7 @@ public class LootGenerator(
             }
 
             // Выбираем случайного героя из списка доступных
-            int randomIndex = rand.Next(heroesId.Count);
+            int randomIndex = Random.Shared.Next(heroesId.Count);
             int selectedBaseHeroId = heroesId[randomIndex];
             return cacheService.TableBaseHeroesOnlyPlayable[selectedBaseHeroId];
         }

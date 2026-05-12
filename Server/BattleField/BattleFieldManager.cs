@@ -1,4 +1,3 @@
-using General;
 using General.DTO.Battlefield;
 using General.DTO.Entities.Collection;
 using General.DTO.Entities.GameData;
@@ -62,7 +61,7 @@ public class BattleFieldManager(Guid userId,
                 }
 
                 X_Battlefield_BaseHero randomEnemy = enemies[Random.Shared.Next(enemies.Count)];
-                spawnedHeroesEnemy.Add(SpawnedHeroFactory.CreateFromBaseHero(randomEnemy.BaseHero));
+                spawnedHeroesEnemy.Add(SpawnedHeroFactory.CreateFromBaseHero(randomEnemy.BaseHero, 1));
             }
 
 
@@ -72,19 +71,19 @@ public class BattleFieldManager(Guid userId,
             // спаун героев
             List<SpawnedHero> spawnedHeroesPlayer = [];
             foreach (Hero hero in db.Heroes.AsNoTracking().Where(a => a.UserId == userId //&& spawnedHeroesId.Contains(a.Id)
-            ).OrderBy(a=>a.Id).Take(8))
+            ).OrderBy(a => a.Id).Take(8))
             {
                 spawnedHeroesPlayer.Add(SpawnedHeroFactory.CreateFromHero(hero));
             }
 
             if (spawnedHeroesPlayer.Count < 1)
             {
-                //return Result.Fail("zero heroes spawned");
+                // ("zero heroes spawned");
                 return null;
             }
             if (spawnedHeroesPlayer.Count > battlefield.MaxHeroCount)
             {
-                // return Result.Fail("too many heroes spawned, max 8");
+                // ($"too many heroes spawned, max {battlefield.MaxHeroCount}");
                 return null;
             }
             //spawnedHeroesEnemy;

@@ -7,10 +7,11 @@ namespace Server.DTO.Battlefield;
 
 public static class SpawnedHeroFactory
 {
-    public static SpawnedHero CreateFromBaseHero(BaseHero bh) => new()
+    public static SpawnedHero CreateFromBaseHero(BaseHero bh, int level) => new()
     {
         SpawnedId = UUID.CreateV7(),
         BaseHeroId = bh.Id,
+        Level = level,
         Health = bh.Health.NewRandomDice(),
         Strength = bh.Strength.NewRandomDice(),
         Agility = bh.Agility.NewRandomDice(),
@@ -27,6 +28,7 @@ public static class SpawnedHeroFactory
     public static SpawnedHero CreateFromHero(Hero h) => new()
     {
         SpawnedId = UUID.CreateV7(),
+        Level = h.Level,
         BaseHeroId = h.BaseHeroId,
         Health = h.Health,
         Strength = h.Strength,
