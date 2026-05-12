@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace General.DTO.Battlefield;
 
 public class SpawnedHero
@@ -8,6 +10,7 @@ public class SpawnedHero
 
     #region Характеристики
     public required float Health { get; set; }
+    public required float HealthMax { get; set; }
     public required float Strength { get; set; }
     public required float Agility { get; set; }
     public required float Intelligence { get; set; }
@@ -18,5 +21,22 @@ public class SpawnedHero
     public required float EndurancePhysical { get; set; }
     public required float EnduranceMagical { get; set; }
     public required float Initiative { get; set; }
-    #endregion Характеристики   
+    public bool IsAlive { get; set; } = true;
+    #endregion Характеристики
+
+    [JsonIgnore]
+    public float HealthPercent
+    {
+        get
+        {
+            if (HealthMax > 0 && Health > 0)
+            {
+                return Health / HealthMax;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
 }

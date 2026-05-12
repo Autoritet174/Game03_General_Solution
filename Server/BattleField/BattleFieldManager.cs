@@ -61,7 +61,9 @@ public class BattleFieldManager(Guid userId,
                 }
 
                 X_Battlefield_BaseHero randomEnemy = enemies[Random.Shared.Next(enemies.Count)];
-                spawnedHeroesEnemy.Add(SpawnedHeroFactory.CreateFromBaseHero(randomEnemy.BaseHero, 1));
+                var sh = SpawnedHeroFactory.CreateFromBaseHero(randomEnemy.BaseHero, 1);
+                sh.Health = RandomShared.NextSingle() * sh.Health;
+                spawnedHeroesEnemy.Add(sh);
             }
 
 
@@ -73,7 +75,9 @@ public class BattleFieldManager(Guid userId,
             foreach (Hero hero in db.Heroes.AsNoTracking().Where(a => a.UserId == userId //&& spawnedHeroesId.Contains(a.Id)
             ).OrderBy(a => a.Id).Take(8))
             {
-                spawnedHeroesPlayer.Add(SpawnedHeroFactory.CreateFromHero(hero));
+                var sh = SpawnedHeroFactory.CreateFromHero(hero);
+                sh.Health = RandomShared.NextSingle() * sh.Health;
+                spawnedHeroesPlayer.Add(sh);
             }
 
             if (spawnedHeroesPlayer.Count < 1)
@@ -87,6 +91,8 @@ public class BattleFieldManager(Guid userId,
                 return null;
             }
             //spawnedHeroesEnemy;
+            spawnedHeroesPlayer = spawnedHeroesPlayer.Shuffle().ToList();
+            spawnedHeroesEnemy = spawnedHeroesEnemy.Shuffle().ToList();
             spawnedBattlefield = new SpawnedBattlefield(eBattleFiled, spawnedHeroesPlayer, spawnedHeroesEnemy);
             dateTimeStartCombat = DateTime.UtcNow;
             inCombat = true;
