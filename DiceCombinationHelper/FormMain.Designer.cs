@@ -1,6 +1,6 @@
 namespace DiceCombinationHelper;
 
-partial class Form1
+partial class FormMain
 {
     /// <summary>
     ///  Required designer variable.
@@ -28,7 +28,7 @@ partial class Form1
     /// </summary>
     private void InitializeComponent()
     {
-        var resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+        var resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
         numeric_value = new NumericUpDown();
         textBox_Results = new TextBox();
         numeric_mod = new NumericUpDown();

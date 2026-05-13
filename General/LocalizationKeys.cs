@@ -133,6 +133,7 @@ public static class LocalizationKeys
             public const string UserAlreadyExists = $"{_Server}{nameof(UserAlreadyExists)}";
             public const string Required2FA = $"{_Server}{nameof(Required2FA)}";
             public const string RefreshTokenErrorCreating = $"{_Server}{nameof(RefreshTokenErrorCreating)}";
+            public const string CombatBreak = $"{_Server}CombatBreak";
         }
 
         /// <summary>

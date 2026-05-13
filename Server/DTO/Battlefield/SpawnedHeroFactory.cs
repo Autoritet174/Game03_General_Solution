@@ -1,6 +1,7 @@
 using General.DTO.Battlefield;
 using General.DTO.Entities.Collection;
 using General.DTO.Entities.GameData;
+using Server.Battlefield;
 using Server.Utilities;
 
 namespace Server.DTO.Battlefield;
@@ -9,6 +10,11 @@ public static class SpawnedHeroFactory
 {
     public static SpawnedHero CreateFromBaseHero(BaseHero bh, int level)
     {
+        if (level < 1)
+        {
+            throw new ArgumentException("level most be 1 or more");
+        }
+
         SpawnedHero result = new()
         {
             SpawnedId = UUID.CreateV7(),
@@ -25,8 +31,11 @@ public static class SpawnedHeroFactory
             EndurancePhysical = bh.EndurancePhysical.NewRandomDice(),
             Haste = bh.Haste.NewRandomDice(),
             Initiative = bh.Initiative.NewRandomDice(),
-            Versality = bh.Versality.NewRandomDice()
+            Versality = bh.Versality.NewRandomDice(),
+            CoefPowerByLevel = level > 1 ? MathF.Pow(BattlefieldManager.LEVEL_MULTIPLIER, level - 1) : 1
         };
+
+        result.Health *= result.CoefPowerByLevel;
         result.HealthMax = result.Health;
         return result;
     }
@@ -49,8 +58,11 @@ public static class SpawnedHeroFactory
             EndurancePhysical = h.EndurancePhysical,
             Haste = h.Haste,
             Initiative = h.Initiative,
-            Versality = h.Versality
+            Versality = h.Versality,
+            CoefPowerByLevel = h.Level > 1 ? MathF.Pow(BattlefieldManager.LEVEL_MULTIPLIER, h.Level - 1) : 1
         };
+
+        result.Health *= result.CoefPowerByLevel;
         result.HealthMax = result.Health;
         return result;
     }

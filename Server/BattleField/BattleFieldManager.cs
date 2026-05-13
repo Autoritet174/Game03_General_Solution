@@ -7,9 +7,9 @@ using Server.DTO.Battlefield;
 using Server.Hubs;
 using Server_DB_Postgres;
 
-namespace Server.BattleField;
+namespace Server.Battlefield;
 
-public class BattleFieldManager(Guid userId,
+public class BattlefieldManager(Guid userId,
     IDbContextFactory<DbContextGame> dbContextFactory,
     ILogger<Client> logger,
     CacheService cacheService)
@@ -19,6 +19,9 @@ public class BattleFieldManager(Guid userId,
     private SpawnedBattlefield? spawnedBattlefield = null;
     private DateTime dateTimeStartCombat = DateTime.MinValue;
 
+    public const float LEVEL_MULTIPLIER = 1.017f;
+
+    /// <summary> Начать бой. </summary>
     public async Task<SpawnedBattlefield?> CombatStartAsync(EBattleFiled eBattleFiled, Guid[] spawnedHeroesId, CancellationToken cancellationToken)
     {
         if (!inCombat)
@@ -31,7 +34,7 @@ public class BattleFieldManager(Guid userId,
                 return null;
             }
 
-            Battlefield battlefield = cacheService.TableBattlefields[eBattleFiled];
+            General.DTO.Entities.GameData.Battlefield battlefield = cacheService.TableBattlefields[eBattleFiled];
             if (spawnedHeroesId.Length > battlefield.MaxHeroCount)
             {
                 //return Result.Fail($"too many heroes, max {battlefield.MaxHeroCount}");
@@ -61,8 +64,7 @@ public class BattleFieldManager(Guid userId,
                 }
 
                 X_Battlefield_BaseHero randomEnemy = enemies[Random.Shared.Next(enemies.Count)];
-                var sh = SpawnedHeroFactory.CreateFromBaseHero(randomEnemy.BaseHero, 1);
-                sh.Health = RandomShared.NextSingle() * sh.Health;
+                SpawnedHero sh = SpawnedHeroFactory.CreateFromBaseHero(randomEnemy.BaseHero, 1);
                 spawnedHeroesEnemy.Add(sh);
             }
 
@@ -72,11 +74,10 @@ public class BattleFieldManager(Guid userId,
 
             // спаун героев
             List<SpawnedHero> spawnedHeroesPlayer = [];
-            foreach (Hero hero in db.Heroes.AsNoTracking().Where(a => a.UserId == userId //&& spawnedHeroesId.Contains(a.Id)
+            foreach (Hero hero in db.Heroes.Include(a => a.BaseHero).AsNoTracking().Where(a => a.UserId == userId //&& spawnedHeroesId.Contains(a.Id)
             ).OrderBy(a => a.Id).Take(8))
             {
-                var sh = SpawnedHeroFactory.CreateFromHero(hero);
-                sh.Health = RandomShared.NextSingle() * sh.Health;
+                SpawnedHero sh = SpawnedHeroFactory.CreateFromHero(hero);
                 spawnedHeroesPlayer.Add(sh);
             }
 
@@ -90,14 +91,20 @@ public class BattleFieldManager(Guid userId,
                 // ($"too many heroes spawned, max {battlefield.MaxHeroCount}");
                 return null;
             }
-            //spawnedHeroesEnemy;
-            spawnedHeroesPlayer = spawnedHeroesPlayer.Shuffle().ToList();
-            spawnedHeroesEnemy = spawnedHeroesEnemy.Shuffle().ToList();
+
             spawnedBattlefield = new SpawnedBattlefield(eBattleFiled, spawnedHeroesPlayer, spawnedHeroesEnemy);
             dateTimeStartCombat = DateTime.UtcNow;
             inCombat = true;
         }
 
         return spawnedBattlefield;
+    }
+
+    /// <summary> Прервать бой. </summary>
+    public async Task<bool> CombatBreakAsync()
+    {
+        inCombat = false;
+        spawnedBattlefield = null;
+        return true;
     }
 }

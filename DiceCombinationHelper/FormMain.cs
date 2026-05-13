@@ -1,11 +1,10 @@
-using System.Security.Policy;
 using System.Text;
 
 namespace DiceCombinationHelper;
 
-public partial class Form1 : Form
+public partial class FormMain : Form
 {
-    public Form1()
+    public FormMain()
     {
         InitializeComponent();
     }
@@ -63,13 +62,12 @@ public partial class Form1 : Form
         int diceCount = (int)numeric_diceCount.Value;
         int diceSize = (int)numeric_diceSize.Value;
         int modificator = (int)numeric_diceModificator.Value;
-        //double mean = ((500L * (diceCount * (diceSize + 1))) + modificator) / 1000d; // Count * (Sides + 1) / 2 * 1000
-        double mean = (diceCount * (diceSize + 1) / 2d) + (modificator / 1000d);
+        double mean = (diceCount * (diceSize + 1) / 2d) + modificator;
         double variance = diceCount * (Math.Pow(diceSize, 2) - 1) / 12.0;
         double stddev = Math.Sqrt(variance);
         double cv = stddev / mean * 100;
-        double min = ((diceCount * 1000d) + modificator)/1000d;
-        double max = ((1000d * (diceCount * diceSize)) + modificator)/1000d;
+        double min = diceCount + modificator;
+        double max = (diceCount * diceSize) + modificator;
 
         textBox_diceResult.Text = $"""
             Mean: {mean:0.00}

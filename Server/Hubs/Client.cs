@@ -10,7 +10,7 @@ namespace Server.Hubs;
 public class Client(Guid userId, ILogger<Client> logger, IDbContextFactory<DbContextGame> dbContextFactory, CacheService cacheService)
 {
     private readonly Collection.EquipmentManager equipmentManager = new(userId, dbContextFactory, logger, cacheService);
-    private readonly BattleField.BattleFieldManager battleFieldManager = new(userId, dbContextFactory, logger, cacheService);
+    private readonly Battlefield.BattlefieldManager battleFieldManager = new(userId, dbContextFactory, logger, cacheService);
 
     public Guid UserId => userId;
 
@@ -56,5 +56,9 @@ public class Client(Guid userId, ILogger<Client> logger, IDbContextFactory<DbCon
     public async Task<SpawnedBattlefield?> CombatStartAsync(EBattleFiled eBattleFiled, Guid[] spawnedHeroesId, CancellationToken cancellationToken)
     {
         return await battleFieldManager.CombatStartAsync(eBattleFiled, spawnedHeroesId, cancellationToken).ConfigureAwait(false);
+    }
+
+    public async Task<bool> CombatBreakAsync() {
+        return await battleFieldManager.CombatBreakAsync().ConfigureAwait(false);
     }
 }

@@ -14,6 +14,7 @@ public class BattleFieldProvider
         {
             return null;
         }
+
         try
         {
             SpawnedBattlefield? spawnedBattlefield = await WebSocketProvider.InvokeAsync<SpawnedBattlefield?>(
@@ -24,18 +25,32 @@ public class BattleFieldProvider
             ).ConfigureAwait(false);
 
             return spawnedBattlefield;
-
         }
-        catch (OperationCanceledException)
-        {
-            // отмена операции
-        }
-        catch (Exception)
-        {
-            // Обработка ошибок (таймаут, разрыв соединения, ошибка хаба)
-            // Логирование и проброс дальше или возврат false
-        }
+        catch (OperationCanceledException) { }
+        catch (Exception) { }
 
         return null;
+    }
+
+    public static async Task<bool> CombatBreakAsync(CancellationToken cancellationToken)
+    {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return false;
+        }
+
+        try
+        {
+            bool result = await WebSocketProvider.InvokeAsync<bool>(
+                HubMethodNames.EMethod.COMBAT_BREAK,
+                cancellationToken
+            ).ConfigureAwait(false);
+
+            return result;
+        }
+        catch (OperationCanceledException) { }
+        catch (Exception) { }
+
+        return false;
     }
 }

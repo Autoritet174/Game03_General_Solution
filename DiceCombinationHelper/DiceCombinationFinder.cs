@@ -99,7 +99,7 @@ public class DiceCombinationFinder
             string jsonb = $"{{\"c\":{numDice},\"s\":{sides}";
             if (modificator != 0)
             {
-                jsonb += $",\"m\":{modificator*1000}";
+                jsonb += $",\"m\":{modificator}";
             }
             jsonb += "}";
             results.Add(new DiceCombination

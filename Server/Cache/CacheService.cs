@@ -32,7 +32,7 @@ public class CacheService()
     public Dictionary<int, X_EquipmentType_DamageType> TableX_EquipmentTypes_DamageTypes { get; private set; } = null!;
     public Dictionary<int, X_Hero_CreatureType> TableX_Heroes_CreatureTypes { get; private set; } = null!;
     public Dictionary<int, X_Battlefield_BaseHero> TableX_Battlefields_BaseHeroes { get; private set; } = null!;
-    public Dictionary<EBattleFiled, Battlefield> TableBattlefields { get; private set; } = null!;
+    public Dictionary<EBattleFiled, General.DTO.Entities.GameData.Battlefield> TableBattlefields { get; private set; } = null!;
 
     /// <summary>
     /// Загрузка константных данных в оперативную память. Эти данные меняются только при не работающем сервере.

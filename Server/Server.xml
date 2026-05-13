@@ -4,6 +4,12 @@
         <name>Server</name>
     </assembly>
     <members>
+        <member name="M:Server.Battlefield.BattlefieldManager.CombatStartAsync(General.EBattleFiled,System.Guid[],System.Threading.CancellationToken)">
+            <summary> Начать бой. </summary>
+        </member>
+        <member name="M:Server.Battlefield.BattlefieldManager.CombatBreakAsync">
+            <summary> Прервать бой. </summary>
+        </member>
         <member name="P:Server.Cache.CacheService.GameDataJson">
             <summary> Возвращает JSON-строку с данными. </summary>
             <returns> JSON-строка со всеми константными игровыми данными необходимыми на стороне клиента. </returns>
