@@ -44,7 +44,6 @@ public partial class EquipmentManager(
         EF.CompileAsyncQuery((DbContextGame db, Guid heroId, ESlot slotId, CancellationToken ct) =>
             db.Equipments.FirstOrDefault(e => e.HeroId == heroId && e.SlotId == slotId));
 
-    private static readonly string _EquipmentTakeOnSql = "SELECT collection.equipment_take_on({0}, {1}, {2})";
 
     #endregion
 

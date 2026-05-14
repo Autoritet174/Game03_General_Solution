@@ -125,7 +125,7 @@ public class BattlefieldManager(Guid userId,
             // тут надо сделать проверку, что если абилка не "атака" то существует ли она у героя
         }
 
-        var unitTarget
+        //var unitTarget
 
 
         

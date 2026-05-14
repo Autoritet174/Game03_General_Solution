@@ -38,7 +38,14 @@ public static class LocalizationKeys
             public const string TakeOnAlt = $"{_Button}{nameof(TakeOnAlt)}";
             public const string Sell = $"{_Button}{nameof(Sell)}";
             public const string ShowHero = $"{_Button}{nameof(ShowHero)}";
-            public const string Cancel = $"{_Button}Cancel";
+            public const string Cancel = $"{_Button}{nameof(Cancel)}";
+
+            public static class Ability
+            {
+                private const string _Ability = $"{_Button}{nameof(Ability)}.";
+
+                public const string Attack = $"{_Ability}{nameof(Attack)}";
+            }
         }
 
         /// <summary>
@@ -56,10 +63,10 @@ public static class LocalizationKeys
             public const string EndBattle = $"{_Label}{nameof(EndBattle)}";
 
             public const string BattleField = $"{_Label}{nameof(BattleField)}";
-            public static readonly string ConnectionLost = $"{_Label}ConnectionLost";
-            public static readonly string Reconnecting = $"{_Label}Reconnecting";
-            public static readonly string Try = $"{_Label}Try";
-            public static readonly string After = $"{_Label}After";
+            public static readonly string ConnectionLost = $"{_Label}{nameof(ConnectionLost)}";
+            public static readonly string Reconnecting = $"{_Label}{nameof(Reconnecting)}";
+            public static readonly string Try = $"{_Label}{nameof(Try)}";
+            public static readonly string After = $"{_Label}{nameof(After)}";
 
             public static class Slot
             {
@@ -133,7 +140,7 @@ public static class LocalizationKeys
             public const string UserAlreadyExists = $"{_Server}{nameof(UserAlreadyExists)}";
             public const string Required2FA = $"{_Server}{nameof(Required2FA)}";
             public const string RefreshTokenErrorCreating = $"{_Server}{nameof(RefreshTokenErrorCreating)}";
-            public const string CombatBreak = $"{_Server}CombatBreak";
+            public const string CombatBreak = $"{_Server}{nameof(CombatBreak)}";
         }
 
         /// <summary>

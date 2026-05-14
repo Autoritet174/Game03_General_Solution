@@ -4,12 +4,6 @@
         <name>Server</name>
     </assembly>
     <members>
-        <member name="M:Server.Battlefield.BattlefieldManager.CombatStartAsync(General.EBattleFiled,System.Guid[],System.Threading.CancellationToken)">
-            <summary> Начать бой. </summary>
-        </member>
-        <member name="M:Server.Battlefield.BattlefieldManager.CombatBreakAsync">
-            <summary> Прервать бой. </summary>
-        </member>
         <member name="M:Server.Battlefield.BattlefieldManager.InitActionPoints(General.DTO.Battlefield.SpawnedHero)">
             <summary> Инициализировать очки действия по инициативе. </summary>
         </member>
