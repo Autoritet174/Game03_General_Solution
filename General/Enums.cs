@@ -106,3 +106,8 @@ public enum EBattleFiled
     TestPlatforms__Polygon = 1,
     Mines__Iron = 2,
 }
+
+public enum EAbility
+{
+    Attack = 1,
+}

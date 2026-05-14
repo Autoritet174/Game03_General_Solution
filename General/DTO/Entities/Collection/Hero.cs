@@ -1,12 +1,12 @@
 using General.DTO.Entities.GameData;
-using System;
+using General.DTO.Interfaces;
 
 namespace General.DTO.Entities.Collection;
 
 /// <summary>
 /// Герой из коллекции игрока.
 /// </summary>
-public class Hero
+public class Hero : ICreatedAt, IUpdatedAt, IVersion
 {
     public Guid Id { get; set; }
     public required Guid UserId { get; init; }

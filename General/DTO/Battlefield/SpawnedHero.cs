@@ -1,4 +1,3 @@
-using General.DTO.Entities.GameData;
 using System.Text.Json.Serialization;
 
 namespace General.DTO.Battlefield;
@@ -9,6 +8,7 @@ public class SpawnedHero
     public required int BaseHeroId { get; init; }
     public required int Level { get; set; }
     public float CoefPowerByLevel { get; set; }
+    public int ActionPoints { get; set; }
 
     #region Характеристики
     public required float Health { get; set; }

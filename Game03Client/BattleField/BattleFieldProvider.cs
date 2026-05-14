@@ -4,9 +4,9 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Game03Client.BattleField;
+namespace Game03Client.Battlefield;
 
-public class BattleFieldProvider
+public class BattlefieldProvider
 {
     public static async Task<SpawnedBattlefield?> LoadBattleFieldAsync(EBattleFiled eBattleFiled, Guid[] spawnedHeroesId, CancellationToken cancellationToken)
     {
@@ -44,6 +44,31 @@ public class BattleFieldProvider
             bool result = await WebSocketProvider.InvokeAsync<bool>(
                 HubMethodNames.EMethod.COMBAT_BREAK,
                 cancellationToken
+            ).ConfigureAwait(false);
+
+            return result;
+        }
+        catch (OperationCanceledException) { }
+        catch (Exception) { }
+
+        return false;
+    }
+
+    public static async Task<bool> UseAbilityAsync(EAbility eAbility, Guid heroSpawnedId, Guid? target, CancellationToken cancellationToken)
+    {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return false;
+        }
+
+        try
+        {
+            bool result = await WebSocketProvider.InvokeAsync<bool>(
+                HubMethodNames.EMethod.USE_ABILITY,
+                cancellationToken,
+                eAbility,
+                heroSpawnedId,
+                target
             ).ConfigureAwait(false);
 
             return result;

@@ -11,9 +11,9 @@ namespace Server;
 public class TestService(LootGenerator lootGenerator)
 {
     /// <summary>
- /// Скомпилированный запрос для получения первой записи Equipment.
- /// Позволяет избежать повторного парсинга LINQ-выражения.
- /// </summary>
+    /// Скомпилированный запрос для получения первой записи Equipment.
+    /// Позволяет избежать повторного парсинга LINQ-выражения.
+    /// </summary>
     private static readonly Func<DbContextGame, CancellationToken, Task<Equipment?>> GetFirstEquipmentCompiled =
         EF.CompileAsyncQuery((DbContextGame db, CancellationToken ct) =>
             db.Equipments.FirstOrDefault());
@@ -25,15 +25,15 @@ public class TestService(LootGenerator lootGenerator)
         //User user = db.Users.First(u => u.Id == userId);
         for (int i = 0; i < 0; i++)
         {
-            // await lootGenerator.GenerateHeroAsync(userId, 5, 5, cancellationToken).ConfigureAwait(false);
-            // await lootGenerator.GenerateEquipmentAsync(userId, General.ESlotType.None, 1, 4, cancellationToken).ConfigureAwait(false);
+            await lootGenerator.GenerateHeroAsync(userId, 5, 5, cancellationToken).ConfigureAwait(false);
+            await lootGenerator.GenerateEquipmentAsync(userId, ESlotType.None, 1, 4, cancellationToken).ConfigureAwait(false);
 
-            _ = await lootGenerator.AddNewEquipmentAsync(db, cacheService.TableBaseEquipmentsByName["Silver bracelet"], userId, cancellationToken).ConfigureAwait(false);
-            _ = await lootGenerator.AddNewEquipmentAsync(db, cacheService.TableBaseEquipmentsByName["Iron boots"], userId, cancellationToken).ConfigureAwait(false);
-            _ = await lootGenerator.AddNewEquipmentAsync(db, cacheService.TableBaseEquipmentsByName["Iron helmet"], userId, cancellationToken).ConfigureAwait(false);
-            _ = await lootGenerator.AddNewEquipmentAsync(db, cacheService.TableBaseEquipmentsByName["Iron gloves"], userId, cancellationToken).ConfigureAwait(false);
-            _ = await lootGenerator.AddNewEquipmentAsync(db, cacheService.TableBaseEquipmentsByName["Iron armor"], userId, cancellationToken).ConfigureAwait(false);
-            _ = await lootGenerator.AddNewEquipmentAsync(db, cacheService.TableBaseEquipmentsByName["Iron sword"], userId, cancellationToken).ConfigureAwait(false);
+            //_ = await lootGenerator.AddNewEquipmentAsync(db, cacheService.TableBaseEquipmentsByName["Silver bracelet"], userId, cancellationToken).ConfigureAwait(false);
+            //_ = await lootGenerator.AddNewEquipmentAsync(db, cacheService.TableBaseEquipmentsByName["Iron boots"], userId, cancellationToken).ConfigureAwait(false);
+            //_ = await lootGenerator.AddNewEquipmentAsync(db, cacheService.TableBaseEquipmentsByName["Iron helmet"], userId, cancellationToken).ConfigureAwait(false);
+            //_ = await lootGenerator.AddNewEquipmentAsync(db, cacheService.TableBaseEquipmentsByName["Iron gloves"], userId, cancellationToken).ConfigureAwait(false);
+            //_ = await lootGenerator.AddNewEquipmentAsync(db, cacheService.TableBaseEquipmentsByName["Iron armor"], userId, cancellationToken).ConfigureAwait(false);
+            //_ = await lootGenerator.AddNewEquipmentAsync(db, cacheService.TableBaseEquipmentsByName["Iron sword"], userId, cancellationToken).ConfigureAwait(false);
         }
         //_ = await lootGenerator.AddNewEquipmentAsync(db, cacheService.TableBaseEquipments.First(a => a.Name == "Thunderfury"), userId, cancellationToken).ConfigureAwait(false);
 
@@ -47,57 +47,57 @@ public class TestService(LootGenerator lootGenerator)
 
 
         // характеристики при выпадении предметов
-        {
-            EquipmentType eq = db.EquipmentTypes.First(a => a.NameRu == "Доспех");
-            eq.PossibleStats = [];
-            eq.PossibleStats.Add(EStatType.Health, new Dice(25, 7));
-            eq.PossibleStats.Add(EStatType.Versality, new Dice(7, 3));
-            eq.PossibleStats.Add(EStatType.CritChance, new Dice(2, 2));
-            eq.PossibleStats.Add(EStatType.CritMultiplier, new Dice(6, 4));
-        }
-        {
-            EquipmentType eq = db.EquipmentTypes.First(a => a.NameRu == "Шлем");
-            eq.PossibleStats = [];
-            eq.PossibleStats.Add(EStatType.Health, new Dice(3, 19));
-            eq.PossibleStats.Add(EStatType.Versality, new Dice(5, 3));
-            eq.PossibleStats.Add(EStatType.CritChance, new Dice(2, 2));
-            eq.PossibleStats.Add(EStatType.CritMultiplier, new Dice(6, 4));
-        }
-        {
-            EquipmentType eq = db.EquipmentTypes.First(a => a.NameRu == "Руки");
-            eq.PossibleStats = [];
-            eq.PossibleStats.Add(EStatType.Health, new Dice(5, 9));
-            eq.PossibleStats.Add(EStatType.Versality, new Dice(5, 3));
-            eq.PossibleStats.Add(EStatType.CritChance, new Dice(2, 2));
-            eq.PossibleStats.Add(EStatType.CritMultiplier, new Dice(6, 4));
-        }
-        {
-            EquipmentType eq = db.EquipmentTypes.First(a => a.NameRu == "Сапоги");
-            eq.PossibleStats = [];
-            eq.PossibleStats.Add(EStatType.Versality, new Dice(5, 3));
-            eq.PossibleStats.Add(EStatType.CritChance, new Dice(2, 2));
-            eq.PossibleStats.Add(EStatType.CritMultiplier, new Dice(6, 4));
-        }
-        {
-            EquipmentType eq = db.EquipmentTypes.First(a => a.NameRu == "Браслет");
-            eq.PossibleStats = [];
-            eq.PossibleStats.Add(EStatType.Health, new Dice(3, 9));
-            eq.PossibleStats.Add(EStatType.CritChance, new Dice(4, 4));
-            eq.PossibleStats.Add(EStatType.CritMultiplier, new Dice(3, 19));
-            eq.PossibleStats.Add(EStatType.Intelligence, new Dice(3, 17));
-            eq.PossibleStats.Add(EStatType.Initiative, new Dice(3, 11));
-            eq.PossibleStats.Add(EStatType.Haste, new Dice(3, 11));
-            eq.PossibleStats.Add(EStatType.Versality, new Dice(5, 3));
-        }
-        {
-            EquipmentType eq = db.EquipmentTypes.First(a => a.NameRu == "Меч");
-            eq.PossibleStats = [];
-            eq.PossibleStats.Add(EStatType.Health, new Dice(3, 9));
-            eq.PossibleStats.Add(EStatType.Versality, new Dice(5, 3));
-            eq.PossibleStats.Add(EStatType.CritChance, new Dice(2, 2));
-            eq.PossibleStats.Add(EStatType.CritMultiplier, new Dice(6, 4));
-            eq.PossibleStats.Add(EStatType.Damage, new Dice(4, 4));
-        }
+        //{
+        //    EquipmentType eq = db.EquipmentTypes.First(a => a.NameRu == "Доспех");
+        //    eq.PossibleStats = [];
+        //    eq.PossibleStats.Add(EStatType.Health, new Dice(25, 7));
+        //    eq.PossibleStats.Add(EStatType.Versality, new Dice(7, 3));
+        //    eq.PossibleStats.Add(EStatType.CritChance, new Dice(2, 2));
+        //    eq.PossibleStats.Add(EStatType.CritMultiplier, new Dice(6, 4));
+        //}
+        //{
+        //    EquipmentType eq = db.EquipmentTypes.First(a => a.NameRu == "Шлем");
+        //    eq.PossibleStats = [];
+        //    eq.PossibleStats.Add(EStatType.Health, new Dice(3, 19));
+        //    eq.PossibleStats.Add(EStatType.Versality, new Dice(5, 3));
+        //    eq.PossibleStats.Add(EStatType.CritChance, new Dice(2, 2));
+        //    eq.PossibleStats.Add(EStatType.CritMultiplier, new Dice(6, 4));
+        //}
+        //{
+        //    EquipmentType eq = db.EquipmentTypes.First(a => a.NameRu == "Руки");
+        //    eq.PossibleStats = [];
+        //    eq.PossibleStats.Add(EStatType.Health, new Dice(5, 9));
+        //    eq.PossibleStats.Add(EStatType.Versality, new Dice(5, 3));
+        //    eq.PossibleStats.Add(EStatType.CritChance, new Dice(2, 2));
+        //    eq.PossibleStats.Add(EStatType.CritMultiplier, new Dice(6, 4));
+        //}
+        //{
+        //    EquipmentType eq = db.EquipmentTypes.First(a => a.NameRu == "Сапоги");
+        //    eq.PossibleStats = [];
+        //    eq.PossibleStats.Add(EStatType.Versality, new Dice(5, 3));
+        //    eq.PossibleStats.Add(EStatType.CritChance, new Dice(2, 2));
+        //    eq.PossibleStats.Add(EStatType.CritMultiplier, new Dice(6, 4));
+        //}
+        //{
+        //    EquipmentType eq = db.EquipmentTypes.First(a => a.NameRu == "Браслет");
+        //    eq.PossibleStats = [];
+        //    eq.PossibleStats.Add(EStatType.Health, new Dice(3, 9));
+        //    eq.PossibleStats.Add(EStatType.CritChance, new Dice(4, 4));
+        //    eq.PossibleStats.Add(EStatType.CritMultiplier, new Dice(3, 19));
+        //    eq.PossibleStats.Add(EStatType.Intelligence, new Dice(3, 17));
+        //    eq.PossibleStats.Add(EStatType.Initiative, new Dice(3, 11));
+        //    eq.PossibleStats.Add(EStatType.Haste, new Dice(3, 11));
+        //    eq.PossibleStats.Add(EStatType.Versality, new Dice(5, 3));
+        //}
+        //{
+        //    EquipmentType eq = db.EquipmentTypes.First(a => a.NameRu == "Меч");
+        //    eq.PossibleStats = [];
+        //    eq.PossibleStats.Add(EStatType.Health, new Dice(3, 9));
+        //    eq.PossibleStats.Add(EStatType.Versality, new Dice(5, 3));
+        //    eq.PossibleStats.Add(EStatType.CritChance, new Dice(2, 2));
+        //    eq.PossibleStats.Add(EStatType.CritMultiplier, new Dice(6, 4));
+        //    eq.PossibleStats.Add(EStatType.Damage, new Dice(4, 4));
+        //}
         db.SaveChanges();
     }
 

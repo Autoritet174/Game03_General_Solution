@@ -91,7 +91,7 @@ public record Dice
         }
 
         int sum = Count;
-        for (int i = Count - 1; i > -1; i--)
+        for (int i = 0; i < Count; i++)
         {
             sum += RandomShared.Next(Sides);
         }

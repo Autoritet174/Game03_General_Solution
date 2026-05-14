@@ -10,6 +10,9 @@
         <member name="M:Server.Battlefield.BattlefieldManager.CombatBreakAsync">
             <summary> Прервать бой. </summary>
         </member>
+        <member name="M:Server.Battlefield.BattlefieldManager.InitActionPoints(General.DTO.Battlefield.SpawnedHero)">
+            <summary> Инициализировать очки действия по инициативе. </summary>
+        </member>
         <member name="P:Server.Cache.CacheService.GameDataJson">
             <summary> Возвращает JSON-строку с данными. </summary>
             <returns> JSON-строка со всеми константными игровыми данными необходимыми на стороне клиента. </returns>

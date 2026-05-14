@@ -2,15 +2,22 @@ using FluentResults;
 
 using General.DTO.Battlefield;
 using Microsoft.EntityFrameworkCore;
+using Server.Battlefield;
 using Server.Cache;
 using Server_DB_Postgres;
 
 namespace Server.Hubs;
 
-public class Client(Guid userId, ILogger<Client> logger, IDbContextFactory<DbContextGame> dbContextFactory, CacheService cacheService)
+public class Client(
+    Guid userId,
+    ILogger<Client> logger,
+    IDbContextFactory<DbContextGame> dbContextFactory,
+    CacheService cacheService,
+    BattlefieldManager? battlefieldManagerOtherPlayer = null
+    )
 {
     private readonly Collection.EquipmentManager equipmentManager = new(userId, dbContextFactory, logger, cacheService);
-    private readonly Battlefield.BattlefieldManager battleFieldManager = new(userId, dbContextFactory, logger, cacheService);
+    public BattlefieldManager battleFieldManager { get; } = battlefieldManagerOtherPlayer ?? new(userId, dbContextFactory, logger, cacheService);
 
     public Guid UserId => userId;
 
@@ -58,7 +65,13 @@ public class Client(Guid userId, ILogger<Client> logger, IDbContextFactory<DbCon
         return await battleFieldManager.CombatStartAsync(eBattleFiled, spawnedHeroesId, cancellationToken).ConfigureAwait(false);
     }
 
-    public async Task<bool> CombatBreakAsync() {
+    public async Task<bool> CombatBreakAsync()
+    {
         return await battleFieldManager.CombatBreakAsync().ConfigureAwait(false);
+    }
+
+    public async Task<bool> UseAbilityAsync(EAbility eAbility, Guid heroSpawnedId, Guid? target)
+    {
+        return await battleFieldManager.UseAbilityAsync(eAbility, heroSpawnedId, target).ConfigureAwait(false);
     }
 }

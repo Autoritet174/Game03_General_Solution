@@ -1,12 +1,10 @@
 using General.DTO.Entities.GameData;
 using General.DTO.Interfaces;
-using System;
 using System.Collections.Generic;
-using static General.LocalizationKeys.Error;
 
 namespace General.DTO.Entities.Collection;
 
-public class Equipment : IVersion, ICreatedAt, IUpdatedAt
+public class Equipment : ICreatedAt, IUpdatedAt, IVersion
 {
     public Guid Id { get; init; }
     public required Guid UserId { get; init; }
