@@ -57,7 +57,7 @@ public static class EquipmentFactory
                 }
 
                 Dice dice = pos[randomKey];
-                float statValue = dice.NewRandomDice();
+                float statValue = dice.GetRandomValue();
                 list.Add(statValue);
             }
 

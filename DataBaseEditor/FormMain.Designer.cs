@@ -1,4 +1,3 @@
-using Server_DB_Postgres.Entities.GameData;
 
 namespace DataBaseEditor;
 
@@ -32,27 +31,31 @@ partial class FormMain
     {
         components = new System.ComponentModel.Container();
         dgv_WeaponTypes = new DataGridView();
-        id = new DataGridViewTextBoxColumn();
-        nameDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
-        nameRuDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
-        xWeaponTypeDamageTypeDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
-        damageTypesDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
         weaponTypeBindingSource = new BindingSource(components);
         tabControl1 = new TabControl();
         tabPage_DamageTypes = new TabPage();
-        button_WeaponTypes_Save = new Button();
+        panel2 = new Panel();
+        button_Refresh_WeaponTypes = new Button();
+        button_Save_WeaponTypes = new Button();
         dgv_DamageTypes = new DataGridView();
         id1 = new DataGridViewTextBoxColumn();
         ColumnNameRu = new DataGridViewTextBoxColumn();
         ColumnDamageCoef = new DataGridViewTextBoxColumn();
-        button_WeaponTypes_Refresh = new Button();
-        tabPage2 = new TabPage();
+        tabPage_BaseHero = new TabPage();
+        dgv_BaseHeroes = new DataGridView();
+        panel1 = new Panel();
+        button_Refresh_BaseHeroes = new Button();
+        button_Save_BaseHeroes = new Button();
         damageTypeBindingSource = new BindingSource(components);
         ((System.ComponentModel.ISupportInitialize)dgv_WeaponTypes).BeginInit();
         ((System.ComponentModel.ISupportInitialize)weaponTypeBindingSource).BeginInit();
         tabControl1.SuspendLayout();
         tabPage_DamageTypes.SuspendLayout();
+        panel2.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)dgv_DamageTypes).BeginInit();
+        tabPage_BaseHero.SuspendLayout();
+        ((System.ComponentModel.ISupportInitialize)dgv_BaseHeroes).BeginInit();
+        panel1.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)damageTypeBindingSource).BeginInit();
         SuspendLayout();
         // 
@@ -64,7 +67,6 @@ partial class FormMain
         dgv_WeaponTypes.AllowUserToResizeRows = false;
         dgv_WeaponTypes.AutoGenerateColumns = false;
         dgv_WeaponTypes.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-        dgv_WeaponTypes.Columns.AddRange(new DataGridViewColumn[] { id, nameDataGridViewTextBoxColumn, nameRuDataGridViewTextBoxColumn, xWeaponTypeDamageTypeDataGridViewTextBoxColumn, damageTypesDataGridViewTextBoxColumn });
         dgv_WeaponTypes.DataSource = weaponTypeBindingSource;
         dgv_WeaponTypes.Location = new Point(4, 48);
         dgv_WeaponTypes.Margin = new Padding(4);
@@ -75,53 +77,10 @@ partial class FormMain
         dgv_WeaponTypes.TabIndex = 0;
         dgv_WeaponTypes.CellClick += dgv_WeaponTypes_CellClick;
         // 
-        // id
-        // 
-        id.DataPropertyName = "Id";
-        id.HeaderText = "Id";
-        id.Name = "id";
-        id.ReadOnly = true;
-        // 
-        // nameDataGridViewTextBoxColumn
-        // 
-        nameDataGridViewTextBoxColumn.DataPropertyName = "Name";
-        nameDataGridViewTextBoxColumn.HeaderText = "Name";
-        nameDataGridViewTextBoxColumn.Name = "nameDataGridViewTextBoxColumn";
-        nameDataGridViewTextBoxColumn.ReadOnly = true;
-        nameDataGridViewTextBoxColumn.Visible = false;
-        // 
-        // nameRuDataGridViewTextBoxColumn
-        // 
-        nameRuDataGridViewTextBoxColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-        nameRuDataGridViewTextBoxColumn.DataPropertyName = "NameRu";
-        nameRuDataGridViewTextBoxColumn.HeaderText = "NameRu";
-        nameRuDataGridViewTextBoxColumn.Name = "nameRuDataGridViewTextBoxColumn";
-        nameRuDataGridViewTextBoxColumn.ReadOnly = true;
-        // 
-        // xWeaponTypeDamageTypeDataGridViewTextBoxColumn
-        // 
-        xWeaponTypeDamageTypeDataGridViewTextBoxColumn.DataPropertyName = "X_WeaponType_DamageType";
-        xWeaponTypeDamageTypeDataGridViewTextBoxColumn.HeaderText = "X_WeaponType_DamageType";
-        xWeaponTypeDamageTypeDataGridViewTextBoxColumn.Name = "xWeaponTypeDamageTypeDataGridViewTextBoxColumn";
-        xWeaponTypeDamageTypeDataGridViewTextBoxColumn.ReadOnly = true;
-        xWeaponTypeDamageTypeDataGridViewTextBoxColumn.Visible = false;
-        // 
-        // damageTypesDataGridViewTextBoxColumn
-        // 
-        damageTypesDataGridViewTextBoxColumn.DataPropertyName = "DamageTypes";
-        damageTypesDataGridViewTextBoxColumn.HeaderText = "DamageTypes";
-        damageTypesDataGridViewTextBoxColumn.Name = "damageTypesDataGridViewTextBoxColumn";
-        damageTypesDataGridViewTextBoxColumn.ReadOnly = true;
-        damageTypesDataGridViewTextBoxColumn.Visible = false;
-        // 
-        // weaponTypeBindingSource
-        // 
-        weaponTypeBindingSource.DataSource = typeof(Server_DB_Postgres.Entities.GameData.EquipmentType);
-        // 
         // tabControl1
         // 
         tabControl1.Controls.Add(tabPage_DamageTypes);
-        tabControl1.Controls.Add(tabPage2);
+        tabControl1.Controls.Add(tabPage_BaseHero);
         tabControl1.Dock = DockStyle.Fill;
         tabControl1.Location = new Point(0, 0);
         tabControl1.Margin = new Padding(4);
@@ -132,9 +91,9 @@ partial class FormMain
         // 
         // tabPage_DamageTypes
         // 
-        tabPage_DamageTypes.Controls.Add(button_WeaponTypes_Save);
+        tabPage_DamageTypes.BackColor = Color.Black;
+        tabPage_DamageTypes.Controls.Add(panel2);
         tabPage_DamageTypes.Controls.Add(dgv_DamageTypes);
-        tabPage_DamageTypes.Controls.Add(button_WeaponTypes_Refresh);
         tabPage_DamageTypes.Controls.Add(dgv_WeaponTypes);
         tabPage_DamageTypes.Location = new Point(4, 30);
         tabPage_DamageTypes.Margin = new Padding(4);
@@ -143,18 +102,38 @@ partial class FormMain
         tabPage_DamageTypes.Size = new Size(1743, 850);
         tabPage_DamageTypes.TabIndex = 0;
         tabPage_DamageTypes.Text = "Типы оружия";
-        tabPage_DamageTypes.UseVisualStyleBackColor = true;
         // 
-        // button_WeaponTypes_Save
+        // panel2
         // 
-        button_WeaponTypes_Save.Location = new Point(112, 8);
-        button_WeaponTypes_Save.Margin = new Padding(4);
-        button_WeaponTypes_Save.Name = "button_WeaponTypes_Save";
-        button_WeaponTypes_Save.Size = new Size(111, 32);
-        button_WeaponTypes_Save.TabIndex = 3;
-        button_WeaponTypes_Save.Text = "Сохранить";
-        button_WeaponTypes_Save.UseVisualStyleBackColor = true;
-        button_WeaponTypes_Save.Click += button_WeaponTypes_Save_Click;
+        panel2.Controls.Add(button_Refresh_WeaponTypes);
+        panel2.Controls.Add(button_Save_WeaponTypes);
+        panel2.Dock = DockStyle.Top;
+        panel2.Location = new Point(4, 4);
+        panel2.Name = "panel2";
+        panel2.Size = new Size(1735, 40);
+        panel2.TabIndex = 8;
+        // 
+        // button_Refresh_WeaponTypes
+        // 
+        button_Refresh_WeaponTypes.Location = new Point(4, 4);
+        button_Refresh_WeaponTypes.Margin = new Padding(4);
+        button_Refresh_WeaponTypes.Name = "button_Refresh_WeaponTypes";
+        button_Refresh_WeaponTypes.Size = new Size(96, 32);
+        button_Refresh_WeaponTypes.TabIndex = 1;
+        button_Refresh_WeaponTypes.Text = "Обновить";
+        button_Refresh_WeaponTypes.UseVisualStyleBackColor = true;
+        button_Refresh_WeaponTypes.Click += button_Refresh_WeaponTypes_Click;
+        // 
+        // button_Save_WeaponTypes
+        // 
+        button_Save_WeaponTypes.Location = new Point(108, 4);
+        button_Save_WeaponTypes.Margin = new Padding(4);
+        button_Save_WeaponTypes.Name = "button_Save_WeaponTypes";
+        button_Save_WeaponTypes.Size = new Size(111, 32);
+        button_Save_WeaponTypes.TabIndex = 3;
+        button_Save_WeaponTypes.Text = "Сохранить";
+        button_Save_WeaponTypes.UseVisualStyleBackColor = true;
+        button_Save_WeaponTypes.Click += button_Save_WeaponTypes_Click;
         // 
         // dgv_DamageTypes
         // 
@@ -188,47 +167,87 @@ partial class FormMain
         ColumnDamageCoef.Name = "ColumnDamageCoef";
         ColumnDamageCoef.Width = 120;
         // 
-        // button_WeaponTypes_Refresh
+        // tabPage_BaseHero
         // 
-        button_WeaponTypes_Refresh.Location = new Point(8, 8);
-        button_WeaponTypes_Refresh.Margin = new Padding(4);
-        button_WeaponTypes_Refresh.Name = "button_WeaponTypes_Refresh";
-        button_WeaponTypes_Refresh.Size = new Size(96, 32);
-        button_WeaponTypes_Refresh.TabIndex = 1;
-        button_WeaponTypes_Refresh.Text = "Обновить";
-        button_WeaponTypes_Refresh.UseVisualStyleBackColor = true;
-        button_WeaponTypes_Refresh.Click += button_WeaponTypes_Refresh_Click;
+        tabPage_BaseHero.BackColor = Color.Black;
+        tabPage_BaseHero.Controls.Add(dgv_BaseHeroes);
+        tabPage_BaseHero.Controls.Add(panel1);
+        tabPage_BaseHero.Location = new Point(4, 24);
+        tabPage_BaseHero.Margin = new Padding(4);
+        tabPage_BaseHero.Name = "tabPage_BaseHero";
+        tabPage_BaseHero.Padding = new Padding(4);
+        tabPage_BaseHero.Size = new Size(1743, 856);
+        tabPage_BaseHero.TabIndex = 1;
+        tabPage_BaseHero.Text = "Базовые герои";
         // 
-        // tabPage2
+        // dgv_BaseHeroes
         // 
-        tabPage2.Location = new Point(4, 24);
-        tabPage2.Margin = new Padding(4);
-        tabPage2.Name = "tabPage2";
-        tabPage2.Padding = new Padding(4);
-        tabPage2.Size = new Size(1743, 856);
-        tabPage2.TabIndex = 1;
-        tabPage2.Text = "tabPage2";
-        tabPage2.UseVisualStyleBackColor = true;
+        dgv_BaseHeroes.AllowUserToAddRows = false;
+        dgv_BaseHeroes.AllowUserToDeleteRows = false;
+        dgv_BaseHeroes.AllowUserToResizeColumns = false;
+        dgv_BaseHeroes.AllowUserToResizeRows = false;
+        dgv_BaseHeroes.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+        dgv_BaseHeroes.Dock = DockStyle.Fill;
+        dgv_BaseHeroes.Location = new Point(4, 44);
+        dgv_BaseHeroes.Margin = new Padding(4);
+        dgv_BaseHeroes.Name = "dgv_BaseHeroes";
+        dgv_BaseHeroes.RowHeadersVisible = false;
+        dgv_BaseHeroes.Size = new Size(1735, 808);
+        dgv_BaseHeroes.TabIndex = 6;
         // 
-        // damageTypeBindingSource
+        // panel1
         // 
-        damageTypeBindingSource.DataSource = typeof(DamageType);
+        panel1.Controls.Add(button_Refresh_BaseHeroes);
+        panel1.Controls.Add(button_Save_BaseHeroes);
+        panel1.Dock = DockStyle.Top;
+        panel1.Location = new Point(4, 4);
+        panel1.Name = "panel1";
+        panel1.Size = new Size(1735, 40);
+        panel1.TabIndex = 7;
+        // 
+        // button_Refresh_BaseHeroes
+        // 
+        button_Refresh_BaseHeroes.Location = new Point(4, 4);
+        button_Refresh_BaseHeroes.Margin = new Padding(4);
+        button_Refresh_BaseHeroes.Name = "button_Refresh_BaseHeroes";
+        button_Refresh_BaseHeroes.Size = new Size(96, 32);
+        button_Refresh_BaseHeroes.TabIndex = 4;
+        button_Refresh_BaseHeroes.Text = "Обновить";
+        button_Refresh_BaseHeroes.UseVisualStyleBackColor = true;
+        button_Refresh_BaseHeroes.Click += button_Refresh_BaseHeroes_Click;
+        // 
+        // button_Save_BaseHeroes
+        // 
+        button_Save_BaseHeroes.Location = new Point(108, 4);
+        button_Save_BaseHeroes.Margin = new Padding(4);
+        button_Save_BaseHeroes.Name = "button_Save_BaseHeroes";
+        button_Save_BaseHeroes.Size = new Size(111, 32);
+        button_Save_BaseHeroes.TabIndex = 5;
+        button_Save_BaseHeroes.Text = "Сохранить";
+        button_Save_BaseHeroes.UseVisualStyleBackColor = true;
+        button_Save_BaseHeroes.Click += button_Save_BaseHeroes_Click;
         // 
         // FormMain
         // 
         AutoScaleDimensions = new SizeF(9F, 21F);
         AutoScaleMode = AutoScaleMode.Font;
+        BackColor = Color.Black;
         ClientSize = new Size(1751, 884);
         Controls.Add(tabControl1);
         Font = new Font("Segoe UI", 12F);
         Margin = new Padding(4);
         Name = "FormMain";
         Text = "Редактор";
+        Load += FormMain_Load;
         ((System.ComponentModel.ISupportInitialize)dgv_WeaponTypes).EndInit();
         ((System.ComponentModel.ISupportInitialize)weaponTypeBindingSource).EndInit();
         tabControl1.ResumeLayout(false);
         tabPage_DamageTypes.ResumeLayout(false);
+        panel2.ResumeLayout(false);
         ((System.ComponentModel.ISupportInitialize)dgv_DamageTypes).EndInit();
+        tabPage_BaseHero.ResumeLayout(false);
+        ((System.ComponentModel.ISupportInitialize)dgv_BaseHeroes).EndInit();
+        panel1.ResumeLayout(false);
         ((System.ComponentModel.ISupportInitialize)damageTypeBindingSource).EndInit();
         ResumeLayout(false);
     }
@@ -238,8 +257,8 @@ partial class FormMain
     private DataGridView dgv_WeaponTypes;
     private TabControl tabControl1;
     private TabPage tabPage_DamageTypes;
-    private Button button_WeaponTypes_Refresh;
-    private TabPage tabPage2;
+    private Button button_Refresh_WeaponTypes;
+    private TabPage tabPage_BaseHero;
     private BindingSource weaponTypeBindingSource;
     private DataGridView dgv_DamageTypes;
     private BindingSource damageTypeBindingSource;
@@ -248,8 +267,13 @@ partial class FormMain
     private DataGridViewTextBoxColumn nameRuDataGridViewTextBoxColumn;
     private DataGridViewTextBoxColumn xWeaponTypeDamageTypeDataGridViewTextBoxColumn;
     private DataGridViewTextBoxColumn damageTypesDataGridViewTextBoxColumn;
-    private Button button_WeaponTypes_Save;
+    private Button button_Save_WeaponTypes;
     private DataGridViewTextBoxColumn id1;
     private DataGridViewTextBoxColumn ColumnNameRu;
     private DataGridViewTextBoxColumn ColumnDamageCoef;
+    private Button button_Save_BaseHeroes;
+    private Button button_Refresh_BaseHeroes;
+    private DataGridView dgv_BaseHeroes;
+    private Panel panel2;
+    private Panel panel1;
 }

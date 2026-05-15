@@ -1,18 +1,21 @@
 using System.Collections.Concurrent;
 
-namespace DiceCombinationHelper;
+namespace DiceCombinationFinder;
 
 public class DiceCombinationFinder
 {
     public class DiceCombination
     {
-        public string Notation { get; set; }
+        public required string Notation { get; set; }
         public double Mean { get; set; }
         public double CV { get; set; }
         public double MeanError { get; set; }
         public double CVError { get; set; }
         public double TotalError { get; set; }
-        public string jsonb { get; set; }
+        public required string jsonb { get; set; }
+        public int Count { get; set; }
+        public int Sides { get; set; }
+        public int Mod { get; set; }
     }
 
     public static List<DiceCombination> FindDiceCombination(
@@ -48,7 +51,7 @@ public class DiceCombinationFinder
         });
 
         // Сортируем по суммарной ошибке и возвращаем 10 лучших
-        return results.OrderBy(r => r.TotalError).Take(10).ToList();
+        return [.. results.OrderBy(r => r.TotalError).Take(10)];
     }
 
     private static void ProcessCombination(
@@ -110,7 +113,10 @@ public class DiceCombinationFinder
                 MeanError = meanError,
                 CVError = cvError,
                 TotalError = totalError,
-                jsonb = jsonb
+                jsonb = jsonb,
+                Count = numDice,
+                Sides = sides,
+                Mod = modificator
             });
         }
     }

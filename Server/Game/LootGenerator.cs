@@ -111,7 +111,8 @@ public class LootGenerator(
     {
         await using DbContextGame db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
         int raritySelected = SelectRandomRarity(minRarity, maxRarity);
-        BaseHero? baseHero = await SelectRandomBaseHeroAsync(db, userId, raritySelected, cancellationToken).ConfigureAwait(false);
+        //BaseHero? baseHero = await SelectRandomBaseHeroWithUniquenessAsync(db, userId, raritySelected, cancellationToken).ConfigureAwait(false);
+        BaseHero? baseHero = SelectRandomBaseHero(raritySelected);
         if (baseHero == null)
         {
             logger.LogError("Failed to select random base hero for user {UserId}", userId);
@@ -149,7 +150,7 @@ public class LootGenerator(
         return Result.Ok();
     }
 
-    private async Task<BaseHero?> SelectRandomBaseHeroAsync(DbContextGame db, Guid userId, int raritySelected, CancellationToken cancellationToken = default)
+    private async Task<BaseHero?> SelectRandomBaseHeroWithUniquenessAsync(DbContextGame db, Guid userId, int raritySelected, CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
         {
@@ -189,6 +190,12 @@ public class LootGenerator(
         }
 
         return null;
+    }
+
+    private BaseHero? SelectRandomBaseHero(int raritySelected)
+    {
+        var list = cacheService.TableBaseHeroesOnlyPlayable.Values.Where(a => a.Rarity == raritySelected).ToList();
+        return list.Count > 0 ? list[Random.Shared.Next(list.Count)] : null;
     }
 
     private async Task<BaseEquipment?> SelectRandomBaseEquipmentAsync(DbContextGame db, Guid userId, ESlotType slotTypeId, int raritySelected, CancellationToken cancellationToken = default)

@@ -78,7 +78,7 @@ public record Dice
         Modificator = modificator;
     }
 
-    public float NewRandomDice()
+    public float GetRandomValue()
     {
         if (Count < 1 || Sides < 1)
         {
@@ -97,5 +97,9 @@ public record Dice
         }
 
         return sum + (Modificator ?? 0f);
+    }
+
+    public string ToStr() {
+        return $"{Count}d{Sides}{(Modificator != null && Modificator!=0 ? (Modificator<0 ? Modificator.ToString() : "+"+Modificator.ToString()) : "")}";
     }
 }

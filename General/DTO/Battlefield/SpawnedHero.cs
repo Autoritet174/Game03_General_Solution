@@ -9,10 +9,12 @@ public class SpawnedHero
     public required int Level { get; set; }
     public float CoefPowerByLevel { get; set; }
     public int ActionPoints { get; set; }
+    public int Team { get; set; }
 
     #region Характеристики
     public required float Health { get; set; }
     public required float HealthMax { get; set; }
+    public required float Damage { get; set; }
     public required float Strength { get; set; }
     public required float Agility { get; set; }
     public required float Intelligence { get; set; }

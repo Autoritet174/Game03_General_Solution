@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DiceCombinationFinder\DiceCombinationFinder.csproj" />
     <ProjectReference Include="..\Server_DB_Postgres\Server_DB_Postgres.csproj" />
   </ItemGroup>
 

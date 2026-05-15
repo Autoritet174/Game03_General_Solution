@@ -20,19 +20,20 @@ public static class SpawnedHeroFactory
             SpawnedId = UUID.CreateV7(),
             BaseHeroId = bh.Id,
             Level = level,
-            Health = bh.Health.NewRandomDice(),
+            Health = bh.Health.GetRandomValue(),
             HealthMax = 0,
-            Strength = bh.Strength.NewRandomDice(),
-            Agility = bh.Agility.NewRandomDice(),
-            Intelligence = bh.Intelligence.NewRandomDice(),
-            CritChance = bh.CritChance.NewRandomDice(),
-            CritMultiplier = bh.CritMultiplier.NewRandomDice(),
-            EnduranceMagical = bh.EnduranceMagical.NewRandomDice(),
-            EndurancePhysical = bh.EndurancePhysical.NewRandomDice(),
-            Haste = bh.Haste.NewRandomDice(),
-            Initiative = bh.Initiative.NewRandomDice(),
-            Versality = bh.Versality.NewRandomDice(),
-            CoefPowerByLevel = level > 1 ? MathF.Pow(BattlefieldManager.LEVEL_MULTIPLIER, level - 1) : 1
+            Strength = bh.Strength.GetRandomValue(),
+            Agility = bh.Agility.GetRandomValue(),
+            Intelligence = bh.Intelligence.GetRandomValue(),
+            CritChance = bh.CritChance.GetRandomValue(),
+            CritMultiplier = bh.CritMultiplier.GetRandomValue(),
+            EnduranceMagical = bh.EnduranceMagical.GetRandomValue(),
+            EndurancePhysical = bh.EndurancePhysical.GetRandomValue(),
+            Haste = bh.Haste.GetRandomValue(),
+            Initiative = bh.Initiative.GetRandomValue(),
+            Versality = bh.Versality.GetRandomValue(),
+            CoefPowerByLevel = level > 1 ? MathF.Pow(BattlefieldManager.LEVEL_MULTIPLIER, level - 1) : 1,
+            Damage = bh.Damage.GetRandomValue()
         };
 
         result.Health *= result.CoefPowerByLevel;
@@ -59,7 +60,8 @@ public static class SpawnedHeroFactory
             Haste = h.Haste,
             Initiative = h.Initiative,
             Versality = h.Versality,
-            CoefPowerByLevel = h.Level > 1 ? MathF.Pow(BattlefieldManager.LEVEL_MULTIPLIER, h.Level - 1) : 1
+            CoefPowerByLevel = h.Level > 1 ? MathF.Pow(BattlefieldManager.LEVEL_MULTIPLIER, h.Level - 1) : 1,
+            Damage = h.Damage
         };
 
         result.Health *= result.CoefPowerByLevel;

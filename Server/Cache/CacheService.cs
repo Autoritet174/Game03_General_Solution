@@ -20,8 +20,10 @@ public class CacheService()
     public Dictionary<int, UserSessionInactivationReason> TableUserSessionInactivationReasons { get; private set; } = null!;
     public Dictionary<int, BaseEquipment> TableBaseEquipments { get; private set; } = null!;
     public Dictionary<string, BaseEquipment> TableBaseEquipmentsByName { get; private set; } = null!;
+
     public Dictionary<int, BaseHero> TableBaseHeroesOnlyPlayable { get; private set; } = null!;
     public Dictionary<int, BaseHero> TableBaseHeroesWithNotPlayable { get; private set; } = null!;
+
     public Dictionary<int, CreatureType> TableCreatureTypes { get; private set; } = null!;
     public Dictionary<int, DamageType> TableDamageTypes { get; private set; } = null!;
     public Dictionary<int, EquipmentType> TableEquipmentTypes { get; private set; } = null!;
@@ -54,6 +56,7 @@ public class CacheService()
         }
 
         TableBaseHeroesOnlyPlayable = db.BaseHeroes.AsNoTracking().Where(a => a.IsPlayable).ToDictionary(a => a.Id);
+
 
         TableBaseHeroesWithNotPlayable = [];
         foreach (KeyValuePair<int, BaseHero> i in TableBaseHeroesOnlyPlayable)

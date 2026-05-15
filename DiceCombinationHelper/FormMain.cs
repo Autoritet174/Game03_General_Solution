@@ -28,8 +28,8 @@ public partial class FormMain : Form
             mod = (int)(numeric_value.Value * numeric_modPerc.Value / 100m);
         }
 
-        List<DiceCombinationFinder.DiceCombination> list = DiceCombinationFinder.FindDiceCombination(val, mod);
-        foreach (DiceCombinationFinder.DiceCombination i in list)
+        List<DiceCombinationFinder.DiceCombinationFinder.DiceCombination> list = DiceCombinationFinder.DiceCombinationFinder.FindDiceCombination(val, mod);
+        foreach (DiceCombinationFinder.DiceCombinationFinder.DiceCombination i in list)
         {
             //stringBuilder.AppendLine($"{i.Notation};    {i.CV}; {i.Mean}; {i.MeanError}; {i.CVError}; {i.TotalError}");
             _ = stringBuilder.AppendLine($"{i.Notation};    {i.CV:0.0};      {i.jsonb}");

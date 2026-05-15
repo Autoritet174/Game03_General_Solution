@@ -23,10 +23,10 @@ public class TestService(LootGenerator lootGenerator)
         //019b7d31-93fd-703f-a582-c82e6bd40036
         var userId = Guid.Parse("019b7d31-93fd-703f-a582-c82e6bd40036");
         //User user = db.Users.First(u => u.Id == userId);
-        for (int i = 0; i < 0; i++)
+        for (int i = 0; i < 10; i++)
         {
             await lootGenerator.GenerateHeroAsync(userId, 5, 5, cancellationToken).ConfigureAwait(false);
-            await lootGenerator.GenerateEquipmentAsync(userId, ESlotType.None, 1, 4, cancellationToken).ConfigureAwait(false);
+            //await lootGenerator.GenerateEquipmentAsync(userId, ESlotType.None, 1, 4, cancellationToken).ConfigureAwait(false);
 
             //_ = await lootGenerator.AddNewEquipmentAsync(db, cacheService.TableBaseEquipmentsByName["Silver bracelet"], userId, cancellationToken).ConfigureAwait(false);
             //_ = await lootGenerator.AddNewEquipmentAsync(db, cacheService.TableBaseEquipmentsByName["Iron boots"], userId, cancellationToken).ConfigureAwait(false);

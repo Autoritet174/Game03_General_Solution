@@ -66,6 +66,7 @@ public class BattlefieldManager(Guid userId,
 
                 X_Battlefield_BaseHero randomEnemy = enemies[Random.Shared.Next(enemies.Count)];
                 SpawnedHero sh = SpawnedHeroFactory.CreateFromBaseHero(randomEnemy.BaseHero, 1);
+                sh.Team = 2;
                 spawnedHeroesEnemy.Add(sh);
                 randomEnemy.Count--;
 
@@ -83,6 +84,7 @@ public class BattlefieldManager(Guid userId,
             {
                 SpawnedHero sh = SpawnedHeroFactory.CreateFromHero(hero);
                 spawnedHeroesPlayer.Add(sh);
+                sh.Team = 1;
 
                 InitActionPoints(sh);
             }
@@ -112,6 +114,8 @@ public class BattlefieldManager(Guid userId,
         spawnedBattlefield = null;
         return true;
     }
+
+   
 
     public async Task<bool> UseAbilityAsync(EAbility eAbility, Guid heroSpawnedId, Guid? target)
     {
@@ -148,5 +152,72 @@ public class BattlefieldManager(Guid userId,
         }
 
         sh.ActionPoints = ap + ACTION_POINTS_ON_START;
+    }
+
+    private int CombatProcess()
+    {
+        int teamWinner = 0;
+        if (spawnedBattlefield == null)
+        {
+            return teamWinner;
+        }
+
+        List<SpawnedHero> allHeroesSortedByInitiative = [.. spawnedBattlefield.SpawnedHeroPlayerList.Concat(spawnedBattlefield.SpawnedHeroEnemyList).OrderByDescending(a=>a.Initiative)];
+        
+        for (int turn = 1; turn <= 1000; turn++)
+        {
+            // все герои ходят
+
+            for (int i = 0; i < allHeroesSortedByInitiative.Count; i++)
+            {
+                var hero = allHeroesSortedByInitiative[i];
+                if (hero.IsAlive)
+                {
+                    // Выбираем противника
+                    SpawnedHero? heroForAttack = allHeroesSortedByInitiative
+                        .Where(a=>a.IsAlive && a.Team != hero.Team)
+                        .OrderBy(a=>a.Health)
+                        .FirstOrDefault();
+                    if (heroForAttack == null)
+                    {
+                        teamWinner = hero.Team;
+                        // Живого героя для атаки не найдено, значит что в одной из команд все герои мертвы
+                        break;
+                    }
+
+                    // тут выбираем способность для использования
+
+                    if (true)//атака
+                    {
+
+                    }
+
+
+
+
+                    // Изменяем статус IsAlive всех героев
+                    for (int i1 = 0; i1 < allHeroesSortedByInitiative.Count; i1++)
+                    {
+                        SpawnedHero h1 = allHeroesSortedByInitiative[i1];
+                        if (h1.Health <= 0)
+                        {
+                            h1.IsAlive = false;
+                        }
+                    }
+                }
+            }
+
+            if (teamWinner > 0)
+            {
+                break;
+            }
+        }
+
+        return teamWinner;
+    }
+
+    private void UseAbilityAttack(SpawnedHero h1, SpawnedHero h2)
+    {
+        //float damage = h1.;
     }
 }

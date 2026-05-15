@@ -14,4 +14,8 @@
     <Content Include="ICONS\icon.ico" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DiceCombinationFinder\DiceCombinationFinder.csproj" />
+  </ItemGroup>
+
 </Project>

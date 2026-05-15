@@ -29,6 +29,7 @@ public class Hero : ICreatedAt, IUpdatedAt, IVersion
     public required float EndurancePhysical { get; init; }
     public required float EnduranceMagical { get; init; }
     public required float Initiative { get; init; }
+    public required float Damage { get; init; }
 
     public Hero CreateCopy()
     {

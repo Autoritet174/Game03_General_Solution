@@ -1,13 +1,15 @@
+using DataBaseEditor.Tables;
+using General.DTO.Entities.GameData;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Npgsql;
 using Server_DB_Postgres;
-using Server_DB_Postgres.Entities.GameData;
 
 namespace DataBaseEditor;
 
 public partial class FormMain : Form
 {
+    #region Form
     private const string CONNECTION_STRING = "Host=localhost;Port=5432;Database=Game;Username=postgres;Password=";
 
     private static DbContextGame GetContext()
@@ -27,16 +29,15 @@ public partial class FormMain : Form
     {
         InitializeComponent();
     }
-
-    private void button_WeaponTypes_Refresh_Click(object sender, EventArgs e)
+    #endregion
+    #region WeaponTypes
+    private void button_Refresh_WeaponTypes_Click(object sender, EventArgs e)
     {
         using DbContextGame db = GetContext();
         dgv_WeaponTypes.AutoGenerateColumns = false;
         //dgv_WeaponTypes.Columns[ColumnNameRu.Name].DataPropertyName = "NameRu";
         dgv_WeaponTypes.DataSource = db.EquipmentTypes.ToList();
-
     }
-
     private void dgv_WeaponTypes_CellClick(object sender, DataGridViewCellEventArgs e)
     {
         int id = Convert.ToInt32(dgv_WeaponTypes.Rows[e.RowIndex].Cells["id"].Value);
@@ -53,8 +54,7 @@ public partial class FormMain : Form
             dgv_DamageTypes.Rows[i].Cells["ColumnDamageCoef"].Value = coef;
         }
     }
-
-    private void button_WeaponTypes_Save_Click(object sender, EventArgs e)
+    private void button_Save_WeaponTypes_Click(object sender, EventArgs e)
     {
         int id = Convert.ToInt32(dgv_WeaponTypes.CurrentRow!.Cells["id"].Value);
         using DbContextGame db = GetContext();
@@ -90,5 +90,30 @@ public partial class FormMain : Form
             _ = db.x_EquipmentTypes_DamageTypes.Remove(x);
         }
         _ = db.SaveChanges();
+    }
+    #endregion
+    #region BaseHeroes
+    private void button_Refresh_BaseHeroes_Click(object sender, EventArgs e)
+    {
+        using DbContextGame db = GetContext();
+        dgv_BaseHeroes.DataSource = db.BaseHeroes.ToList().Select(a => new
+        {
+            a.Id,
+            a.Name,
+            a.Rarity,
+            Health = a.Health.Expected,
+            Damage = a.Damage.Expected,
+        });
+    }
+    private void button_Save_BaseHeroes_Click(object sender, EventArgs e)
+    {
+
+    }
+    #endregion
+    BaseHeroesForm baseHeroesForm = new BaseHeroesForm();
+    private void FormMain_Load(object sender, EventArgs e)
+    {
+        
+        baseHeroesForm.Show();
     }
 }
