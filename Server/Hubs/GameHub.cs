@@ -72,7 +72,7 @@ public class GameHub(ClientManager clientManager, IClientFactory clientFactory, 
         await base.OnDisconnectedAsync(exception).ConfigureAwait(false);
     }
 
-    private Client? GetClientOrLog()
+    private Client? GetClient()
     {
         Client? client = clientManager.Get(Context.ConnectionId);
         if (client == null)
@@ -91,37 +91,77 @@ public class GameHub(ClientManager clientManager, IClientFactory clientFactory, 
     [HubMethodName(HubMethodNames.EQUIPMENT_TAKE_ON)]
     public async Task<bool> EquipmentTakeOnAsync(Guid heroId, Guid equipmentId, bool? inAltSlot)
     {
-        Client? client = GetClientOrLog();
+        Client? client = GetClient();
         return client != null && await client.EquipmentTakeOnAsync(heroId, equipmentId, inAltSlot, Context.ConnectionAborted).ConfigureAwait(false);
     }
 
     [HubMethodName(HubMethodNames.EQUIPMENT_TAKE_OFF)]
     public async Task<bool> EquipmentTakeOffAsync(Guid equipmentId)
     {
-        Client? client = GetClientOrLog();
+        Client? client = GetClient();
         return client != null && await client.EquipmentTakeOffAsync(equipmentId, Context.ConnectionAborted).ConfigureAwait(false);
     }
 
     [HubMethodName(HubMethodNames.COMBAT_START)]
     public async Task<SpawnedBattlefield?> CombatStartAsync(EBattleFiled eBattleFiled, Guid[] spawnedHeroesId)
     {
-        Client? client = GetClientOrLog();
+        Client? client = GetClient();
         return client == null
             ? null
             : await client.CombatStartAsync(eBattleFiled, spawnedHeroesId, Context.ConnectionAborted).ConfigureAwait(false);
     }
 
     [HubMethodName(HubMethodNames.COMBAT_BREAK)]
-    public async Task<bool> CombatBreakAsync()
-    {
-        Client? client = GetClientOrLog();
-        return client != null && await client.CombatBreakAsync().ConfigureAwait(false);
-    }
+    public async Task<bool> CombatBreakAsync() => GetClient()?.CombatBreak() ?? false;
 
     [HubMethodName(HubMethodNames.USE_ABILITY)]
     public async Task<bool> UseAbilityAsync(EAbility eAbility, Guid heroSpawnedId, Guid? target)
     {
-        Client? client = GetClientOrLog();
+        Client? client = GetClient();
         return client != null && await client.UseAbilityAsync(eAbility, heroSpawnedId, target).ConfigureAwait(false);
     }
+
+    [HubMethodName(HubMethodNames.GET_BATTLE_LOG)]
+    public async Task<List<BattlefieldLogRecord>?> GetBattleLogAsync() => GetClient()?.GetBattleLog();
+
+
+    /*
+    /// <summary>
+    /// Отправляет данные конкретному клиенту по ConnectionId
+    /// </summary>
+    /// <typeparam name="T">Тип отправляемых данных</typeparam>
+    /// <param name="connectionId">ID подключения получателя</param>
+    /// <param name="methodName">Имя метода на клиенте</param>
+    /// <param name="data">Данные для отправки</param>
+    /// <returns>true - если отправка успешна, false - если клиент не найден</returns>
+    public async Task<bool> SendToClientAsync<T>(string connectionId, string methodName, T data)
+    {
+        try
+        {
+            // Проверяем, существует ли клиент с таким ConnectionId
+            Client? client = clientManager.Get(connectionId);
+            if (client == null)
+            {
+                logger.LogWarning("Попытка отправить данные несуществующему клиенту. ConnectionId: {ConnectionId}", connectionId);
+                return false;
+            }
+
+            // Отправляем данные
+            await Clients.Client(connectionId).SendAsync(methodName, data).ConfigureAwait(false);
+            if (logger.IsEnabled(LogLevel.Debug))
+            {
+                logger.LogDebug("Данные отправлены клиенту {ConnectionId}. Метод: {MethodName}, Тип: {DataType}",
+                connectionId, methodName, typeof(T).Name);
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Ошибка при отправке данных клиенту {ConnectionId}. Метод: {MethodName}",
+                connectionId, methodName);
+            return false;
+        }
+    }
+    */
 }

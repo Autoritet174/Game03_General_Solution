@@ -17,11 +17,14 @@ public class BattlefieldManager(Guid userId,
     private bool inCombat = false;
 
     private SpawnedBattlefield? spawnedBattlefield = null;
+    private List<BattlefieldLogRecord>? battleLog = null;
     private DateTime dateTimeStartCombat = DateTime.MinValue;
+    private int battleLogIndex = 1;
 
     public const float LEVEL_MULTIPLIER = 1.017f;
     public const int ACTION_POINTS_ON_START = 10;
     public const int INITIATIVES_FOR_ACTION_POINT = 100;
+    private int battlefieldTurn = 1;
 
     public async Task<SpawnedBattlefield?> CombatStartAsync(EBattleFiled eBattleFiled, Guid[] spawnedHeroesId, CancellationToken cancellationToken)
     {
@@ -100,22 +103,27 @@ public class BattlefieldManager(Guid userId,
                 return null;
             }
 
-            spawnedBattlefield = new SpawnedBattlefield(eBattleFiled, spawnedHeroesPlayer, spawnedHeroesEnemy);
+            spawnedBattlefield = new SpawnedBattlefield(eBattleFiled, spawnedHeroesPlayer, spawnedHeroesEnemy)
+            {
+                BattlefieldLog = []
+            };
+            battleLog = spawnedBattlefield.BattlefieldLog;
             dateTimeStartCombat = DateTime.UtcNow;
+            battleLogIndex = 1;
             inCombat = true;
         }
-
+        //CombatProcess();
         return spawnedBattlefield;
     }
 
-    public async Task<bool> CombatBreakAsync()
+    public bool CombatBreak()
     {
         inCombat = false;
         spawnedBattlefield = null;
         return true;
     }
 
-   
+
 
     public async Task<bool> UseAbilityAsync(EAbility eAbility, Guid heroSpawnedId, Guid? target)
     {
@@ -132,10 +140,28 @@ public class BattlefieldManager(Guid userId,
         //var unitTarget
 
 
-        
+
 
 
         return true;
+    }
+
+    public List<BattlefieldLogRecord>? GetBattleLog()
+    {
+        if (!inCombat)
+        {
+            return null;
+        }
+        CombatProcess();
+        try
+        {
+            return battleLog;
+        }
+        finally
+        {
+            battleLog = null;
+        }
+
     }
 
     // === Вспомогательные методы ===
@@ -154,29 +180,29 @@ public class BattlefieldManager(Guid userId,
         sh.ActionPoints = ap + ACTION_POINTS_ON_START;
     }
 
-    private int CombatProcess()
+    private void CombatProcess()
     {
         int teamWinner = 0;
         if (spawnedBattlefield == null)
         {
-            return teamWinner;
+            return;
         }
 
-        List<SpawnedHero> allHeroesSortedByInitiative = [.. spawnedBattlefield.SpawnedHeroPlayerList.Concat(spawnedBattlefield.SpawnedHeroEnemyList).OrderByDescending(a=>a.Initiative)];
-        
-        for (int turn = 1; turn <= 1000; turn++)
+        List<SpawnedHero> allHeroesSortedByInitiative = [.. spawnedBattlefield.SpawnedHeroPlayerList.Concat(spawnedBattlefield.SpawnedHeroEnemyList).OrderByDescending(a => a.Initiative)];
+
+        for (battlefieldTurn = 1; battlefieldTurn <= 1000; battlefieldTurn++)
         {
             // все герои ходят
 
             for (int i = 0; i < allHeroesSortedByInitiative.Count; i++)
             {
-                var hero = allHeroesSortedByInitiative[i];
+                SpawnedHero hero = allHeroesSortedByInitiative[i];
                 if (hero.IsAlive)
                 {
                     // Выбираем противника
                     SpawnedHero? heroForAttack = allHeroesSortedByInitiative
-                        .Where(a=>a.IsAlive && a.Team != hero.Team)
-                        .OrderBy(a=>a.Health)
+                        .Where(a => a.IsAlive && a.Team != hero.Team)
+                        .OrderBy(a => a.Health)
                         .FirstOrDefault();
                     if (heroForAttack == null)
                     {
@@ -189,20 +215,17 @@ public class BattlefieldManager(Guid userId,
 
                     if (true)//атака
                     {
-
+                        UseAbilityAttack(hero, heroForAttack);
                     }
+                }
 
-
-
-
-                    // Изменяем статус IsAlive всех героев
-                    for (int i1 = 0; i1 < allHeroesSortedByInitiative.Count; i1++)
+                // Изменяем статус IsAlive всех героев
+                for (int i1 = 0; i1 < allHeroesSortedByInitiative.Count; i1++)
+                {
+                    SpawnedHero h1 = allHeroesSortedByInitiative[i1];
+                    if (h1.Health <= 0)
                     {
-                        SpawnedHero h1 = allHeroesSortedByInitiative[i1];
-                        if (h1.Health <= 0)
-                        {
-                            h1.IsAlive = false;
-                        }
+                        h1.IsAlive = false;
                     }
                 }
             }
@@ -212,12 +235,35 @@ public class BattlefieldManager(Guid userId,
                 break;
             }
         }
-
-        return teamWinner;
+        _ = CombatBreak();
+        //return teamWinner;
     }
 
     private void UseAbilityAttack(SpawnedHero h1, SpawnedHero h2)
     {
-        //float damage = h1.;
+        float damage = h1.Damage;
+        bool isCrit = false;
+        if (Random.Shared.NextSingle() * 100 < h1.CritChance)
+        {
+            damage *= (h1.CritMultiplier / 100f) + 1;
+            isCrit = true;
+        }
+        h2.Health -= damage;
+        if (battleLog == null)
+        {
+            _ = CombatBreak();
+            logger.LogError("battleLog is null");
+            return;
+        }
+        battleLog.Add(new BattlefieldLogRecord
+        {
+            H1 = h1.SpawnedId,
+            H2 = h2.SpawnedId,
+            eAbility = EAbility.Attack,
+            Damage = damage,
+            Index = battleLogIndex++,
+            BattlefieldTurn = battlefieldTurn,
+            IsCrit = isCrit
+        });
     }
 }

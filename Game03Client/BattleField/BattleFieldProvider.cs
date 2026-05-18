@@ -1,6 +1,7 @@
 
 using General.DTO.Battlefield;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -77,5 +78,28 @@ public class BattlefieldProvider
         catch (Exception) { }
 
         return false;
+    }
+
+
+    public static async Task<List<BattlefieldLogRecord>?> GetBattleLogAsync(CancellationToken cancellationToken)
+    {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return null;
+        }
+
+        try
+        {
+            List<BattlefieldLogRecord>? result = await WebSocketProvider.InvokeAsync<List<BattlefieldLogRecord>?>(
+                HubMethodNames.EMethod.GET_BATTLE_LOG,
+                cancellationToken
+            ).ConfigureAwait(false);
+
+            return result;
+        }
+        catch (OperationCanceledException) { }
+        catch (Exception) { }
+
+        return null;
     }
 }

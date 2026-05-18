@@ -65,13 +65,15 @@ public class Client(
         return await battleFieldManager.CombatStartAsync(eBattleFiled, spawnedHeroesId, cancellationToken).ConfigureAwait(false);
     }
 
-    public async Task<bool> CombatBreakAsync()
-    {
-        return await battleFieldManager.CombatBreakAsync().ConfigureAwait(false);
-    }
+    public bool CombatBreak() => battleFieldManager.CombatBreak();
 
     public async Task<bool> UseAbilityAsync(EAbility eAbility, Guid heroSpawnedId, Guid? target)
     {
         return await battleFieldManager.UseAbilityAsync(eAbility, heroSpawnedId, target).ConfigureAwait(false);
+    }
+
+    public List<BattlefieldLogRecord>? GetBattleLog()
+    {
+        return battleFieldManager.GetBattleLog();
     }
 }
