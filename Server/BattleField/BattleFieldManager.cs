@@ -120,6 +120,7 @@ public class BattlefieldManager(Guid userId,
     {
         inCombat = false;
         spawnedBattlefield = null;
+        battleLog = null;
         return true;
     }
 
@@ -197,11 +198,11 @@ public class BattlefieldManager(Guid userId,
             for (int i = 0; i < allHeroesSortedByInitiative.Count; i++)
             {
                 SpawnedHero hero = allHeroesSortedByInitiative[i];
-                if (hero.IsAlive)
+                if (hero.Health > 0)
                 {
                     // Выбираем противника
                     SpawnedHero? heroForAttack = allHeroesSortedByInitiative
-                        .Where(a => a.IsAlive && a.Team != hero.Team)
+                        .Where(a => a.Health > 0 && a.Team != hero.Team)
                         .OrderByDescending(a => a.HealthMax)
                         .FirstOrDefault();
                     if (heroForAttack == null)
@@ -220,14 +221,14 @@ public class BattlefieldManager(Guid userId,
                 }
 
                 // Изменяем статус IsAlive всех героев
-                for (int i1 = 0; i1 < allHeroesSortedByInitiative.Count; i1++)
-                {
-                    SpawnedHero h1 = allHeroesSortedByInitiative[i1];
-                    if (h1.Health <= 0)
-                    {
-                        h1.IsAlive = false;
-                    }
-                }
+                //for (int i1 = 0; i1 < allHeroesSortedByInitiative.Count; i1++)
+                //{
+                //    SpawnedHero h1 = allHeroesSortedByInitiative[i1];
+                //    if (h1.Health <= 0)
+                //    {
+                //        h1.IsAlive = false;
+                //    }
+                //}
             }
 
             if (teamWinner > 0)
@@ -242,13 +243,13 @@ public class BattlefieldManager(Guid userId,
     private void UseAbilityAttack(SpawnedHero h1, SpawnedHero h2)
     {
         float damage = h1.Damage;
-<<<<<<< Updated upstream
         bool isCrit = false;
         if (Random.Shared.NextSingle() * 100 < h1.CritChance)
         {
             damage *= (h1.CritMultiplier / 100f) + 1;
             isCrit = true;
         }
+
         h2.Health -= damage;
         if (battleLog == null)
         {
@@ -256,6 +257,7 @@ public class BattlefieldManager(Guid userId,
             logger.LogError("battleLog is null");
             return;
         }
+
         battleLog.Add(new BattlefieldLogRecord
         {
             H1 = h1.SpawnedId,
@@ -266,11 +268,5 @@ public class BattlefieldManager(Guid userId,
             Turn = battlefieldTurn,
             IsCrit = isCrit
         });
-=======
-        if (Random.Shared.NextSingle() < h1.CritChance) {
-            damage *= h1.CritMultiplier;
-        }
-        h2.Health -= damage;
->>>>>>> Stashed changes
     }
 }

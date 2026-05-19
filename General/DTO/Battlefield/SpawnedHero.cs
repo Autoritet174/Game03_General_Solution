@@ -25,7 +25,7 @@ public class SpawnedHero
     public required float EndurancePhysical { get; set; }
     public required float EnduranceMagical { get; set; }
     public required float Initiative { get; set; }
-    public bool IsAlive { get; set; } = true;
+    //public bool IsAlive { get; set; } = true;
     #endregion Характеристики
 
     [JsonIgnore]
