@@ -32,8 +32,9 @@ partial class BaseHeroesForm
         label1 = new Label();
         numeric_rarity = new NumericUpDown();
         label2 = new Label();
-        ucDiceHealth = new UCDice();
-        button1 = new Button();
+        ucDice_Health = new UCDice();
+        button_save = new Button();
+        ucDice_Damage = new UCDice();
         ((System.ComponentModel.ISupportInitialize)numeric_rarity).BeginInit();
         SuspendLayout();
         // 
@@ -73,32 +74,52 @@ partial class BaseHeroesForm
         label2.TabIndex = 1;
         label2.Text = "rarity";
         // 
-        // ucDiceHealth
+        // ucDice_Health
         // 
-        ucDiceHealth.Font = new Font("Segoe UI", 12F);
-        ucDiceHealth.Location = new Point(3, 85);
-        ucDiceHealth.Margin = new Padding(4);
-        ucDiceHealth.Name = "ucDiceHealth";
-        ucDiceHealth.Size = new Size(285, 121);
-        ucDiceHealth.TabIndex = 3;
+        ucDice_Health.BackColor = Color.FromArgb(192, 255, 255);
+        ucDice_Health.Font = new Font("Segoe UI", 12F);
+        ucDice_Health.Location = new Point(3, 85);
+        ucDice_Health.Margin = new Padding(4);
+        ucDice_Health.MaximumSize = new Size(358, 141);
+        ucDice_Health.MinimumSize = new Size(358, 141);
+        ucDice_Health.Name = "ucDice_Health";
+        ucDice_Health.Padding = new Padding(5);
+        ucDice_Health.Size = new Size(358, 141);
+        ucDice_Health.TabIndex = 3;
         // 
-        // button1
+        // button_save
         // 
-        button1.Location = new Point(251, 301);
-        button1.Name = "button1";
-        button1.Size = new Size(108, 28);
-        button1.TabIndex = 4;
-        button1.Text = "button1";
-        button1.UseVisualStyleBackColor = true;
-        button1.Click += button1_Click;
+        button_save.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+        button_save.Location = new Point(426, 444);
+        button_save.Name = "button_save";
+        button_save.Size = new Size(114, 37);
+        button_save.TabIndex = 4;
+        button_save.Text = "Save";
+        button_save.UseVisualStyleBackColor = true;
+        button_save.Click += button_save_Click;
+        // 
+        // ucDice_Damage
+        // 
+        ucDice_Damage.BackColor = Color.FromArgb(192, 255, 255);
+        ucDice_Damage.Font = new Font("Segoe UI", 12F);
+        ucDice_Damage.Location = new Point(3, 234);
+        ucDice_Damage.Margin = new Padding(4);
+        ucDice_Damage.MaximumSize = new Size(358, 141);
+        ucDice_Damage.MinimumSize = new Size(358, 141);
+        ucDice_Damage.Name = "ucDice_Damage";
+        ucDice_Damage.Padding = new Padding(5);
+        ucDice_Damage.Size = new Size(358, 141);
+        ucDice_Damage.TabIndex = 3;
         // 
         // BaseHeroesForm
         // 
         AutoScaleDimensions = new SizeF(9F, 21F);
         AutoScaleMode = AutoScaleMode.Font;
-        ClientSize = new Size(765, 450);
-        Controls.Add(button1);
-        Controls.Add(ucDiceHealth);
+        BackColor = Color.Silver;
+        ClientSize = new Size(543, 484);
+        Controls.Add(button_save);
+        Controls.Add(ucDice_Damage);
+        Controls.Add(ucDice_Health);
         Controls.Add(numeric_rarity);
         Controls.Add(textBox_name);
         Controls.Add(label1);
@@ -107,6 +128,7 @@ partial class BaseHeroesForm
         Margin = new Padding(4);
         Name = "BaseHeroesForm";
         Text = "BaseHeroesForm";
+        FormClosing += BaseHeroesForm_FormClosing;
         Load += BaseHeroesForm_Load;
         ((System.ComponentModel.ISupportInitialize)numeric_rarity).EndInit();
         ResumeLayout(false);
@@ -119,6 +141,7 @@ partial class BaseHeroesForm
     private Label label1;
     private NumericUpDown numeric_rarity;
     private Label label2;
-    private UCDice ucDiceHealth;
-    private Button button1;
+    private UCDice ucDice_Health;
+    private Button button_save;
+    private UCDice ucDice_Damage;
 }

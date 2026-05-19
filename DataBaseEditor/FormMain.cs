@@ -10,30 +10,18 @@ namespace DataBaseEditor;
 public partial class FormMain : Form
 {
     #region Form
-    private const string CONNECTION_STRING = "Host=localhost;Port=5432;Database=Game;Username=postgres;Password=";
 
-    private static DbContextGame GetContext()
-    {
-        var dataSourceBuilder = new NpgsqlDataSourceBuilder(CONNECTION_STRING);
-        JsonSerializerSettings jsonSettings = new()
-        {
-            NullValueHandling = NullValueHandling.Ignore // Это исключит null поля из JSON
-        };
-        _ = dataSourceBuilder.UseJsonNet(jsonSettings);
-        NpgsqlDataSource dataSource = dataSourceBuilder.Build();
-        DbContextOptionsBuilder<DbContextGame> optionsBuilder = new();
-        return new DbContextGame(optionsBuilder.UseNpgsql(dataSource).Options);
-    }
 
     public FormMain()
     {
         InitializeComponent();
+        dgv_BaseHeroes.AutoGenerateColumns = true;
     }
     #endregion
     #region WeaponTypes
     private void button_Refresh_WeaponTypes_Click(object sender, EventArgs e)
     {
-        using DbContextGame db = GetContext();
+        using DbContextGame db = DB.Create();
         dgv_WeaponTypes.AutoGenerateColumns = false;
         //dgv_WeaponTypes.Columns[ColumnNameRu.Name].DataPropertyName = "NameRu";
         dgv_WeaponTypes.DataSource = db.EquipmentTypes.ToList();
@@ -41,7 +29,7 @@ public partial class FormMain : Form
     private void dgv_WeaponTypes_CellClick(object sender, DataGridViewCellEventArgs e)
     {
         int id = Convert.ToInt32(dgv_WeaponTypes.Rows[e.RowIndex].Cells["id"].Value);
-        using DbContextGame db = GetContext();
+        using DbContextGame db = DB.Create();
         var damageTypes = db.DamageTypes.Where(a => a.Id <= 4).ToList();
         dgv_DamageTypes.RowCount = damageTypes.Count;
         for (int i = 0; i < damageTypes.Count; i++)
@@ -57,7 +45,7 @@ public partial class FormMain : Form
     private void button_Save_WeaponTypes_Click(object sender, EventArgs e)
     {
         int id = Convert.ToInt32(dgv_WeaponTypes.CurrentRow!.Cells["id"].Value);
-        using DbContextGame db = GetContext();
+        using DbContextGame db = DB.Create();
         IQueryable<X_EquipmentType_DamageType> xArray = db.x_EquipmentTypes_DamageTypes.Where(a => a.EquipmentTypeId == id);
         for (int i = 0; i < dgv_DamageTypes.RowCount; i++)
         {
@@ -93,27 +81,49 @@ public partial class FormMain : Form
     }
     #endregion
     #region BaseHeroes
-    private void button_Refresh_BaseHeroes_Click(object sender, EventArgs e)
-    {
-        using DbContextGame db = GetContext();
-        dgv_BaseHeroes.DataSource = db.BaseHeroes.ToList().Select(a => new
+    void RefreshData_BaseHeroes() {
+        using DbContextGame db = DB.Create();
+        var list = db.BaseHeroes.OrderBy(a => a.Rarity).ThenBy(a => a.Id).ToList();
+        var list2 = list.Select(a => new
         {
             a.Id,
             a.Name,
             a.Rarity,
+            a.MainStat,
             Health = a.Health.Expected,
             Damage = a.Damage.Expected,
-        });
+            H_D = a.Health.Expected / a.Damage.Expected
+        }).ToList();
+        dgv_BaseHeroes.DataSource = list2;
+    }
+    private void button_Refresh_BaseHeroes_Click(object sender, EventArgs e)
+    {
+        RefreshData_BaseHeroes();
     }
     private void button_Save_BaseHeroes_Click(object sender, EventArgs e)
     {
 
     }
     #endregion
-    BaseHeroesForm baseHeroesForm = new BaseHeroesForm();
     private void FormMain_Load(object sender, EventArgs e)
     {
-        
-        baseHeroesForm.Show();
+
+    }
+
+    private void dgv_BaseHeroes_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+    {
+        if (e.RowIndex >= 0)
+        {
+            DataGridViewRow row = dgv_BaseHeroes.Rows[e.RowIndex];
+            if (row != null)
+            {
+                int id = Convert.ToInt32(row.Cells[0].Value);
+                if (id > 0)
+                {
+                    new BaseHeroesForm(id).ShowDialog();
+                    RefreshData_BaseHeroes();
+                }
+            }
+        }
     }
 }

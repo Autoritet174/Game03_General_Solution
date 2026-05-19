@@ -79,7 +79,7 @@ internal partial class Program
             ServiceLifetime.Scoped,  // DbContext как Scoped
             ServiceLifetime.Singleton); // DbContextOptions как Singleton
 
-        _ = builder.Services.AddControllers()
+        _ = services.AddControllers()
             .AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.TypeInfoResolverChain.Insert(0, GlobalJsonContext.Default);

@@ -1,23 +1,27 @@
 using General.DTO;
-using System.Xml.Linq;
+using General.DTO.Entities.GameData;
 
 namespace DataBaseEditor.Tables;
 
 public partial class UCDice : UserControl
 {
+    private BaseHero? baseHero;
+    private string name = "";
     public UCDice()
     {
         InitializeComponent();
-        
     }
 
-    public void SetName(string name) {
+    public void Init(string name, BaseHero baseHero)
+    {
+        this.name = name;
         label_name.Text = name;
+        this.baseHero = baseHero;
     }
     public void SetValue(Dice dice)
     {
-        radioButton_csm.Checked = false;
-        radioButton_exc.Checked = true;
+        radioButton_csm.Checked = true;
+        radioButton_exc.Checked = false;
 
         numeric_count.Value = dice.Count;
         numeric_sides.Value = dice.Sides;
@@ -36,7 +40,70 @@ public partial class UCDice : UserControl
         }
         else
         {
-            List<DCF.DiceCombination> list = DCF.FindDiceCombination((double)numeric_exc.Value, 0, 10, 10000);
+            float exp = (float)numeric_exc.Value;
+
+            switch (baseHero?.Rarity)
+            {
+                case 2:
+                    exp *= 1.5f;
+                    break;
+                case 3:
+                    exp *= 1.5f * 1.5f;
+                    break;
+                case 4:
+                    exp *= 1.5f * 1.5f * 1.5f;
+                    break;
+                case 5:
+                    exp *= 1.5f * 1.5f * (1.5f * 1.5f);
+                    break;
+            }
+
+            if (name == "Health")
+            {
+                switch (baseHero?.MainStat)
+                {
+                    case General.EMainStat.Strength:
+                        exp *= 1.3f;
+                        break;
+                    case General.EMainStat.Universal:
+                        
+                        break;
+                    case General.EMainStat.Agility:
+                        exp *= 0.9f;
+                        break;
+                    case General.EMainStat.Intelligence:
+                        exp *= 0.8f;
+                        break;
+                    case null:
+                        break;
+                    default:
+                        break;
+                }
+            } 
+            if (name == "Damage")
+            {
+                switch (baseHero?.MainStat)
+                {
+                    case General.EMainStat.Strength:
+                        exp *= 0.95f;
+                        break;
+                    case General.EMainStat.Universal:
+                        break;
+                    case General.EMainStat.Agility:
+                        exp *= 1.35f;
+                        break;
+                    case General.EMainStat.Intelligence:
+                        exp *= 1.1f;
+                        break;
+                    case null:
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+
+            List<DCF.DiceCombination> list = DCF.FindDiceCombination((int)Math.Round(exp, 0), 0, 10, 10000);
             double target = 10;
             DCF.DiceCombination d = list.OrderBy(x => Math.Abs(x.CV - target)).First();
 

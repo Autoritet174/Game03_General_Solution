@@ -30,6 +30,8 @@ partial class FormMain
     private void InitializeComponent()
     {
         components = new System.ComponentModel.Container();
+        var dataGridViewCellStyle1 = new DataGridViewCellStyle();
+        var dataGridViewCellStyle2 = new DataGridViewCellStyle();
         dgv_WeaponTypes = new DataGridView();
         weaponTypeBindingSource = new BindingSource(components);
         tabControl1 = new TabControl();
@@ -43,6 +45,7 @@ partial class FormMain
         ColumnDamageCoef = new DataGridViewTextBoxColumn();
         tabPage_BaseHero = new TabPage();
         dgv_BaseHeroes = new DataGridView();
+        ColumnId = new DataGridViewTextBoxColumn();
         panel1 = new Panel();
         button_Refresh_BaseHeroes = new Button();
         button_Save_BaseHeroes = new Button();
@@ -172,11 +175,11 @@ partial class FormMain
         tabPage_BaseHero.BackColor = Color.Black;
         tabPage_BaseHero.Controls.Add(dgv_BaseHeroes);
         tabPage_BaseHero.Controls.Add(panel1);
-        tabPage_BaseHero.Location = new Point(4, 24);
+        tabPage_BaseHero.Location = new Point(4, 30);
         tabPage_BaseHero.Margin = new Padding(4);
         tabPage_BaseHero.Name = "tabPage_BaseHero";
         tabPage_BaseHero.Padding = new Padding(4);
-        tabPage_BaseHero.Size = new Size(1743, 856);
+        tabPage_BaseHero.Size = new Size(1743, 850);
         tabPage_BaseHero.TabIndex = 1;
         tabPage_BaseHero.Text = "Базовые герои";
         // 
@@ -184,16 +187,35 @@ partial class FormMain
         // 
         dgv_BaseHeroes.AllowUserToAddRows = false;
         dgv_BaseHeroes.AllowUserToDeleteRows = false;
+        dgv_BaseHeroes.AllowUserToOrderColumns = true;
         dgv_BaseHeroes.AllowUserToResizeColumns = false;
         dgv_BaseHeroes.AllowUserToResizeRows = false;
+        dataGridViewCellStyle1.BackColor = Color.FromArgb(224, 224, 224);
+        dgv_BaseHeroes.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
         dgv_BaseHeroes.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+        dgv_BaseHeroes.Columns.AddRange(new DataGridViewColumn[] { ColumnId });
         dgv_BaseHeroes.Dock = DockStyle.Fill;
         dgv_BaseHeroes.Location = new Point(4, 44);
         dgv_BaseHeroes.Margin = new Padding(4);
         dgv_BaseHeroes.Name = "dgv_BaseHeroes";
+        dataGridViewCellStyle2.BackColor = SystemColors.Control;
+        dataGridViewCellStyle2.Font = new Font("Segoe UI", 12F);
+        dataGridViewCellStyle2.ForeColor = SystemColors.WindowText;
+        dataGridViewCellStyle2.SelectionBackColor = SystemColors.Highlight;
+        dataGridViewCellStyle2.SelectionForeColor = SystemColors.HighlightText;
+        dataGridViewCellStyle2.WrapMode = DataGridViewTriState.True;
+        dgv_BaseHeroes.RowHeadersDefaultCellStyle = dataGridViewCellStyle2;
         dgv_BaseHeroes.RowHeadersVisible = false;
-        dgv_BaseHeroes.Size = new Size(1735, 808);
+        dgv_BaseHeroes.Size = new Size(1735, 802);
         dgv_BaseHeroes.TabIndex = 6;
+        dgv_BaseHeroes.CellDoubleClick += dgv_BaseHeroes_CellDoubleClick;
+        // 
+        // ColumnId
+        // 
+        ColumnId.DataPropertyName = "Id";
+        ColumnId.HeaderText = "Id";
+        ColumnId.Name = "ColumnId";
+        ColumnId.ReadOnly = true;
         // 
         // panel1
         // 
@@ -276,4 +298,5 @@ partial class FormMain
     private DataGridView dgv_BaseHeroes;
     private Panel panel2;
     private Panel panel1;
+    private DataGridViewTextBoxColumn ColumnId;
 }

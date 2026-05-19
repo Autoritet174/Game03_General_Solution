@@ -242,6 +242,7 @@ public class BattlefieldManager(Guid userId,
     private void UseAbilityAttack(SpawnedHero h1, SpawnedHero h2)
     {
         float damage = h1.Damage;
+<<<<<<< Updated upstream
         bool isCrit = false;
         if (Random.Shared.NextSingle() * 100 < h1.CritChance)
         {
@@ -265,5 +266,11 @@ public class BattlefieldManager(Guid userId,
             BattlefieldTurn = battlefieldTurn,
             IsCrit = isCrit
         });
+=======
+        if (Random.Shared.NextSingle() < h1.CritChance) {
+            damage *= h1.CritMultiplier;
+        }
+        h2.Health -= damage;
+>>>>>>> Stashed changes
     }
 }
