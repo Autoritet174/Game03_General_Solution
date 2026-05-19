@@ -5,7 +5,7 @@ public class BattlefieldLogRecord
 
     /// <summary> Индекс лога. </summary>
     public int Index { get; init; }
-    public int? BattlefieldTurn { get; init; }
+    public int? Turn { get; init; }
     public EAbility? eAbility { get; init; }
 
     /// <summary> Герой нанёсший урон. </summary>

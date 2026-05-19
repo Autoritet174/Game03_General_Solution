@@ -67,6 +67,8 @@ public static class LocalizationKeys
             public static readonly string Reconnecting = $"{_Label}{nameof(Reconnecting)}";
             public static readonly string Try = $"{_Label}{nameof(Try)}";
             public static readonly string After = $"{_Label}{nameof(After)}";
+            public static readonly string Turn = $"{_Label}{nameof(Turn)}";
+            public static readonly string Dead = $"{_Label}{nameof(Dead)}";
 
             public static class Slot
             {

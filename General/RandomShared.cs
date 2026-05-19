@@ -46,6 +46,13 @@ public static class RandomShared
             : minValue + (Current.NextDouble() * (maxValue - minValue));
     }
 
+    public static float NextSingle(float minValue, float maxValue)
+    {
+        return minValue > maxValue
+            ? throw new ArgumentOutOfRangeException(nameof(minValue))
+            : minValue + ((float)Current.NextDouble() * (maxValue - minValue));
+    }
+
     // === bytes ===
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public static void NextBytes(byte[] buffer) => Current.NextBytes(buffer);
