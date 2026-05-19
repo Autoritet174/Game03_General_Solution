@@ -202,7 +202,7 @@ public class BattlefieldManager(Guid userId,
                     // Выбираем противника
                     SpawnedHero? heroForAttack = allHeroesSortedByInitiative
                         .Where(a => a.IsAlive && a.Team != hero.Team)
-                        .OrderBy(a => a.Health)
+                        .OrderByDescending(a => a.HealthMax)
                         .FirstOrDefault();
                     if (heroForAttack == null)
                     {
@@ -262,7 +262,7 @@ public class BattlefieldManager(Guid userId,
             eAbility = EAbility.Attack,
             Damage = damage,
             Index = battleLogIndex++,
-            BattlefieldTurn = battlefieldTurn,
+            Turn = battlefieldTurn,
             IsCrit = isCrit
         });
     }
