@@ -4,6 +4,7 @@ using General.DTO.Entities.GameData;
 using Microsoft.EntityFrameworkCore;
 using Server.Cache;
 using Server.DTO.Battlefield;
+using Server.Extensions;
 using Server.Hubs;
 using Server_DB_Postgres;
 
@@ -17,7 +18,7 @@ public class BattlefieldManager(Guid userId,
     private bool inCombat = false;
 
     private SpawnedBattlefield? spawnedBattlefield = null;
-    private List<BattlefieldLogRecord>? battleLog = null;
+    private List<BattlefieldLogRecord> battleLog = [];
     private DateTime dateTimeStartCombat = DateTime.MinValue;
     private int battleLogIndex = 1;
 
@@ -120,20 +121,19 @@ public class BattlefieldManager(Guid userId,
     {
         inCombat = false;
         spawnedBattlefield = null;
-        battleLog = null;
+        // battleLog = null; не добавлять эту строку
         return true;
     }
 
 
-
-    public async Task<bool> UseAbilityAsync(EAbility eAbility, Guid heroSpawnedId, Guid? target)
+    public async Task<bool> UseAbilityAsync(EBattlefieldLogAbility eAbility, Guid heroSpawnedId, Guid? target)
     {
         if (!inCombat || spawnedBattlefield == null)
         {
             return false;
         }
 
-        if (eAbility != EAbility.Attack)
+        if (eAbility != EBattlefieldLogAbility.Attack)
         {
             // тут надо сделать проверку, что если абилка не "атака" то существует ли она у героя
         }
@@ -154,15 +154,9 @@ public class BattlefieldManager(Guid userId,
             return null;
         }
         CombatProcess();
-        try
-        {
-            return battleLog;
-        }
-        finally
-        {
-            battleLog = null;
-        }
-
+        List<BattlefieldLogRecord>? log = battleLog;
+        battleLog = [];
+        return log;
     }
 
     // === Вспомогательные методы ===
@@ -181,6 +175,8 @@ public class BattlefieldManager(Guid userId,
         sh.ActionPoints = ap + ACTION_POINTS_ON_START;
     }
 
+    private const int COST_AP_ABILITY_ATTACK = 10;
+
     private void CombatProcess()
     {
         int teamWinner = 0;
@@ -189,10 +185,19 @@ public class BattlefieldManager(Guid userId,
             return;
         }
 
+
         List<SpawnedHero> allHeroesSortedByInitiative = [.. spawnedBattlefield.SpawnedHeroPlayerList.Concat(spawnedBattlefield.SpawnedHeroEnemyList).OrderByDescending(a => a.Initiative)];
 
         for (battlefieldTurn = 1; battlefieldTurn <= 1000; battlefieldTurn++)
         {
+            battleLog.Add(new BattlefieldLogRecord
+            {
+                Index = battleLogIndex++,
+                Action = EBattlefieldLogAction.StartTurn,
+                IntValue1 = battlefieldTurn
+            });
+
+
             // все герои ходят
 
             for (int i = 0; i < allHeroesSortedByInitiative.Count; i++)
@@ -200,11 +205,12 @@ public class BattlefieldManager(Guid userId,
                 SpawnedHero hero = allHeroesSortedByInitiative[i];
                 if (hero.Health > 0)
                 {
-                    // Выбираем противника
-                    SpawnedHero? heroForAttack = allHeroesSortedByInitiative
-                        .Where(a => a.Health > 0 && a.Team != hero.Team)
-                        .OrderByDescending(a => a.HealthMax)
-                        .FirstOrDefault();
+                    // Выбираем коллекцию героев противников того героя который сейчас атакует
+                    List<SpawnedHero> targets = hero.Team == 1 ? spawnedBattlefield.SpawnedHeroEnemyList : spawnedBattlefield.SpawnedHeroPlayerList;
+
+                    // Выбираем случайного противника
+                    SpawnedHero? heroForAttack = targets.Where(a => a.Health > 0).GetRandomElement();
+
                     if (heroForAttack == null)
                     {
                         teamWinner = hero.Team;
@@ -212,12 +218,15 @@ public class BattlefieldManager(Guid userId,
                         break;
                     }
 
-                    // тут выбираем способность для использования
-
-                    if (true)//атака
+                    if (hero.ActionPoints >= COST_AP_ABILITY_ATTACK)
                     {
-                        UseAbilityAttack(hero, heroForAttack);
+                        UseAbilityAttack(hero, heroForAttack); // атака
                     }
+                    else
+                    {
+
+                    }
+
                 }
 
                 // Изменяем статус IsAlive всех героев
@@ -235,6 +244,16 @@ public class BattlefieldManager(Guid userId,
             {
                 break;
             }
+
+            // добавить всем героям по 5-15 АП
+            for (int i = 0; i < allHeroesSortedByInitiative.Count; i++)
+            {
+                SpawnedHero h = allHeroesSortedByInitiative[i];
+                if (h.Health > 0)
+                {
+                    h.ActionPoints += Random.Shared.Next(5, 16);
+                }
+            }
         }
         _ = CombatBreak();
         //return teamWinner;
@@ -250,23 +269,28 @@ public class BattlefieldManager(Guid userId,
             isCrit = true;
         }
 
-        h2.Health -= damage;
-        if (battleLog == null)
-        {
-            _ = CombatBreak();
-            logger.LogError("battleLog is null");
-            return;
-        }
 
+        h1.ActionPoints -= COST_AP_ABILITY_ATTACK;
         battleLog.Add(new BattlefieldLogRecord
         {
+            Index = battleLogIndex++,
+            Action = EBattlefieldLogAction.ChangeActionPoints,
+            H1 = h1.SpawnedId,
+            IntValue1 = -COST_AP_ABILITY_ATTACK
+        });
+
+
+        h2.Health -= damage;
+        battleLog.Add(new BattlefieldLogRecord
+        {
+            Index = battleLogIndex++,
+            Action = EBattlefieldLogAction.Attack,
             H1 = h1.SpawnedId,
             H2 = h2.SpawnedId,
-            eAbility = EAbility.Attack,
-            Damage = damage,
-            Index = battleLogIndex++,
-            Turn = battlefieldTurn,
-            IsCrit = isCrit
+            Ability = EBattlefieldLogAbility.Attack,
+            FloatValue1 = damage,
+            BoolValue1 = isCrit,
         });
+
     }
 }

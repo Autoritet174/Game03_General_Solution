@@ -9,6 +9,7 @@ namespace Game03Client.Battlefield;
 
 public class BattlefieldProvider
 {
+    private static readonly Logger<BattlefieldProvider> logger = new();
     public static async Task<SpawnedBattlefield?> LoadBattleFieldAsync(EBattleFiled eBattleFiled, Guid[] spawnedHeroesId, CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
@@ -55,7 +56,7 @@ public class BattlefieldProvider
         return false;
     }
 
-    public static async Task<bool> UseAbilityAsync(EAbility eAbility, Guid heroSpawnedId, Guid? target, CancellationToken cancellationToken)
+    public static async Task<bool> UseAbilityAsync(EBattlefieldLogAbility eAbility, Guid heroSpawnedId, Guid? target, CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
         {
@@ -94,6 +95,7 @@ public class BattlefieldProvider
                 HubMethodNames.EMethod.GET_BATTLE_LOG,
                 cancellationToken
             ).ConfigureAwait(false);
+            logger.LogInfo(JSON.Serialize(result));
 
             return result;
         }

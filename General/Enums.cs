@@ -107,7 +107,15 @@ public enum EBattleFiled
     Mines__Iron = 2,
 }
 
-public enum EAbility
+public enum EBattlefieldLogAction
+{
+    StartTurn = 1,
+    ChangeActionPoints = 2,
+    Attack = 3,
+
+}
+
+public enum EBattlefieldLogAbility
 {
     Attack = 1,
 }

@@ -4,17 +4,17 @@ public class BattlefieldLogRecord
 {
 
     /// <summary> Индекс лога. </summary>
-    public int Index { get; init; }
-    public int? Turn { get; init; }
-    public EAbility? eAbility { get; init; }
+    public required int Index { get; init; }
+    public required EBattlefieldLogAction Action { get; init; }
+    //public int? Turn { get; init; }
 
-    /// <summary> Герой нанёсший урон. </summary>
+    public EBattlefieldLogAbility? Ability { get; init; }
+
     public Guid? H1 { get; init; }
-
-    /// <summary> Герой получивший урон. </summary>
     public Guid? H2 { get; init; }
 
-    public float? Damage { get; init; }
+    public float? FloatValue1 { get; init; }
+    public int? IntValue1 { get; init; }
 
-    public bool IsCrit { get; set; } = false;
+    public bool? BoolValue1 { get; init => field = value == true ? true : null; } = null;
 }
