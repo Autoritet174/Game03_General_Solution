@@ -1,4 +1,4 @@
-namespace Server.Http_NS.Middleware_NS;
+namespace Server.Middlewares;
 
 /// <summary>
 /// Middleware для глобального перехвата исключений и логирования в файл.

@@ -1,5 +1,7 @@
 
 using General.DTO.Battlefield;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR.Client;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -28,10 +30,33 @@ public class BattlefieldProvider
 
             return spawnedBattlefield;
         }
-        catch (OperationCanceledException) { }
-        catch (Exception) { }
+        catch (HubException ex)
+        {
+            // Ошибка от сервера
+            logger.LogError($"Hub error: {ex.Message}");
+            throw;
+        }
+        catch (OperationCanceledException ex)
+        {
+            logger.LogError($"Cancelled: {ex.Message}");
+            throw;
+        }
+        catch (Exception ex)
+        {
+            // Детальное логирование
+            //logger.LogError($"Connection state: {WebSocketProvider.conn _hubConnection.State}");
+            logger.LogError($"Error invoking GetBattleLog: {ex.Message}");
+            logger.LogError($"Stack trace: {ex.StackTrace}");
 
-        return null;
+            if (ex.InnerException != null)
+            {
+                logger.LogError($"Inner exception: {ex.InnerException.Message}");
+            }
+
+            throw;
+        }
+
+        //return null;
     }
 
     public static async Task<bool> CombatBreakAsync(CancellationToken cancellationToken)
@@ -82,7 +107,7 @@ public class BattlefieldProvider
     }
 
 
-    public static async Task<List<BattlefieldLogRecord>?> GetBattleLogAsync(CancellationToken cancellationToken)
+    public static async Task<List<IBattlefieldLogRecord>?> GetBattleLogAsync(CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
         {
@@ -91,7 +116,7 @@ public class BattlefieldProvider
 
         try
         {
-            List<BattlefieldLogRecord>? result = await WebSocketProvider.InvokeAsync<List<BattlefieldLogRecord>?>(
+            List<IBattlefieldLogRecord>? result = await WebSocketProvider.InvokeAsync<List<IBattlefieldLogRecord>?>(
                 HubMethodNames.EMethod.GET_BATTLE_LOG,
                 cancellationToken
             ).ConfigureAwait(false);

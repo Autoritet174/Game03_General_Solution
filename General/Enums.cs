@@ -107,11 +107,13 @@ public enum EBattleFiled
     Mines__Iron = 2,
 }
 
-public enum EBattlefieldLogAction
+public enum COMBAT_LOG_EVENT
 {
     StartTurn = 1,
     ChangeActionPoints = 2,
-    Attack = 3,
+    UseAbility = 3,
+    ChangeHealth_Damage = 4,
+    ChangeHealth_Healing = 5,
 
 }
 

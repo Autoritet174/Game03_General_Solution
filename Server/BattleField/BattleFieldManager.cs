@@ -1,12 +1,15 @@
 using General.DTO.Battlefield;
 using General.DTO.Entities.Collection;
 using General.DTO.Entities.GameData;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Server.Cache;
 using Server.DTO.Battlefield;
 using Server.Extensions;
 using Server.Hubs;
 using Server_DB_Postgres;
+using System.Diagnostics.Metrics;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Server.Battlefield;
 
@@ -18,13 +21,15 @@ public class BattlefieldManager(Guid userId,
     private bool inCombat = false;
 
     private SpawnedBattlefield? spawnedBattlefield = null;
-    private List<BattlefieldLogRecord> battleLog = [];
+    private List<IBattlefieldLogRecord> battleLog = [];
     private DateTime dateTimeStartCombat = DateTime.MinValue;
     private int battleLogIndex = 1;
 
     public const float LEVEL_MULTIPLIER = 1.017f;
     public const int ACTION_POINTS_ON_START = 10;
     public const int INITIATIVES_FOR_ACTION_POINT = 100;
+    private const int COST_AP_ABILITY_ATTACK = 10;
+
     private int battlefieldTurn = 1;
 
     public async Task<SpawnedBattlefield?> CombatStartAsync(EBattleFiled eBattleFiled, Guid[] spawnedHeroesId, CancellationToken cancellationToken)
@@ -125,7 +130,6 @@ public class BattlefieldManager(Guid userId,
         return true;
     }
 
-
     public async Task<bool> UseAbilityAsync(EBattlefieldLogAbility eAbility, Guid heroSpawnedId, Guid? target)
     {
         if (!inCombat || spawnedBattlefield == null)
@@ -147,19 +151,24 @@ public class BattlefieldManager(Guid userId,
         return true;
     }
 
-    public List<BattlefieldLogRecord>? GetBattleLog()
+    public List<IBattlefieldLogRecord>? GetBattleLog()
     {
         if (!inCombat)
         {
             return null;
         }
         CombatProcess();
-        List<BattlefieldLogRecord>? log = battleLog;
+        List<IBattlefieldLogRecord>? log = battleLog;
         battleLog = [];
         return log;
     }
 
     // === Вспомогательные методы ===
+
+    private void AddLog(IBattlefieldLogRecord battlefieldLogRecord) {
+        battleLog.Add(battlefieldLogRecord);
+        battlefieldLogRecord.Index = battleLog.Count;
+    }
 
     /// <summary> Инициализировать очки действия по инициативе. </summary>
     private static void InitActionPoints(SpawnedHero sh)
@@ -175,7 +184,6 @@ public class BattlefieldManager(Guid userId,
         sh.ActionPoints = ap + ACTION_POINTS_ON_START;
     }
 
-    private const int COST_AP_ABILITY_ATTACK = 10;
 
     private void CombatProcess()
     {
@@ -190,13 +198,10 @@ public class BattlefieldManager(Guid userId,
 
         for (battlefieldTurn = 1; battlefieldTurn <= 1000; battlefieldTurn++)
         {
-            battleLog.Add(new BattlefieldLogRecord
+            AddLog(new BattlefieldLogRecord_TurnStart
             {
-                Index = battleLogIndex++,
-                Action = EBattlefieldLogAction.StartTurn,
-                IntValue1 = battlefieldTurn
+                Turn = battlefieldTurn
             });
-
 
             // все герои ходят
 
@@ -259,6 +264,7 @@ public class BattlefieldManager(Guid userId,
         //return teamWinner;
     }
 
+    #region ABILITIES
     private void UseAbilityAttack(SpawnedHero h1, SpawnedHero h2)
     {
         float damage = h1.Damage;
@@ -269,28 +275,41 @@ public class BattlefieldManager(Guid userId,
             isCrit = true;
         }
 
-
-        h1.ActionPoints -= COST_AP_ABILITY_ATTACK;
-        battleLog.Add(new BattlefieldLogRecord
-        {
-            Index = battleLogIndex++,
-            Action = EBattlefieldLogAction.ChangeActionPoints,
-            H1 = h1.SpawnedId,
-            IntValue1 = -COST_AP_ABILITY_ATTACK
-        });
-
-
-        h2.Health -= damage;
-        battleLog.Add(new BattlefieldLogRecord
-        {
-            Index = battleLogIndex++,
-            Action = EBattlefieldLogAction.Attack,
-            H1 = h1.SpawnedId,
-            H2 = h2.SpawnedId,
-            Ability = EBattlefieldLogAbility.Attack,
-            FloatValue1 = damage,
-            BoolValue1 = isCrit,
-        });
-
+        Event_ChangeActionPoints(h1, -COST_AP_ABILITY_ATTACK);
+        Event_UseAbility(h1, EBattlefieldLogAbility.Attack, [h2.SpawnedId]);
+        Event_Damage(h2, damage, battleLog[^1].Index, isCrit);
     }
+    #endregion
+    #region EVENTS
+    private void Event_ChangeActionPoints(SpawnedHero spawnedHero, int countAP)
+    {
+        spawnedHero.ActionPoints += countAP;
+        AddLog(new BattlefieldLogRecord_ChangeActionPoints
+        {
+            SpawnedHeroId = spawnedHero.SpawnedId,
+            CountAP = countAP
+        });
+    }
+    private void Event_Damage(SpawnedHero spawnedHero, float damage, int indexReason, bool isCrit = false, bool isPeriodic = false)
+    {
+        spawnedHero.Health -= damage;
+        AddLog(new BattlefieldLogRecord_Damage
+        {
+            SpawnedHeroId = spawnedHero.SpawnedId,
+            IndexReason = indexReason,
+            Damage = damage,
+            IsCrit = isCrit,
+            IsPerodic = isPeriodic
+        });
+    }
+    private void Event_UseAbility(SpawnedHero spawnedHero, EBattlefieldLogAbility ability, Guid[]? spawnedHeroTargets)
+    {
+        AddLog(new BattlefieldLogRecord_UseAbility
+        {
+            SpawnedHero1Id = spawnedHero.SpawnedId,
+            Ability = ability,
+            SpawnedHeroTargets = spawnedHeroTargets
+        });
+    }
+    #endregion
 }

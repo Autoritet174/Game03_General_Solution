@@ -12,9 +12,9 @@ using Serilog;
 using Serilog.Events;
 using Server.Cache;
 using Server.Game;
-using Server.Http_NS.Middleware_NS;
 using Server.Hubs;
 using Server.Jwt_NS;
+using Server.Middlewares;
 using Server.Users;
 using Server.Users.Authentication;
 using Server.Users.Registration;
@@ -224,6 +224,7 @@ internal partial class Program
 
         // Подключение кастомного WebSocket middleware
         //_ = app.UseMiddleware<WebSocketMiddleware>();
+        _ = app.UseMiddleware<SignalRLoggingMiddleware>();
 
         _ = app.UseRouting();//Маршрутизация
 

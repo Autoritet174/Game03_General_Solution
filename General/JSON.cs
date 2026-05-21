@@ -40,16 +40,53 @@ public partial class GlobalJsonContext : JsonSerializerContext
 
 public static class JSON
 {
-    public static JsonSerializerOptions Options { get; } = new()
-    {
-        WriteIndented = false,
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, // Отключаем экранирование Unicode
+    //public static JsonSerializerOptions Options { get; } = new()
+    //{
+    //    WriteIndented = false,
+    //    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+    //    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    //    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, // Отключаем экранирование Unicode
 
-        // Важно для производительности: включаем кэширование сериализаторов
-        TypeInfoResolver = new DefaultJsonTypeInfoResolver()
-    };
+    //    // Важно для производительности: включаем кэширование сериализаторов
+    //    TypeInfoResolver = new DefaultJsonTypeInfoResolver()
+    //};
+    public static JsonSerializerOptions Options { get; } = CreateOptions();
+
+    private static JsonSerializerOptions CreateOptions()
+    {
+        DefaultJsonTypeInfoResolver resolver = new();
+
+        // Добавляем модификатор контракта
+        resolver.Modifiers.Add(static typeInfo =>
+        {
+            // Если это не объект — пропускаем
+            if (typeInfo.Kind != JsonTypeInfoKind.Object)
+                return;
+
+            foreach (JsonPropertyInfo property in typeInfo.Properties)
+            {
+                // Проверяем, что тип свойства — bool (не nullable)
+                if (property.PropertyType == typeof(bool))
+                {
+                    // Устанавливаем условие игнорирования:
+                    // если значение — default (false) → не пишем в JSON
+                    property.ShouldSerialize = static (obj, value) =>
+                    {
+                        return value is bool b && b; // true → пишем, false → не пишем
+                    };
+                }
+            }
+        });
+
+        return new JsonSerializerOptions
+        {
+            WriteIndented = false,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            TypeInfoResolver = resolver
+        };
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static JsonDocument Parse(string json) => JsonDocument.Parse(json);

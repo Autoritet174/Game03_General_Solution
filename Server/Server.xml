@@ -164,62 +164,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="T:Server.Http_NS.Middleware_NS.ExceptionLoggingMiddleware">
-            <summary>
-            Middleware для глобального перехвата исключений и логирования в файл.
-            </summary>
-            <remarks>
-            Конструктор.
-            </remarks>
-        </member>
-        <member name="M:Server.Http_NS.Middleware_NS.ExceptionLoggingMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Microsoft.Extensions.Logging.ILogger{Server.Http_NS.Middleware_NS.ExceptionLoggingMiddleware})">
-            <summary>
-            Middleware для глобального перехвата исключений и логирования в файл.
-            </summary>
-            <remarks>
-            Конструктор.
-            </remarks>
-        </member>
-        <member name="M:Server.Http_NS.Middleware_NS.ExceptionLoggingMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext)">
-            <summary>
-            Основной метод middleware.
-            </summary>
-        </member>
-        <member name="T:Server.Http_NS.Middleware_NS.SecurityHeadersMiddleware">
-            <summary>
-            Middleware для добавления HTTP-заголовков безопасности.
-            </summary>
-            <remarks>
-            Инициализирует новый экземпляр класса <see cref="T:Server.Http_NS.Middleware_NS.SecurityHeadersMiddleware"/>.
-            </remarks>
-            <param name="next">Следующий middleware в конвейере обработки запроса.</param>
-        </member>
-        <member name="M:Server.Http_NS.Middleware_NS.SecurityHeadersMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate)">
-            <summary>
-            Middleware для добавления HTTP-заголовков безопасности.
-            </summary>
-            <remarks>
-            Инициализирует новый экземпляр класса <see cref="T:Server.Http_NS.Middleware_NS.SecurityHeadersMiddleware"/>.
-            </remarks>
-            <param name="next">Следующий middleware в конвейере обработки запроса.</param>
-        </member>
-        <member name="M:Server.Http_NS.Middleware_NS.SecurityHeadersMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext)">
-            <summary>
-            Обрабатывает HTTP-запрос, добавляя заголовки безопасности к ответу.
-            </summary>
-            <param name="context">Контекст HTTP-запроса.</param>
-            <returns>Задача, представляющая асинхронную операцию обработки запроса.</returns>
-            <remarks>
-            Добавляет следующие заголовки безопасности:
-            <list type="bullet">
-            <item><description>Strict-Transport-Security: Принудительное использование HTTPS</description></item>
-            <item><description>X-Content-Type-Options: Запрет MIME-sniffing</description></item>
-            <item><description>X-Frame-Options: Запрет встраивания в iframe</description></item>
-            <item><description>X-XSS-Protection: Защита от XSS-атак</description></item>
-            <item><description>Content-Security-Policy: Политика безопасности контента</description></item>
-            </list>
-            </remarks>
-        </member>
         <member name="T:Server.Collection.EquipmentManager">
             <summary>
             Менеджер управления экипировкой персонажей.
@@ -355,6 +299,62 @@
             <returns><see cref="T:System.Security.Claims.ClaimsPrincipal"/> с утверждениями пользователя.</returns>
             <exception cref="T:System.ArgumentException">Если токен пустой.</exception>
             <exception cref="T:Microsoft.IdentityModel.Tokens.SecurityTokenException">Если токен не прошёл проверку.</exception>
+        </member>
+        <member name="T:Server.Middlewares.ExceptionLoggingMiddleware">
+            <summary>
+            Middleware для глобального перехвата исключений и логирования в файл.
+            </summary>
+            <remarks>
+            Конструктор.
+            </remarks>
+        </member>
+        <member name="M:Server.Middlewares.ExceptionLoggingMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Microsoft.Extensions.Logging.ILogger{Server.Middlewares.ExceptionLoggingMiddleware})">
+            <summary>
+            Middleware для глобального перехвата исключений и логирования в файл.
+            </summary>
+            <remarks>
+            Конструктор.
+            </remarks>
+        </member>
+        <member name="M:Server.Middlewares.ExceptionLoggingMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            Основной метод middleware.
+            </summary>
+        </member>
+        <member name="T:Server.Middlewares.SecurityHeadersMiddleware">
+            <summary>
+            Middleware для добавления HTTP-заголовков безопасности.
+            </summary>
+            <remarks>
+            Инициализирует новый экземпляр класса <see cref="T:Server.Middlewares.SecurityHeadersMiddleware"/>.
+            </remarks>
+            <param name="next">Следующий middleware в конвейере обработки запроса.</param>
+        </member>
+        <member name="M:Server.Middlewares.SecurityHeadersMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate)">
+            <summary>
+            Middleware для добавления HTTP-заголовков безопасности.
+            </summary>
+            <remarks>
+            Инициализирует новый экземпляр класса <see cref="T:Server.Middlewares.SecurityHeadersMiddleware"/>.
+            </remarks>
+            <param name="next">Следующий middleware в конвейере обработки запроса.</param>
+        </member>
+        <member name="M:Server.Middlewares.SecurityHeadersMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            Обрабатывает HTTP-запрос, добавляя заголовки безопасности к ответу.
+            </summary>
+            <param name="context">Контекст HTTP-запроса.</param>
+            <returns>Задача, представляющая асинхронную операцию обработки запроса.</returns>
+            <remarks>
+            Добавляет следующие заголовки безопасности:
+            <list type="bullet">
+            <item><description>Strict-Transport-Security: Принудительное использование HTTPS</description></item>
+            <item><description>X-Content-Type-Options: Запрет MIME-sniffing</description></item>
+            <item><description>X-Frame-Options: Запрет встраивания в iframe</description></item>
+            <item><description>X-XSS-Protection: Защита от XSS-атак</description></item>
+            <item><description>Content-Security-Policy: Политика безопасности контента</description></item>
+            </list>
+            </remarks>
         </member>
         <member name="T:Server.Program">
             <summary> Класс содержит точку входа приложения и настройки сервисов, аутентификации, middleware, маршрутов и баз данных. </summary>

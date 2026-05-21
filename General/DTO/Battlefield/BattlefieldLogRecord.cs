@@ -1,12 +1,16 @@
+using System.Text.Json.Serialization;
+
 namespace General.DTO.Battlefield;
+
+public interface IBattlefieldLogRecord
+{
+    int Index { get; set; }
+}
 
 public class BattlefieldLogRecord
 {
-
-    /// <summary> Индекс лога. </summary>
-    public required int Index { get; init; }
-    public required EBattlefieldLogAction Action { get; init; }
-    //public int? Turn { get; init; }
+    public required int Index { get; set; }
+    public required COMBAT_LOG_EVENT Action { get; init; }
 
     public EBattlefieldLogAbility? Ability { get; init; }
 
@@ -15,6 +19,38 @@ public class BattlefieldLogRecord
 
     public float? FloatValue1 { get; init; }
     public int? IntValue1 { get; init; }
-
     public bool? BoolValue1 { get; init => field = value == true ? true : null; } = null;
+    public bool? BoolValue2 { get; init => field = value == true ? true : null; } = null;
+}
+
+public class BattlefieldLogRecord_TurnStart : IBattlefieldLogRecord
+{
+    public int Index { get; set; }
+    public required int Turn { get; init; }
+}
+
+public class BattlefieldLogRecord_ChangeActionPoints : IBattlefieldLogRecord
+{
+    public int Index { get; set; }
+    public required Guid SpawnedHeroId { get; init; }
+    public required int CountAP { get; init; }
+}
+
+public class BattlefieldLogRecord_Damage : IBattlefieldLogRecord
+{
+    public int Index { get; set; }
+    public required int IndexReason { get; set; }
+    public required Guid SpawnedHeroId { get; init; }
+    public required float Damage { get; init; }
+    public bool IsCrit { get; init; }
+    public bool IsPerodic { get; init; }
+}
+
+public class BattlefieldLogRecord_UseAbility : IBattlefieldLogRecord
+{
+    public int Index { get; set; }
+    public required Guid SpawnedHero1Id { get; init; }
+    public required EBattlefieldLogAbility Ability { get; init; }
+    public Guid[]? SpawnedHeroTargets { get; init; }
+    public float[]? Damage { get; init; }
 }

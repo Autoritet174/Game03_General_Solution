@@ -7,5 +7,5 @@ public class SpawnedBattlefield(EBattleFiled eBattleFiled, List<SpawnedHero> Spa
     public EBattleFiled eBattleFiled { get; } = eBattleFiled;
     public List<SpawnedHero> SpawnedHeroPlayerList { get; } = SpawnedHeroPlayerList;
     public List<SpawnedHero> SpawnedHeroEnemyList { get; } = SpawnedHeroEnemyList;
-    public List<BattlefieldLogRecord>? BattlefieldLog { get; set; }
+    public List<IBattlefieldLogRecord>? BattlefieldLog { get; set; }
 }
