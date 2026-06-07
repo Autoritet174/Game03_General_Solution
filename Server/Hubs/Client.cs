@@ -72,7 +72,7 @@ public class Client(
         return await battleFieldManager.UseAbilityAsync(eAbility, heroSpawnedId, target).ConfigureAwait(false);
     }
 
-    public List<IBattlefieldLogRecord>? GetBattleLog()
+    public List<BattlefieldLogRecordBase> GetBattleLog()
     {
         return battleFieldManager.GetBattleLog();
     }

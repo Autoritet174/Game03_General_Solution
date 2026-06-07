@@ -22,19 +22,19 @@ public class WebSocketProvider
 
     // Pre-allocated logging delegates
     private static readonly Action<Logger<WebSocketProvider>, string, Exception> _errorInvokeLogger =
-        (l, method, ex) => l.LogError($"Error invoking {method}");
+        (l, method, ex) => l.LogError($"Error invoking {method}, {ex}");
 
     private static readonly Action<Logger<WebSocketProvider>, string, Exception> _errorSendLogger =
-        (l, method, ex) => l.LogError($"Error sending {method}");
+        (l, method, ex) => l.LogError($"Error sending {method}, {ex}");
 
     private static readonly Action<Logger<WebSocketProvider>, string, Exception> _errorDisconnectLogger =
-        (l, msg, ex) => l.LogError($"Disconnect error: {msg}");
+        (l, msg, ex) => l.LogError($"Disconnect error: {msg}, {ex}");
 
     private static readonly Action<Logger<WebSocketProvider>, Exception> _errorConnectLogger =
         (l, ex) => l.LogError($"Connection error: Exception: {ex}");
 
     private static readonly Action<Logger<WebSocketProvider>, string, Exception> _infoReceiveLogger =
-        (l, msg, ex) => l.LogInfo($"Server log: {msg}");
+        (l, msg, ex) => l.LogInfo($"Server log: {msg}, {ex}");
 
     public static async Task<bool> ConnectAsync(CancellationToken ctOpen, CancellationToken ctReceive)
     {

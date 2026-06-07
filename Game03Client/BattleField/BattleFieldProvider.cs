@@ -107,7 +107,7 @@ public class BattlefieldProvider
     }
 
 
-    public static async Task<List<IBattlefieldLogRecord>?> GetBattleLogAsync(CancellationToken cancellationToken)
+    public static async Task<List<BattlefieldLogRecordBase>?> GetBattleLogAsync(CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
         {
@@ -116,7 +116,7 @@ public class BattlefieldProvider
 
         try
         {
-            List<IBattlefieldLogRecord>? result = await WebSocketProvider.InvokeAsync<List<IBattlefieldLogRecord>?>(
+            List<BattlefieldLogRecordBase>? result = await WebSocketProvider.InvokeAsync<List<BattlefieldLogRecordBase>?>(
                 HubMethodNames.EMethod.GET_BATTLE_LOG,
                 cancellationToken
             ).ConfigureAwait(false);

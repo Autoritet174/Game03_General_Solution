@@ -106,7 +106,9 @@ public class CacheService()
 
             Slots = TableSlots.Values.AsEnumerable(),
 
-            XBattlefieldNpc = TableX_Battlefields_BaseHeroes.Values.AsEnumerable()
+            XBattlefieldNpc = TableX_Battlefields_BaseHeroes.Values.AsEnumerable(),
+
+            Battlefields = TableBattlefields.Values.AsEnumerable()
         };
 
 

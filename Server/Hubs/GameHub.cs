@@ -122,7 +122,7 @@ public class GameHub(ClientManager clientManager, IClientFactory clientFactory, 
     }
 
     [HubMethodName(HubMethodNames.GET_BATTLE_LOG)]
-    public async Task<List<IBattlefieldLogRecord>?> GetBattleLogAsync() => GetClient()?.GetBattleLog();
+    public async Task<List<BattlefieldLogRecordBase>> GetBattleLogAsync() => GetClient()!.GetBattleLog();
 
 
     /*

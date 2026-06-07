@@ -21,7 +21,7 @@ public class BattlefieldManager(Guid userId,
     private bool inCombat = false;
 
     private SpawnedBattlefield? spawnedBattlefield = null;
-    private List<IBattlefieldLogRecord> battleLog = [];
+    private List<BattlefieldLogRecordBase> battleLog = [];
     private DateTime dateTimeStartCombat = DateTime.MinValue;
     private int battleLogIndex = 1;
 
@@ -151,24 +151,25 @@ public class BattlefieldManager(Guid userId,
         return true;
     }
 
-    public List<IBattlefieldLogRecord>? GetBattleLog()
+    public List<BattlefieldLogRecordBase> GetBattleLog()
     {
         if (!inCombat)
         {
-            return null;
+            return [];
         }
         CombatProcess();
-        List<IBattlefieldLogRecord>? log = battleLog;
+        List<BattlefieldLogRecordBase>? log = battleLog;
         battleLog = [];
         return log;
     }
 
-    // === Вспомогательные методы ===
 
-    private void AddLog(IBattlefieldLogRecord battlefieldLogRecord) {
-        battleLog.Add(battlefieldLogRecord);
-        battlefieldLogRecord.Index = battleLog.Count;
+    private void AddLog<T>(T log) where T : BattlefieldLogRecordBase
+    {
+        battleLog.Add(log);
+        log.Index = battleLog.Count;
     }
+
 
     /// <summary> Инициализировать очки действия по инициативе. </summary>
     private static void InitActionPoints(SpawnedHero sh)
