@@ -1,7 +1,6 @@
 
 using General.DTO.Battlefield;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.AspNetCore.SignalR.Client;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -12,6 +11,7 @@ namespace Game03Client.Battlefield;
 public class BattlefieldProvider
 {
     private static readonly Logger<BattlefieldProvider> logger = new();
+
     public static async Task<SpawnedBattlefield?> LoadBattleFieldAsync(EBattleFiled eBattleFiled, Guid[] spawnedHeroesId, CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
