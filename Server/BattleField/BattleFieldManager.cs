@@ -88,8 +88,7 @@ public class BattlefieldManager(Guid userId,
 
             // спаун героев
             List<SpawnedHero> spawnedHeroesPlayer = [];
-            foreach (Hero hero in db.Heroes.Include(a => a.BaseHero).AsNoTracking().Where(a => a.UserId == userId //&& spawnedHeroesId.Contains(a.Id)
-            ).OrderBy(a => a.Id).Take(12))
+            foreach (Hero hero in db.Heroes.Include(a => a.BaseHero).AsNoTracking().Where(a => a.UserId == userId && spawnedHeroesId.Contains(a.Id)))
             {
                 SpawnedHero sh = SpawnedHeroFactory.CreateFromHero(hero);
                 spawnedHeroesPlayer.Add(sh);
