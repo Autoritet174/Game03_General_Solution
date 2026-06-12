@@ -12,7 +12,7 @@ public class BattlefieldProvider
 {
     private static readonly Logger<BattlefieldProvider> logger = new();
 
-    public static async Task<SpawnedBattlefield?> LoadBattleFieldAsync(EBattleFiled eBattleFiled, Guid[] spawnedHeroesId, CancellationToken cancellationToken)
+    public static async Task<SpawnedBattlefield?> LoadBattlefieldAsync(EBattleFiled eBattleFiled, Guid[] spawnedHeroesId, CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
         {

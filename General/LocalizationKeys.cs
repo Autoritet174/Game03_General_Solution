@@ -39,6 +39,7 @@ public static class LocalizationKeys
             public const string Sell = $"{_Button}{nameof(Sell)}";
             public const string ShowHero = $"{_Button}{nameof(ShowHero)}";
             public const string Cancel = $"{_Button}{nameof(Cancel)}";
+            public const string StartBattle = $"{_Button}{nameof(StartBattle)}";
 
             public static class Ability
             {
@@ -62,7 +63,7 @@ public static class LocalizationKeys
             public const string NoGroup = $"{_Label}{nameof(NoGroup)}";
             public const string EndBattle = $"{_Label}{nameof(EndBattle)}";
 
-            public const string BattleField = $"{_Label}{nameof(BattleField)}";
+            public const string Battlefield = $"{_Label}{nameof(Battlefield)}";
             public static readonly string ConnectionLost = $"{_Label}{nameof(ConnectionLost)}";
             public static readonly string Reconnecting = $"{_Label}{nameof(Reconnecting)}";
             public static readonly string Try = $"{_Label}{nameof(Try)}";
