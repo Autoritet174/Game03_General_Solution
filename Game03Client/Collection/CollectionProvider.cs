@@ -18,6 +18,9 @@ public class CollectionProvider
     private static DtoContainerCollection collection = null!;
     private static readonly Logger<CollectionProvider> logger = new();
 
+    private static readonly Dictionary<Guid, Hero> dictonaryHeroes = [];
+    private static readonly Dictionary<Guid, Equipment> dictonaryEquipments = [];
+
     public static async Task<bool> LoadAllCollectionFromServerAsync(CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
@@ -41,17 +44,24 @@ public class CollectionProvider
             return false;
         }
 
+
         IEnumerable<BaseEquipment> baseEquipments = GameData.Container.BaseEquipments;
+        dictonaryEquipments.Clear();
         foreach (Equipment i in c.CollectionEquipments)
         {
             i.BaseEquipment = baseEquipments.FirstOrDefault(a => a.Id == i.BaseEquipmentId);
+            dictonaryEquipments.Add(i.Id, i);
         }
 
+
         IEnumerable<BaseHero> baseHeroes = GameData.Container.BaseHeroes;
+        dictonaryHeroes.Clear();
         foreach (Hero i in c.CollectionHeroes)
         {
             i.BaseHero = baseHeroes.FirstOrDefault(a => a.Id == i.BaseHeroId);
+            dictonaryHeroes.Add(i.Id, i);
         }
+
 
         collection = c;
 
@@ -63,11 +73,17 @@ public class CollectionProvider
         {
             // Сначала по Rarity (убывание)
             int result = b.BaseHero!.Rarity.CompareTo(a.BaseHero!.Rarity);
-            if (result != 0) return result;
+            if (result != 0)
+            {
+                return result;
+            }
 
             // Затем по Level (возрастание)
             result = a.Level.CompareTo(b.Level);
-            if (result != 0) return result;
+            if (result != 0)
+            {
+                return result;
+            }
 
             // Затем по Name (возрастание)
             if (a.BaseHero == null || b.BaseHero == null)
@@ -78,6 +94,10 @@ public class CollectionProvider
 
             return string.Compare(a.BaseHero.Name, b.BaseHero.Name, StringComparison.Ordinal);
         });
+
+
+
+
 
         return true;
     }
@@ -312,6 +332,31 @@ public class CollectionProvider
         return false;
     }
 
+    public static Hero? GetHero(Guid id)
+    {
+        try
+        {
+            return dictonaryHeroes[id];
+        }
+        catch (Exception ex)
+        {
+            logger.LogException(ex);
+            return null;
+        }
+    }
+
+    public static Equipment? GetEquipment(Guid id)
+    {
+        try
+        {
+            return dictonaryEquipments[id];
+        }
+        catch (Exception ex)
+        {
+            logger.LogException(ex);
+            return null;
+        }
+    }
 
     private static readonly Comparer<Equipment> DtoEquipmentComparer = Comparer<Equipment>.Create(static (a, b) =>
     {
