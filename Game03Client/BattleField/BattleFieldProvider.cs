@@ -106,7 +106,7 @@ public class BattlefieldProvider
         return false;
     }
 
-
+    
     public static async Task<List<BattlefieldLogRecordBase>?> GetBattleLogAsync(CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
