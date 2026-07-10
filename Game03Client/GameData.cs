@@ -1,6 +1,6 @@
-
 using General.DTO.Entities;
 using General.DTO.Entities.GameData;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,6 +10,7 @@ namespace Game03Client;
 public static class GameData
 {
     public static DtoContainerGameData Container = null!;
+    private static readonly Dictionary<int, BaseHero> DictonaryBaseHero = [];
 
     public static async Task<bool> LoadGameDataAsync(CancellationToken cancellationToken)
     {
@@ -51,7 +52,19 @@ public static class GameData
         }
 
         Container = c;
+
+        DictonaryBaseHero.Clear();
+        foreach (BaseHero i in c.BaseHeroes)
+        {
+            DictonaryBaseHero.Add(i.Id, i);
+        }
+
+
         return true;
     }
 
+    public static BaseHero? GetBaseHeroById(int id)
+    {
+        return DictonaryBaseHero.TryGetValue(id, out BaseHero baseHero) ? baseHero : null;
+    }
 }
