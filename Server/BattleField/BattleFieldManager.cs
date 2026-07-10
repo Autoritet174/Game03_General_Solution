@@ -1,15 +1,12 @@
 using General.DTO.Battlefield;
 using General.DTO.Entities.Collection;
 using General.DTO.Entities.GameData;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Server.Cache;
 using Server.DTO.Battlefield;
 using Server.Extensions;
 using Server.Hubs;
 using Server_DB_Postgres;
-using System.Diagnostics.Metrics;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Server.Battlefield;
 
