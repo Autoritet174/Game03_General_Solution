@@ -120,7 +120,7 @@ public class BattlefieldProvider
                 HubMethodNames.EMethod.GET_BATTLE_LOG,
                 cancellationToken
             ).ConfigureAwait(false);
-            logger.LogInfo(JSON.Serialize(result));
+            //logger.LogInfo(JSON.Serialize(result));
 
             return result;
         }

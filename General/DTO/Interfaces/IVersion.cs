@@ -4,5 +4,5 @@ namespace General.DTO.Interfaces;
 public interface IVersion
 {
     /// <summary> Версия записи для оптимистической блокировки. </summary>
-    long Version { get; set; }
+    long version { get; set; }
 }

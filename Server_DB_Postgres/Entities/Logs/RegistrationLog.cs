@@ -7,24 +7,24 @@ namespace Server_DB_Postgres.Entities.Logs;
 /// <summary> Лог авторизации пользователей. </summary>
 public class RegistrationLog : IVersion, ICreatedAt
 {
-    public Guid Id { get; init; }
+    public Guid id { get; init; }
 
     /// <summary> <inheritdoc/> </summary>
-    public long Version { get; set; }
+    public long version { get; set; }
 
     /// <summary> <inheritdoc/> </summary>
-    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset createdAt { get; set; }
 
-    public string? Email { get; set; }
+    public string? email { get; set; }
 
-    public Guid? UserId { get; set; }
-    public User? User { get; set; }
+    public Guid? userId { get; set; }
+    public User? user { get; set; }
 
     /// <summary> Успешность регистрации. </summary>
-    public required bool Success { get; set; }
+    public required bool success { get; set; }
 
-    public Guid? UserDeviceId { get; set; }
-    public UserDevice? UserDevice { get; set; }
+    public Guid? userDeviceId { get; set; }
+    public UserDevice? userDevice { get; set; }
 
-    public IPAddress? Ip { get; set; }
+    public IPAddress? ip { get; set; }
 }

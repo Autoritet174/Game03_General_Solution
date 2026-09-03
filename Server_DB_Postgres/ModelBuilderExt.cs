@@ -36,7 +36,7 @@ public static class ModelBuilderExt
                 if (attr != null)
                 {
                     // Если атрибут HasDefaultValue есть, используем его значение
-                    _ = entity.Property(property.Name).HasDefaultValue(attr.Value);
+                    _ = entity.Property(property.Name).HasDefaultValue(attr.value);
                 }
                 // Проверяем, является ли свойство типом Dice и не nullable
                 else if (property.PropertyType == typeof(Dice) &&

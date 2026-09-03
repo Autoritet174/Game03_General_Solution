@@ -9,7 +9,7 @@ namespace Server_DB_Postgres.Attributes;
 public class DefaultAttribute(object value) : Attribute
 {
     /// <summary> Значение. </summary>
-    public object Value { get; } = value;
+    public object value { get; } = value;
 }
 
 /// <summary>

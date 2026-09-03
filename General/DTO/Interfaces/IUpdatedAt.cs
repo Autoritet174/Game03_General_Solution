@@ -6,5 +6,5 @@ namespace General.DTO.Interfaces;
 public interface IUpdatedAt
 {
     /// <summary> UTC дата время обновления. Контролируется на уровне EF автоматически при сохранении по интерфейсу <see cref="IUpdatedAt"/>. </summary>
-    DateTimeOffset UpdatedAt { get; set; }
+    DateTimeOffset updatedAt { get; set; }
 }

@@ -94,7 +94,7 @@ public sealed partial class SessionService(
             RefreshTokenHash = hash,
             ExpiresAt = expiresAt,
             UserDeviceId = deviceId,
-            CreatedAt = DateTimeOffset.UtcNow
+            createdAt = DateTimeOffset.UtcNow
         };
 
         _ = dbContext.UserSessions.Add(session);
@@ -109,13 +109,13 @@ public sealed partial class SessionService(
     /// </summary>
     public async Task<Result<SessionResponseData>> RefreshSessionAsync(DtoRequestAuthReg dto, CancellationToken cancellationToken)
     {
-        if (dto.RefreshToken?.Length != BASE_64_TOKEN_LENGTH)
+        if (dto.refreshToken?.Length != BASE_64_TOKEN_LENGTH)
         {
             return Result.Fail("Invalid token length");
         }
 
         Span<byte> rawToken = stackalloc byte[TOKEN_SIZE];
-        if (!Convert.TryFromBase64String(dto.RefreshToken, rawToken, out _))
+        if (!Convert.TryFromBase64String(dto.refreshToken, rawToken, out _))
         {
             return Result.Fail("Invalid Base64");
         }
@@ -188,7 +188,7 @@ public sealed partial class SessionService(
                 RefreshTokenHash = nextTokenHash,
                 ExpiresAt = nextExpiry,
                 UserDeviceId = session.UserDeviceId,
-                CreatedAt = DateTimeOffset.UtcNow
+                createdAt = DateTimeOffset.UtcNow
             };
 
             _ = dbContext.UserSessions.Add(nextSession);

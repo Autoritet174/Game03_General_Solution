@@ -14,13 +14,13 @@ public class UserBan : IVersion, ICreatedAt, IUpdatedAt
 
 
     /// <summary> <inheritdoc/> </summary>
-    public long Version { get; set; }
+    public long version { get; set; }
 
     /// <summary> <inheritdoc/> </summary>
-    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset createdAt { get; set; }
 
     /// <summary> <inheritdoc/> </summary>
-    public DateTimeOffset UpdatedAt { get; set; }
+    public DateTimeOffset updatedAt { get; set; }
 
     /// <summary> Дата и время окончания блокировки. Null, если блокировка бессрочная. </summary>
     public DateTimeOffset? ExpiresAt { get; set; }

@@ -8,7 +8,7 @@ public class UserDevice : ICreatedAt
     public Guid Id { get; init; }
 
     /// <summary> <inheritdoc/> </summary>
-    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset createdAt { get; set; }
 
     /// <summary> Получает или задаёт имя пользователя операционной системы. </summary>
     /// <value>Имя пользователя, под которым запущено приложение (например, 'JohnDoe').</value>

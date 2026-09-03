@@ -19,6 +19,6 @@ public class RegController(RegService _regService) : ControllerBaseApi
         DtoResponseAuthReg dtoResult = await _regService.RegisterAsync(dtoRequest, HttpContext.Connection.RemoteIpAddress, cancellationToken).ConfigureAwait(false);
 
         string jsonResult = JSON.Serialize(dtoResult);
-        return dtoResult.ErrorKey == null ? Ok(jsonResult) : BadRequest(jsonResult);
+        return dtoResult.errorKey == null ? Ok(jsonResult) : BadRequest(jsonResult);
     }
 }

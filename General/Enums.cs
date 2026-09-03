@@ -2,68 +2,68 @@ namespace General;
 
 public enum ESlotType : int
 {
-    None = 0,
+    none = 0,
 
     /// <summary> Оружие </summary>
-    Weapon = 1,
+    weapon = 1,
 
     /// <summary> Щит </summary>
-    Shield = 2,
+    shield = 2,
 
     /// <summary> Голова </summary>
-    Head = 4,
+    head = 4,
 
     /// <summary> Доспех </summary>
-    Armor = 6,
+    armor = 6,
 
     /// <summary> Руки </summary>
-    Hands = 7,
+    hands = 7,
 
     /// <summary> Ступни </summary>
-    Feet = 9,
+    feet = 9,
 
     /// <summary> Браслет </summary>
-    Bracelet = 10,
+    bracelet = 10,
 
     /// <summary> Кольцо </summary>
-    Ring = 14,
+    ring = 14,
 
     /// <summary> Аксессуар </summary>
-    Trinket = 16,
+    trinket = 16,
 
     /// <summary> Шея </summary>
-    Neck = 17
+    neck = 17
 }
 
 public enum EStatType : int
 {
-    None = 0,
-    Health = 1,
-    Damage = 2,
-    Strength = 3,
-    Agility = 4,
-    Intelligence = 5,
-    CritChance = 6,
-    CritMultiplier = 7,
-    Haste = 8,
-    Versality = 9,
-    Initiative = 10
+    none = 0,
+    health = 1,
+    damage = 2,
+    strength = 3,
+    agility = 4,
+    intelligence = 5,
+    critChance = 6,
+    critMultiplier = 7,
+    haste = 8,
+    versality = 9,
+    initiative = 10
 }
 
 public enum ESlot : int
 {
-    RightHand = 1,
-    LeftHand = 2,
-    Head = 3,
-    Armor = 4,
-    Hands = 5,
-    Feet = 6,
-    Bracelet = 7,
-    Ring1 = 8,
-    Ring2 = 9,
-    Trinket1 = 10,
-    Trinket2 = 11,
-    Neck = 12
+    rightHand = 1,
+    leftHand = 2,
+    head = 3,
+    armor = 4,
+    hands = 5,
+    feet = 6,
+    bracelet = 7,
+    ring1 = 8,
+    ring2 = 9,
+    trinket1 = 10,
+    trinket2 = 11,
+    neck = 12
 }
 
 //public enum int : int
@@ -80,18 +80,18 @@ public enum ESlot : int
 
 public enum EMainStat : int
 {
-    Universal = 0,
-    Strength = 1,
-    Agility = 2,
-    Intelligence = 3
+    universal = 0,
+    strength = 1,
+    agility = 2,
+    intelligence = 3
 }
 
 public enum ERank : int
 {
-    None = 0,
-    Amplified = 1,
-    Elite = 2,
-    Champion = 3,
+    none = 0,
+    amplified = 1,
+    elite = 2,
+    champion = 3,
 }
 
 //public enum EBattlefieldDifficulty : int
@@ -109,15 +109,15 @@ public enum EBattleFiled
 
 public enum COMBAT_LOG_EVENT
 {
-    StartTurn = 1,
-    ChangeActionPoints = 2,
-    UseAbility = 3,
-    ChangeHealth_Damage = 4,
-    ChangeHealth_Healing = 5,
+    startTurn = 1,
+    changeActionPoints = 2,
+    useAbility = 3,
+    changeHealth_Damage = 4,
+    changeHealth_Healing = 5,
 
 }
 
 public enum EBattlefieldLogAbility
 {
-    Attack = 1,
+    attack = 1,
 }

@@ -21,15 +21,15 @@ public static class EquipmentFactory
     {
         Equipment e = new()
         {
-            BaseEquipmentId = baseEquipment.Id,
-            UserId = userId
+            baseEquipmentId = baseEquipment.id,
+            userId = userId
         };
 
         // Сгенерировать статы
-        Dictionary<EStatType, Dice> pos = baseEquipment.PossibleStats ?? [];
-        if (baseEquipment.EquipmentType.PossibleStats != null)
+        Dictionary<EStatType, Dice> pos = baseEquipment.possibleStats ?? [];
+        if (baseEquipment.equipmentType.possibleStats != null)
         {
-            foreach (KeyValuePair<EStatType, Dice> item in baseEquipment.EquipmentType.PossibleStats)
+            foreach (KeyValuePair<EStatType, Dice> item in baseEquipment.equipmentType.possibleStats)
             {
                 if (!pos.ContainsKey(item.Key))
                 {
@@ -41,19 +41,19 @@ public static class EquipmentFactory
         int countPossibleStats = pos.Count;
         if (countPossibleStats > 0)
         {
-            e.Stats = [];
-            for (int i = countStatsByRarity[baseEquipment.Rarity]; i > 0; i--)
+            e.stats = [];
+            for (int i = countStatsByRarity[baseEquipment.rarity]; i > 0; i--)
             {
                 EStatType randomKey = pos.Keys.ElementAt(Random.Shared.Next(countPossibleStats));
                 List<float> list;
-                if (e.Stats.TryGetValue(randomKey, out List<float>? value))
+                if (e.stats.TryGetValue(randomKey, out List<float>? value))
                 {
                     list = value;
                 }
                 else
                 {
                     list = [];
-                    e.Stats.Add(randomKey, list);
+                    e.stats.Add(randomKey, list);
                 }
 
                 Dice dice = pos[randomKey];

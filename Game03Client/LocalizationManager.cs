@@ -20,7 +20,7 @@ public static class LocalizationManager
     {
         localization.Clear();
 
-        using var doc = JsonDocument.Parse(jsonFileData.Value);
+        using var doc = JsonDocument.Parse(jsonFileData.value);
         ProcessElement(doc.RootElement, "");
     }
 

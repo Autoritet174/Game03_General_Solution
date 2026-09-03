@@ -2,10 +2,10 @@ namespace General.DTO.Entities.GameData;
 
 public class MaterialDamagePercent
 {
-    public int Id { get; set; }
-    public int SmithingMaterialsId { get; set; }
-    public SmithingMaterial SmithingMaterials { get; set; } = null!;
-    public int DamageTypeId { get; set; }
-    public DamageType DamageType { get; set; } = null!;
-    public int Percent { get; set; }
+    public int id { get; set; }
+    public int smithingMaterialsId { get; set; }
+    public SmithingMaterial smithingMaterials { get; set; } = null!;
+    public int damageTypeId { get; set; }
+    public DamageType damageType { get; set; } = null!;
+    public int percent { get; set; }
 }

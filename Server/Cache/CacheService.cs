@@ -47,15 +47,15 @@ public class CacheService()
 
         //LoadTableUserSessionInactivationReasons(db);
         TableUserSessionInactivationReasons = db.UserSessionInactivationReasons.AsNoTracking().ToDictionary(a => a.Id);
-        TableBaseEquipments = db.BaseEquipments.AsNoTracking().ToDictionary(a => a.Id);
+        TableBaseEquipments = db.BaseEquipments.AsNoTracking().ToDictionary(a => a.id);
         TableBaseEquipmentsByName = [];
         foreach (KeyValuePair<int, BaseEquipment> kv in TableBaseEquipments)
         {
             BaseEquipment v = kv.Value;
-            TableBaseEquipmentsByName.Add(v.Name, v);
+            TableBaseEquipmentsByName.Add(v.name, v);
         }
 
-        TableBaseHeroesOnlyPlayable = db.BaseHeroes.AsNoTracking().Where(a => a.IsPlayable).ToDictionary(a => a.Id);
+        TableBaseHeroesOnlyPlayable = db.BaseHeroes.AsNoTracking().Where(a => a.isPlayable).ToDictionary(a => a.id);
 
 
         TableBaseHeroesWithNotPlayable = [];
@@ -63,52 +63,52 @@ public class CacheService()
         {
             TableBaseHeroesWithNotPlayable.Add(i.Key, i.Value);
         }
-        foreach (BaseHero? i in db.BaseHeroes.AsNoTracking().Where(a => !a.IsPlayable))
+        foreach (BaseHero? i in db.BaseHeroes.AsNoTracking().Where(a => !a.isPlayable))
         {
-            TableBaseHeroesWithNotPlayable.Add(i.Id, i);
+            TableBaseHeroesWithNotPlayable.Add(i.id, i);
         }
 
 
-        TableCreatureTypes = db.CreatureTypes.AsNoTracking().ToDictionary(a => a.Id);
-        TableDamageTypes = db.DamageTypes.AsNoTracking().ToDictionary(a => a.Id);
-        TableEquipmentTypes = db.EquipmentTypes.AsNoTracking().ToDictionary(a => a.Id);
-        TableMaterialDamagePercents = db.MaterialDamagePercents.AsNoTracking().ToDictionary(a => a.Id);
-        TableSlotTypes = db.SlotTypes.AsNoTracking().ToDictionary(a => a.Id);
-        TableSlots = db.Slots.AsNoTracking().ToDictionary(a => a.Id);
-        TableSmithingMaterials = db.SmithingMaterials.AsNoTracking().ToDictionary(a => a.Id);
-        TableX_EquipmentTypes_DamageTypes = db.x_EquipmentTypes_DamageTypes.AsNoTracking().ToDictionary(a => a.Id);
-        TableX_Heroes_CreatureTypes = db.x_Heroes_CreatureTypes.AsNoTracking().ToDictionary(a => a.Id);
-        TableBattlefields = db.Battlefields.AsNoTracking().ToDictionary(a => a.Id);
-        TableX_Battlefields_BaseHeroes = db.x_Battlefields_BaseHeroes.AsNoTracking().ToDictionary(a => a.Id);
+        TableCreatureTypes = db.CreatureTypes.AsNoTracking().ToDictionary(a => a.id);
+        TableDamageTypes = db.DamageTypes.AsNoTracking().ToDictionary(a => a.id);
+        TableEquipmentTypes = db.EquipmentTypes.AsNoTracking().ToDictionary(a => a.id);
+        TableMaterialDamagePercents = db.MaterialDamagePercents.AsNoTracking().ToDictionary(a => a.id);
+        TableSlotTypes = db.SlotTypes.AsNoTracking().ToDictionary(a => a.id);
+        TableSlots = db.Slots.AsNoTracking().ToDictionary(a => a.id);
+        TableSmithingMaterials = db.SmithingMaterials.AsNoTracking().ToDictionary(a => a.id);
+        TableX_EquipmentTypes_DamageTypes = db.x_EquipmentTypes_DamageTypes.AsNoTracking().ToDictionary(a => a.id);
+        TableX_Heroes_CreatureTypes = db.x_Heroes_CreatureTypes.AsNoTracking().ToDictionary(a => a.id);
+        TableBattlefields = db.Battlefields.AsNoTracking().ToDictionary(a => a.id);
+        TableX_Battlefields_BaseHeroes = db.x_Battlefields_BaseHeroes.AsNoTracking().ToDictionary(a => a.id);
 
         ThrowIfDataNotCorrect();
 
         DtoContainerGameData container = new()
         {
-            BaseEquipments = TableBaseEquipments.Values.AsEnumerable(),
-            BaseHeroes = TableBaseHeroesOnlyPlayable.Values.AsEnumerable(),
+            baseEquipments = TableBaseEquipments.Values.AsEnumerable(),
+            baseHeroes = TableBaseHeroesOnlyPlayable.Values.AsEnumerable(),
 
-            CreatureTypes = TableCreatureTypes.Values.AsEnumerable(),
+            creatureTypes = TableCreatureTypes.Values.AsEnumerable(),
 
-            DamageTypes = TableDamageTypes.Values.AsEnumerable(),
+            damageTypes = TableDamageTypes.Values.AsEnumerable(),
 
-            EquipmentTypes = TableEquipmentTypes.Values.AsEnumerable(),
+            equipmentTypes = TableEquipmentTypes.Values.AsEnumerable(),
 
-            MaterialDamagePercents = TableMaterialDamagePercents.Values.AsEnumerable(),
+            materialDamagePercents = TableMaterialDamagePercents.Values.AsEnumerable(),
 
-            SlotTypes = TableSlotTypes.Values.AsEnumerable(),
+            slotTypes = TableSlotTypes.Values.AsEnumerable(),
 
-            SmithingMaterials = TableSmithingMaterials.Values.AsEnumerable(),
+            smithingMaterials = TableSmithingMaterials.Values.AsEnumerable(),
 
-            XEquipmentTypesDamageTypes = TableX_EquipmentTypes_DamageTypes.Values.AsEnumerable(),
+            xEquipmentTypesDamageTypes = TableX_EquipmentTypes_DamageTypes.Values.AsEnumerable(),
 
-            XHeroesCreatureTypes = TableX_Heroes_CreatureTypes.Values.AsEnumerable(),
+            xHeroesCreatureTypes = TableX_Heroes_CreatureTypes.Values.AsEnumerable(),
 
             Slots = TableSlots.Values.AsEnumerable(),
 
-            XBattlefieldNpc = TableX_Battlefields_BaseHeroes.Values.AsEnumerable(),
+            xBattlefieldNpc = TableX_Battlefields_BaseHeroes.Values.AsEnumerable(),
 
-            Battlefields = TableBattlefields.Values.AsEnumerable()
+            battlefields = TableBattlefields.Values.AsEnumerable()
         };
 
 
@@ -122,48 +122,48 @@ public class CacheService()
         foreach (KeyValuePair<int, BaseEquipment> kv in TableBaseEquipments)
         {
             BaseEquipment i = kv.Value;
-            i.EquipmentType = TableEquipmentTypes[i.EquipmentTypeId];
-            i.SmithingMaterial = i.SmithingMaterialId != null ? TableSmithingMaterials[i.SmithingMaterialId.Value] : null;
+            i.equipmentType = TableEquipmentTypes[i.equipmentTypeId];
+            i.smithingMaterial = i.smithingMaterialId != null ? TableSmithingMaterials[i.smithingMaterialId.Value] : null;
         }
 
         foreach (KeyValuePair<int, EquipmentType> kv in TableEquipmentTypes)
         {
             EquipmentType i = kv.Value;
-            i.SlotType = TableSlotTypes[i.SlotTypeId];
+            i.slotType = TableSlotTypes[i.slotTypeId];
         }
 
         foreach (KeyValuePair<int, MaterialDamagePercent> kv in TableMaterialDamagePercents)
         {
             MaterialDamagePercent i = kv.Value;
-            i.SmithingMaterials = TableSmithingMaterials[i.SmithingMaterialsId];
-            i.DamageType = TableDamageTypes[i.DamageTypeId];
+            i.smithingMaterials = TableSmithingMaterials[i.smithingMaterialsId];
+            i.damageType = TableDamageTypes[i.damageTypeId];
         }
 
         foreach (KeyValuePair<ESlot, Slot> kv in TableSlots)
         {
             Slot i = kv.Value;
-            i.SlotType = TableSlotTypes[i.SlotTypeId];
+            i.slotType = TableSlotTypes[i.slotTypeId];
         }
 
         foreach (KeyValuePair<int, X_EquipmentType_DamageType> kv in TableX_EquipmentTypes_DamageTypes)
         {
             X_EquipmentType_DamageType i = kv.Value;
-            i.EquipmentType = TableEquipmentTypes[i.EquipmentTypeId];
-            i.DamageType = TableDamageTypes[i.DamageTypeId];
+            i.equipmentType = TableEquipmentTypes[i.equipmentTypeId];
+            i.damageType = TableDamageTypes[i.damageTypeId];
         }
 
         foreach (KeyValuePair<int, X_Hero_CreatureType> kv in TableX_Heroes_CreatureTypes)
         {
             X_Hero_CreatureType i = kv.Value;
-            i.BaseHero = TableBaseHeroesOnlyPlayable[i.BaseHeroId];
-            i.CreatureType = TableCreatureTypes[i.CreatureTypeId];
+            i.baseHero = TableBaseHeroesOnlyPlayable[i.baseHeroId];
+            i.creatureType = TableCreatureTypes[i.creatureTypeId];
         }
 
         foreach (KeyValuePair<int, X_Battlefield_BaseHero> kv in TableX_Battlefields_BaseHeroes)
         {
             X_Battlefield_BaseHero i = kv.Value;
-            i.BaseHero = TableBaseHeroesOnlyPlayable[i.BaseHeroId];
-            i.Battlefield = TableBattlefields[i.BattlefieldId];
+            i.baseHero = TableBaseHeroesOnlyPlayable[i.baseHeroId];
+            i.battlefield = TableBattlefields[i.battlefieldId];
         }
 
 
@@ -234,7 +234,7 @@ public class CacheService()
     {
         foreach (EBattleFiled i in Enum.GetValues<EBattleFiled>())
         {
-            if (!TableBattlefields.Values.Any(a => a.EnumName == i.ToString()))
+            if (!TableBattlefields.Values.Any(a => a.enumName == i.ToString()))
             {
                 throw new Exception("Not correct data in table Battlefields and enum EBattleFiled");
             }

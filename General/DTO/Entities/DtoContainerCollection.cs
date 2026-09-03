@@ -8,7 +8,7 @@ namespace General.DTO.Entities;
 /// </summary>
 public class DtoContainerCollection
 {
-    public required List<Equipment> CollectionEquipments { get; init; }
-    public required List<Hero> CollectionHeroes { get; init; }
+    public required List<Equipment> collectionEquipments { get; init; }
+    public required List<Hero> collectionHeroes { get; init; }
 
 }

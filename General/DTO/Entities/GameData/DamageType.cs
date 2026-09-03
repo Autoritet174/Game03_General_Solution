@@ -2,9 +2,9 @@ namespace General.DTO.Entities.GameData;
 
 public class DamageType
 {
-    public int Id { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public string? NameRu { get; set; }
-    public string? DevHintRu { get; set; }
-    public int Category { get; set; } = 0;
+    public int id { get; set; }
+    public string name { get; set; } = string.Empty;
+    public string? nameRu { get; set; }
+    public string? devHintRu { get; set; }
+    public int category { get; set; } = 0;
 }

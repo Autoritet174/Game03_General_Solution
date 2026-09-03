@@ -44,15 +44,15 @@ public class Auth
             return false;
         }
 
-        if (!string.IsNullOrEmpty(dtoResponse.ErrorKey))
+        if (!string.IsNullOrEmpty(dtoResponse.errorKey))
         {
             //logger.LogError($"ErrorKey: {dtoResponse.ErrorKey}", dtoResponse.ErrorKey);
             return false;
         }
 
-        AccessToken = dtoResponse.AccessToken;
-        RefreshToken = dtoResponse.RefreshToken;
-        RefreshTokenExpirationAt = dtoResponse.ExtraDateTimeOffset;
+        AccessToken = dtoResponse.accessToken;
+        RefreshToken = dtoResponse.refreshToken;
+        RefreshTokenExpirationAt = dtoResponse.extraDateTimeOffset;
         return true;
     }
 

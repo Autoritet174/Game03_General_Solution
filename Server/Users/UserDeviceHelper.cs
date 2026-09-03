@@ -171,7 +171,7 @@ public static class UserDeviceHelper
     /// </summary>
     public static Guid ComputeUUIDv8(DtoRequestAuthReg dto)
     {
-        if (dto == null || string.IsNullOrWhiteSpace(dto.DeviceUniqueIdentifier))
+        if (dto == null || string.IsNullOrWhiteSpace(dto.deviceUniqueIdentifier))
         {
             return Guid.Empty;
         }
@@ -181,19 +181,19 @@ public static class UserDeviceHelper
         ReadOnlySpan<byte> separator = [SEPARATOR_BYTE];
 
         // Последовательно добавляем данные в хешер
-        AppendString(dto.System_Environment_UserName, hasher, separator);
-        AppendInt(dto.TimeZoneInfo_Local_BaseUtcOffset_Minutes, hasher, separator);
-        AppendString(dto.DeviceUniqueIdentifier, hasher, separator);
-        AppendString(dto.DeviceModel, hasher, separator);
-        AppendString(dto.DeviceType, hasher, separator);
-        AppendString(dto.OperatingSystem, hasher, separator);
-        AppendString(dto.ProcessorType, hasher, separator);
-        AppendInt(dto.ProcessorCount, hasher, separator);
-        AppendInt(dto.SystemMemorySize, hasher, separator);
-        AppendString(dto.GraphicsDeviceName, hasher, separator);
-        AppendInt(dto.GraphicsMemorySize, hasher, separator);
-        AppendBool(dto.SystemInfo_supportsInstancing, hasher, separator);
-        AppendString(dto.SystemInfo_npotSupport, hasher, separator);
+        AppendString(dto.system_Environment_UserName, hasher, separator);
+        AppendInt(dto.timeZoneInfo_Local_BaseUtcOffset_Minutes, hasher, separator);
+        AppendString(dto.deviceUniqueIdentifier, hasher, separator);
+        AppendString(dto.deviceModel, hasher, separator);
+        AppendString(dto.deviceType, hasher, separator);
+        AppendString(dto.operatingSystem, hasher, separator);
+        AppendString(dto.processorType, hasher, separator);
+        AppendInt(dto.processorCount, hasher, separator);
+        AppendInt(dto.systemMemorySize, hasher, separator);
+        AppendString(dto.graphicsDeviceName, hasher, separator);
+        AppendInt(dto.graphicsMemorySize, hasher, separator);
+        AppendBool(dto.systemInfo_supportsInstancing, hasher, separator);
+        AppendString(dto.systemInfo_npotSupport, hasher, separator);
 
         // Получаем хеш (32 байта для SHA-256)
         Span<byte> hash = stackalloc byte[32];
@@ -267,19 +267,19 @@ public static class UserDeviceHelper
     public static UserDevice DtoToUserDevice(DtoRequestAuthReg dto, Guid userDeviceId) => new()
     {
         Id = userDeviceId,
-        DeviceModel = dto.DeviceModel,
-        DeviceType = dto.DeviceType,
-        OperatingSystem = dto.OperatingSystem,
-        ProcessorType = dto.ProcessorType,
-        ProcessorCount = dto.ProcessorCount,
-        SystemMemorySize = dto.SystemMemorySize,
-        GraphicsDeviceName = dto.GraphicsDeviceName,
-        DeviceUniqueIdentifier = dto.DeviceUniqueIdentifier,
-        GraphicsMemorySize = dto.GraphicsMemorySize,
-        SystemEnvironmentUserName = dto.System_Environment_UserName,
-        SystemInfoSupportsInstancing = dto.SystemInfo_supportsInstancing,
-        SystemInfoNpotSupport = dto.SystemInfo_npotSupport,
-        TimeZoneMinutes = dto.TimeZoneInfo_Local_BaseUtcOffset_Minutes
+        DeviceModel = dto.deviceModel,
+        DeviceType = dto.deviceType,
+        OperatingSystem = dto.operatingSystem,
+        ProcessorType = dto.processorType,
+        ProcessorCount = dto.processorCount,
+        SystemMemorySize = dto.systemMemorySize,
+        GraphicsDeviceName = dto.graphicsDeviceName,
+        DeviceUniqueIdentifier = dto.deviceUniqueIdentifier,
+        GraphicsMemorySize = dto.graphicsMemorySize,
+        SystemEnvironmentUserName = dto.system_Environment_UserName,
+        SystemInfoSupportsInstancing = dto.systemInfo_supportsInstancing,
+        SystemInfoNpotSupport = dto.systemInfo_npotSupport,
+        TimeZoneMinutes = dto.timeZoneInfo_Local_BaseUtcOffset_Minutes
     };
 
 }

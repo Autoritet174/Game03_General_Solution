@@ -37,12 +37,12 @@ public sealed class SessionController(SessionService sessionService, JwtService 
     [HttpPost("logout"), Authorize]
     public async Task<IActionResult> LogoutAsync([FromBody] DtoRequestLogout request, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(request.RefreshToken))
+        if (string.IsNullOrWhiteSpace(request.refreshToken))
         {
             return BadRequest("Refresh token is required.");
         }
 
-        _ = await sessionService.LogoutAsync(request.RefreshToken, cancellationToken).ConfigureAwait(false);
+        _ = await sessionService.LogoutAsync(request.refreshToken, cancellationToken).ConfigureAwait(false);
 
         return Ok();
     }

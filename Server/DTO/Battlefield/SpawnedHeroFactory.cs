@@ -17,27 +17,27 @@ public static class SpawnedHeroFactory
 
         SpawnedHero result = new()
         {
-            SpawnedId = UUID.CreateV7(),
-            BaseHeroId = bh.Id,
-            Level = level,
-            Health = bh.Health.GetRandomValue(),
-            HealthMax = 0,
-            Strength = bh.Strength.GetRandomValue(),
-            Agility = bh.Agility.GetRandomValue(),
-            Intelligence = bh.Intelligence.GetRandomValue(),
-            CritChance = bh.CritChance.GetRandomValue(),
-            CritMultiplier = bh.CritMultiplier.GetRandomValue(),
-            EnduranceMagical = bh.EnduranceMagical.GetRandomValue(),
-            EndurancePhysical = bh.EndurancePhysical.GetRandomValue(),
-            Haste = bh.Haste.GetRandomValue(),
-            Initiative = bh.Initiative.GetRandomValue(),
-            Versality = bh.Versality.GetRandomValue(),
-            CoefPowerByLevel = level > 1 ? MathF.Pow(BattlefieldManager.LEVEL_MULTIPLIER, level - 1) : 1,
-            Damage = bh.Damage.GetRandomValue()
+            spawnedId = UUID.CreateV7(),
+            baseHeroId = bh.id,
+            level = level,
+            health = bh.health.GetRandomValue(),
+            healthMax = 0,
+            strength = bh.strength.GetRandomValue(),
+            agility = bh.agility.GetRandomValue(),
+            intelligence = bh.intelligence.GetRandomValue(),
+            critChance = bh.critChance.GetRandomValue(),
+            critMultiplier = bh.critMultiplier.GetRandomValue(),
+            enduranceMagical = bh.enduranceMagical.GetRandomValue(),
+            endurancePhysical = bh.endurancePhysical.GetRandomValue(),
+            haste = bh.haste.GetRandomValue(),
+            initiative = bh.initiative.GetRandomValue(),
+            versality = bh.versality.GetRandomValue(),
+            coefPowerByLevel = level > 1 ? MathF.Pow(BattlefieldManager.LEVEL_MULTIPLIER, level - 1) : 1,
+            damage = bh.damage.GetRandomValue()
         };
 
-        result.Health *= result.CoefPowerByLevel;
-        result.HealthMax = result.Health;
+        result.health *= result.coefPowerByLevel;
+        result.healthMax = result.health;
         return result;
     }
 
@@ -45,27 +45,27 @@ public static class SpawnedHeroFactory
     {
         SpawnedHero result = new()
         {
-            SpawnedId = UUID.CreateV7(),
-            Level = h.Level,
-            BaseHeroId = h.BaseHeroId,
-            Health = h.Health,
-            HealthMax = 0,
-            Strength = h.Strength,
-            Agility = h.Agility,
-            Intelligence = h.Intelligence,
-            CritChance = h.CritChance,
-            CritMultiplier = h.CritMultiplier,
-            EnduranceMagical = h.EnduranceMagical,
-            EndurancePhysical = h.EndurancePhysical,
-            Haste = h.Haste,
-            Initiative = h.Initiative,
-            Versality = h.Versality,
-            CoefPowerByLevel = h.Level > 1 ? MathF.Pow(BattlefieldManager.LEVEL_MULTIPLIER, h.Level - 1) : 1,
-            Damage = h.Damage
+            spawnedId = UUID.CreateV7(),
+            level = h.level,
+            baseHeroId = h.baseHeroId,
+            health = h.health,
+            healthMax = 0,
+            strength = h.strength,
+            agility = h.agility,
+            intelligence = h.intelligence,
+            critChance = h.critChance,
+            critMultiplier = h.critMultiplier,
+            enduranceMagical = h.enduranceMagical,
+            endurancePhysical = h.endurancePhysical,
+            haste = h.haste,
+            initiative = h.initiative,
+            versality = h.versality,
+            coefPowerByLevel = h.level > 1 ? MathF.Pow(BattlefieldManager.LEVEL_MULTIPLIER, h.level - 1) : 1,
+            damage = h.damage
         };
 
-        result.Health *= result.CoefPowerByLevel;
-        result.HealthMax = result.Health;
+        result.health *= result.coefPowerByLevel;
+        result.healthMax = result.health;
         return result;
     }
 }

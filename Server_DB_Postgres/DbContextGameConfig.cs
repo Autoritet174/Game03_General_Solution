@@ -71,124 +71,124 @@ public class DbContextGameConfig
     private static void Configure(EntityTypeBuilder<BaseHero> builder)
     {
         //_ = builder.Property(static e => e.Rarity).HasDefaultValue(int.Common).HasSentinel(int.Common);
-        _ = builder.Property(static e => e.MainStat).HasDefaultValue(EMainStat.Universal).HasSentinel(EMainStat.Universal);
+        _ = builder.Property(static e => e.mainStat).HasDefaultValue(EMainStat.universal).HasSentinel(EMainStat.universal);
         builder.ToTable(nameof(DbContextGame.BaseHeroes), gameData);
-        builder.HasIndex(e => e.Name).IsUnique();
-        builder.Property(e => e.Name).HasMaxLength(256);
-        builder.Property(e => e.IsUnique).HasDefaultValue(false);
-        builder.Property(e => e.IsPlayable).HasDefaultValue(true);
-        builder.Property(e => e.Health).HasColumnType("jsonb");
-        builder.Property(e => e.Damage).HasColumnType("jsonb");
-        builder.Property(e => e.Strength).HasColumnType("jsonb");
-        builder.Property(e => e.Agility).HasColumnType("jsonb");
-        builder.Property(e => e.Intelligence).HasColumnType("jsonb");
-        builder.Property(e => e.CritChance).HasColumnType("jsonb");
-        builder.Property(e => e.CritMultiplier).HasColumnType("jsonb");
-        builder.Property(e => e.Haste).HasColumnType("jsonb");
-        builder.Property(e => e.Versality).HasColumnType("jsonb");
-        builder.Property(e => e.EndurancePhysical).HasColumnType("jsonb");
-        builder.Property(e => e.EnduranceMagical).HasColumnType("jsonb");
-        builder.Property(e => e.Initiative).HasColumnType("jsonb");
+        builder.HasIndex(e => e.name).IsUnique();
+        builder.Property(e => e.name).HasMaxLength(256);
+        builder.Property(e => e.isUnique).HasDefaultValue(false);
+        builder.Property(e => e.isPlayable).HasDefaultValue(true);
+        builder.Property(e => e.health).HasColumnType("jsonb");
+        builder.Property(e => e.damage).HasColumnType("jsonb");
+        builder.Property(e => e.strength).HasColumnType("jsonb");
+        builder.Property(e => e.agility).HasColumnType("jsonb");
+        builder.Property(e => e.intelligence).HasColumnType("jsonb");
+        builder.Property(e => e.critChance).HasColumnType("jsonb");
+        builder.Property(e => e.critMultiplier).HasColumnType("jsonb");
+        builder.Property(e => e.haste).HasColumnType("jsonb");
+        builder.Property(e => e.versality).HasColumnType("jsonb");
+        builder.Property(e => e.endurancePhysical).HasColumnType("jsonb");
+        builder.Property(e => e.enduranceMagical).HasColumnType("jsonb");
+        builder.Property(e => e.initiative).HasColumnType("jsonb");
     }
     private static void Configure(EntityTypeBuilder<BaseEquipment> builder)
     {
         //_ = builder.Property(static e => e.Rarity).HasDefaultValue(int.Common).HasSentinel(int.Common);
         builder.ToTable(nameof(DbContextGame.BaseEquipments), gameData);
-        builder.HasIndex(e => e.Name).IsUnique();
-        builder.Property(e => e.Name).HasMaxLength(256);
-        builder.Property(e => e.IsUnique).HasDefaultValue(false);
-        builder.HasOne(e => e.EquipmentType).WithMany().HasForeignKey(e => e.EquipmentTypeId);
-        builder.HasOne(e => e.SmithingMaterial).WithMany().HasForeignKey(e => e.SmithingMaterialId).IsRequired(false);
-        builder.Property(e => e.PossibleStats).HasColumnType("jsonb");
+        builder.HasIndex(e => e.name).IsUnique();
+        builder.Property(e => e.name).HasMaxLength(256);
+        builder.Property(e => e.isUnique).HasDefaultValue(false);
+        builder.HasOne(e => e.equipmentType).WithMany().HasForeignKey(e => e.equipmentTypeId);
+        builder.HasOne(e => e.smithingMaterial).WithMany().HasForeignKey(e => e.smithingMaterialId).IsRequired(false);
+        builder.Property(e => e.possibleStats).HasColumnType("jsonb");
     }
     private static void Configure(EntityTypeBuilder<SlotType> builder)
     {
         builder.ToTable(nameof(DbContextGame.SlotTypes), gameData);
-        builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id).ValueGeneratedNever();
-        builder.Property(x => x.Name).HasMaxLength(256).IsRequired();
-        builder.HasIndex(x => x.Name).IsUnique();
-        builder.Property(x => x.NameRu).HasMaxLength(256);
+        builder.HasKey(x => x.id);
+        builder.Property(x => x.id).ValueGeneratedNever();
+        builder.Property(x => x.name).HasMaxLength(256).IsRequired();
+        builder.HasIndex(x => x.name).IsUnique();
+        builder.Property(x => x.nameRu).HasMaxLength(256);
     }
     private static void Configure(EntityTypeBuilder<Slot> builder)
     {
         builder.ToTable(nameof(DbContextGame.Slots), gameData);
-        builder.HasIndex(e => e.Name).IsUnique();
-        builder.Property(e => e.Name).HasMaxLength(256);
-        builder.Property(e => e.MainSlot).HasDefaultValue(true);
-        builder.HasOne(e => e.SlotType).WithMany().HasForeignKey(e => e.SlotTypeId);
+        builder.HasIndex(e => e.name).IsUnique();
+        builder.Property(e => e.name).HasMaxLength(256);
+        builder.Property(e => e.mainSlot).HasDefaultValue(true);
+        builder.HasOne(e => e.slotType).WithMany().HasForeignKey(e => e.slotTypeId);
     }
     private static void Configure(EntityTypeBuilder<EquipmentType> builder)
     {
         builder.ToTable(nameof(DbContextGame.EquipmentTypes), gameData);
-        builder.HasIndex(e => e.Name).IsUnique();
-        builder.Property(e => e.Name).HasMaxLength(256);
-        builder.Property(e => e.NameRu).HasMaxLength(256);
-        builder.Property(e => e.MassPhysical).HasDefaultValue(0);
-        builder.Property(e => e.MassMagical).HasDefaultValue(0);
-        builder.Property(e => e.CanCraftSmithing).HasDefaultValue(false);
-        builder.Property(e => e.CanCraftJewelcrafting).HasDefaultValue(false);
-        builder.Property(e => e.SpendActionPoints).HasDefaultValue(0);
-        builder.HasOne(e => e.SlotType).WithMany().HasForeignKey(e => e.SlotTypeId);
-        builder.Property(e => e.Damage).HasColumnType("jsonb");
-        builder.Property(e => e.PossibleStats).HasColumnType("jsonb");
+        builder.HasIndex(e => e.name).IsUnique();
+        builder.Property(e => e.name).HasMaxLength(256);
+        builder.Property(e => e.nameRu).HasMaxLength(256);
+        builder.Property(e => e.massPhysical).HasDefaultValue(0);
+        builder.Property(e => e.massMagical).HasDefaultValue(0);
+        builder.Property(e => e.canCraftSmithing).HasDefaultValue(false);
+        builder.Property(e => e.canCraftJewelcrafting).HasDefaultValue(false);
+        builder.Property(e => e.spendActionPoints).HasDefaultValue(0);
+        builder.HasOne(e => e.slotType).WithMany().HasForeignKey(e => e.slotTypeId);
+        builder.Property(e => e.damage).HasColumnType("jsonb");
+        builder.Property(e => e.possibleStats).HasColumnType("jsonb");
     }
     private static void Configure(EntityTypeBuilder<MaterialDamagePercent> builder)
     {
         builder.ToTable(nameof(DbContextGame.MaterialDamagePercents), gameData);
-        builder.HasOne(e => e.SmithingMaterials).WithMany().HasForeignKey(e => e.SmithingMaterialsId);
-        builder.HasOne(e => e.DamageType).WithMany().HasForeignKey(e => e.DamageTypeId);
+        builder.HasOne(e => e.smithingMaterials).WithMany().HasForeignKey(e => e.smithingMaterialsId);
+        builder.HasOne(e => e.damageType).WithMany().HasForeignKey(e => e.damageTypeId);
     }
     private static void Configure(EntityTypeBuilder<SmithingMaterial> builder)
     {
         builder.ToTable(nameof(DbContextGame.SmithingMaterials), gameData);
-        builder.HasIndex(e => e.Name).IsUnique();
-        builder.Property(e => e.Name).HasMaxLength(256);
-        builder.Property(e => e.NameRu).HasMaxLength(256);
+        builder.HasIndex(e => e.name).IsUnique();
+        builder.Property(e => e.name).HasMaxLength(256);
+        builder.Property(e => e.nameRu).HasMaxLength(256);
     }
     private static void Configure(EntityTypeBuilder<Battlefield> builder)
     {
         builder.ToTable(nameof(DbContextGame.Battlefields), gameData);
-        builder.HasIndex(e => e.Name).IsUnique();
-        builder.Property(e => e.Name).HasMaxLength(256);
-        builder.Property(e => e.EnumName).HasMaxLength(256);
-        builder.Property(e => e.MaxEnemyCount).HasDefaultValue(12);
-        builder.Property(e => e.MaxHeroCount).HasDefaultValue(12);
+        builder.HasIndex(e => e.name).IsUnique();
+        builder.Property(e => e.name).HasMaxLength(256);
+        builder.Property(e => e.enumName).HasMaxLength(256);
+        builder.Property(e => e.maxEnemyCount).HasDefaultValue(12);
+        builder.Property(e => e.maxHeroCount).HasDefaultValue(12);
     }
     private static void Configure(EntityTypeBuilder<CreatureType> builder)
     {
         builder.ToTable(nameof(DbContextGame.CreatureTypes), gameData);
-        builder.HasIndex(e => e.Name).IsUnique();
-        builder.Property(e => e.Name).HasMaxLength(256);
+        builder.HasIndex(e => e.name).IsUnique();
+        builder.Property(e => e.name).HasMaxLength(256);
     }
     private static void Configure(EntityTypeBuilder<DamageType> builder)
     {
         builder.ToTable(nameof(DbContextGame.DamageTypes), gameData);
-        builder.HasIndex(e => e.Name).IsUnique();
-        builder.Property(e => e.Name).HasMaxLength(256);
-        builder.Property(e => e.NameRu).HasMaxLength(256);
-        builder.Property(e => e.DevHintRu).HasColumnType("text");
-        builder.Property(e => e.Category).HasDefaultValue(0);
+        builder.HasIndex(e => e.name).IsUnique();
+        builder.Property(e => e.name).HasMaxLength(256);
+        builder.Property(e => e.nameRu).HasMaxLength(256);
+        builder.Property(e => e.devHintRu).HasColumnType("text");
+        builder.Property(e => e.category).HasDefaultValue(0);
     }
     private static void Configure(EntityTypeBuilder<X_Battlefield_BaseHero> builder)
     {
         builder.ToTable(nameof(DbContextGame.x_Battlefields_BaseHeroes), gameData);
-        builder.HasOne(e => e.Battlefield).WithMany().HasForeignKey(e => e.BattlefieldId);
-        builder.HasOne(e => e.BaseHero).WithMany().HasForeignKey(e => e.BaseHeroId);
-        builder.Property(e => e.Count).HasDefaultValue(1);
+        builder.HasOne(e => e.battlefield).WithMany().HasForeignKey(e => e.battlefieldId);
+        builder.HasOne(e => e.baseHero).WithMany().HasForeignKey(e => e.baseHeroId);
+        builder.Property(e => e.count).HasDefaultValue(1);
     }
     private static void Configure(EntityTypeBuilder<X_EquipmentType_DamageType> builder)
     {
         builder.ToTable(nameof(DbContextGame.x_EquipmentTypes_DamageTypes), gameData);
-        builder.HasOne(e => e.EquipmentType).WithMany().HasForeignKey(e => e.EquipmentTypeId);
-        builder.HasOne(e => e.DamageType).WithMany().HasForeignKey(e => e.DamageTypeId);
-        builder.Property(e => e.DamageCoef).HasDefaultValue(0);
+        builder.HasOne(e => e.equipmentType).WithMany().HasForeignKey(e => e.equipmentTypeId);
+        builder.HasOne(e => e.damageType).WithMany().HasForeignKey(e => e.damageTypeId);
+        builder.Property(e => e.damageCoef).HasDefaultValue(0);
     }
     private static void Configure(EntityTypeBuilder<X_Hero_CreatureType> builder)
     {
         builder.ToTable(nameof(DbContextGame.x_Heroes_CreatureTypes), gameData);
-        builder.HasOne(e => e.BaseHero).WithMany().HasForeignKey(e => e.BaseHeroId);
-        builder.HasOne(e => e.CreatureType).WithMany().HasForeignKey(e => e.CreatureTypeId);
+        builder.HasOne(e => e.baseHero).WithMany().HasForeignKey(e => e.baseHeroId);
+        builder.HasOne(e => e.creatureType).WithMany().HasForeignKey(e => e.creatureTypeId);
     }
     #endregion
     #region Collection
@@ -199,39 +199,39 @@ public class DbContextGameConfig
         //builder.HasOne(e => e.User).WithMany().HasForeignKey(e => e.UserId);
 
         // создание внешнего ключа в базе postgres без навигационного свойства в EF
-        builder.HasOne<User>().WithMany().HasForeignKey(e => e.UserId);
+        builder.HasOne<User>().WithMany().HasForeignKey(e => e.userId);
 
-        builder.HasIndex(e => e.UserId);
-        builder.HasOne(e => e.BaseHero).WithMany().HasForeignKey(e => e.BaseHeroId);
-        builder.Property(e => e.GroupName).HasMaxLength(256);
-        builder.Property(e => e.Level).HasDefaultValue(1);
-        builder.Property(e => e.Experience).HasDefaultValue(0);
+        builder.HasIndex(e => e.userId);
+        builder.HasOne(e => e.baseHero).WithMany().HasForeignKey(e => e.baseHeroId);
+        builder.Property(e => e.groupName).HasMaxLength(256);
+        builder.Property(e => e.level).HasDefaultValue(1);
+        builder.Property(e => e.experience).HasDefaultValue(0);
     }
     private static void Configure(EntityTypeBuilder<Equipment> builder)
     {
         builder.ToTable(nameof(DbContextGame.Equipments), collection);
-        builder.HasIndex(e => new { e.HeroId, e.SlotId });
+        builder.HasIndex(e => new { e.heroId, e.slotId });
 
         //builder.HasOne(e => e.User).WithMany().HasForeignKey(e => e.UserId);
 
         // создание внешнего ключа в базе postgres без навигационного свойства в EF
-        builder.HasOne<User>().WithMany().HasForeignKey(e => e.UserId);
+        builder.HasOne<User>().WithMany().HasForeignKey(e => e.userId);
 
-        builder.Property(e => e.GroupName).HasMaxLength(256);
-        builder.HasOne(e => e.BaseEquipment).WithMany().HasForeignKey(e => e.BaseEquipmentId);
-        builder.HasOne<Hero>().WithMany().HasForeignKey(e => e.HeroId).IsRequired(false);
-        builder.HasOne<Slot>().WithMany().HasForeignKey(e => e.SlotId).IsRequired(false);
-        builder.Property(e => e.Level).HasDefaultValue(1);
-        builder.Property(e => e.Stats).HasColumnType("jsonb");
+        builder.Property(e => e.groupName).HasMaxLength(256);
+        builder.HasOne(e => e.baseEquipment).WithMany().HasForeignKey(e => e.baseEquipmentId);
+        builder.HasOne<Hero>().WithMany().HasForeignKey(e => e.heroId).IsRequired(false);
+        builder.HasOne<Slot>().WithMany().HasForeignKey(e => e.slotId).IsRequired(false);
+        builder.Property(e => e.level).HasDefaultValue(1);
+        builder.Property(e => e.stats).HasColumnType("jsonb");
 
 
         //вручную делаем индексы так как EF не сделает автоматически изза следующих индексов
-        _ = builder.HasIndex(static e => e.HeroId);
-        _ = builder.HasIndex(static e => e.UserId);
+        _ = builder.HasIndex(static e => e.heroId);
+        _ = builder.HasIndex(static e => e.userId);
 
         // Уникальный индекс для надетых предметов. Гарантирует, что у героя в конкретном слоте только один предмет.
-        _ = builder.HasIndex(e => new { e.HeroId, e.SlotId }).IsUnique()
-            .HasFilter($"{nameof(Equipment.HeroId).ToSnakeCase()} IS NOT NULL AND {nameof(Equipment.SlotId).ToSnakeCase()} IS NOT NULL");
+        _ = builder.HasIndex(e => new { e.heroId, e.slotId }).IsUnique()
+            .HasFilter($"{nameof(Equipment.heroId).ToSnakeCase()} IS NOT NULL AND {nameof(Equipment.slotId).ToSnakeCase()} IS NOT NULL");
 
 
         // Конветрет для статов, чтобы хранить в базе не название enum полей а их числовые значения
@@ -246,7 +246,7 @@ public class DbContextGameConfig
         );
 
         // Настраиваем свойство
-        PropertyBuilder<Dictionary<EStatType, List<float>>?> property = builder.Property(static e => e.Stats)
+        PropertyBuilder<Dictionary<EStatType, List<float>>?> property = builder.Property(static e => e.stats)
             .HasColumnType("jsonb")
             .HasConversion(
                 static v => v == null ? null : v.ToDictionary(static kvp => (int)kvp.Key, static kvp => kvp.Value),
@@ -407,7 +407,7 @@ public class DbContextGameConfig
     private static void Configure(EntityTypeBuilder<DropRate> builder)
     {
         builder.ToTable(nameof(DbContextGame.DropRates), collection);
-        builder.HasOne(e => e.User).WithMany().HasForeignKey(e => e.UserId);
+        builder.HasOne(e => e.user).WithMany().HasForeignKey(e => e.userId);
     }
     #endregion
     #region Users
@@ -477,32 +477,32 @@ public class DbContextGameConfig
     private static void Configure(EntityTypeBuilder<AuthenticationLog> builder)
     {
         builder.ToTable(nameof(DbContextGame.AuthenticationLogs), logs);
-        builder.Property(e => e.Email).HasMaxLength(256);
-        builder.HasOne(e => e.User).WithMany().HasForeignKey(e => e.UserId).IsRequired(false);
-        builder.HasOne(e => e.UserDevice).WithMany().HasForeignKey(e => e.UserDeviceId).IsRequired(false);
-        builder.HasOne(e => e.UserSession).WithMany().HasForeignKey(e => e.UserSessionId).IsRequired(false);
+        builder.Property(e => e.email).HasMaxLength(256);
+        builder.HasOne(e => e.user).WithMany().HasForeignKey(e => e.userId).IsRequired(false);
+        builder.HasOne(e => e.userDevice).WithMany().HasForeignKey(e => e.userDeviceId).IsRequired(false);
+        builder.HasOne(e => e.userSession).WithMany().HasForeignKey(e => e.userSessionId).IsRequired(false);
     }
     private static void Configure2(EntityTypeBuilder<AuthenticationLog> builder)
     {
         // Настройка для UserAuthorization: Cascade при удалении ApplicationUser
-        _ = builder.HasOne(static a => a.User)
+        _ = builder.HasOne(static a => a.user)
             .WithMany()
-            .HasForeignKey(static a => a.UserId)
+            .HasForeignKey(static a => a.userId)
             .OnDelete(DeleteBehavior.Cascade);
     }
     private static void Configure(EntityTypeBuilder<RegistrationLog> builder)
     {
         builder.ToTable(nameof(DbContextGame.RegistrationLogs), logs);
-        builder.Property(e => e.Email).HasMaxLength(256);
-        builder.HasOne(e => e.User).WithMany().HasForeignKey(e => e.UserId).IsRequired(false);
-        builder.HasOne(e => e.UserDevice).WithMany().HasForeignKey(e => e.UserDeviceId).IsRequired(false);
+        builder.Property(e => e.email).HasMaxLength(256);
+        builder.HasOne(e => e.user).WithMany().HasForeignKey(e => e.userId).IsRequired(false);
+        builder.HasOne(e => e.userDevice).WithMany().HasForeignKey(e => e.userDeviceId).IsRequired(false);
     }
     private static void Configure2(EntityTypeBuilder<RegistrationLog> builder)
     {
         // Настройка для UserAuthorization: Cascade при удалении ApplicationUser
-        _ = builder.HasOne(static a => a.User)
+        _ = builder.HasOne(static a => a.user)
             .WithMany()
-            .HasForeignKey(static a => a.UserId)
+            .HasForeignKey(static a => a.userId)
             .OnDelete(DeleteBehavior.Cascade);
     }
     #endregion

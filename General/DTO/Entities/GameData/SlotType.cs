@@ -2,9 +2,9 @@ namespace General.DTO.Entities.GameData;
 
 public class SlotType
 {
-    public ESlotType Id { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public string? NameRu { get; set; }
-    public bool HaveAltSlot { get; set; }
-    public int Sorting { get; set; }
+    public ESlotType id { get; set; }
+    public string name { get; set; } = string.Empty;
+    public string? nameRu { get; set; }
+    public bool haveAltSlot { get; set; }
+    public int sorting { get; set; }
 }

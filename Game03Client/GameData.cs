@@ -30,33 +30,33 @@ public static class GameData
             return false;
         }
 
-        foreach (BaseEquipment i in c.BaseEquipments)
+        foreach (BaseEquipment i in c.baseEquipments)
         {
-            i.EquipmentType = c.EquipmentTypes.FirstOrDefault(a => a.Id == i.EquipmentTypeId);
+            i.equipmentType = c.equipmentTypes.FirstOrDefault(a => a.id == i.equipmentTypeId);
         }
 
-        foreach (EquipmentType i in c.EquipmentTypes)
+        foreach (EquipmentType i in c.equipmentTypes)
         {
-            i.SlotType = c.SlotTypes.FirstOrDefault(a => a.Id == i.SlotTypeId);
+            i.slotType = c.slotTypes.FirstOrDefault(a => a.id == i.slotTypeId);
         }
 
-        foreach (MaterialDamagePercent i in c.MaterialDamagePercents)
+        foreach (MaterialDamagePercent i in c.materialDamagePercents)
         {
-            i.SmithingMaterials = c.SmithingMaterials.FirstOrDefault(a => a.Id == i.SmithingMaterialsId);
-            i.DamageType = c.DamageTypes.FirstOrDefault(a => a.Id == i.DamageTypeId);
+            i.smithingMaterials = c.smithingMaterials.FirstOrDefault(a => a.id == i.smithingMaterialsId);
+            i.damageType = c.damageTypes.FirstOrDefault(a => a.id == i.damageTypeId);
         }
 
         foreach (Slot i in c.Slots)
         {
-            i.SlotType = c.SlotTypes.FirstOrDefault(a => a.Id == i.SlotTypeId);
+            i.slotType = c.slotTypes.FirstOrDefault(a => a.id == i.slotTypeId);
         }
 
         Container = c;
 
         DictonaryBaseHero.Clear();
-        foreach (BaseHero i in c.BaseHeroes)
+        foreach (BaseHero i in c.baseHeroes)
         {
-            DictonaryBaseHero.Add(i.Id, i);
+            DictonaryBaseHero.Add(i.id, i);
         }
 
 

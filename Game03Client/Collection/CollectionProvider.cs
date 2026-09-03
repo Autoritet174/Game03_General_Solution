@@ -45,21 +45,21 @@ public class CollectionProvider
         }
 
 
-        IEnumerable<BaseEquipment> baseEquipments = GameData.Container.BaseEquipments;
+        IEnumerable<BaseEquipment> baseEquipments = GameData.Container.baseEquipments;
         dictonaryEquipments.Clear();
-        foreach (Equipment i in c.CollectionEquipments)
+        foreach (Equipment i in c.collectionEquipments)
         {
-            i.BaseEquipment = baseEquipments.FirstOrDefault(a => a.Id == i.BaseEquipmentId);
-            dictonaryEquipments.Add(i.Id, i);
+            i.baseEquipment = baseEquipments.FirstOrDefault(a => a.id == i.baseEquipmentId);
+            dictonaryEquipments.Add(i.id, i);
         }
 
 
-        IEnumerable<BaseHero> baseHeroes = GameData.Container.BaseHeroes;
+        IEnumerable<BaseHero> baseHeroes = GameData.Container.baseHeroes;
         dictonaryHeroes.Clear();
-        foreach (Hero i in c.CollectionHeroes)
+        foreach (Hero i in c.collectionHeroes)
         {
-            i.BaseHero = baseHeroes.FirstOrDefault(a => a.Id == i.BaseHeroId);
-            dictonaryHeroes.Add(i.Id, i);
+            i.baseHero = baseHeroes.FirstOrDefault(a => a.id == i.baseHeroId);
+            dictonaryHeroes.Add(i.id, i);
         }
 
 
@@ -69,30 +69,30 @@ public class CollectionProvider
         RefreshListGroupNameEquipment();
 
         // Сортировка героев по редкости, уровню и имени
-        c.CollectionHeroes.Sort((a, b) =>
+        c.collectionHeroes.Sort((a, b) =>
         {
             // Сначала по Rarity (убывание)
-            int result = b.BaseHero!.Rarity.CompareTo(a.BaseHero!.Rarity);
+            int result = b.baseHero!.rarity.CompareTo(a.baseHero!.rarity);
             if (result != 0)
             {
                 return result;
             }
 
             // Затем по Level (возрастание)
-            result = a.Level.CompareTo(b.Level);
+            result = a.level.CompareTo(b.level);
             if (result != 0)
             {
                 return result;
             }
 
             // Затем по Name (возрастание)
-            if (a.BaseHero == null || b.BaseHero == null)
+            if (a.baseHero == null || b.baseHero == null)
             {
                 logger.LogError("BaseHero is null");
                 throw new Exception();
             }
 
-            return string.Compare(a.BaseHero.Name, b.BaseHero.Name, StringComparison.Ordinal);
+            return string.Compare(a.baseHero.name, b.baseHero.name, StringComparison.Ordinal);
         });
 
 
@@ -107,9 +107,9 @@ public class CollectionProvider
         List<string> list = listGroupNameHero;
         list.Clear();
         list.Add(string.Empty);
-        foreach (Hero i in collection.CollectionHeroes)
+        foreach (Hero i in collection.collectionHeroes)
         {
-            string group_name = i.GroupName ?? string.Empty;
+            string group_name = i.groupName ?? string.Empty;
             if (!list.Contains(group_name))
             {
                 list.Add(group_name);
@@ -122,9 +122,9 @@ public class CollectionProvider
         List<string> list = listGroupNameEquipment;
         list.Clear();
         list.Add(string.Empty);
-        foreach (Equipment i in collection.CollectionEquipments)
+        foreach (Equipment i in collection.collectionEquipments)
         {
-            string group_name = i.GroupName ?? string.Empty;
+            string group_name = i.groupName ?? string.Empty;
             if (!list.Contains(group_name))
             {
                 list.Add(group_name);
@@ -132,11 +132,11 @@ public class CollectionProvider
         }
     }
 
-    public static IEnumerable<Hero> GetCollectionHeroesFromCache() => collection.CollectionHeroes;
-    public static IEnumerable<Equipment> GetCollectionEquipmentsFromCache() => collection.CollectionEquipments;
+    public static IEnumerable<Hero> GetCollectionHeroesFromCache() => collection.collectionHeroes;
+    public static IEnumerable<Equipment> GetCollectionEquipmentsFromCache() => collection.collectionEquipments;
 
-    public static int GetCountHeroes() => collection.CollectionHeroes.Count();
-    public static int GetCountEquipments() => collection.CollectionEquipments.Count();
+    public static int GetCountHeroes() => collection.collectionHeroes.Count();
+    public static int GetCountEquipments() => collection.collectionEquipments.Count();
 
     public const int PAGE_SIZE = 100;
 
@@ -144,7 +144,7 @@ public class CollectionProvider
     public static IEnumerable<GroupCollectionElement> GetCollectionHeroesGroupedByGroupNames(int page)
     {
         List<GroupCollectionElement> result = [];
-        IEnumerable<Hero> c = collection.CollectionHeroes;
+        IEnumerable<Hero> c = collection.collectionHeroes;
         if (page > 0)
         {
             c = [.. c.Skip((page - 1) * PAGE_SIZE).Take(PAGE_SIZE)];
@@ -152,16 +152,16 @@ public class CollectionProvider
 
         foreach (string groupName in listGroupNameHero)
         {
-            IEnumerable<Hero> heroes = groupName == string.Empty ? c.Where(a => a.GroupName is null or "") : c.Where(a => a.GroupName == groupName);
+            IEnumerable<Hero> heroes = groupName == string.Empty ? c.Where(a => a.groupName is null or "") : c.Where(a => a.groupName == groupName);
             List<CollectionElement> collectionElements = [];
             foreach (Hero hero in heroes)
             {
-                if (hero.BaseHero == null)
+                if (hero.baseHero == null)
                 {
                     logger.LogError("hero.DtoBaseHero is null");
                     throw new Exception();
                 }
-                collectionElements.Add(new CollectionElement(hero.Id, hero.BaseHeroId, hero.BaseHero.Rarity, hero.BaseHero.Name, hero.BaseHero.IsUnique, TypeCollectionElement.Hero));
+                collectionElements.Add(new CollectionElement(hero.id, hero.baseHeroId, hero.baseHero.rarity, hero.baseHero.name, hero.baseHero.isUnique, TypeCollectionElement.Hero));
             }
 
             GroupCollectionElement groupCollectionElement = new(groupName, collectionElements);
@@ -178,24 +178,24 @@ public class CollectionProvider
     public static IEnumerable<GroupCollectionElement> GetCollectionEquipmentesGroupByGroups(int page)
     {
         List<GroupCollectionElement> result = [];
-        collection.CollectionEquipments.Sort(DtoEquipmentComparer);
-        IEnumerable<Equipment> c = collection.CollectionEquipments;
+        collection.collectionEquipments.Sort(DtoEquipmentComparer);
+        IEnumerable<Equipment> c = collection.collectionEquipments;
         if (page > 0)
         {
             c = [.. c.Skip((page - 1) * PAGE_SIZE).Take(PAGE_SIZE)];
         }
         foreach (string groupName in listGroupNameEquipment)
         {
-            IEnumerable<Equipment> equipments = groupName == string.Empty ? c.Where(a => a.GroupName is null or "") : c.Where(a => a.GroupName == groupName);
+            IEnumerable<Equipment> equipments = groupName == string.Empty ? c.Where(a => a.groupName is null or "") : c.Where(a => a.groupName == groupName);
             List<CollectionElement> collectionElements = [];
             foreach (Equipment equipment in equipments)
             {
-                if (equipment.BaseEquipment == null)
+                if (equipment.baseEquipment == null)
                 {
                     logger.LogError("Equipment.DtoBaseEquipment is null");
                     throw new Exception();
                 }
-                collectionElements.Add(new CollectionElement(equipment.Id, equipment.BaseEquipmentId, equipment.BaseEquipment.Rarity, equipment.BaseEquipment.Name, equipment.BaseEquipment.IsUnique, TypeCollectionElement.Equipment));
+                collectionElements.Add(new CollectionElement(equipment.id, equipment.baseEquipmentId, equipment.baseEquipment.rarity, equipment.baseEquipment.name, equipment.baseEquipment.isUnique, TypeCollectionElement.Equipment));
             }
 
             GroupCollectionElement groupCollectionElement = new(groupName, collectionElements);
@@ -210,31 +210,31 @@ public class CollectionProvider
 
     public static bool EquipmentIsEquipped(Guid equipmentId)
     {
-        Equipment? equipment = collection.CollectionEquipments.FirstOrDefault(a => a.Id == equipmentId);
+        Equipment? equipment = collection.collectionEquipments.FirstOrDefault(a => a.id == equipmentId);
         if (equipment == null)
         {
             logger.LogError("Equipment not found in collection. Id: {EquipmentId}", equipmentId.ToString());
             return false;
         }
-        return equipment.HeroId != null;
+        return equipment.heroId != null;
     }
 
     public static async Task<bool> EquipmentTakeOnAsync(Guid equipmentId, Guid heroId, bool? inAltSlot, CancellationToken cancellationToken)
     {
-        Equipment? equipment = collection.CollectionEquipments.FirstOrDefault(a => a.Id == equipmentId);
+        Equipment? equipment = collection.collectionEquipments.FirstOrDefault(a => a.id == equipmentId);
         if (equipment == null)
         {
             logger.LogError("Equipment not found in collection. Id: {EquipmentId}", equipmentId.ToString());
             return false;
         }
-        Hero? hero = collection.CollectionHeroes.FirstOrDefault(a => a.Id == heroId);
+        Hero? hero = collection.collectionHeroes.FirstOrDefault(a => a.id == heroId);
         if (hero == null)
         {
             logger.LogError("Hero not found in collection. Id: {heroId}", heroId.ToString());
             return false;
         }
 
-        if (equipment.HeroId != null)
+        if (equipment.heroId != null)
         {
             logger.LogError("Equipment is not equipped. Id: {EquipmentId}", equipmentId.ToString());
             return false;
@@ -252,8 +252,8 @@ public class CollectionProvider
 
             if (success)
             {
-                equipment.HeroId = heroId;
-                equipment.SlotId = GetSlotId(equipment, inAltSlot);
+                equipment.heroId = heroId;
+                equipment.slotId = GetSlotId(equipment, inAltSlot);
                 return true;
             }
         }
@@ -272,13 +272,13 @@ public class CollectionProvider
 
     public static General.ESlot GetSlotId(Equipment equipment, bool? inAltSlot = null)
     {
-        General.ESlotType slotTypeId = equipment.BaseEquipment?.EquipmentType?.SlotType?.Id ?? 0;
+        General.ESlotType slotTypeId = equipment.baseEquipment?.equipmentType?.slotType?.id ?? 0;
         return slotTypeId switch
         {
-            General.ESlotType.Weapon => inAltSlot == true ? General.ESlot.LeftHand : General.ESlot.RightHand,     // Оружие
-            General.ESlotType.Ring => inAltSlot == true ? General.ESlot.Ring2 : General.ESlot.Ring1,    // Кольцо
-            General.ESlotType.Trinket => inAltSlot == true ? General.ESlot.Trinket2 : General.ESlot.Trinket1,  // Аксессуар
-            _ => GameData.Container.Slots.First(a => a.SlotTypeId == slotTypeId).Id
+            General.ESlotType.weapon => inAltSlot == true ? General.ESlot.leftHand : General.ESlot.rightHand,     // Оружие
+            General.ESlotType.ring => inAltSlot == true ? General.ESlot.ring2 : General.ESlot.ring1,    // Кольцо
+            General.ESlotType.trinket => inAltSlot == true ? General.ESlot.trinket2 : General.ESlot.trinket1,  // Аксессуар
+            _ => GameData.Container.Slots.First(a => a.slotTypeId == slotTypeId).id
         };
         /*
         return slotTypeId switch
@@ -293,7 +293,7 @@ public class CollectionProvider
 
     public static async Task<bool> EquipmentTakeOffAsync(Guid equipmentId, CancellationToken cancellationToken)
     {
-        Equipment? equipment = collection.CollectionEquipments.FirstOrDefault(a => a.Id == equipmentId);
+        Equipment? equipment = collection.collectionEquipments.FirstOrDefault(a => a.id == equipmentId);
         if (equipment == null)
         {
             logger.LogError("Equipment not found in collection. Id: {EquipmentId}", equipmentId.ToString());
@@ -301,7 +301,7 @@ public class CollectionProvider
         }
 
         // Сразу возвращаем успех если предмет и так не одет
-        if (equipment.HeroId == null)
+        if (equipment.heroId == null)
         {
             return true;
         }
@@ -315,8 +315,8 @@ public class CollectionProvider
                 ).ConfigureAwait(false);
             if (success)
             {
-                equipment.HeroId = null;
-                equipment.SlotId = null;
+                equipment.heroId = null;
+                equipment.slotId = null;
                 return true;
             }
         }
@@ -360,42 +360,42 @@ public class CollectionProvider
 
     private static readonly Comparer<Equipment> DtoEquipmentComparer = Comparer<Equipment>.Create(static (a, b) =>
     {
-        BaseEquipment aBE = a.BaseEquipment ?? throw new Exception("a.BaseEquipment is null");
-        BaseEquipment bBE = b.BaseEquipment ?? throw new Exception("b.BaseEquipment is null");
-        EquipmentType aET = aBE.EquipmentType ?? throw new Exception("a.EquipmentType is null");
-        EquipmentType bET = bBE.EquipmentType ?? throw new Exception("b.EquipmentType is null");
-        SlotType aST = aET.SlotType ?? throw new Exception("a.SlotType is null");
-        SlotType bST = bET.SlotType ?? throw new Exception("b.SlotType is null");
+        BaseEquipment aBE = a.baseEquipment ?? throw new Exception("a.BaseEquipment is null");
+        BaseEquipment bBE = b.baseEquipment ?? throw new Exception("b.BaseEquipment is null");
+        EquipmentType aET = aBE.equipmentType ?? throw new Exception("a.EquipmentType is null");
+        EquipmentType bET = bBE.equipmentType ?? throw new Exception("b.EquipmentType is null");
+        SlotType aST = aET.slotType ?? throw new Exception("a.SlotType is null");
+        SlotType bST = bET.slotType ?? throw new Exception("b.SlotType is null");
 
         // Сортировка по SlotType.Sorting
-        int slotCompare = aST.Sorting.CompareTo(bST.Sorting);
+        int slotCompare = aST.sorting.CompareTo(bST.sorting);
         if (slotCompare != 0)
         {
             return slotCompare;
         }
 
         // Сортировка по Rarity (по убыванию)
-        int rarityCompare = bBE.Rarity.CompareTo(aBE.Rarity);
+        int rarityCompare = bBE.rarity.CompareTo(aBE.rarity);
         if (rarityCompare != 0)
         {
             return rarityCompare;
         }
 
         // Сортировка по IsUnique. Сначала true, потом false
-        int uniqueCompare = bBE.IsUnique.CompareTo(aBE.IsUnique);
+        int uniqueCompare = bBE.isUnique.CompareTo(aBE.isUnique);
         if (uniqueCompare != 0)
         {
             return uniqueCompare;
         }
 
         // Сортировка по уровню (от большего к меньшему)
-        int levelCompare = b.Level.CompareTo(a.Level);
+        int levelCompare = b.level.CompareTo(a.level);
         if (levelCompare != 0)
         {
             return levelCompare;
         }
 
         // Сортировка по Name
-        return string.Compare(aBE.Name, bBE.Name, StringComparison.Ordinal);
+        return string.Compare(aBE.name, bBE.name, StringComparison.Ordinal);
     });
 }

@@ -15,5 +15,5 @@ public class StringCapsule()
     /// Фактическое строковое значение, хранимое в капсуле.
     /// Инициализировано пустой строкой.
     /// </summary>
-    public string Value = string.Empty;
+    public string value = string.Empty;
 }

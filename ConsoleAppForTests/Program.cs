@@ -69,7 +69,7 @@ internal class Program
         string Password = Game03Client.Password.HashSha512("testPassword");
         General.StringCapsule capsule = new()
         {
-            Value = File.ReadAllText(@"C:\UnityProjects\Game03_Git\Client_Game03\Assets\Resources\localization\ru\data.json"),
+            value = File.ReadAllText(@"C:\UnityProjects\Game03_Git\Client_Game03\Assets\Resources\localization\ru\data.json"),
         };
 
         Game03.Init(Path.Combine(@"c:\UnityProjects\Game03_Git\Client_Game03\Assets", @"GameData\Config\Main.ini"), capsule, Game_OnLog, Game_OnLog);

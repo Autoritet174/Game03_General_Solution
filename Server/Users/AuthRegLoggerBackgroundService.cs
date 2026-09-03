@@ -235,13 +235,13 @@ public sealed class AuthRegLoggerBackgroundService(
             {
                 _ = db.AuthenticationLogs.Add(new Server_DB_Postgres.Entities.Logs.AuthenticationLog
                 {
-                    Id = UUID.CreateV7(),
-                    Email = item.dto.Email,
-                    Success = item.Success,
-                    UserId = item.UserId,
-                    UserDeviceId = item.UserDeviceId,
-                    CreatedAt = DateTimeOffset.UtcNow,
-                    Ip = item.Ip,
+                    id = UUID.CreateV7(),
+                    email = item.dto.email,
+                    success = item.Success,
+                    userId = item.UserId,
+                    userDeviceId = item.UserDeviceId,
+                    createdAt = DateTimeOffset.UtcNow,
+                    ip = item.Ip,
                 });
             }
 
@@ -270,7 +270,7 @@ public sealed class AuthRegLoggerBackgroundService(
         {
             DateTimeOffset cutoff = DateTimeOffset.UtcNow.AddMonths(-24);
             int deleted = await db.AuthenticationLogs
-                .Where(a => a.CreatedAt < cutoff)
+                .Where(a => a.createdAt < cutoff)
                 .ExecuteDeleteAsync(ct).ConfigureAwait(false);
 
             if (deleted > 0)

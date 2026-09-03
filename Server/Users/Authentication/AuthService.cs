@@ -32,7 +32,7 @@ public sealed partial class AuthService(
     private static readonly Func<DbContextGame, Guid, DateTimeOffset, CancellationToken, Task<bool>> IsUserBannedQuery =
         EF.CompileAsyncQuery(
             (DbContextGame db, Guid uId, DateTimeOffset now, CancellationToken ct) =>
-            db.UserBans.Any(b => b.UserId == uId && b.CreatedAt <= now && (b.ExpiresAt == null || b.ExpiresAt >= now))
+            db.UserBans.Any(b => b.UserId == uId && b.createdAt <= now && (b.ExpiresAt == null || b.ExpiresAt >= now))
         );
 
     // 2. Получение деталей бана. Добавлен CancellationToken.
@@ -40,7 +40,7 @@ public sealed partial class AuthService(
         EF.CompileAsyncQuery(
             (DbContextGame db, Guid uId, DateTimeOffset now, CancellationToken ct) =>
             db.UserBans
-                .Where(b => b.UserId == uId && b.CreatedAt <= now && (b.ExpiresAt == null || b.ExpiresAt >= now))
+                .Where(b => b.UserId == uId && b.createdAt <= now && (b.ExpiresAt == null || b.ExpiresAt >= now))
                 .OrderByDescending(b => b.ExpiresAt == null)
                 .ThenByDescending(b => b.ExpiresAt)
                 .FirstOrDefault()
@@ -64,16 +64,16 @@ public sealed partial class AuthService(
         DateTimeOffset now = DateTimeOffset.UtcNow;
         DateTimeOffset dtEndCheck = now.AddMilliseconds(Random.Shared.Next(600, 800));
 
-        if (string.IsNullOrWhiteSpace(dto?.Email) || string.IsNullOrWhiteSpace(dto?.Password))
+        if (string.IsNullOrWhiteSpace(dto?.email) || string.IsNullOrWhiteSpace(dto?.password))
         {
             return Result.Fail(new Error("Invalid credentials").WithMetadata("Type", "BadRequest"));
         }
 
         // Защита от Flood с использованием string.Create (Zero-allocation для ключа)
-        string floodKey = GetFloodKey(dto.Email);
+        string floodKey = GetFloodKey(dto.email);
         if (memoryCache.TryGetValue(floodKey, out int attempts) && attempts >= 10)
         {
-            LogFlood(dto.Email);
+            LogFlood(dto.email);
             return Result.Ok(AuthRegResponse.TooManyRequests((long)_FloodPeriod.TotalSeconds));
         }
 
@@ -82,7 +82,7 @@ public sealed partial class AuthService(
 
         try
         {
-            User? user = await userManager.FindByEmailAsync(dto.Email).ConfigureAwait(false);
+            User? user = await userManager.FindByEmailAsync(dto.email).ConfigureAwait(false);
             if (user == null)
             {
                 return Result.Ok(AuthRegResponse.InvalidCredentials());
@@ -97,7 +97,7 @@ public sealed partial class AuthService(
                 return Result.Ok(AuthRegResponse.TooManyRequests(GetSecondsLeft(lockoutEnd)));
             }
 
-            SignInResult signInResult = await signInManager.CheckPasswordSignInAsync(user, dto.Password, true).ConfigureAwait(false);
+            SignInResult signInResult = await signInManager.CheckPasswordSignInAsync(user, dto.password, true).ConfigureAwait(false);
             if (!signInResult.Succeeded)
             {
                 IncrementFlood(floodKey);
@@ -127,7 +127,7 @@ public sealed partial class AuthService(
         }
         catch (Exception ex)
         {
-            LogAuthEx(dto.Email, ex.Message, ex);
+            LogAuthEx(dto.email, ex.Message, ex);
             return Result.Fail("Internal error");
         }
         finally

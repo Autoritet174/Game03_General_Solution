@@ -1,4 +1,3 @@
-using System;
 using System.Net.Mail;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -90,21 +89,21 @@ public static partial class StringExt
     /// Регулярное выражение для преобразования строки в snake_case.
     /// Ищет заглавные буквы, которые следуют после строчных букв.
     /// </summary>
-    private static readonly Regex SnakeCaseRegex = new(@"(?<=[a-z0-9])([A-Z])", RegexOptions.Compiled);
+    private static readonly Regex snakeCaseRegex = new(@"(?<=[a-z0-9])([A-Z])", RegexOptions.Compiled);
     //private static readonly Regex SnakeCaseRegex = new("(?<=[a-z])([A-Z])", RegexOptions.Compiled);
 
     /// <summary>
     /// Регулярное выражение для разделения строк на слова при преобразовании в PascalCase/camelCase.
     /// Сохраняет символы подчеркивания как часть итогового имени.
     /// </summary>
-    private static readonly Regex WordSplitWithUnderscoresRegex = new(
+    private static readonly Regex wordSplitWithUnderscoresRegex = new(
         @"(?:(?<=[a-z])(?=[A-Z]))|(?:(?<=[A-Z])(?=[A-Z][a-z]))|([_\-\s]+)",
         RegexOptions.Compiled);
 
     /// <summary>
     /// Регулярное выражение для разделения строк на слова при полном разбиении.
     /// </summary>
-    private static readonly Regex WordSplitRegex = new(
+    private static readonly Regex wordSplitRegex = new(
         @"[_\-\s]+|(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])",
         RegexOptions.Compiled);
 
@@ -131,7 +130,7 @@ public static partial class StringExt
     /// </remarks>
     public static string ToSnakeCase(this string? input)
     {
-        return string.IsNullOrWhiteSpace(input) ? string.Empty : SnakeCaseRegex.Replace(input, "_$1").ToLowerInvariant();
+        return string.IsNullOrWhiteSpace(input) ? string.Empty : snakeCaseRegex.Replace(input, "_$1").ToLowerInvariant();
     }
 
 
@@ -171,7 +170,7 @@ public static partial class StringExt
         if (preserveUnderscores)
         {
             var result = new StringBuilder();
-            string[] wordsAndSeparators = WordSplitWithUnderscoresRegex.Split(input);
+            string[] wordsAndSeparators = wordSplitWithUnderscoresRegex.Split(input);
 
             for (int i = 0; i < wordsAndSeparators.Length; i++)
             {
@@ -220,7 +219,7 @@ public static partial class StringExt
         else
         {
             // Старая логика без сохранения подчеркиваний
-            string[] words = WordSplitRegex.Split(input);
+            string[] words = wordSplitRegex.Split(input);
             var result = new StringBuilder();
 
             foreach (string? word in words)
@@ -268,7 +267,7 @@ public static partial class StringExt
         if (preserveUnderscores)
         {
             var result = new StringBuilder();
-            string[] wordsAndSeparators = WordSplitWithUnderscoresRegex.Split(input);
+            string[] wordsAndSeparators = wordSplitWithUnderscoresRegex.Split(input);
             bool isFirstWord = true;
 
             for (int i = 0; i < wordsAndSeparators.Length; i++)
@@ -323,7 +322,7 @@ public static partial class StringExt
         else
         {
             // Старая логика без сохранения подчеркиваний
-            string[] words = WordSplitRegex.Split(input);
+            string[] words = wordSplitRegex.Split(input);
             var result = new StringBuilder();
             bool isFirstWord = true;
 
@@ -381,7 +380,7 @@ public static partial class StringExt
             return string.Empty;
         }
 
-        string[] words = WordSplitRegex.Split(input);
+        string[] words = wordSplitRegex.Split(input);
         var result = new StringBuilder();
 
         foreach (string? word in words)
@@ -431,7 +430,7 @@ public static partial class StringExt
             return string.Empty;
         }
 
-        string[] words = WordSplitRegex.Split(input);
+        string[] words = wordSplitRegex.Split(input);
         var result = new StringBuilder();
 
         foreach (string? word in words)
@@ -457,7 +456,7 @@ public static partial class StringExt
     /// </summary>
     private static string ToPascalCaseWithoutUnderscores(string input, bool keepOriginalAcronyms)
     {
-        string[] words = WordSplitRegex.Split(input);
+        string[] words = wordSplitRegex.Split(input);
         var result = new StringBuilder();
 
         foreach (string? word in words)
@@ -489,7 +488,7 @@ public static partial class StringExt
     /// </summary>
     private static string ToCamelCaseWithoutUnderscores(string input, bool keepOriginalAcronyms)
     {
-        string[] words = WordSplitRegex.Split(input);
+        string[] words = wordSplitRegex.Split(input);
         var result = new StringBuilder();
         bool isFirstWord = true;
 

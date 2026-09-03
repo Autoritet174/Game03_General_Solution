@@ -3,15 +3,15 @@ using System.Collections.Generic;
 namespace General.DTO.Entities.GameData;
 
 /// <summary> Представляет базовую сущность предмета. </summary>
-public class BaseEquipment(int Id, string Name, int Rarity, bool IsUnique, int EquipmentTypeId, int? SmithingMaterialId, Dictionary<EStatType, Dice>? PossibleStats)
+public class BaseEquipment(int id, string name, int rarity, bool isUnique, int equipmentTypeId, int? smithingMaterialId, Dictionary<EStatType, Dice>? possibleStats)
 {
-    public int Id { get; set; } = Id;
-    public string Name { get; set; } = Name;
-    public int Rarity { get; set; } = Rarity;
-    public bool IsUnique { get; set; } = IsUnique;
-    public int EquipmentTypeId { get; set; } = EquipmentTypeId;
-    public EquipmentType EquipmentType { get; set; } = null!;
-    public int? SmithingMaterialId { get; set; } = SmithingMaterialId;
-    public SmithingMaterial? SmithingMaterial { get; set; }
-    public Dictionary<EStatType, Dice>? PossibleStats { get; set; } = PossibleStats;
+    public int id { get; set; } = id;
+    public string name { get; set; } = name;
+    public int rarity { get; set; } = rarity;
+    public bool isUnique { get; set; } = isUnique;
+    public int equipmentTypeId { get; set; } = equipmentTypeId;
+    public EquipmentType equipmentType { get; set; } = null!;
+    public int? smithingMaterialId { get; set; } = smithingMaterialId;
+    public SmithingMaterial? smithingMaterial { get; set; }
+    public Dictionary<EStatType, Dice>? possibleStats { get; set; } = possibleStats;
 }

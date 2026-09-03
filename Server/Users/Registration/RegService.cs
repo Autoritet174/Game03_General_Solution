@@ -30,8 +30,8 @@ public sealed class RegService(
 
         Guid? userId = null; // ID пользователя для логирования
         bool success = false;
-        string? email = dto.Email;
-        string? password = dto.Password;
+        string? email = dto.email;
+        string? password = dto.password;
         try
         {
             // Проверка входных данных

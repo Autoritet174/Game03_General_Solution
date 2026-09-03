@@ -4,38 +4,38 @@ namespace General.DTO.Battlefield;
 
 public class SpawnedHero
 {
-    public required Guid SpawnedId { get; init; }
-    public required int BaseHeroId { get; init; }
-    public required int Level { get; set; }
-    public float CoefPowerByLevel { get; set; }
-    public int ActionPoints { get; set; }
-    public int Team { get; set; }
+    public required Guid spawnedId { get; init; }
+    public required int baseHeroId { get; init; }
+    public required int level { get; set; }
+    public float coefPowerByLevel { get; set; }
+    public int actionPoints { get; set; }
+    public int team { get; set; }
 
     #region Характеристики
-    public required float Health { get; set; }
-    public required float HealthMax { get; set; }
-    public required float Damage { get; set; }
-    public required float Strength { get; set; }
-    public required float Agility { get; set; }
-    public required float Intelligence { get; set; }
-    public required float CritChance { get; set; }
-    public required float CritMultiplier { get; set; }
-    public required float Haste { get; set; }
-    public required float Versality { get; set; }
-    public required float EndurancePhysical { get; set; }
-    public required float EnduranceMagical { get; set; }
-    public required float Initiative { get; set; }
+    public required float health { get; set; }
+    public required float healthMax { get; set; }
+    public required float damage { get; set; }
+    public required float strength { get; set; }
+    public required float agility { get; set; }
+    public required float intelligence { get; set; }
+    public required float critChance { get; set; }
+    public required float critMultiplier { get; set; }
+    public required float haste { get; set; }
+    public required float versality { get; set; }
+    public required float endurancePhysical { get; set; }
+    public required float enduranceMagical { get; set; }
+    public required float initiative { get; set; }
     //public bool IsAlive { get; set; } = true;
     #endregion Характеристики
 
     [JsonIgnore]
-    public float HealthPercent
+    public float healthPercent
     {
         get
         {
-            if (HealthMax > 0 && Health > 0)
+            if (healthMax > 0 && health > 0)
             {
-                return Health / HealthMax;
+                return health / healthMax;
             }
             else
             {

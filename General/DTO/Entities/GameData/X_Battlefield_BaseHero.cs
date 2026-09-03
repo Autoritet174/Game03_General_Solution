@@ -2,21 +2,21 @@ namespace General.DTO.Entities.GameData;
 
 public class X_Battlefield_BaseHero
 {
-    public int Id { get; set; }
-    public EBattleFiled BattlefieldId { get; set; }
-    public Battlefield Battlefield { get; set; } = null!;
-    public int BaseHeroId { get; set; }
-    public BaseHero BaseHero { get; set; } = null!;
+    public int id { get; set; }
+    public EBattleFiled battlefieldId { get; set; }
+    public Battlefield battlefield { get; set; } = null!;
+    public int baseHeroId { get; set; }
+    public BaseHero baseHero { get; set; } = null!;
 
     /// <summary> Гарантированное появление на поле боя. </summary>
-    public bool GuarantSpawn { get; set; }
+    public bool guarantSpawn { get; set; }
 
     /// <summary> Вероятность появления на поле боя. Чем выше число тем выше шанс. Игнорируется при GuarantSpawn=true. </summary>
-    public int ProbabilitySpawn { get; set; }
+    public int probabilitySpawn { get; set; }
 
     /// <summary> При респауне может иметь ранг. </summary>
-    public bool PossibleRank { get; set; }
-    public int Count { get; set; } = 1;
+    public bool possibleRank { get; set; }
+    public int count { get; set; } = 1;
 
     public X_Battlefield_BaseHero Copy()
     {

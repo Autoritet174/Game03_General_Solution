@@ -4,8 +4,8 @@ namespace General.DTO.Entities.GameData;
 
 public class SmithingMaterial
 {
-    public int Id { get; set; }
-    public string Name { get; set; } = string.Empty;
+    public int id { get; set; }
+    public string name { get; set; } = string.Empty;
     [JsonIgnore]
-    public string? NameRu { get; set; }
+    public string? nameRu { get; set; }
 }

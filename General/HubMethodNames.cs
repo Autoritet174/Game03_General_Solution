@@ -10,8 +10,11 @@ public static class HubMethodNames
     public const string USE_ABILITY = "UseAbility";
     public const string GET_BATTLE_LOG = "GetBattleLog";
 
-    public enum EMethod { PING, EQUIPMENT_TAKE_ON, EQUIPMENT_TAKE_OFF, COMBAT_START, COMBAT_BREAK,
-        USE_ABILITY, GET_BATTLE_LOG }
+    public enum EMethod
+    {
+        PING, EQUIPMENT_TAKE_ON, EQUIPMENT_TAKE_OFF, COMBAT_START, COMBAT_BREAK,
+        USE_ABILITY, GET_BATTLE_LOG
+    }
 
     public static string GetMethod(EMethod eMethod)
     {

@@ -210,7 +210,7 @@ public class DbContextGame(DbContextOptions<DbContextGame> options) : IdentityDb
 
             if (hasCreatedAt)
             {
-                IProperty? prop = entry.Metadata.FindProperty(nameof(ICreatedAt.CreatedAt));
+                IProperty? prop = entry.Metadata.FindProperty(nameof(ICreatedAt.createdAt));
                 if (prop != null)
                 {
                     if (entry.State == EntityState.Added)
@@ -226,7 +226,7 @@ public class DbContextGame(DbContextOptions<DbContextGame> options) : IdentityDb
 
             if (hasUpdatedAt && entry.State is EntityState.Added or EntityState.Modified)
             {
-                IProperty? prop = entry.Metadata.FindProperty(nameof(IUpdatedAt.UpdatedAt));
+                IProperty? prop = entry.Metadata.FindProperty(nameof(IUpdatedAt.updatedAt));
                 if (prop != null)
                 {
                     entry.CurrentValues[prop] = utcNow;

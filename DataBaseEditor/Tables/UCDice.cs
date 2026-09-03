@@ -23,12 +23,12 @@ public partial class UCDice : UserControl
         radioButton_csm.Checked = true;
         radioButton_exc.Checked = false;
 
-        numeric_count.Value = dice.Count;
-        numeric_sides.Value = dice.Sides;
-        numeric_mod.Value = (decimal)(dice.Modificator ?? 0f);
-        numeric_exc.Value = (decimal)dice.Expected;
-        numeric_min.Value = (decimal)dice.Min;
-        numeric_max.Value = (decimal)dice.Max;
+        numeric_count.Value = dice.count;
+        numeric_sides.Value = dice.sides;
+        numeric_mod.Value = (decimal)(dice.modificator ?? 0f);
+        numeric_exc.Value = (decimal)dice.expected;
+        numeric_min.Value = (decimal)dice.min;
+        numeric_max.Value = (decimal)dice.max;
     }
 
     public Dice GetValue()
@@ -42,7 +42,7 @@ public partial class UCDice : UserControl
         {
             float exp = (float)numeric_exc.Value;
 
-            switch (baseHero?.Rarity)
+            switch (baseHero?.rarity)
             {
                 case 2:
                     exp *= 1.5f;
@@ -60,18 +60,18 @@ public partial class UCDice : UserControl
 
             if (name == "Health")
             {
-                switch (baseHero?.MainStat)
+                switch (baseHero?.mainStat)
                 {
-                    case General.EMainStat.Strength:
+                    case General.EMainStat.strength:
                         exp *= 1.3f;
                         break;
-                    case General.EMainStat.Universal:
+                    case General.EMainStat.universal:
                         
                         break;
-                    case General.EMainStat.Agility:
+                    case General.EMainStat.agility:
                         exp *= 0.9f;
                         break;
-                    case General.EMainStat.Intelligence:
+                    case General.EMainStat.intelligence:
                         exp *= 0.8f;
                         break;
                     case null:
@@ -82,17 +82,17 @@ public partial class UCDice : UserControl
             } 
             if (name == "Damage")
             {
-                switch (baseHero?.MainStat)
+                switch (baseHero?.mainStat)
                 {
-                    case General.EMainStat.Strength:
+                    case General.EMainStat.strength:
                         exp *= 0.95f;
                         break;
-                    case General.EMainStat.Universal:
+                    case General.EMainStat.universal:
                         break;
-                    case General.EMainStat.Agility:
+                    case General.EMainStat.agility:
                         exp *= 1.35f;
                         break;
-                    case General.EMainStat.Intelligence:
+                    case General.EMainStat.intelligence:
                         exp *= 1.1f;
                         break;
                     case null:

@@ -15,11 +15,11 @@ public partial class BaseHeroesForm : Form
 
     private void SaveData()
     {
-        BaseHero baseHero = db.BaseHeroes.First(a => a.Id == id);
+        BaseHero baseHero = db.BaseHeroes.First(a => a.id == id);
         try
         {
-            baseHero.Health = ucDice_Health.GetValue();
-            baseHero.Damage = ucDice_Damage.GetValue();
+            baseHero.health = ucDice_Health.GetValue();
+            baseHero.damage = ucDice_Damage.GetValue();
             _ = db.SaveChanges();
         } catch (Exception ex) {
             MessageBox.Show(ex.Message);
@@ -28,9 +28,9 @@ public partial class BaseHeroesForm : Form
 
     private void RefreshData()
     {
-        BaseHero baseHero = db.BaseHeroes.First(a => a.Id == id);
-        ucDice_Health.SetValue(baseHero.Health);
-        ucDice_Damage.SetValue(baseHero.Damage);
+        BaseHero baseHero = db.BaseHeroes.First(a => a.id == id);
+        ucDice_Health.SetValue(baseHero.health);
+        ucDice_Damage.SetValue(baseHero.damage);
     }
 
     private void button_save_Click(object sender, EventArgs e)
@@ -46,7 +46,7 @@ public partial class BaseHeroesForm : Form
 
     private void BaseHeroesForm_Load(object sender, EventArgs e)
     {
-        BaseHero baseHero = db.BaseHeroes.First(a => a.Id == id);
+        BaseHero baseHero = db.BaseHeroes.First(a => a.id == id);
         ucDice_Health.Init("Health", baseHero);
         ucDice_Damage.Init("Damage", baseHero);
         RefreshData();

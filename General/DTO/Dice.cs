@@ -9,27 +9,27 @@ public record Dice
 {
     /// <summary> Count. Количество бросаемых кубиков. </summary>
     [JsonPropertyName("c")]
-    public int Count { get; set; }
+    public int count { get; set; }
 
     /// <summary> Sides. Размер кубика (число граней). </summary>
     [JsonPropertyName("d")] // названо этой буквой потому что postgres сортирует jsonb по алфавиту, сортировку задаём для наглядности
-    public int Sides { get; set; }
+    public int sides { get; set; }
 
     /// <summary> Modificator. Модификатор к броску кубиков. </summary>
     [JsonPropertyName("m")]
-    public float? Modificator { get; set; } = null;
+    public float? modificator { get; set; } = null;
 
     /// <summary> Минимальное значение. </summary>
     [JsonIgnore]
-    public float Min => Count + (Modificator ?? 0f);
+    public float min => count + (modificator ?? 0f);
 
     /// <summary> Максимальное значение. </summary>
     [JsonIgnore]
-    public float Max => (Count * Sides) + (Modificator ?? 0f);
+    public float max => (count * sides) + (modificator ?? 0f);
 
     /// <summary> Ожидаемое значение. </summary>
     [JsonIgnore]
-    public float Expected => (Count * (Sides + 1) / 2f) + (Modificator ?? 0f);
+    public float expected => (count * (sides + 1) / 2f) + (modificator ?? 0f);
 
     public Dice() { }
 
@@ -50,56 +50,57 @@ public record Dice
             throw new FormatException(MESSAGE_EXCEPTION);
         }
 
-        Count = int.Parse(span[..i_d]);
+        count = int.Parse(span[..i_d]);
 
         int i_p = span[i_d..].IndexOf('+');
         int i_d1 = i_d + 1;
 
         if (i_p == -1)
         {
-            Sides = int.Parse(span[i_d1..]);
+            sides = int.Parse(span[i_d1..]);
         }
         else
         {
-            Sides = int.Parse(span[i_d1..(i_d + i_p)]);
+            sides = int.Parse(span[i_d1..(i_d + i_p)]);
 
             float mod = int.Parse(span[(i_d + i_p + 1)..]);
             if (mod != 0)
             {
-                Modificator = mod;
+                modificator = mod;
             }
         }
     }
 
     public Dice(int count, int sides, float? modificator = null)
     {
-        Count = count;
-        Sides = sides;
-        Modificator = modificator;
+        this.count = count;
+        this.sides = sides;
+        this.modificator = modificator;
     }
 
     public float GetRandomValue()
     {
-        if (Count < 1 || Sides < 1)
+        if (count < 1 || sides < 1)
         {
-            return Modificator ?? 0f;
+            return modificator ?? 0f;
         }
 
-        if (Sides == 1)
+        if (sides == 1)
         {
-            return Count + (Modificator ?? 0f);
+            return count + (modificator ?? 0f);
         }
 
-        int sum = Count;
-        for (int i = 0; i < Count; i++)
+        int sum = count;
+        for (int i = 0; i < count; i++)
         {
-            sum += RandomShared.Next(Sides);
+            sum += RandomShared.Next(sides);
         }
 
-        return sum + (Modificator ?? 0f);
+        return sum + (modificator ?? 0f);
     }
 
-    public string ToStr() {
-        return $"{Count}d{Sides}{(Modificator != null && Modificator!=0 ? (Modificator<0 ? Modificator.ToString() : "+"+Modificator.ToString()) : "")}";
+    public string ToStr()
+    {
+        return $"{count}d{sides}{(modificator != null && modificator != 0 ? (modificator < 0 ? modificator.ToString() : "+" + modificator.ToString()) : "")}";
     }
 }

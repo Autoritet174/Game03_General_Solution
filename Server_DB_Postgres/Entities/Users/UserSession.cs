@@ -27,14 +27,14 @@ public class UserSession : ICreatedAt, IUpdatedAt, IVersion
     public DateTimeOffset ExpiresAt { get; set; }
 
     /// <summary> <inheritdoc/> </summary>
-    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset createdAt { get; set; }
 
     /// <summary> <inheritdoc/> </summary>
-    public DateTimeOffset UpdatedAt { get; set; }
+    public DateTimeOffset updatedAt { get; set; }
 
     public Guid UserDeviceId { get; set; }
     public UserDevice? UserDevice { get; set; }
 
     /// <summary> <inheritdoc/> </summary>
-    public long Version { get; set; }
+    public long version { get; set; }
 }

@@ -31,7 +31,7 @@ public class AuthController(AuthService _authService) : ControllerBaseApi
 
         // Вместо ручной сериализации в строку возвращаем объект. 
         // ASP.NET Core сам применит System.Text.Json (который быстрее Newtonsoft).
-        return dtoResult.ErrorKey == null ? Ok(dtoResult) : BadRequest(dtoResult);
+        return dtoResult.errorKey == null ? Ok(dtoResult) : BadRequest(dtoResult);
     }
 
     [HttpGet("validate")]

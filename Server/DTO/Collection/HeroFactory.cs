@@ -7,19 +7,19 @@ public static class HeroFactory
 {
     public static Hero CreateFromBaseHero(BaseHero bh, Guid userId) => new()
     {
-        UserId = userId,
-        BaseHeroId = bh.Id,
-        Health = bh.Health.GetRandomValue(),
-        Strength = bh.Strength.GetRandomValue(),
-        Agility = bh.Agility.GetRandomValue(),
-        Intelligence = bh.Intelligence.GetRandomValue(),
-        CritChance = bh.CritChance.GetRandomValue(),
-        CritMultiplier = bh.CritMultiplier.GetRandomValue(),
-        EnduranceMagical = bh.EnduranceMagical.GetRandomValue(),
-        EndurancePhysical = bh.EndurancePhysical.GetRandomValue(),
-        Haste = bh.Haste.GetRandomValue(),
-        Initiative = bh.Initiative.GetRandomValue(),
-        Versality = bh.Versality.GetRandomValue(),
-        Damage = bh.Damage.GetRandomValue()
+        userId = userId,
+        baseHeroId = bh.id,
+        health = bh.health.GetRandomValue(),
+        strength = bh.strength.GetRandomValue(),
+        agility = bh.agility.GetRandomValue(),
+        intelligence = bh.intelligence.GetRandomValue(),
+        critChance = bh.critChance.GetRandomValue(),
+        critMultiplier = bh.critMultiplier.GetRandomValue(),
+        enduranceMagical = bh.enduranceMagical.GetRandomValue(),
+        endurancePhysical = bh.endurancePhysical.GetRandomValue(),
+        haste = bh.haste.GetRandomValue(),
+        initiative = bh.initiative.GetRandomValue(),
+        versality = bh.versality.GetRandomValue(),
+        damage = bh.damage.GetRandomValue()
     };
 }

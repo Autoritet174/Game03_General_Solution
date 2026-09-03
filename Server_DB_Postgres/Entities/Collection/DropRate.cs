@@ -5,20 +5,20 @@ namespace Server_DB_Postgres.Entities.Collection;
 
 public class DropRate : IVersion
 {
-    public Guid Id { get; set; }
+    public Guid id { get; set; }
 
-    public Guid UserId { get; set; }
-    public User? User { get; set; }
+    public Guid userId { get; set; }
+    public User? user { get; set; }
 
-    public long Version { get; set; }
+    public long version { get; set; }
 
     /// <summary>
     /// Тип вероятностей. 1 - Герой. 2 - Предмет.
     /// </summary>
-    public int Type { get; set; }
+    public int type { get; set; }
 
     /// <summary>
     /// Абстрактое количество из которого сервер вычислит вероятность.
     /// </summary>
-    public int[] Counts { get; set; } = [];
+    public int[] counts { get; set; } = [];
 }

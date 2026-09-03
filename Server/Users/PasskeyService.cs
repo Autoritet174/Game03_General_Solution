@@ -84,7 +84,7 @@ public sealed class PasskeyService(
             DescriptorId = credential.Id,
             PublicKey = credential.PublicKey,
             SignatureCounter = credential.SignCount,
-            CreatedAt = DateTimeOffset.UtcNow
+            createdAt = DateTimeOffset.UtcNow
         };
 
         _ = dbContext.UserAccesskeys.Add(passkey);

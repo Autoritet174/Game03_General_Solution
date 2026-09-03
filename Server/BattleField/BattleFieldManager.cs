@@ -42,7 +42,7 @@ public class BattlefieldManager(Guid userId,
             }
 
             General.DTO.Entities.GameData.Battlefield battlefield = cacheService.TableBattlefields[eBattleFiled];
-            if (spawnedHeroesId.Length > battlefield.MaxHeroCount)
+            if (spawnedHeroesId.Length > battlefield.maxHeroCount)
             {
                 //return Result.Fail($"too many heroes, max {battlefield.MaxHeroCount}");
                 return null;
@@ -50,20 +50,20 @@ public class BattlefieldManager(Guid userId,
 
 
             // Все герои которые могут сгенерироваться на этом поле боя как ВРАГИ.
-            List<X_Battlefield_BaseHero> enemyList = [.. cacheService.TableX_Battlefields_BaseHeroes.Values.Where(x => x.BattlefieldId == eBattleFiled).Select(a => a.Copy())];
+            List<X_Battlefield_BaseHero> enemyList = [.. cacheService.TableX_Battlefields_BaseHeroes.Values.Where(x => x.battlefieldId == eBattleFiled).Select(a => a.Copy())];
 
             List<SpawnedHero> spawnedHeroesEnemy = [];
-            for (int c = 0; c < battlefield.MaxEnemyCount; c++)
+            for (int c = 0; c < battlefield.maxEnemyCount; c++)
             {
                 if (enemyList.Count < 1)
                 {
                     break;
                 }
 
-                List<X_Battlefield_BaseHero> enemies = [.. enemyList.Where(a => a.Count > 0 && a.GuarantSpawn)];
+                List<X_Battlefield_BaseHero> enemies = [.. enemyList.Where(a => a.count > 0 && a.guarantSpawn)];
                 if (enemies.Count < 1)
                 {
-                    enemies = [.. enemyList.Where(a => a.Count > 0 && a.ProbabilitySpawn > 0)];
+                    enemies = [.. enemyList.Where(a => a.count > 0 && a.probabilitySpawn > 0)];
                     if (enemies.Count < 1)
                     {
                         break;
@@ -71,10 +71,10 @@ public class BattlefieldManager(Guid userId,
                 }
 
                 X_Battlefield_BaseHero randomEnemy = enemies[Random.Shared.Next(enemies.Count)];
-                SpawnedHero sh = SpawnedHeroFactory.CreateFromBaseHero(randomEnemy.BaseHero, 1);
-                sh.Team = 2;
+                SpawnedHero sh = SpawnedHeroFactory.CreateFromBaseHero(randomEnemy.baseHero, 1);
+                sh.team = 2;
                 spawnedHeroesEnemy.Add(sh);
-                randomEnemy.Count--;
+                randomEnemy.count--;
 
                 InitActionPoints(sh);
             }
@@ -85,11 +85,11 @@ public class BattlefieldManager(Guid userId,
 
             // спаун героев
             List<SpawnedHero> spawnedHeroesPlayer = [];
-            foreach (Hero hero in db.Heroes.Include(a => a.BaseHero).AsNoTracking().Where(a => a.UserId == userId && spawnedHeroesId.Contains(a.Id)))
+            foreach (Hero hero in db.Heroes.Include(a => a.baseHero).AsNoTracking().Where(a => a.userId == userId && spawnedHeroesId.Contains(a.id)))
             {
                 SpawnedHero sh = SpawnedHeroFactory.CreateFromHero(hero);
                 spawnedHeroesPlayer.Add(sh);
-                sh.Team = 1;
+                sh.team = 1;
 
                 InitActionPoints(sh);
             }
@@ -99,7 +99,7 @@ public class BattlefieldManager(Guid userId,
                 // ("zero heroes spawned");
                 return null;
             }
-            if (spawnedHeroesPlayer.Count > battlefield.MaxHeroCount)
+            if (spawnedHeroesPlayer.Count > battlefield.maxHeroCount)
             {
                 // ($"too many heroes spawned, max {battlefield.MaxHeroCount}");
                 return null;
@@ -107,9 +107,9 @@ public class BattlefieldManager(Guid userId,
 
             spawnedBattlefield = new SpawnedBattlefield(eBattleFiled, spawnedHeroesPlayer, spawnedHeroesEnemy)
             {
-                BattlefieldLog = []
+                battlefieldLog = []
             };
-            battleLog = spawnedBattlefield.BattlefieldLog;
+            battleLog = spawnedBattlefield.battlefieldLog;
             dateTimeStartCombat = DateTime.UtcNow;
             battleLogIndex = 1;
             inCombat = true;
@@ -133,7 +133,7 @@ public class BattlefieldManager(Guid userId,
             return false;
         }
 
-        if (eAbility != EBattlefieldLogAbility.Attack)
+        if (eAbility != EBattlefieldLogAbility.attack)
         {
             // тут надо сделать проверку, что если абилка не "атака" то существует ли она у героя
         }
@@ -163,14 +163,14 @@ public class BattlefieldManager(Guid userId,
     private void AddLog<T>(T log) where T : BattlefieldLogRecordBase
     {
         battleLog.Add(log);
-        log.Index = battleLog.Count;
+        log.index = battleLog.Count;
     }
 
 
     /// <summary> Инициализировать очки действия по инициативе. </summary>
     private static void InitActionPoints(SpawnedHero sh)
     {
-        float initiative = sh.Initiative;//  220.2
+        float initiative = sh.initiative;//  220.2
         int ap = (int)(initiative / INITIATIVES_FOR_ACTION_POINT);//  220.2/100=2
         initiative -= ap * INITIATIVES_FOR_ACTION_POINT;//  =220.2 - 2*100 = 20.2
         if (initiative > 0 && Random.Shared.NextSingle() * INITIATIVES_FOR_ACTION_POINT < initiative)
@@ -178,7 +178,7 @@ public class BattlefieldManager(Guid userId,
             ap++;
         }
 
-        sh.ActionPoints = ap + ACTION_POINTS_ON_START;
+        sh.actionPoints = ap + ACTION_POINTS_ON_START;
     }
 
 
@@ -191,13 +191,13 @@ public class BattlefieldManager(Guid userId,
         }
 
 
-        List<SpawnedHero> allHeroesSortedByInitiative = [.. spawnedBattlefield.SpawnedHeroPlayerList.Concat(spawnedBattlefield.SpawnedHeroEnemyList).OrderByDescending(a => a.Initiative)];
+        List<SpawnedHero> allHeroesSortedByInitiative = [.. spawnedBattlefield.spawnedHeroPlayerList.Concat(spawnedBattlefield.spawnedHeroEnemyList).OrderByDescending(a => a.initiative)];
 
         for (battlefieldTurn = 1; battlefieldTurn <= 1000; battlefieldTurn++)
         {
             AddLog(new BattlefieldLogRecord_TurnStart
             {
-                Turn = battlefieldTurn
+                turn = battlefieldTurn
             });
 
             // все герои ходят
@@ -205,22 +205,22 @@ public class BattlefieldManager(Guid userId,
             for (int i = 0; i < allHeroesSortedByInitiative.Count; i++)
             {
                 SpawnedHero hero = allHeroesSortedByInitiative[i];
-                if (hero.Health > 0)
+                if (hero.health > 0)
                 {
                     // Выбираем коллекцию героев противников того героя который сейчас атакует
-                    List<SpawnedHero> targets = hero.Team == 1 ? spawnedBattlefield.SpawnedHeroEnemyList : spawnedBattlefield.SpawnedHeroPlayerList;
+                    List<SpawnedHero> targets = hero.team == 1 ? spawnedBattlefield.spawnedHeroEnemyList : spawnedBattlefield.spawnedHeroPlayerList;
 
                     // Выбираем случайного противника
-                    SpawnedHero? heroForAttack = targets.Where(a => a.Health > 0).GetRandomElement();
+                    SpawnedHero? heroForAttack = targets.Where(a => a.health > 0).GetRandomElement();
 
                     if (heroForAttack == null)
                     {
-                        teamWinner = hero.Team;
+                        teamWinner = hero.team;
                         // Живого героя для атаки не найдено, значит что в одной из команд все герои мертвы
                         break;
                     }
 
-                    if (hero.ActionPoints >= COST_AP_ABILITY_ATTACK)
+                    if (hero.actionPoints >= COST_AP_ABILITY_ATTACK)
                     {
                         UseAbilityAttack(hero, heroForAttack); // атака
                     }
@@ -251,9 +251,9 @@ public class BattlefieldManager(Guid userId,
             for (int i = 0; i < allHeroesSortedByInitiative.Count; i++)
             {
                 SpawnedHero h = allHeroesSortedByInitiative[i];
-                if (h.Health > 0)
+                if (h.health > 0)
                 {
-                    h.ActionPoints += Random.Shared.Next(5, 16);
+                    h.actionPoints += Random.Shared.Next(5, 16);
                 }
             }
         }
@@ -264,48 +264,49 @@ public class BattlefieldManager(Guid userId,
     #region ABILITIES
     private void UseAbilityAttack(SpawnedHero h1, SpawnedHero h2)
     {
-        float damage = h1.Damage;
+        float damage = h1.damage;
         bool isCrit = false;
-        if (Random.Shared.NextSingle() * 100 < h1.CritChance)
+        if (Random.Shared.NextSingle() * 100 < h1.critChance)
         {
-            damage *= (h1.CritMultiplier / 100f) + 1;
+            damage *= (h1.critMultiplier / 100f) + 1;
             isCrit = true;
         }
 
         Event_ChangeActionPoints(h1, -COST_AP_ABILITY_ATTACK);
-        Event_UseAbility(h1, EBattlefieldLogAbility.Attack, [h2.SpawnedId]);
-        Event_Damage(h2, damage, battleLog[^1].Index, isCrit);
+        Event_UseAbility(h1, EBattlefieldLogAbility.attack, [h2.spawnedId]);
+        Event_Damage(h1, h2, damage, battleLog[^1].index, isCrit);
     }
     #endregion
     #region EVENTS
     private void Event_ChangeActionPoints(SpawnedHero spawnedHero, int countAP)
     {
-        spawnedHero.ActionPoints += countAP;
+        spawnedHero.actionPoints += countAP;
         AddLog(new BattlefieldLogRecord_ChangeActionPoints
         {
-            SpawnedHeroId = spawnedHero.SpawnedId,
-            CountAP = countAP
+            spawnedHeroId = spawnedHero.spawnedId,
+            countAP = countAP
         });
     }
-    private void Event_Damage(SpawnedHero spawnedHero, float damage, int indexReason, bool isCrit = false, bool isPeriodic = false)
+    private void Event_Damage(SpawnedHero h1, SpawnedHero h2, float damage, int indexReason, bool isCrit = false, bool isPeriodic = false)
     {
-        spawnedHero.Health -= damage;
+        h2.health -= damage;
         AddLog(new BattlefieldLogRecord_Damage
         {
-            SpawnedHeroId = spawnedHero.SpawnedId,
-            IndexReason = indexReason,
-            Damage = damage,
-            IsCrit = isCrit,
-            IsPerodic = isPeriodic
+            hero1Id = h1.spawnedId,
+            hero2Id = h2.spawnedId,
+            indexReason = indexReason,
+            damage = damage,
+            isCrit = isCrit,
+            isPerodic = isPeriodic
         });
     }
     private void Event_UseAbility(SpawnedHero spawnedHero, EBattlefieldLogAbility ability, Guid[]? spawnedHeroTargets)
     {
         AddLog(new BattlefieldLogRecord_UseAbility
         {
-            SpawnedHero1Id = spawnedHero.SpawnedId,
-            Ability = ability,
-            SpawnedHeroTargets = spawnedHeroTargets
+            spawnedHero1Id = spawnedHero.spawnedId,
+            ability = ability,
+            spawnedHeroTargets = spawnedHeroTargets
         });
     }
     #endregion

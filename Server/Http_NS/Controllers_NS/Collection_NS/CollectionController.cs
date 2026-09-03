@@ -22,14 +22,14 @@ public class CollectionController(DbContextGame dbContext) : ControllerBaseApi
             return Unauthorized();
         }
 
-        List<Equipment> equipments = await dbContext.Equipments.AsNoTracking().Where(a => a.UserId == userId).ToListAsync(cancellationToken).ConfigureAwait(false);
+        List<Equipment> equipments = await dbContext.Equipments.AsNoTracking().Where(a => a.userId == userId).ToListAsync(cancellationToken).ConfigureAwait(false);
 
-        List<Hero> heroes = await dbContext.Heroes.AsNoTracking().Where(a => a.UserId == userId).ToListAsync(cancellationToken).ConfigureAwait(false);
+        List<Hero> heroes = await dbContext.Heroes.AsNoTracking().Where(a => a.userId == userId).ToListAsync(cancellationToken).ConfigureAwait(false);
 
         DtoContainerCollection container = new()
         {
-            CollectionEquipments = equipments,
-            CollectionHeroes = heroes
+            collectionEquipments = equipments,
+            collectionHeroes = heroes
         };
         return Ok(JSON.Serialize(container));
     }

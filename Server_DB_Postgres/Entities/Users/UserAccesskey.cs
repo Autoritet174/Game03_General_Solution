@@ -33,12 +33,12 @@ public sealed class UserAccesskey : ICreatedAt, IUpdatedAt, IVersion
     public string? DeviceName { get; init; }
 
     /// <summary> <inheritdoc/> </summary>
-    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset createdAt { get; set; }
 
 
     /// <summary> <inheritdoc/> </summary>
-    public DateTimeOffset UpdatedAt { get; set; }
+    public DateTimeOffset updatedAt { get; set; }
 
     /// <summary> <inheritdoc/> </summary>
-    public long Version { get; set; }
+    public long version { get; set; }
 }

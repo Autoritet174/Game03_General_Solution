@@ -30,14 +30,14 @@ public partial class FormMain : Form
     {
         int id = Convert.ToInt32(dgv_WeaponTypes.Rows[e.RowIndex].Cells["id"].Value);
         using DbContextGame db = DB.Create();
-        var damageTypes = db.DamageTypes.Where(a => a.Id <= 4).ToList();
+        var damageTypes = db.DamageTypes.Where(a => a.id <= 4).ToList();
         dgv_DamageTypes.RowCount = damageTypes.Count;
         for (int i = 0; i < damageTypes.Count; i++)
         {
-            dgv_DamageTypes.Rows[i].Cells["id1"].Value = damageTypes[i].Id;
-            dgv_DamageTypes.Rows[i].Cells["ColumnNameRu"].Value = damageTypes[i].NameRu;
+            dgv_DamageTypes.Rows[i].Cells["id1"].Value = damageTypes[i].id;
+            dgv_DamageTypes.Rows[i].Cells["ColumnNameRu"].Value = damageTypes[i].nameRu;
 
-            int coef = db.x_EquipmentTypes_DamageTypes.FirstOrDefault(a => a.DamageTypeId == damageTypes[i].Id && a.EquipmentTypeId == id)?.DamageCoef ?? 0;
+            int coef = db.x_EquipmentTypes_DamageTypes.FirstOrDefault(a => a.damageTypeId == damageTypes[i].id && a.equipmentTypeId == id)?.damageCoef ?? 0;
 
             dgv_DamageTypes.Rows[i].Cells["ColumnDamageCoef"].Value = coef;
         }
@@ -46,33 +46,33 @@ public partial class FormMain : Form
     {
         int id = Convert.ToInt32(dgv_WeaponTypes.CurrentRow!.Cells["id"].Value);
         using DbContextGame db = DB.Create();
-        IQueryable<X_EquipmentType_DamageType> xArray = db.x_EquipmentTypes_DamageTypes.Where(a => a.EquipmentTypeId == id);
+        IQueryable<X_EquipmentType_DamageType> xArray = db.x_EquipmentTypes_DamageTypes.Where(a => a.equipmentTypeId == id);
         for (int i = 0; i < dgv_DamageTypes.RowCount; i++)
         {
             DataGridViewRow row = dgv_DamageTypes.Rows[i];
             int damageTypeId = Convert.ToInt32(row.Cells["id1"].Value);
             int damageCoef = Convert.ToInt32(row.Cells["ColumnDamageCoef"].Value);
 
-            X_EquipmentType_DamageType? x = xArray.FirstOrDefault(a => a.DamageTypeId == damageTypeId);
+            X_EquipmentType_DamageType? x = xArray.FirstOrDefault(a => a.damageTypeId == damageTypeId);
             if (x == null)
             {
                 x = new()
                 {
-                    DamageTypeId = damageTypeId,
-                    EquipmentTypeId = id,
-                    DamageCoef = damageCoef,
-                    DamageType = db.DamageTypes.First(a => a.Id == damageTypeId),
-                    EquipmentType = db.EquipmentTypes.First(a => a.Id == id),
+                    damageTypeId = damageTypeId,
+                    equipmentTypeId = id,
+                    damageCoef = damageCoef,
+                    damageType = db.DamageTypes.First(a => a.id == damageTypeId),
+                    equipmentType = db.EquipmentTypes.First(a => a.id == id),
                 };
                 _ = db.x_EquipmentTypes_DamageTypes.Add(x);
             }
             else
             {
-                x.DamageCoef = damageCoef;
+                x.damageCoef = damageCoef;
             }
         }
 
-        var xArrayForDelete = db.x_EquipmentTypes_DamageTypes.Where(a => a.DamageCoef <= 0).ToList();
+        var xArrayForDelete = db.x_EquipmentTypes_DamageTypes.Where(a => a.damageCoef <= 0).ToList();
         foreach (X_EquipmentType_DamageType? x in xArrayForDelete)
         {
             _ = db.x_EquipmentTypes_DamageTypes.Remove(x);
@@ -83,16 +83,16 @@ public partial class FormMain : Form
     #region BaseHeroes
     void RefreshData_BaseHeroes() {
         using DbContextGame db = DB.Create();
-        var list = db.BaseHeroes.OrderBy(a => a.Rarity).ThenBy(a => a.Id).ToList();
+        var list = db.BaseHeroes.OrderBy(a => a.rarity).ThenBy(a => a.id).ToList();
         var list2 = list.Select(a => new
         {
-            a.Id,
-            a.Name,
-            a.Rarity,
-            a.MainStat,
-            Health = a.Health.Expected,
-            Damage = a.Damage.Expected,
-            H_D = a.Health.Expected / a.Damage.Expected
+            a.id,
+            a.name,
+            a.rarity,
+            a.mainStat,
+            Health = a.health.expected,
+            Damage = a.damage.expected,
+            H_D = a.health.expected / a.damage.expected
         }).ToList();
         dgv_BaseHeroes.DataSource = list2;
     }

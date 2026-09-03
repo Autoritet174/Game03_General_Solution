@@ -14,7 +14,7 @@
             Значение по умолчанию.
             </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Attributes.DefaultAttribute.Value">
+        <member name="P:Server_DB_Postgres.Attributes.DefaultAttribute.value">
             <summary> Значение. </summary>
         </member>
         <member name="T:Server_DB_Postgres.Attributes.JsonbAttribute">
@@ -106,12 +106,12 @@
             Использование конструктора List(IEnumerable) эффективнее для List[T], так как он оптимизирован под ICollection.
             </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.DropRate.Type">
+        <member name="P:Server_DB_Postgres.Entities.Collection.DropRate.type">
             <summary>
             Тип вероятностей. 1 - Герой. 2 - Предмет.
             </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Collection.DropRate.Counts">
+        <member name="P:Server_DB_Postgres.Entities.Collection.DropRate.counts">
             <summary>
             Абстрактое количество из которого сервер вычислит вероятность.
             </summary>
@@ -119,25 +119,25 @@
         <member name="T:Server_DB_Postgres.Entities.Logs.AuthenticationLog">
             <summary> Лог авторизации пользователей. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Logs.AuthenticationLog.Version">
+        <member name="P:Server_DB_Postgres.Entities.Logs.AuthenticationLog.version">
             <summary> <inheritdoc/> </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Logs.AuthenticationLog.CreatedAt">
+        <member name="P:Server_DB_Postgres.Entities.Logs.AuthenticationLog.createdAt">
             <summary> <inheritdoc/> </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Logs.AuthenticationLog.Success">
+        <member name="P:Server_DB_Postgres.Entities.Logs.AuthenticationLog.success">
             <summary> Успешность авторизации. </summary>
         </member>
         <member name="T:Server_DB_Postgres.Entities.Logs.RegistrationLog">
             <summary> Лог авторизации пользователей. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Logs.RegistrationLog.Version">
+        <member name="P:Server_DB_Postgres.Entities.Logs.RegistrationLog.version">
             <summary> <inheritdoc/> </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Logs.RegistrationLog.CreatedAt">
+        <member name="P:Server_DB_Postgres.Entities.Logs.RegistrationLog.createdAt">
             <summary> <inheritdoc/> </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Logs.RegistrationLog.Success">
+        <member name="P:Server_DB_Postgres.Entities.Logs.RegistrationLog.success">
             <summary> Успешность регистрации. </summary>
         </member>
         <member name="T:Server_DB_Postgres.Entities.Server.UserBanReason">
@@ -149,13 +149,13 @@
         <member name="T:Server_DB_Postgres.Entities.Server.UserSessionInactivationReason">
             <summary> Причины завершения сессии </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.User.CreatedAt">
+        <member name="P:Server_DB_Postgres.Entities.Users.User.createdAt">
             <summary> <inheritdoc/> </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.User.UpdatedAt">
+        <member name="P:Server_DB_Postgres.Entities.Users.User.updatedAt">
             <summary> <inheritdoc/> </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.User.Version">
+        <member name="P:Server_DB_Postgres.Entities.Users.User.version">
             <summary> <inheritdoc/> </summary>
         </member>
         <member name="T:Server_DB_Postgres.Entities.Users.UserAccesskey">
@@ -183,13 +183,13 @@
             Тип устройства или дружественное имя (например, "My iPhone 15").
             </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserAccesskey.CreatedAt">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserAccesskey.createdAt">
             <summary> <inheritdoc/> </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserAccesskey.UpdatedAt">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserAccesskey.updatedAt">
             <summary> <inheritdoc/> </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserAccesskey.Version">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserAccesskey.version">
             <summary> <inheritdoc/> </summary>
         </member>
         <member name="T:Server_DB_Postgres.Entities.Users.UserBan">
@@ -198,13 +198,13 @@
         <member name="P:Server_DB_Postgres.Entities.Users.UserBan.UserId">
             <summary> Идентификатор пользователя, к которому применена блокировка. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserBan.Version">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserBan.version">
             <summary> <inheritdoc/> </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserBan.CreatedAt">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserBan.createdAt">
             <summary> <inheritdoc/> </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserBan.UpdatedAt">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserBan.updatedAt">
             <summary> <inheritdoc/> </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.Users.UserBan.ExpiresAt">
@@ -216,7 +216,7 @@
         <member name="T:Server_DB_Postgres.Entities.Users.UserDevice">
             <summary> Представляет пользователя системы. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.CreatedAt">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.createdAt">
             <summary> <inheritdoc/> </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.SystemEnvironmentUserName">
@@ -286,13 +286,13 @@
         <member name="P:Server_DB_Postgres.Entities.Users.UserSession.UserSessionInactivationReasonId">
             <summary> Причина деактивации (например: "Rotation", "Logout", "SystemLock") </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserSession.CreatedAt">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserSession.createdAt">
             <summary> <inheritdoc/> </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserSession.UpdatedAt">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserSession.updatedAt">
             <summary> <inheritdoc/> </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserSession.Version">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserSession.version">
             <summary> <inheritdoc/> </summary>
         </member>
         <member name="T:Server_DB_Postgres.Migrations.Init">
