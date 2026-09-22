@@ -156,6 +156,7 @@ public class BattlefieldManager(Guid userId,
         CombatProcess();
         List<BattlefieldLogRecordBase>? log = battleLog;
         battleLog = [];
+        //File.WriteAllText(@"C:\_temp\1.txt",JSON.Serialize(log));
         return log;
     }
 
