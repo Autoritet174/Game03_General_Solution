@@ -120,4 +120,5 @@ public enum COMBAT_LOG_EVENT
 public enum EBattlefieldLogAbility
 {
     attack = 1,
+    healing = 2,
 }

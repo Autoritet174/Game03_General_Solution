@@ -7,6 +7,7 @@ namespace General.DTO.Battlefield;
 [JsonDerivedType(typeof(BattlefieldLogRecord_TurnStart), "turn_start")]
 [JsonDerivedType(typeof(BattlefieldLogRecord_ChangeActionPoints), "change_ap")]
 [JsonDerivedType(typeof(BattlefieldLogRecord_Damage), "damage")]
+[JsonDerivedType(typeof(BattlefieldLogRecord_Healing), "healing")]
 [JsonDerivedType(typeof(BattlefieldLogRecord_UseAbility), "use_ability")]
 public abstract class BattlefieldLogRecordBase
 {
@@ -51,6 +52,15 @@ public class BattlefieldLogRecord_Damage : BattlefieldLogRecordBase
     public required float damage { get; init; }
     public bool isCrit { get; init; }
     public bool isPerodic { get; init; }
+}
+
+public class BattlefieldLogRecord_Healing : BattlefieldLogRecordBase
+{
+    public override int index { get; set; }
+    public required int indexReason { get; set; }
+    public required Guid hero1Id { get; init; }
+    public required Guid hero2Id { get; init; }
+    public required float healing { get; init; }
 }
 
 public class BattlefieldLogRecord_UseAbility : BattlefieldLogRecordBase

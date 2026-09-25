@@ -1,314 +1,268 @@
 using General.DTO.Battlefield;
-using General.DTO.Entities.Collection;
 using General.DTO.Entities.GameData;
 using Microsoft.EntityFrameworkCore;
 using Server.Cache;
+using Server.Battlefield.Abilities;
 using Server.DTO.Battlefield;
 using Server.Extensions;
-using Server.Hubs;
 using Server_DB_Postgres;
+using BattlefieldDefinition = General.DTO.Entities.GameData.Battlefield;
 
 namespace Server.Battlefield;
 
+/// <summary>Создаёт команды участников, рассчитывает бой и формирует последовательный журнал событий.</summary>
 public class BattlefieldManager(Guid userId,
     IDbContextFactory<DbContextGame> dbContextFactory,
-    ILogger<Client> logger,
+    //ILogger<Hubs.Client> logger,
     CacheService cacheService)
 {
-    private bool inCombat = false;
-
-    private SpawnedBattlefield? spawnedBattlefield = null;
-    private List<BattlefieldLogRecordBase> battleLog = [];
-    private DateTime dateTimeStartCombat = DateTime.MinValue;
-    private int battleLogIndex = 1;
-
     public const float LEVEL_MULTIPLIER = 1.017f;
     public const int ACTION_POINTS_ON_START = 10;
     public const int INITIATIVES_FOR_ACTION_POINT = 100;
-    private const int COST_AP_ABILITY_ATTACK = 10;
 
-    private int battlefieldTurn = 1;
+    private const int MAX_COMBAT_TURNS = 1000;
 
+    // Порядок задаёт приоритет: герой выполняет первую доступную способность.
+    private readonly IBattleAbility[] abilities = [new Healing(), new Attack()];
+
+    private bool inCombat;
+    private SpawnedBattlefield? spawnedBattlefield;
+    private List<BattlefieldLogRecordBase> battleLog = [];
+
+    #region Управление боем
+
+    /// <summary>Создаёт новый бой с выбранными героями либо возвращает уже запущенный бой.</summary>
+    /// <returns>Начальное состояние боя или null при недопустимом количестве героев.</returns>
     public async Task<SpawnedBattlefield?> CombatStartAsync(EBattleFiled eBattleFiled, Guid[] spawnedHeroesId, CancellationToken cancellationToken)
     {
-        if (!inCombat)
+        if (inCombat)
         {
-
-            // Проверки количества героев для спауна
-            if (spawnedHeroesId.Length < 1)
-            {
-                // Result.Fail("zero heroes");
-                return null;
-            }
-
-            General.DTO.Entities.GameData.Battlefield battlefield = cacheService.TableBattlefields[eBattleFiled];
-            if (spawnedHeroesId.Length > battlefield.maxHeroCount)
-            {
-                //return Result.Fail($"too many heroes, max {battlefield.MaxHeroCount}");
-                return null;
-            }
-
-
-            // Все герои которые могут сгенерироваться на этом поле боя как ВРАГИ.
-            List<X_Battlefield_BaseHero> enemyList = [.. cacheService.TableX_Battlefields_BaseHeroes.Values.Where(x => x.battlefieldId == eBattleFiled).Select(a => a.Copy())];
-
-            List<SpawnedHero> spawnedHeroesEnemy = [];
-            for (int c = 0; c < battlefield.maxEnemyCount; c++)
-            {
-                if (enemyList.Count < 1)
-                {
-                    break;
-                }
-
-                List<X_Battlefield_BaseHero> enemies = [.. enemyList.Where(a => a.count > 0 && a.guarantSpawn)];
-                if (enemies.Count < 1)
-                {
-                    enemies = [.. enemyList.Where(a => a.count > 0 && a.probabilitySpawn > 0)];
-                    if (enemies.Count < 1)
-                    {
-                        break;
-                    }
-                }
-
-                X_Battlefield_BaseHero randomEnemy = enemies[Random.Shared.Next(enemies.Count)];
-                SpawnedHero sh = SpawnedHeroFactory.CreateFromBaseHero(randomEnemy.baseHero, 1);
-                sh.team = 2;
-                spawnedHeroesEnemy.Add(sh);
-                randomEnemy.count--;
-
-                InitActionPoints(sh);
-            }
-
-
-            DbContextGame db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
-
-            // спаун героев
-            List<SpawnedHero> spawnedHeroesPlayer = [];
-            foreach (Hero hero in db.Heroes.Include(a => a.baseHero).AsNoTracking().Where(a => a.userId == userId && spawnedHeroesId.Contains(a.id)))
-            {
-                SpawnedHero sh = SpawnedHeroFactory.CreateFromHero(hero);
-                spawnedHeroesPlayer.Add(sh);
-                sh.team = 1;
-
-                InitActionPoints(sh);
-            }
-
-            if (spawnedHeroesPlayer.Count < 1)
-            {
-                // ("zero heroes spawned");
-                return null;
-            }
-            if (spawnedHeroesPlayer.Count > battlefield.maxHeroCount)
-            {
-                // ($"too many heroes spawned, max {battlefield.MaxHeroCount}");
-                return null;
-            }
-
-            spawnedBattlefield = new SpawnedBattlefield(eBattleFiled, spawnedHeroesPlayer, spawnedHeroesEnemy)
-            {
-                battlefieldLog = []
-            };
-            battleLog = spawnedBattlefield.battlefieldLog;
-            dateTimeStartCombat = DateTime.UtcNow;
-            battleLogIndex = 1;
-            inCombat = true;
+            return spawnedBattlefield;
         }
-        //CombatProcess();
+
+        if (spawnedHeroesId.Length < 1)
+        {
+            return null;
+        }
+
+        BattlefieldDefinition battlefield = cacheService.TableBattlefields[eBattleFiled];
+        if (spawnedHeroesId.Length > battlefield.maxHeroCount)
+        {
+            return null;
+        }
+
+        List<SpawnedHero> spawnedHeroesEnemy = CreateEnemyHeroes(eBattleFiled, battlefield.maxEnemyCount);
+        List<SpawnedHero> spawnedHeroesPlayer = await CreatePlayerHeroesAsync(spawnedHeroesId, cancellationToken).ConfigureAwait(false);
+
+        if (spawnedHeroesPlayer.Count < 1 || spawnedHeroesPlayer.Count > battlefield.maxHeroCount)
+        {
+            return null;
+        }
+
+        spawnedBattlefield = new(eBattleFiled, spawnedHeroesPlayer, spawnedHeroesEnemy)
+        {
+            battlefieldLog = []
+        };
+        battleLog = spawnedBattlefield.battlefieldLog;
+        inCombat = true;
+
         return spawnedBattlefield;
     }
 
+    /// <summary>Завершает бой, сохраняя накопленный журнал для последующей выдачи клиенту.</summary>
     public bool CombatBreak()
     {
         inCombat = false;
         spawnedBattlefield = null;
-        // battleLog = null; не добавлять эту строку
         return true;
     }
 
-    public async Task<bool> UseAbilityAsync(EBattlefieldLogAbility eAbility, Guid heroSpawnedId, Guid? target)
+    /// <summary>Проверяет наличие активного боя; ручное применение способности пока не реализовано.</summary>
+    public Task<bool> UseAbilityAsync(EBattlefieldLogAbility eAbility, Guid heroSpawnedId, Guid? target)
     {
-        if (!inCombat || spawnedBattlefield == null)
-        {
-            return false;
-        }
-
-        if (eAbility != EBattlefieldLogAbility.attack)
-        {
-            // тут надо сделать проверку, что если абилка не "атака" то существует ли она у героя
-        }
-
-        //var unitTarget
-
-
-
-
-
-        return true;
+        return Task.FromResult(inCombat && spawnedBattlefield != null);
     }
 
+    /// <summary>Рассчитывает активный бой и передаёт накопленный журнал, очищая буфер менеджера.</summary>
     public List<BattlefieldLogRecordBase> GetBattleLog()
     {
         if (!inCombat)
         {
             return [];
         }
+
         CombatProcess();
-        List<BattlefieldLogRecordBase>? log = battleLog;
+
+        List<BattlefieldLogRecordBase> log = battleLog;
         battleLog = [];
-        //File.WriteAllText(@"C:\_temp\1.txt",JSON.Serialize(log));
         return log;
     }
 
+    #endregion Управление боем
 
-    private void AddLog<T>(T log) where T : BattlefieldLogRecordBase
+    #region Подготовка участников
+
+    /// <summary>Создаёт противников, выбирая сначала гарантированные записи с оставшимся количеством.</summary>
+    private List<SpawnedHero> CreateEnemyHeroes(EBattleFiled battlefieldId, int maxEnemyCount)
     {
-        battleLog.Add(log);
-        log.index = battleLog.Count;
-    }
+        List<X_Battlefield_BaseHero> enemyPool =
+        [
+            .. cacheService.TableX_Battlefields_BaseHeroes.Values
+                .Where(enemy => enemy.battlefieldId == battlefieldId)
+                .Select(enemy => enemy.Copy())
+        ];
 
-
-    /// <summary> Инициализировать очки действия по инициативе. </summary>
-    private static void InitActionPoints(SpawnedHero sh)
-    {
-        float initiative = sh.initiative;//  220.2
-        int ap = (int)(initiative / INITIATIVES_FOR_ACTION_POINT);//  220.2/100=2
-        initiative -= ap * INITIATIVES_FOR_ACTION_POINT;//  =220.2 - 2*100 = 20.2
-        if (initiative > 0 && Random.Shared.NextSingle() * INITIATIVES_FOR_ACTION_POINT < initiative)
+        List<SpawnedHero> spawnedHeroes = [];
+        for (int i = 0; i < maxEnemyCount; i++)
         {
-            ap++;
+            if (enemyPool.Count < 1)
+            {
+                break;
+            }
+
+            List<X_Battlefield_BaseHero> candidates = [.. enemyPool.Where(enemy => enemy.count > 0 && enemy.guarantSpawn)];
+            if (candidates.Count < 1)
+            {
+                candidates = [.. enemyPool.Where(enemy => enemy.count > 0 && enemy.probabilitySpawn > 0)];
+                if (candidates.Count < 1)
+                {
+                    break;
+                }
+            }
+
+            X_Battlefield_BaseHero selectedEnemy = candidates[Random.Shared.Next(candidates.Count)];
+            SpawnedHero hero = SpawnedHeroFactory.CreateFromBaseHero(selectedEnemy.baseHero, 1);
+            hero.team = 2;
+            spawnedHeroes.Add(hero);
+            selectedEnemy.count--;
+
+            InitActionPoints(hero);
         }
 
-        sh.actionPoints = ap + ACTION_POINTS_ON_START;
+        return spawnedHeroes;
     }
 
+    /// <summary>Загружает принадлежащих игроку героев с экипировкой и создаёт их боевые представления.</summary>
+    private async Task<List<SpawnedHero>> CreatePlayerHeroesAsync(Guid[] spawnedHeroesId, CancellationToken cancellationToken)
+    {
+        await using DbContextGame db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
+        var heroesWithEquipment = db.Heroes
+            .AsNoTracking()
+            .Where(hero => hero.userId == userId && spawnedHeroesId.Contains(hero.id))
+            .Select(hero => new
+            {
+                hero,
+                items = db.Equipments.Where(equipment => equipment.heroId == hero.id).ToList()
+            })
+            .ToList();
+
+        List<SpawnedHero> spawnedHeroes = [];
+        foreach (var row in heroesWithEquipment)
+        {
+            SpawnedHero hero = SpawnedHeroFactory.CreateFromHero(row.hero, row.items);
+            spawnedHeroes.Add(hero);
+            hero.team = 1;
+            InitActionPoints(hero);
+        }
+
+        return spawnedHeroes;
+    }
+
+    /// <summary>Начисляет стартовые очки действия с вероятностным округлением дробного вклада инициативы.</summary>
+    private static void InitActionPoints(SpawnedHero hero)
+    {
+        float remainingInitiative = hero.initiative;
+        int actionPoints = (int)(remainingInitiative / INITIATIVES_FOR_ACTION_POINT);
+        remainingInitiative -= actionPoints * INITIATIVES_FOR_ACTION_POINT;
+
+        if (remainingInitiative > 0 && Random.Shared.NextSingle() * INITIATIVES_FOR_ACTION_POINT < remainingInitiative)
+        {
+            actionPoints++;
+        }
+
+        hero.actionPoints = actionPoints + ACTION_POINTS_ON_START;
+    }
+
+    #endregion Подготовка участников
+
+    #region Расчёт боя
+
+    /// <summary>Разыгрывает ходы до обнаружения победителя или достижения предельного числа ходов.</summary>
     private void CombatProcess()
     {
-        int teamWinner = 0;
         if (spawnedBattlefield == null)
         {
             return;
         }
 
+        List<SpawnedHero> heroesByInitiative =
+        [
+            .. spawnedBattlefield.spawnedHeroPlayerList
+                .Concat(spawnedBattlefield.spawnedHeroEnemyList)
+                .OrderByDescending(hero => hero.initiative)
+        ];
 
-        List<SpawnedHero> allHeroesSortedByInitiative = [.. spawnedBattlefield.spawnedHeroPlayerList.Concat(spawnedBattlefield.spawnedHeroEnemyList).OrderByDescending(a => a.initiative)];
+        BattleAbilityContext context = new(heroesByInitiative.AsReadOnly(), battleLog);
 
-        for (battlefieldTurn = 1; battlefieldTurn <= 1000; battlefieldTurn++)
+        for (int turn = 1; turn <= MAX_COMBAT_TURNS; turn++)
         {
-            AddLog(new BattlefieldLogRecord_TurnStart
+            context.AddLog(new BattlefieldLogRecord_TurnStart
             {
-                turn = battlefieldTurn
+                turn = turn
             });
 
-            // все герои ходят
-
-            for (int i = 0; i < allHeroesSortedByInitiative.Count; i++)
-            {
-                SpawnedHero hero = allHeroesSortedByInitiative[i];
-                if (hero.health > 0)
-                {
-                    // Выбираем коллекцию героев противников того героя который сейчас атакует
-                    List<SpawnedHero> targets = hero.team == 1 ? spawnedBattlefield.spawnedHeroEnemyList : spawnedBattlefield.spawnedHeroPlayerList;
-
-                    // Выбираем случайного противника
-                    SpawnedHero? heroForAttack = targets.Where(a => a.health > 0).GetRandomElement();
-
-                    if (heroForAttack == null)
-                    {
-                        teamWinner = hero.team;
-                        // Живого героя для атаки не найдено, значит что в одной из команд все герои мертвы
-                        break;
-                    }
-
-                    if (hero.actionPoints >= COST_AP_ABILITY_ATTACK)
-                    {
-                        UseAbilityAttack(hero, heroForAttack); // атака
-                    }
-                    else
-                    {
-
-                    }
-
-                }
-
-                // Изменяем статус IsAlive всех героев
-                //for (int i1 = 0; i1 < allHeroesSortedByInitiative.Count; i1++)
-                //{
-                //    SpawnedHero h1 = allHeroesSortedByInitiative[i1];
-                //    if (h1.Health <= 0)
-                //    {
-                //        h1.IsAlive = false;
-                //    }
-                //}
-            }
-
-            if (teamWinner > 0)
+            if (ProcessTurn(context))
             {
                 break;
             }
 
-            // добавить всем героям по 5-15 АП
-            for (int i = 0; i < allHeroesSortedByInitiative.Count; i++)
+            RestoreActionPoints(heroesByInitiative);
+        }
+
+        _ = CombatBreak();
+    }
+
+    /// <summary>Перебирает способности героев в порядке приоритета до первого успешного применения.</summary>
+    /// <returns>True, если у очередного живого героя больше нет живых противников.</returns>
+    private bool ProcessTurn(BattleAbilityContext context)
+    {
+        foreach (SpawnedHero hero in context.heroes)
+        {
+            if (hero.health is not > 0)
             {
-                SpawnedHero h = allHeroesSortedByInitiative[i];
-                if (h.health > 0)
+                continue;
+            }
+
+            // Это условие завершения боя; допустимые цели определяет сама способность.
+            if (!context.heroes.Any(other => other.health > 0 && other.team != hero.team))
+            {
+                return true;
+            }
+
+            foreach (IBattleAbility ability in abilities)
+            {
+                if (ability.TryUse(hero, context))
                 {
-                    h.actionPoints += Random.Shared.Next(5, 16);
+                    break;
                 }
             }
         }
-        _ = CombatBreak();
-        //return teamWinner;
+
+        return false;
     }
 
-    #region ABILITIES
-    private void UseAbilityAttack(SpawnedHero h1, SpawnedHero h2)
+    /// <summary>В конце незавершённого хода начисляет каждому живому герою от 5 до 15 очков действия.</summary>
+    private static void RestoreActionPoints(List<SpawnedHero> heroes)
     {
-        float damage = h1.damage;
-        bool isCrit = false;
-        if (Random.Shared.NextSingle() * 100 < h1.critChance)
+        foreach (SpawnedHero hero in heroes)
         {
-            damage *= (h1.critMultiplier / 100f) + 1;
-            isCrit = true;
+            if (hero.health > 0)
+            {
+                hero.actionPoints += Random.Shared.Next(5, 16);
+            }
         }
+    }
 
-        Event_ChangeActionPoints(h1, -COST_AP_ABILITY_ATTACK);
-        Event_UseAbility(h1, EBattlefieldLogAbility.attack, [h2.spawnedId]);
-        Event_Damage(h1, h2, damage, battleLog[^1].index, isCrit);
-    }
-    #endregion
-    #region EVENTS
-    private void Event_ChangeActionPoints(SpawnedHero spawnedHero, int countAP)
-    {
-        spawnedHero.actionPoints += countAP;
-        AddLog(new BattlefieldLogRecord_ChangeActionPoints
-        {
-            spawnedHeroId = spawnedHero.spawnedId,
-            countAP = countAP
-        });
-    }
-    private void Event_Damage(SpawnedHero h1, SpawnedHero h2, float damage, int indexReason, bool isCrit = false, bool isPeriodic = false)
-    {
-        h2.health -= damage;
-        AddLog(new BattlefieldLogRecord_Damage
-        {
-            hero1Id = h1.spawnedId,
-            hero2Id = h2.spawnedId,
-            indexReason = indexReason,
-            damage = damage,
-            isCrit = isCrit,
-            isPerodic = isPeriodic
-        });
-    }
-    private void Event_UseAbility(SpawnedHero spawnedHero, EBattlefieldLogAbility ability, Guid[]? spawnedHeroTargets)
-    {
-        AddLog(new BattlefieldLogRecord_UseAbility
-        {
-            spawnedHero1Id = spawnedHero.spawnedId,
-            ability = ability,
-            spawnedHeroTargets = spawnedHeroTargets
-        });
-    }
-    #endregion
+    #endregion Расчёт боя
 }

@@ -1,6 +1,7 @@
 using General.DTO.Battlefield;
 using General.DTO.Entities.Collection;
 using General.DTO.Entities.GameData;
+using Microsoft.EntityFrameworkCore.Storage.Json;
 using Server.Battlefield;
 using Server.Utilities;
 
@@ -8,6 +9,9 @@ namespace Server.DTO.Battlefield;
 
 public static class SpawnedHeroFactory
 {
+    private static readonly ILogger logger = LoggerFactory.Create(builder => builder.AddConsole())
+        .CreateLogger(nameof(SpawnedHeroFactory));
+
     public static SpawnedHero CreateFromBaseHero(BaseHero bh, int level)
     {
         if (level < 1)
@@ -41,31 +45,87 @@ public static class SpawnedHeroFactory
         return result;
     }
 
-    public static SpawnedHero CreateFromHero(Hero h)
+    public static SpawnedHero CreateFromHero(Hero hero, IEnumerable<Equipment> equipments)
     {
-        SpawnedHero result = new()
+        int heroLevel = hero.level;
+        SpawnedHero sHero = new()
         {
             spawnedId = UUID.CreateV7(),
-            level = h.level,
-            baseHeroId = h.baseHeroId,
-            health = h.health,
+            level = heroLevel,
+            baseHeroId = hero.baseHeroId,
+            health = hero.health,
             healthMax = 0,
-            strength = h.strength,
-            agility = h.agility,
-            intelligence = h.intelligence,
-            critChance = h.critChance,
-            critMultiplier = h.critMultiplier,
-            enduranceMagical = h.enduranceMagical,
-            endurancePhysical = h.endurancePhysical,
-            haste = h.haste,
-            initiative = h.initiative,
-            versality = h.versality,
-            coefPowerByLevel = h.level > 1 ? MathF.Pow(BattlefieldManager.LEVEL_MULTIPLIER, h.level - 1) : 1,
-            damage = h.damage
+            strength = hero.strength,
+            agility = hero.agility,
+            intelligence = hero.intelligence,
+            critChance = hero.critChance,
+            critMultiplier = hero.critMultiplier,
+            enduranceMagical = hero.enduranceMagical,
+            endurancePhysical = hero.endurancePhysical,
+            haste = hero.haste,
+            initiative = hero.initiative,
+            versality = hero.versality,
+            coefPowerByLevel = heroLevel > 1 ? MathF.Pow(BattlefieldManager.LEVEL_MULTIPLIER, heroLevel - 1) : 1,
+            damage = hero.damage
         };
 
-        result.health *= result.coefPowerByLevel;
-        result.healthMax = result.health;
-        return result;
+        sHero.health *= sHero.coefPowerByLevel;
+
+        // корректировка характеристик героя по одетым предметам
+        foreach (Equipment e in equipments)
+        {
+            if (e.stats == null || e.stats.Count < 1)
+            {
+                continue;
+            }
+            foreach (KeyValuePair<EStatType, List<float>> stat in e.stats)
+            {
+                if (stat.Value == null || stat.Value.Count < 1) {
+                    continue;
+                }
+                switch (stat.Key)
+                {
+                    case EStatType.health:
+                        sHero.health += stat.Value.Sum();
+                        break;
+                    case EStatType.damage:
+                        sHero.damage += stat.Value.Sum();
+                        break;
+                    case EStatType.strength:
+                        sHero.strength += stat.Value.Sum();
+                        break;
+                    case EStatType.agility:
+                        sHero.agility += stat.Value.Sum();
+                        break;
+                    case EStatType.intelligence:
+                        sHero.intelligence += stat.Value.Sum();
+                        break;
+                    case EStatType.critChance:
+                        sHero.critChance += stat.Value.Sum();
+                        break;
+                    case EStatType.critMultiplier:
+                        sHero.critMultiplier += stat.Value.Sum();
+                        break;
+                    case EStatType.haste:
+                        sHero.haste += stat.Value.Sum();
+                        break;
+                    case EStatType.versality:
+                        sHero.versality += stat.Value.Sum();
+                        break;
+                    case EStatType.initiative:
+                        sHero.initiative += stat.Value.Sum();
+                        break;
+                    case EStatType.none:
+                        break;
+                    default:
+                        logger.LogWarning("Не реализована обработка характеристики {StatType} экипировки {EquipmentId} при создании героя {HeroId}", stat.Key, e.id, hero.id);
+                        break;
+                }
+            }
+        }
+
+
+        sHero.healthMax = sHero.health;
+        return sHero;
     }
 }
