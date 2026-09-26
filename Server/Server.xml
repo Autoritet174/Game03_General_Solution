@@ -7,42 +7,14 @@
         <member name="T:Server.Battlefield.Abilities.Attack">
             <summary>Выбирает одного живого противника и наносит обычный удар с возможностью критического урона.</summary>
         </member>
-        <member name="M:Server.Battlefield.Abilities.Attack.TryUse(General.DTO.Battlefield.SpawnedHero,Server.Battlefield.Abilities.BattleAbilityContext)">
+        <member name="M:Server.Battlefield.Abilities.Attack.TryUse(General.DTO.Battlefield.SpawnedHero,Server.BattleField.BattleAbilityContext)">
             <summary>Атакует случайного противника, если герой жив и имеет достаточно очков действия.</summary>
-        </member>
-        <member name="T:Server.Battlefield.Abilities.BattleAbilityContext">
-            <summary>Предоставляет всех участников боя и операции изменения состояния с записью в общий журнал.</summary>
-        </member>
-        <member name="M:Server.Battlefield.Abilities.BattleAbilityContext.#ctor(System.Collections.Generic.IReadOnlyList{General.DTO.Battlefield.SpawnedHero},System.Collections.Generic.List{General.DTO.Battlefield.BattlefieldLogRecordBase})">
-            <summary>Предоставляет всех участников боя и операции изменения состояния с записью в общий журнал.</summary>
-        </member>
-        <member name="M:Server.Battlefield.Abilities.BattleAbilityContext.AddLog(General.DTO.Battlefield.BattlefieldLogRecordBase)">
-            <summary>Добавляет событие в журнал и возвращает его индекс для связи с последующими эффектами.</summary>
-        </member>
-        <member name="M:Server.Battlefield.Abilities.BattleAbilityContext.ChangeActionPoints(General.DTO.Battlefield.SpawnedHero,System.Int32)">
-            <summary>Изменяет очки действия героя и записывает приращение в журнал.</summary>
-        </member>
-        <member name="M:Server.Battlefield.Abilities.BattleAbilityContext.RecordAbilityUse(General.DTO.Battlefield.SpawnedHero,General.EBattlefieldLogAbility,System.Guid[])">
-            <summary>Записывает применение способности и возвращает индекс причины её эффектов.</summary>
-        </member>
-        <member name="M:Server.Battlefield.Abilities.BattleAbilityContext.ApplyDamage(General.DTO.Battlefield.SpawnedHero,General.DTO.Battlefield.SpawnedHero,System.Single,System.Int32,System.Boolean,System.Boolean)">
-            <summary>Уменьшает здоровье цели и связывает событие урона с вызвавшей его записью.</summary>
-        </member>
-        <member name="M:Server.Battlefield.Abilities.BattleAbilityContext.ApplyHealing(General.DTO.Battlefield.SpawnedHero,General.DTO.Battlefield.SpawnedHero,System.Single,System.Int32)">
-            <summary>Восстанавливает здоровье в пределах максимума и записывает фактическое лечение.</summary>
         </member>
         <member name="T:Server.Battlefield.Abilities.Healing">
             <summary>Самостоятельно выбирает одного раненого союзника и восстанавливает его здоровье.</summary>
         </member>
-        <member name="M:Server.Battlefield.Abilities.Healing.TryUse(General.DTO.Battlefield.SpawnedHero,Server.Battlefield.Abilities.BattleAbilityContext)">
+        <member name="M:Server.Battlefield.Abilities.Healing.TryUse(General.DTO.Battlefield.SpawnedHero,Server.BattleField.BattleAbilityContext)">
             <summary>Применяет исцеление, если герой жив, имеет очки действия и подходящую цель.</summary>
-        </member>
-        <member name="T:Server.Battlefield.Abilities.IBattleAbility">
-            <summary>Определяет проверку условий и применение боевой способности.</summary>
-        </member>
-        <member name="M:Server.Battlefield.Abilities.IBattleAbility.TryUse(General.DTO.Battlefield.SpawnedHero,Server.Battlefield.Abilities.BattleAbilityContext)">
-            <summary>Проверяет условия, самостоятельно выбирает цели и применяет способность.</summary>
-            <returns>True, если способность применена; при false состояние боя и журнал не изменяются.</returns>
         </member>
         <member name="T:Server.Battlefield.BattlefieldManager">
             <summary>Создаёт команды участников, рассчитывает бой и формирует последовательный журнал событий.</summary>
@@ -75,12 +47,40 @@
         <member name="M:Server.Battlefield.BattlefieldManager.CombatProcess">
             <summary>Разыгрывает ходы до обнаружения победителя или достижения предельного числа ходов.</summary>
         </member>
-        <member name="M:Server.Battlefield.BattlefieldManager.ProcessTurn(Server.Battlefield.Abilities.BattleAbilityContext)">
+        <member name="M:Server.Battlefield.BattlefieldManager.ProcessTurn(Server.BattleField.BattleAbilityContext)">
             <summary>Перебирает способности героев в порядке приоритета до первого успешного применения.</summary>
             <returns>True, если у очередного живого героя больше нет живых противников.</returns>
         </member>
         <member name="M:Server.Battlefield.BattlefieldManager.RestoreActionPoints(System.Collections.Generic.List{General.DTO.Battlefield.SpawnedHero})">
             <summary>В конце незавершённого хода начисляет каждому живому герою от 5 до 15 очков действия.</summary>
+        </member>
+        <member name="T:Server.BattleField.BattleAbilityContext">
+            <summary>Предоставляет всех участников боя и операции изменения состояния с записью в общий журнал.</summary>
+        </member>
+        <member name="M:Server.BattleField.BattleAbilityContext.#ctor(System.Collections.Generic.IReadOnlyList{General.DTO.Battlefield.SpawnedHero},System.Collections.Generic.List{General.DTO.Battlefield.BattlefieldLogRecordBase})">
+            <summary>Предоставляет всех участников боя и операции изменения состояния с записью в общий журнал.</summary>
+        </member>
+        <member name="M:Server.BattleField.BattleAbilityContext.AddLog(General.DTO.Battlefield.BattlefieldLogRecordBase)">
+            <summary>Добавляет событие в журнал и возвращает его индекс для связи с последующими эффектами.</summary>
+        </member>
+        <member name="M:Server.BattleField.BattleAbilityContext.ChangeActionPoints(General.DTO.Battlefield.SpawnedHero,System.Int32)">
+            <summary>Изменяет очки действия героя и записывает приращение в журнал.</summary>
+        </member>
+        <member name="M:Server.BattleField.BattleAbilityContext.RecordAbilityUse(General.DTO.Battlefield.SpawnedHero,General.EBattlefieldLogAbility,System.Guid[])">
+            <summary>Записывает применение способности и возвращает индекс причины её эффектов.</summary>
+        </member>
+        <member name="M:Server.BattleField.BattleAbilityContext.ApplyDamage(General.DTO.Battlefield.SpawnedHero,General.DTO.Battlefield.SpawnedHero,System.Single,System.Int32,System.Boolean,System.Boolean)">
+            <summary>Уменьшает здоровье цели и связывает событие урона с вызвавшей его записью.</summary>
+        </member>
+        <member name="M:Server.BattleField.BattleAbilityContext.ApplyHealing(General.DTO.Battlefield.SpawnedHero,General.DTO.Battlefield.SpawnedHero,System.Single,System.Int32)">
+            <summary>Восстанавливает здоровье в пределах максимума и записывает фактическое лечение.</summary>
+        </member>
+        <member name="T:Server.BattleField.IBattleAbility">
+            <summary>Определяет проверку условий и применение боевой способности.</summary>
+        </member>
+        <member name="M:Server.BattleField.IBattleAbility.TryUse(General.DTO.Battlefield.SpawnedHero,Server.BattleField.BattleAbilityContext)">
+            <summary>Проверяет условия, самостоятельно выбирает цели и применяет способность.</summary>
+            <returns>True, если способность применена; при false состояние боя и журнал не изменяются.</returns>
         </member>
         <member name="P:Server.Cache.CacheService.GameDataJson">
             <summary> Возвращает JSON-строку с данными. </summary>

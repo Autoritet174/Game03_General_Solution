@@ -96,6 +96,7 @@ public class BattlefieldManager(Guid userId,
 
         List<BattlefieldLogRecordBase> log = battleLog;
         battleLog = [];
+        File.WriteAllText(@"C:\UnityProjects\Game03_Git\Client_Game03\TestData\battle_log.json", JSON.Serialize(log));
         return log;
     }
 
