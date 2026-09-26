@@ -1,5 +1,6 @@
 using General;
 using General.DTO.Battlefield;
+using Server.BattleField;
 using Server.Extensions;
 
 namespace Server.Battlefield.Abilities;
@@ -14,7 +15,7 @@ public sealed class Attack : IBattleAbility
     /// <summary>Атакует случайного противника, если герой жив и имеет достаточно очков действия.</summary>
     public bool TryUse(SpawnedHero caster, BattleAbilityContext context)
     {
-        if (caster.health is not > 0 || caster.actionPoints < COST_AP)
+        if (caster.health <= 0 || caster.actionPoints < COST_AP)
         {
             return false;
         }

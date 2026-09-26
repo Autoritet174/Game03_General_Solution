@@ -1,7 +1,6 @@
-using General;
 using General.DTO.Battlefield;
 
-namespace Server.Battlefield.Abilities;
+namespace Server.BattleField;
 
 /// <summary>Определяет проверку условий и применение боевой способности.</summary>
 public interface IBattleAbility

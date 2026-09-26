@@ -1,5 +1,6 @@
 using General;
 using General.DTO.Battlefield;
+using Server.BattleField;
 using Server.Extensions;
 
 namespace Server.Battlefield.Abilities;

@@ -7,6 +7,7 @@ using Server.DTO.Battlefield;
 using Server.Extensions;
 using Server_DB_Postgres;
 using BattlefieldDefinition = General.DTO.Entities.GameData.Battlefield;
+using Server.BattleField;
 
 namespace Server.Battlefield;
 

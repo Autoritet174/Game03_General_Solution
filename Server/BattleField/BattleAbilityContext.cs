@@ -1,7 +1,6 @@
-using General;
 using General.DTO.Battlefield;
 
-namespace Server.Battlefield.Abilities;
+namespace Server.BattleField;
 
 /// <summary>Предоставляет всех участников боя и операции изменения состояния с записью в общий журнал.</summary>
 public sealed class BattleAbilityContext(IReadOnlyList<SpawnedHero> heroes, List<BattlefieldLogRecordBase> battleLog)
@@ -20,7 +19,7 @@ public sealed class BattleAbilityContext(IReadOnlyList<SpawnedHero> heroes, List
     public void ChangeActionPoints(SpawnedHero hero, int actionPointsChange)
     {
         hero.actionPoints += actionPointsChange;
-        AddLog(new BattlefieldLogRecord_ChangeActionPoints
+        _ = AddLog(new BattlefieldLogRecord_ChangeActionPoints
         {
             spawnedHeroId = hero.spawnedId,
             countAP = actionPointsChange
@@ -42,7 +41,7 @@ public sealed class BattleAbilityContext(IReadOnlyList<SpawnedHero> heroes, List
     public void ApplyDamage(SpawnedHero caster, SpawnedHero target, float damage, int indexReason, bool isCrit = false, bool isPeriodic = false)
     {
         target.health -= damage;
-        AddLog(new BattlefieldLogRecord_Damage
+        _ = AddLog(new BattlefieldLogRecord_Damage
         {
             hero1Id = caster.spawnedId,
             hero2Id = target.spawnedId,
@@ -58,7 +57,7 @@ public sealed class BattleAbilityContext(IReadOnlyList<SpawnedHero> heroes, List
     {
         float actualHealing = MathF.Min(MathF.Max(0, healing), MathF.Max(0, target.healthMax - target.health));
         target.health += actualHealing;
-        AddLog(new BattlefieldLogRecord_Healing
+        _ = AddLog(new BattlefieldLogRecord_Healing
         {
             hero1Id = caster.spawnedId,
             hero2Id = target.spawnedId,
