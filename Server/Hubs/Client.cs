@@ -17,8 +17,7 @@ public class Client(
     )
 {
     private readonly Collection.EquipmentManager equipmentManager = new(userId, dbContextFactory, logger, cacheService);
-    public BattlefieldManager battleFieldManager { get; } = battlefieldManagerOtherPlayer ?? new(userId, dbContextFactory,// logger,
-        cacheService);
+    public BattlefieldManager battleFieldManager { get; } = battlefieldManagerOtherPlayer ?? new(userId, dbContextFactory, logger, cacheService);
 
     public Guid UserId => userId;
 

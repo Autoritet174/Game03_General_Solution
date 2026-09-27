@@ -22,8 +22,9 @@ public class CacheService()
     public Dictionary<string, BaseEquipment> TableBaseEquipmentsByName { get; private set; } = null!;
 
     public Dictionary<int, BaseHero> TableBaseHeroesOnlyPlayable { get; private set; } = null!;
-    public Dictionary<int, BaseHero> TableBaseHeroesWithNotPlayable { get; private set; } = null!;
+    public Dictionary<int, BaseHero> TableBaseHeroes { get; private set; } = null!;
 
+    public Dictionary<int, Ability> TableAbilities { get; private set; } = null!;
     public Dictionary<int, CreatureType> TableCreatureTypes { get; private set; } = null!;
     public Dictionary<int, DamageType> TableDamageTypes { get; private set; } = null!;
     public Dictionary<int, EquipmentType> TableEquipmentTypes { get; private set; } = null!;
@@ -34,6 +35,8 @@ public class CacheService()
     public Dictionary<int, X_EquipmentType_DamageType> TableX_EquipmentTypes_DamageTypes { get; private set; } = null!;
     public Dictionary<int, X_Hero_CreatureType> TableX_Heroes_CreatureTypes { get; private set; } = null!;
     public Dictionary<int, X_Battlefield_BaseHero> TableX_Battlefields_BaseHeroes { get; private set; } = null!;
+    public Dictionary<int, X_BaseHero_Ability> TableX_BaseHeroes_Abilities { get; private set; } = null!;
+
     public Dictionary<EBattleFiled, General.DTO.Entities.GameData.Battlefield> TableBattlefields { get; private set; } = null!;
 
     /// <summary>
@@ -58,18 +61,19 @@ public class CacheService()
         TableBaseHeroesOnlyPlayable = db.BaseHeroes.AsNoTracking().Where(a => a.isPlayable).ToDictionary(a => a.id);
 
 
-        TableBaseHeroesWithNotPlayable = [];
+        TableBaseHeroes = [];
         foreach (KeyValuePair<int, BaseHero> i in TableBaseHeroesOnlyPlayable)
         {
-            TableBaseHeroesWithNotPlayable.Add(i.Key, i.Value);
+            TableBaseHeroes.Add(i.Key, i.Value);
         }
-        foreach (BaseHero? i in db.BaseHeroes.AsNoTracking().Where(a => !a.isPlayable))
+        foreach (BaseHero? i in db.BaseHeroes.AsNoTracking().Where(a => !a.isPlayable).ToList())
         {
-            TableBaseHeroesWithNotPlayable.Add(i.id, i);
+            TableBaseHeroes.Add(i.id, i);
         }
 
 
         TableCreatureTypes = db.CreatureTypes.AsNoTracking().ToDictionary(a => a.id);
+        TableAbilities = db.Abilities.AsNoTracking().ToDictionary(a => a.id);
         TableDamageTypes = db.DamageTypes.AsNoTracking().ToDictionary(a => a.id);
         TableEquipmentTypes = db.EquipmentTypes.AsNoTracking().ToDictionary(a => a.id);
         TableMaterialDamagePercents = db.MaterialDamagePercents.AsNoTracking().ToDictionary(a => a.id);
@@ -80,6 +84,8 @@ public class CacheService()
         TableX_Heroes_CreatureTypes = db.x_Heroes_CreatureTypes.AsNoTracking().ToDictionary(a => a.id);
         TableBattlefields = db.Battlefields.AsNoTracking().ToDictionary(a => a.id);
         TableX_Battlefields_BaseHeroes = db.x_Battlefields_BaseHeroes.AsNoTracking().ToDictionary(a => a.id);
+        TableX_BaseHeroes_Abilities = db.x_BaseHeroes_Abilities.AsNoTracking().ToDictionary(a => a.id);
+
 
         ThrowIfDataNotCorrect();
 
@@ -108,7 +114,11 @@ public class CacheService()
 
             xBattlefieldNpc = TableX_Battlefields_BaseHeroes.Values.AsEnumerable(),
 
-            battlefields = TableBattlefields.Values.AsEnumerable()
+            battlefields = TableBattlefields.Values.AsEnumerable(),
+
+            abilities = TableAbilities.Values.AsEnumerable(),
+
+            xBaseHeroesAbilities = TableX_BaseHeroes_Abilities.Values.AsEnumerable()
         };
 
 
@@ -117,6 +127,12 @@ public class CacheService()
         if (string.IsNullOrWhiteSpace(GameDataJson))
         {
             throw new InvalidOperationException("Кэш не инициализирован.");
+        }
+
+        foreach (KeyValuePair<int, BaseHero> kv in TableBaseHeroes)
+        {
+            BaseHero i = kv.Value;
+            i.abilities = [.. TableAbilities.Values.Where(a => TableX_BaseHeroes_Abilities.Values.Any(x => x.baseHeroId == i.id && x.abilityId == a.id))];
         }
 
         foreach (KeyValuePair<int, BaseEquipment> kv in TableBaseEquipments)
@@ -166,6 +182,14 @@ public class CacheService()
             i.battlefield = TableBattlefields[i.battlefieldId];
         }
 
+        foreach (KeyValuePair<int, X_BaseHero_Ability> kv in TableX_BaseHeroes_Abilities)
+        {
+            X_BaseHero_Ability i = kv.Value;
+            i.baseHero = TableBaseHeroesOnlyPlayable[i.baseHeroId];
+            i.ability = TableAbilities[i.abilityId];
+        }
+
+       
 
     }
 

@@ -6,6 +6,7 @@ using General;
 using General.DTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server_DB_Postgres;
@@ -15,9 +16,11 @@ using Server_DB_Postgres;
 namespace Server_DB_Postgres.Migrations
 {
     [DbContext(typeof(DbContextGame))]
-    partial class DbContext_GameModelSnapshot : ModelSnapshot
+    [Migration("20260926101741_Migration_20260926_181722")]
+    partial class Migration_20260926_181722
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -215,12 +218,6 @@ namespace Server_DB_Postgres.Migrations
                     b.Property<int>("code")
                         .HasColumnType("integer")
                         .HasColumnName("code");
-
-                    b.Property<int>("cooldown")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0)
-                        .HasColumnName("cooldown");
 
                     b.Property<int>("cost")
                         .HasColumnType("integer")

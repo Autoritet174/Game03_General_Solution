@@ -1,20 +1,19 @@
 using General.DTO.Battlefield;
 using General.DTO.Entities.GameData;
 using Microsoft.EntityFrameworkCore;
-using Server.Cache;
 using Server.Battlefield.Abilities;
+using Server.BattleField;
+using Server.Cache;
 using Server.DTO.Battlefield;
-using Server.Extensions;
 using Server_DB_Postgres;
 using BattlefieldDefinition = General.DTO.Entities.GameData.Battlefield;
-using Server.BattleField;
 
 namespace Server.Battlefield;
 
 /// <summary>Создаёт команды участников, рассчитывает бой и формирует последовательный журнал событий.</summary>
 public class BattlefieldManager(Guid userId,
     IDbContextFactory<DbContextGame> dbContextFactory,
-    //ILogger<Hubs.Client> logger,
+    ILogger<Hubs.Client> logger,
     CacheService cacheService)
 {
     public const float LEVEL_MULTIPLIER = 1.017f;
@@ -24,7 +23,11 @@ public class BattlefieldManager(Guid userId,
     private const int MAX_COMBAT_TURNS = 1000;
 
     // Порядок задаёт приоритет: герой выполняет первую доступную способность.
-    private readonly IBattleAbility[] abilities = [new Healing(), new Attack()];
+    private readonly Dictionary<EBattlefieldLogAbility, IBattleAbility> abilitiesDict = new()
+    {
+        { EBattlefieldLogAbility.attack, new Attack() },
+        { EBattlefieldLogAbility.healing, new Healing() }
+    };
 
     private bool inCombat;
     private SpawnedBattlefield? spawnedBattlefield;
@@ -205,11 +208,11 @@ public class BattlefieldManager(Guid userId,
                 .OrderByDescending(hero => hero.initiative)
         ];
 
-        BattleAbilityContext context = new(heroesByInitiative.AsReadOnly(), battleLog);
+        BattleAbilityContext context = new(heroesByInitiative.AsReadOnly(), battleLog, cacheService);
 
         for (int turn = 1; turn <= MAX_COMBAT_TURNS; turn++)
         {
-            context.AddLog(new BattlefieldLogRecord_TurnStart
+            _ = context.AddLog(new BattlefieldLogRecord_TurnStart
             {
                 turn = turn
             });
@@ -219,7 +222,7 @@ public class BattlefieldManager(Guid userId,
                 break;
             }
 
-            RestoreActionPoints(heroesByInitiative);
+            RestoreActionPoints(context);
         }
 
         _ = CombatBreak();
@@ -231,9 +234,47 @@ public class BattlefieldManager(Guid userId,
     {
         foreach (SpawnedHero hero in context.heroes)
         {
-            if (hero.health is not > 0)
+            if (hero.health <= 0)
             {
                 continue;
+            }
+
+            BaseHero baseHero = context.cacheService.TableBaseHeroes[hero.baseHeroId];
+            if (baseHero.abilities.Count == 0)
+            {
+                continue;
+            }
+
+            bool abilityUsed = true;
+            while (abilityUsed)
+            {
+                abilityUsed = false;
+
+                foreach (IBattleAbility a in abilitiesDict.Values)
+                {
+                    a.ResetEffectiveness();
+                }
+
+                foreach (Ability ability in baseHero.abilities)
+                {
+                    if (abilitiesDict.TryGetValue(ability.code, out IBattleAbility? battleAbility))
+                    {
+                        if (battleAbility != null)
+                        {
+                            battleAbility.CalcEffectiveness(hero, context);
+                        }
+                        else
+                        {
+                            logger.LogError("Ability not found: {AbilityCode}", ability.code);
+                        }
+                    }
+                }
+
+                IBattleAbility? abilityWithMaxEffectiveness = abilitiesDict.Values.Where(a => a.effectiveness > 0f).MaxBy(a => a.effectiveness);
+                if (abilityWithMaxEffectiveness != null && abilityWithMaxEffectiveness.UseAbility(hero, context))
+                {
+                    abilityUsed = true;
+                }
             }
 
             // Это условие завершения боя; допустимые цели определяет сама способность.
@@ -242,26 +283,21 @@ public class BattlefieldManager(Guid userId,
                 return true;
             }
 
-            foreach (IBattleAbility ability in abilities)
-            {
-                if (ability.TryUse(hero, context))
-                {
-                    break;
-                }
-            }
+
         }
 
         return false;
     }
 
     /// <summary>В конце незавершённого хода начисляет каждому живому герою от 5 до 15 очков действия.</summary>
-    private static void RestoreActionPoints(List<SpawnedHero> heroes)
+    private static void RestoreActionPoints(BattleAbilityContext context)
     {
-        foreach (SpawnedHero hero in heroes)
+        foreach (SpawnedHero hero in context.heroes)
         {
             if (hero.health > 0)
             {
-                hero.actionPoints += Random.Shared.Next(5, 16);
+                int ap = 100;// Random.Shared.Next(5, 16);
+                context.ChangeActionPoints(hero, ap);
             }
         }
     }

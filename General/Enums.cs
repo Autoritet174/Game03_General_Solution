@@ -117,7 +117,7 @@ public enum COMBAT_LOG_EVENT
 
 }
 
-public enum EBattlefieldLogAbility
+public enum EBattlefieldLogAbility : int
 {
     attack = 1,
     healing = 2,

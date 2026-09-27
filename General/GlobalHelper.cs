@@ -24,7 +24,6 @@ public static class GlobalHelper
     /// Строка, представляющая время в формате "dd hh mm s".
     /// Пример: "05m 10s", "01h 05m 10s", "1d 01h 05m 10s".
     /// </returns>
-    /// <exception cref="ArgumentOutOfRangeException">Выбрасывается, если <paramref name="sec"/> меньше нуля.</exception>
     public static string SecondsToTimeStr(long sec)
     {
         string sign;

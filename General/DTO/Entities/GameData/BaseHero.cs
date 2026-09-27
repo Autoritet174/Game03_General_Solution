@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace General.DTO.Entities.GameData;
 
 public class BaseHero(int id, string name, int rarity, bool isUnique, EMainStat mainStat, bool isPlayable, Dice health, Dice damage, Dice strength, Dice agility, Dice intelligence, Dice critChance, Dice critMultiplier, Dice haste, Dice versality, Dice endurancePhysical, Dice enduranceMagical, Dice initiative)
@@ -20,4 +22,5 @@ public class BaseHero(int id, string name, int rarity, bool isUnique, EMainStat 
     public Dice endurancePhysical { get; set; } = endurancePhysical;
     public Dice enduranceMagical { get; set; } = enduranceMagical;
     public Dice initiative { get; set; } = initiative;
+    public List<Ability> abilities { get; set; } = [];
 }

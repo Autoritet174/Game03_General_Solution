@@ -33,9 +33,11 @@ public class DbContextGameConfig
         Configure(modelBuilder.Entity<Battlefield>());
         Configure(modelBuilder.Entity<CreatureType>());
         Configure(modelBuilder.Entity<DamageType>());
+        Configure(modelBuilder.Entity<Ability>());
         Configure(modelBuilder.Entity<X_Battlefield_BaseHero>());
         Configure(modelBuilder.Entity<X_EquipmentType_DamageType>());
         Configure(modelBuilder.Entity<X_Hero_CreatureType>());
+        Configure(modelBuilder.Entity<X_BaseHero_Ability>());
 
         // Collection
         Configure(modelBuilder.Entity<Hero>());
@@ -89,6 +91,12 @@ public class DbContextGameConfig
         builder.Property(e => e.endurancePhysical).HasColumnType("jsonb");
         builder.Property(e => e.enduranceMagical).HasColumnType("jsonb");
         builder.Property(e => e.initiative).HasColumnType("jsonb");
+        // Способности связаны с героями через существующую таблицу многие ко многим.
+        builder.HasMany(e => e.abilities)
+            .WithMany()
+            .UsingEntity<X_BaseHero_Ability>(
+                right => right.HasOne(e => e.ability).WithMany().HasForeignKey(e => e.abilityId),
+                left => left.HasOne(e => e.baseHero).WithMany().HasForeignKey(e => e.baseHeroId));
     }
     private static void Configure(EntityTypeBuilder<BaseEquipment> builder)
     {
@@ -170,6 +178,13 @@ public class DbContextGameConfig
         builder.Property(e => e.devHintRu).HasColumnType("text");
         builder.Property(e => e.category).HasDefaultValue(0);
     }
+    private static void Configure(EntityTypeBuilder<Ability> builder)
+    {
+        builder.ToTable(nameof(DbContextGame.Abilities), gameData);
+        builder.Property(x => x.name).HasMaxLength(256).IsRequired();
+        builder.HasIndex(x => x.name).IsUnique();
+        builder.Property(x => x.cooldown).HasDefaultValue(0);
+    }
     private static void Configure(EntityTypeBuilder<X_Battlefield_BaseHero> builder)
     {
         builder.ToTable(nameof(DbContextGame.x_Battlefields_BaseHeroes), gameData);
@@ -189,6 +204,15 @@ public class DbContextGameConfig
         builder.ToTable(nameof(DbContextGame.x_Heroes_CreatureTypes), gameData);
         builder.HasOne(e => e.baseHero).WithMany().HasForeignKey(e => e.baseHeroId);
         builder.HasOne(e => e.creatureType).WithMany().HasForeignKey(e => e.creatureTypeId);
+    }
+    private static void Configure(EntityTypeBuilder<X_BaseHero_Ability> builder)
+    {
+        builder.ToTable(nameof(DbContextGame.x_BaseHeroes_Abilities), gameData);
+        builder.HasOne(e => e.baseHero).WithMany().HasForeignKey(e => e.baseHeroId);
+        builder.HasOne(e => e.ability).WithMany().HasForeignKey(e => e.abilityId);
+
+        // Составной уникальный индекс
+        builder.HasIndex(e => new { e.baseHeroId, e.abilityId }).IsUnique();
     }
     #endregion
     #region Collection

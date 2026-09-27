@@ -8,7 +8,7 @@ dotnet ef database update --project ".\Server_DB_Postgres\Server_DB_Postgres.csp
 dotnet ef migrations remove --project ".\Server_DB_Postgres\Server_DB_Postgres.csproj" --startup-project ".\Server\Server.csproj" --context DbContextGame
 
 ÎÁÍÎÂËÅÍÈÅ ÄÎ ÓÊÀÇÀÍÍÎÉ ÌÈÃĞÀÖÈÈ ÂÊËŞ×ÈÒÅËÜÍÎ, ÂÑ¨ ×ÒÎ ÏÎÇÆÅ ÂÛÏÎËÍÈÒ ÎÒÊÀÒ Â ÎÁĞÀÒÅÌ ÏÎĞßÄÊÅ
-dotnet ef database update Migration_20260317_160908 --project ".\Server_DB_Postgres\Server_DB_Postgres.csproj" --startup-project ".\Server\Server.csproj" --context DbContextGame
+dotnet ef database update Migration_20260515_144823 --project ".\Server_DB_Postgres\Server_DB_Postgres.csproj" --startup-project ".\Server\Server.csproj" --context DbContextGame
 
 
 dotnet build .\Server\Server.csproj

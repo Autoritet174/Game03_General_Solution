@@ -61,6 +61,8 @@ public class BattlefieldLogRecord_Healing : BattlefieldLogRecordBase
     public required Guid hero1Id { get; init; }
     public required Guid hero2Id { get; init; }
     public required float healing { get; init; }
+    public bool isCrit { get; init; }
+    public bool isPerodic { get; init; }
 }
 
 public class BattlefieldLogRecord_UseAbility : BattlefieldLogRecordBase

@@ -29,6 +29,9 @@ public class DbContextGame(DbContextOptions<DbContextGame> options) : IdentityDb
 
     #region gameData
 
+    /// <summary> Способности героев и нпс. </summary>
+    public DbSet<Ability> Abilities { get; set; }
+
     /// <summary> Экипировка, болванки. </summary>
     public DbSet<BaseEquipment> BaseEquipments { get; set; }
 
@@ -65,6 +68,7 @@ public class DbContextGame(DbContextOptions<DbContextGame> options) : IdentityDb
     /// <summary> Таблица связи многие ко мноким между WeaponTypes и DamageTypes. </summary>
     public DbSet<X_EquipmentType_DamageType> x_EquipmentTypes_DamageTypes { get; set; }
     public DbSet<X_Battlefield_BaseHero> x_Battlefields_BaseHeroes { get; set; }
+    public DbSet<X_BaseHero_Ability> x_BaseHeroes_Abilities { get; set; }
 
     #endregion gameData
 
