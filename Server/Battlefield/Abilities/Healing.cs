@@ -1,51 +1,26 @@
 using General.DTO.Battlefield;
 using General.DTO.Entities.GameData;
 using Server.BattleField;
-using Server.Extensions;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Server.Battlefield.Abilities;
 
 /// <summary>Самостоятельно выбирает одного раненого союзника и восстанавливает его здоровье.</summary>
-public sealed class Healing : IBattleAbility
+public sealed class Healing(Ability definition) : BattleAbility(definition)
 {
-    private const float COEF_EFFECTIVENESS = 1f;
+    private const float COEF_EFFECTIVENESS = 1.2f;
 
-    public EBattlefieldLogAbility id => EBattlefieldLogAbility.healing;
-    public float effectiveness { get; private set; } = 0f;
-
-    public void ResetEffectiveness()
+    /// <summary>Оценивает доступное лечение; во время кулдауна эффективность равна нулю.</summary>
+    public override void CalcEffectiveness(SpawnedHero caster, BattleAbilityContext context)
     {
         effectiveness = 0f;
-    }
-
-    /// <summary></summary>
-    public void CalcEffectiveness(SpawnedHero caster, BattleAbilityContext context)
-    {
-        effectiveness = 0f;
-        if (caster.health <= 0)
-        {
-            return;
-        }
-
-        BaseHero baseHero = context.cacheService.TableBaseHeroes[caster.baseHeroId];
-        if (baseHero.abilities.Count == 0)
-        {
-            return;
-        }
-        Ability? ability = baseHero.abilities.FirstOrDefault(a => a != null && a.code == id);
-        if (ability == null)
-        {
-            return;
-        }
-
-        if (ability.cost > caster.actionPoints)
+        if (cooldownRemaining > 0 || caster.health <= 0 || definition.cost > caster.actionPoints)
         {
             return;
         }
 
         float healing = caster.intelligence * (1 + (caster.critChance / 100f * (caster.critMultiplier / 100f)));
-        float maxHp = context.heroes.Where(h => h.health > 0 && h.team != caster.team).Max(h => h.health);
+        float maxHp = context.heroes.Where(h => h.health > 0 && h.team != caster.team)
+            .Select(h => h.health).DefaultIfEmpty(0f).Max();
         if (healing > maxHp)
         {
             healing = maxHp;
@@ -53,10 +28,13 @@ public sealed class Healing : IBattleAbility
         effectiveness = healing * COEF_EFFECTIVENESS;
     }
 
-    public bool UseAbility(SpawnedHero caster, BattleAbilityContext context)
+    public override bool UseAbility(SpawnedHero caster, BattleAbilityContext context)
     {
-        BaseHero baseHero = context.cacheService.TableBaseHeroes[caster.baseHeroId];
-        Ability ability = baseHero.abilities.First(a => a != null && a.code == id);
+        if (cooldownRemaining > 0 || caster.health <= 0 || definition.cost > caster.actionPoints)
+        {
+            return false;
+        }
+
         SpawnedHero? target = context.heroes
             .Where(hero => hero.health > 0 && hero.team == caster.team && hero.health < hero.healthMax)
             .OrderByDescending(h => h.healthMax - h.health).FirstOrDefault();
@@ -80,7 +58,7 @@ public sealed class Healing : IBattleAbility
             return false;
         }
 
-        context.ChangeActionPoints(caster, -ability.cost);
+        context.ChangeActionPoints(caster, -definition.cost);
         int indexReason = context.RecordAbilityUse(caster, id, [target.spawnedId]);
         target.health += actualHealing;
         _ = context.AddLog(new BattlefieldLogRecord_Healing
@@ -93,6 +71,7 @@ public sealed class Healing : IBattleAbility
             isPerodic = false,
         });
 
+        StartCooldown();
         return true;
     }
 }

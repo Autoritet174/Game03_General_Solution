@@ -1,7 +1,6 @@
 using General.DTO.Battlefield;
 using General.DTO.Entities.GameData;
 using Microsoft.EntityFrameworkCore;
-using Server.Battlefield.Abilities;
 using Server.BattleField;
 using Server.Cache;
 using Server.DTO.Battlefield;
@@ -21,13 +20,6 @@ public class BattlefieldManager(Guid userId,
     public const int INITIATIVES_FOR_ACTION_POINT = 100;
 
     private const int MAX_COMBAT_TURNS = 1000;
-
-    // Порядок задаёт приоритет: герой выполняет первую доступную способность.
-    private readonly Dictionary<EBattlefieldLogAbility, IBattleAbility> abilitiesDict = new()
-    {
-        { EBattlefieldLogAbility.attack, new Attack() },
-        { EBattlefieldLogAbility.healing, new Healing() }
-    };
 
     private bool inCombat;
     private SpawnedBattlefield? spawnedBattlefield;
@@ -55,20 +47,25 @@ public class BattlefieldManager(Guid userId,
             return null;
         }
 
-        List<SpawnedHero> spawnedHeroesEnemy = CreateEnemyHeroes(eBattleFiled, battlefield.maxEnemyCount);
-        List<SpawnedHero> spawnedHeroesPlayer = await CreatePlayerHeroesAsync(spawnedHeroesId, cancellationToken).ConfigureAwait(false);
+        List<ServerSpawnedHero> spawnedHeroesEnemy = CreateEnemyHeroes(eBattleFiled, battlefield.maxEnemyCount);
+        List<ServerSpawnedHero> spawnedHeroesPlayer = await CreatePlayerHeroesAsync(spawnedHeroesId, cancellationToken).ConfigureAwait(false);
 
         if (spawnedHeroesPlayer.Count < 1 || spawnedHeroesPlayer.Count > battlefield.maxHeroCount)
         {
             return null;
         }
 
-        spawnedBattlefield = new(eBattleFiled, spawnedHeroesPlayer, spawnedHeroesEnemy)
+        spawnedBattlefield = new(eBattleFiled, [.. spawnedHeroesPlayer], [.. spawnedHeroesEnemy])
         {
             battlefieldLog = []
         };
         battleLog = spawnedBattlefield.battlefieldLog;
         inCombat = true;
+        if (logger.IsEnabled(LogLevel.Debug))
+        {
+            logger.LogDebug("Combat started: {BattlefieldId}, players: {PlayerCount}, enemies: {EnemyCount}",
+            eBattleFiled, spawnedHeroesPlayer.Count, spawnedHeroesEnemy.Count);
+        }
 
         return spawnedBattlefield;
     }
@@ -108,7 +105,7 @@ public class BattlefieldManager(Guid userId,
     #region Подготовка участников
 
     /// <summary>Создаёт противников, выбирая сначала гарантированные записи с оставшимся количеством.</summary>
-    private List<SpawnedHero> CreateEnemyHeroes(EBattleFiled battlefieldId, int maxEnemyCount)
+    private List<ServerSpawnedHero> CreateEnemyHeroes(EBattleFiled battlefieldId, int maxEnemyCount)
     {
         List<X_Battlefield_BaseHero> enemyPool =
         [
@@ -117,7 +114,7 @@ public class BattlefieldManager(Guid userId,
                 .Select(enemy => enemy.Copy())
         ];
 
-        List<SpawnedHero> spawnedHeroes = [];
+        List<ServerSpawnedHero> spawnedHeroes = [];
         for (int i = 0; i < maxEnemyCount; i++)
         {
             if (enemyPool.Count < 1)
@@ -136,7 +133,7 @@ public class BattlefieldManager(Guid userId,
             }
 
             X_Battlefield_BaseHero selectedEnemy = candidates[Random.Shared.Next(candidates.Count)];
-            SpawnedHero hero = SpawnedHeroFactory.CreateFromBaseHero(selectedEnemy.baseHero, 1);
+            ServerSpawnedHero hero = SpawnedHeroFactory.CreateFromBaseHero(selectedEnemy.baseHero, 1);
             hero.team = 2;
             spawnedHeroes.Add(hero);
             selectedEnemy.count--;
@@ -148,7 +145,7 @@ public class BattlefieldManager(Guid userId,
     }
 
     /// <summary>Загружает принадлежащих игроку героев с экипировкой и создаёт их боевые представления.</summary>
-    private async Task<List<SpawnedHero>> CreatePlayerHeroesAsync(Guid[] spawnedHeroesId, CancellationToken cancellationToken)
+    private async Task<List<ServerSpawnedHero>> CreatePlayerHeroesAsync(Guid[] spawnedHeroesId, CancellationToken cancellationToken)
     {
         await using DbContextGame db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
@@ -162,10 +159,10 @@ public class BattlefieldManager(Guid userId,
             })
             .ToList();
 
-        List<SpawnedHero> spawnedHeroes = [];
+        List<ServerSpawnedHero> spawnedHeroes = [];
         foreach (var row in heroesWithEquipment)
         {
-            SpawnedHero hero = SpawnedHeroFactory.CreateFromHero(row.hero, row.items);
+            ServerSpawnedHero hero = SpawnedHeroFactory.CreateFromHero(row.hero, row.items, cacheService.TableBaseHeroes[row.hero.baseHeroId]);
             spawnedHeroes.Add(hero);
             hero.team = 1;
             InitActionPoints(hero);
@@ -201,10 +198,11 @@ public class BattlefieldManager(Guid userId,
             return;
         }
 
-        List<SpawnedHero> heroesByInitiative =
+        List<ServerSpawnedHero> heroesByInitiative =
         [
             .. spawnedBattlefield.spawnedHeroPlayerList
                 .Concat(spawnedBattlefield.spawnedHeroEnemyList)
+                .Cast<ServerSpawnedHero>()
                 .OrderByDescending(hero => hero.initiative)
         ];
 
@@ -212,6 +210,15 @@ public class BattlefieldManager(Guid userId,
 
         for (int turn = 1; turn <= MAX_COMBAT_TURNS; turn++)
         {
+            // Кулдаун 2 после применения на ходу 1 истекает в начале хода 3.
+            foreach (ServerSpawnedHero hero in context.heroes)
+            {
+                foreach (BattleAbility ability in hero.abilities)
+                {
+                    ability.ReduceCooldown();
+                }
+            }
+
             _ = context.AddLog(new BattlefieldLogRecord_TurnStart
             {
                 turn = turn
@@ -228,21 +235,21 @@ public class BattlefieldManager(Guid userId,
         _ = CombatBreak();
     }
 
-    /// <summary>Перебирает способности героев в порядке приоритета до первого успешного применения.</summary>
+    /// <summary>Применяет наиболее эффективные доступные способности каждого героя, пока это возможно.</summary>
     /// <returns>True, если у очередного живого героя больше нет живых противников.</returns>
-    private bool ProcessTurn(BattleAbilityContext context)
+    private static bool ProcessTurn(BattleAbilityContext context)
     {
-        foreach (SpawnedHero hero in context.heroes)
+        foreach (ServerSpawnedHero hero in context.heroes)
         {
             if (hero.health <= 0)
             {
                 continue;
             }
 
-            BaseHero baseHero = context.cacheService.TableBaseHeroes[hero.baseHeroId];
-            if (baseHero.abilities.Count == 0)
+            // условие завершения боя
+            if (!context.heroes.Any(other => other.health > 0 && other.team != hero.team))
             {
-                continue;
+                return true;
             }
 
             bool abilityUsed = true;
@@ -250,40 +257,17 @@ public class BattlefieldManager(Guid userId,
             {
                 abilityUsed = false;
 
-                foreach (IBattleAbility a in abilitiesDict.Values)
+                foreach (BattleAbility ability in hero.abilities)
                 {
-                    a.ResetEffectiveness();
+                    ability.CalcEffectiveness(hero, context);
                 }
 
-                foreach (Ability ability in baseHero.abilities)
-                {
-                    if (abilitiesDict.TryGetValue(ability.code, out IBattleAbility? battleAbility))
-                    {
-                        if (battleAbility != null)
-                        {
-                            battleAbility.CalcEffectiveness(hero, context);
-                        }
-                        else
-                        {
-                            logger.LogError("Ability not found: {AbilityCode}", ability.code);
-                        }
-                    }
-                }
-
-                IBattleAbility? abilityWithMaxEffectiveness = abilitiesDict.Values.Where(a => a.effectiveness > 0f).MaxBy(a => a.effectiveness);
-                if (abilityWithMaxEffectiveness != null && abilityWithMaxEffectiveness.UseAbility(hero, context))
+                BattleAbility? abilityWithMaxEffectiveness = hero.abilities.MaxBy(a => a.effectiveness);
+                if (abilityWithMaxEffectiveness != null && abilityWithMaxEffectiveness.effectiveness > 0f && abilityWithMaxEffectiveness.UseAbility(hero, context))
                 {
                     abilityUsed = true;
                 }
             }
-
-            // Это условие завершения боя; допустимые цели определяет сама способность.
-            if (!context.heroes.Any(other => other.health > 0 && other.team != hero.team))
-            {
-                return true;
-            }
-
-
         }
 
         return false;
@@ -296,7 +280,7 @@ public class BattlefieldManager(Guid userId,
         {
             if (hero.health > 0)
             {
-                int ap = 100;// Random.Shared.Next(5, 16);
+                int ap = Random.Shared.Next(5, 16);
                 context.ChangeActionPoints(hero, ap);
             }
         }

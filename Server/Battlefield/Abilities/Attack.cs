@@ -6,38 +6,15 @@ using Server.Extensions;
 namespace Server.Battlefield.Abilities;
 
 /// <summary>Выбирает одного живого противника и наносит обычный удар с возможностью критического урона.</summary>
-public sealed class Attack : IBattleAbility
+public sealed class Attack(Ability definition) : BattleAbility(definition)
 {
     private const float COEF_EFFECTIVENESS = 1f;
-    public EBattlefieldLogAbility id => EBattlefieldLogAbility.attack;
-    public float effectiveness { get; private set; } = 0f;
 
-    public void ResetEffectiveness()
+    /// <summary>Оценивает урон доступной атаки; во время кулдауна эффективность равна нулю.</summary>
+    public override void CalcEffectiveness(SpawnedHero caster, BattleAbilityContext context)
     {
         effectiveness = 0f;
-    }
-
-    /// <summary></summary>
-    public void CalcEffectiveness(SpawnedHero caster, BattleAbilityContext context)
-    {
-        effectiveness = 0f;
-        if (caster.health <= 0)
-        {
-            return;
-        }
-
-        BaseHero baseHero = context.cacheService.TableBaseHeroes[caster.baseHeroId];
-        if (baseHero.abilities.Count == 0)
-        {
-            return;
-        }
-        Ability? ability = baseHero.abilities.FirstOrDefault(a => a != null && a.code == id);
-        if (ability == null)
-        {
-            return;
-        }
-
-        if (ability.cost > caster.actionPoints)
+        if (cooldownRemaining > 0 || caster.health <= 0 || definition.cost > caster.actionPoints)
         {
             return;
         }
@@ -48,7 +25,8 @@ public sealed class Attack : IBattleAbility
             return;
         }
 
-        float maxHp = context.heroes.Where(h => h.health > 0 && h.team != caster.team).Max(h => h.health);
+        float maxHp = context.heroes.Where(h => h.health > 0 && h.team != caster.team)
+            .Select(h => h.health).DefaultIfEmpty(0f).Max();
         if (damage > maxHp)
         {
             damage = maxHp;
@@ -56,10 +34,13 @@ public sealed class Attack : IBattleAbility
         effectiveness = damage * COEF_EFFECTIVENESS;
     }
 
-    public bool UseAbility(SpawnedHero caster, BattleAbilityContext context)
+    public override bool UseAbility(SpawnedHero caster, BattleAbilityContext context)
     {
-        BaseHero baseHero = context.cacheService.TableBaseHeroes[caster.baseHeroId];
-        Ability ability = baseHero.abilities.First(a => a != null && a.code == id);
+        if (cooldownRemaining > 0 || caster.health <= 0 || definition.cost > caster.actionPoints)
+        {
+            return false;
+        }
+
         SpawnedHero? target = context.heroes.Where(hero => hero.health > 0 && hero.team != caster.team).GetRandomElement();
         if (target == null)
         {
@@ -79,7 +60,7 @@ public sealed class Attack : IBattleAbility
             return false;
         }
 
-        context.ChangeActionPoints(caster, -ability.cost);
+        context.ChangeActionPoints(caster, -definition.cost);
         int indexReason = context.RecordAbilityUse(caster, id, [target.spawnedId]);
         target.health -= damage;
         _ = context.AddLog(new BattlefieldLogRecord_Damage
@@ -92,6 +73,7 @@ public sealed class Attack : IBattleAbility
             isPerodic = false,
         });
 
+        StartCooldown();
         return true;
     }
 }

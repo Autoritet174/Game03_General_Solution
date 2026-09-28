@@ -1,8 +1,8 @@
-using General.DTO.Battlefield;
 using General.DTO.Entities.Collection;
 using General.DTO.Entities.GameData;
-using Microsoft.EntityFrameworkCore.Storage.Json;
 using Server.Battlefield;
+using Server.Battlefield.Abilities;
+using Server.BattleField;
 using Server.Utilities;
 
 namespace Server.DTO.Battlefield;
@@ -12,15 +12,16 @@ public static class SpawnedHeroFactory
     private static readonly ILogger logger = LoggerFactory.Create(builder => builder.AddConsole())
         .CreateLogger(nameof(SpawnedHeroFactory));
 
-    public static SpawnedHero CreateFromBaseHero(BaseHero bh, int level)
+    public static ServerSpawnedHero CreateFromBaseHero(BaseHero bh, int level)
     {
         if (level < 1)
         {
             throw new ArgumentException("level most be 1 or more");
         }
 
-        SpawnedHero result = new()
+        ServerSpawnedHero result = new()
         {
+            abilities = CreateAbilities(bh),
             spawnedId = UUID.CreateV7(),
             baseHeroId = bh.id,
             level = level,
@@ -45,11 +46,12 @@ public static class SpawnedHeroFactory
         return result;
     }
 
-    public static SpawnedHero CreateFromHero(Hero hero, IEnumerable<Equipment> equipments)
+    public static ServerSpawnedHero CreateFromHero(Hero hero, IEnumerable<Equipment> equipments, BaseHero baseHero)
     {
         int heroLevel = hero.level;
-        SpawnedHero sHero = new()
+        ServerSpawnedHero sHero = new()
         {
+            abilities = CreateAbilities(baseHero),
             spawnedId = UUID.CreateV7(),
             level = heroLevel,
             baseHeroId = hero.baseHeroId,
@@ -127,5 +129,30 @@ public static class SpawnedHeroFactory
 
         sHero.healthMax = sHero.health;
         return sHero;
+    }
+
+    /// <summary>Создаёт личное состояние способностей из общего списка базового героя.</summary>
+    private static List<BattleAbility> CreateAbilities(BaseHero baseHero)
+    {
+        List<BattleAbility> abilities = [];
+        foreach (Ability definition in baseHero.abilities)
+        {
+            BattleAbility? ability = definition.code switch
+            {
+                EBattlefieldLogAbility.attack => new Attack(definition),
+                EBattlefieldLogAbility.healing => new Healing(definition),
+                _ => null
+            };
+
+            if (ability is null)
+            {
+                logger.LogError("Ability not found: {AbilityCode}", definition.code);
+                continue;
+            }
+
+            abilities.Add(ability);
+        }
+
+        return abilities;
     }
 }

@@ -1,12 +1,13 @@
 using General.DTO.Battlefield;
 using Server.Cache;
+using Server.DTO.Battlefield;
 
 namespace Server.BattleField;
 
 /// <summary>Предоставляет всех участников боя и операции изменения состояния с записью в общий журнал.</summary>
-public sealed class BattleAbilityContext(IReadOnlyList<SpawnedHero> heroes, List<BattlefieldLogRecordBase> battleLog, CacheService cacheService)
+public sealed class BattleAbilityContext(IReadOnlyList<ServerSpawnedHero> heroes, List<BattlefieldLogRecordBase> battleLog, CacheService cacheService)
 {
-    public IReadOnlyList<SpawnedHero> heroes { get; } = heroes;
+    public IReadOnlyList<ServerSpawnedHero> heroes { get; } = heroes;
     public CacheService cacheService { get; } = cacheService;
 
     /// <summary>Добавляет событие в журнал и возвращает его индекс для связи с последующими эффектами.</summary>
