@@ -136,7 +136,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.12" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.12" />
     <PackageReference Include="Microsoft.Bcl.Memory" Version="10.0.12" />
-    <PackageReference Include="Microsoft.Build.Framework" Version="18.10.1" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="5.9.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

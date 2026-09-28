@@ -114,12 +114,12 @@ public class GameHub(ClientManager clientManager, IClientFactory clientFactory, 
     [HubMethodName(HubMethodNames.COMBAT_BREAK)]
     public async Task<bool> CombatBreakAsync() => GetClient()?.CombatBreak() ?? false;
 
-    [HubMethodName(HubMethodNames.USE_ABILITY)]
-    public async Task<bool> UseAbilityAsync(EBattlefieldLogAbility eAbility, Guid heroSpawnedId, Guid? target)
-    {
-        Client? client = GetClient();
-        return client != null && await client.UseAbilityAsync(eAbility, heroSpawnedId, target).ConfigureAwait(false);
-    }
+    //[HubMethodName(HubMethodNames.USE_ABILITY)]
+    //public async Task<bool> UseAbilityAsync(EBattlefieldLogAbility eAbility, Guid heroSpawnedId, Guid? target)
+    //{
+    //    Client? client = GetClient();
+    //    return client != null && await client.UseAbilityAsync(eAbility, heroSpawnedId, target).ConfigureAwait(false);
+    //}
 
     [HubMethodName(HubMethodNames.GET_BATTLE_LOG)]
     public async Task<List<BattlefieldLogRecordBase>> GetBattleLogAsync() => GetClient()!.GetBattleLog();

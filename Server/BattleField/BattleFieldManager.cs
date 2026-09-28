@@ -81,11 +81,11 @@ public class BattlefieldManager(Guid userId,
         return true;
     }
 
-    /// <summary>Проверяет наличие активного боя; ручное применение способности пока не реализовано.</summary>
-    public Task<bool> UseAbilityAsync(EBattlefieldLogAbility eAbility, Guid heroSpawnedId, Guid? target)
-    {
-        return Task.FromResult(inCombat && spawnedBattlefield != null);
-    }
+    ///// <summary>Проверяет наличие активного боя; ручное применение способности пока не реализовано.</summary>
+    //public Task<bool> UseAbilityAsync(EBattlefieldLogAbility eAbility, Guid heroSpawnedId, Guid? target)
+    //{
+    //    return Task.FromResult(inCombat && spawnedBattlefield != null);
+    //}
 
     /// <summary>Рассчитывает активный бой и передаёт накопленный журнал, очищая буфер менеджера.</summary>
     public List<BattlefieldLogRecordBase> GetBattleLog()

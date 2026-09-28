@@ -67,10 +67,10 @@ public class Client(
 
     public bool CombatBreak() => battleFieldManager.CombatBreak();
 
-    public async Task<bool> UseAbilityAsync(EBattlefieldLogAbility eAbility, Guid heroSpawnedId, Guid? target)
-    {
-        return await battleFieldManager.UseAbilityAsync(eAbility, heroSpawnedId, target).ConfigureAwait(false);
-    }
+    //public async Task<bool> UseAbilityAsync(EBattlefieldLogAbility eAbility, Guid heroSpawnedId, Guid? target)
+    //{
+    //    return await battleFieldManager.UseAbilityAsync(eAbility, heroSpawnedId, target).ConfigureAwait(false);
+    //}
 
     public List<BattlefieldLogRecordBase> GetBattleLog()
     {
