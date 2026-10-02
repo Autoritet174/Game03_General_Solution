@@ -64,6 +64,12 @@ public static class LocalizationKeys
             public static readonly string dead = $"{labelPrefix}{nameof(dead)}";
             public static readonly string damage = $"{labelPrefix}{nameof(damage)}";
             public static readonly string mainStat = $"{labelPrefix}{nameof(mainStat)}";
+            public static readonly string rarity = $"{labelPrefix}{nameof(rarity)}";
+
+            public static readonly string characteristic = $"{labelPrefix}{nameof(characteristic)}";
+            public static readonly string expectedValue = $"{labelPrefix}{nameof(expectedValue)}";
+            public static readonly string dice = $"{labelPrefix}{nameof(dice)}";
+            public static readonly string range = $"{labelPrefix}{nameof(range)}";
 
             public static class Slot
             {
