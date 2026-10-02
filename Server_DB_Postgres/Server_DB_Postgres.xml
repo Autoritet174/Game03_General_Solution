@@ -28,34 +28,34 @@
         <member name="M:Server_DB_Postgres.DbContextGame.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions{Server_DB_Postgres.DbContextGame})">
             <summary> Контекст базы данных для работы с игровыми данными. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.DbContextGame.Abilities">
+        <member name="P:Server_DB_Postgres.DbContextGame.abilities">
             <summary> Способности героев и нпс. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.DbContextGame.BaseEquipments">
+        <member name="P:Server_DB_Postgres.DbContextGame.baseEquipments">
             <summary> Экипировка, болванки. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.DbContextGame.BaseHeroes">
+        <member name="P:Server_DB_Postgres.DbContextGame.baseHeroes">
             <summary> Данные героев. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.DbContextGame.BaseHeroNpcs">
+        <member name="P:Server_DB_Postgres.DbContextGame.baseHeroNpcs">
             <summary> Не игровые персонажи. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.DbContextGame.CreatureTypes">
+        <member name="P:Server_DB_Postgres.DbContextGame.creatureTypes">
             <summary> Типы существ. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.DbContextGame.DamageTypes">
+        <member name="P:Server_DB_Postgres.DbContextGame.damageTypes">
             <summary> Типы урона. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.DbContextGame.EquipmentTypes">
+        <member name="P:Server_DB_Postgres.DbContextGame.equipmentTypes">
             <summary> Типы экипировки. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.DbContextGame.MaterialDamagePercents">
+        <member name="P:Server_DB_Postgres.DbContextGame.materialDamagePercents">
             <summary> Дополнительный процентный урон от материала. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.DbContextGame.Slots">
+        <member name="P:Server_DB_Postgres.DbContextGame.slots">
             <summary> Типы слотов экипировки. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.DbContextGame.SmithingMaterials">
+        <member name="P:Server_DB_Postgres.DbContextGame.smithingMaterials">
             <summary> Материалы для кузнечного дела. </summary>
         </member>
         <member name="P:Server_DB_Postgres.DbContextGame.x_Heroes_CreatureTypes">
@@ -64,10 +64,10 @@
         <member name="P:Server_DB_Postgres.DbContextGame.x_EquipmentTypes_DamageTypes">
             <summary> Таблица связи многие ко мноким между WeaponTypes и DamageTypes. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.DbContextGame.AuthenticationLogs">
+        <member name="P:Server_DB_Postgres.DbContextGame.authenticationLogs">
             <summary> Лог авторизации пользователей. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.DbContextGame.UserBanReasons">
+        <member name="P:Server_DB_Postgres.DbContextGame.userBanReasons">
             <summary> Причины бана пользователей. </summary>
         </member>
         <member name="M:Server_DB_Postgres.DbContextGame.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
@@ -146,7 +146,7 @@
         <member name="T:Server_DB_Postgres.Entities.Server.UserBanReason">
             <summary> Причины блокировки пользователя </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Server.UserBanReason.Name">
+        <member name="P:Server_DB_Postgres.Entities.Server.UserBanReason.name">
             <summary> Наименование причины блокировки. </summary>
         </member>
         <member name="T:Server_DB_Postgres.Entities.Server.UserSessionInactivationReason">
@@ -166,22 +166,22 @@
             Представляет публичный ключ Passkey, привязанный к аккаунту пользователя.
             </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserAccesskey.DescriptorId">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserAccesskey.descriptorId">
             <summary>
             Уникальный идентификатор учетных данных, сгенерированный устройством.
             </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserAccesskey.PublicKey">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserAccesskey.publicKey">
             <summary>
             Публичный ключ в бинарном формате.
             </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserAccesskey.SignatureCounter">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserAccesskey.signatureCounter">
             <summary>
             Счетчик использований для защиты от атак воспроизведения.
             </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserAccesskey.DeviceName">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserAccesskey.deviceName">
             <summary>
             Тип устройства или дружественное имя (например, "My iPhone 15").
             </summary>
@@ -198,7 +198,7 @@
         <member name="T:Server_DB_Postgres.Entities.Users.UserBan">
             <summary> Представляет запись о блокировке (бане) пользователя. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserBan.UserId">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserBan.userId">
             <summary> Идентификатор пользователя, к которому применена блокировка. </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.Users.UserBan.version">
@@ -210,10 +210,10 @@
         <member name="P:Server_DB_Postgres.Entities.Users.UserBan.updatedAt">
             <summary> <inheritdoc/> </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserBan.ExpiresAt">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserBan.expiresAt">
             <summary> Дата и время окончания блокировки. Null, если блокировка бессрочная. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserBan.UserBanReasonId">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserBan.userBanReasonId">
             <summary> Идентификатор причины блокировки. </summary>
         </member>
         <member name="T:Server_DB_Postgres.Entities.Users.UserDevice">
@@ -222,71 +222,71 @@
         <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.createdAt">
             <summary> <inheritdoc/> </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.SystemEnvironmentUserName">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.systemEnvironmentUserName">
             <summary> Получает или задаёт имя пользователя операционной системы. </summary>
             <value>Имя пользователя, под которым запущено приложение (например, 'JohnDoe').</value>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.TimeZoneMinutes">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.timeZoneMinutes">
             <summary> Получает или задаёт смещение локального часового пояса от UTC в минутах. </summary>
             <value>Целое число, представляющее разницу во времени (например, +180 для UTC+3).</value>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.DeviceUniqueIdentifier">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.deviceUniqueIdentifier">
             <summary> Получает или задаёт уникальный идентификатор устройства. </summary>
             <value>Уникальная строка, идентифицирующая устройство (например, IMEI, UUID).</value>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.DeviceModel">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.deviceModel">
             <summary> Получает или задаёт модель устройства. </summary>
             <value>Описание аппаратной модели устройства.</value>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.DeviceType">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.deviceType">
             <summary> Получает или задаёт тип устройства. </summary>
             <value>Категория устройства: мобильное, настольное, игровая консоль и т.д.</value>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.OperatingSystem">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.operatingSystem">
             <summary> Получает или задаёт операционную систему устройства. </summary>
             <value>Название и версия ОС (например, 'Windows 10', 'iOS 17').</value>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.ProcessorType">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.processorType">
             <summary> Получает или задаёт тип процессора устройства. </summary>
             <value>Архитектура и модель процессора (например, 'Intel Core i7', 'Apple M1').</value>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.ProcessorCount">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.processorCount">
             <summary> Получает или задаёт количество логических ядер процессора. </summary>
             <value>Число, равное количеству потоков процессора.</value>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.SystemMemorySize">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.systemMemorySize">
             <summary> Получает или задаёт объём оперативной памяти устройства в мегабайтах. </summary>
             <value>Размер ОЗУ в мегабайтах (например, 16384 для 16 ГБ).</value>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.GraphicsDeviceName">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.graphicsDeviceName">
             <summary> Получает или задаёт название графического устройства. </summary>
             <value>Модель видеокарты или встроенного GPU.</value>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.GraphicsMemorySize">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.graphicsMemorySize">
             <summary> Получает или задаёт объём видеопамяти в мегабайтах. </summary>
             <value>Размер видеопамяти (VRAM) в МБ.</value>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.SystemInfoSupportsInstancing">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.systemInfoSupportsInstancing">
             <summary> Получает или задаёт признак поддержки графической системой инстансинга. </summary>
             <value><c>true</c>, если поддерживается; иначе <c>false</c>.</value>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.SystemInfoNpotSupport">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserDevice.systemInfoNpotSupport">
             <summary> Получает или задаёт информацию о поддержке текстур с размерами, не являющимися степенью двойки (NPOT). </summary>
             <value>Строка, описывающая уровень поддержки NPOT (например, 'Full', 'Restricted', 'None').</value>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserSession.RefreshTokenHash">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserSession.refreshTokenHash">
             <summary> Токен сессии. Имеет индекс уникальности для живых токенов. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserSession.IsUsed">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserSession.isUsed">
             <summary> Токен использован. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserSession.IsRevoked">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserSession.isRevoked">
             <summary> Токен анулирован. </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserSession.InactivatedAt">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserSession.inactivatedAt">
             <summary> Когда сессия была фактически завершена (для истории). </summary>
         </member>
-        <member name="P:Server_DB_Postgres.Entities.Users.UserSession.UserSessionInactivationReasonId">
+        <member name="P:Server_DB_Postgres.Entities.Users.UserSession.userSessionInactivationReasonId">
             <summary> Причина деактивации (например: "Rotation", "Logout", "SystemLock") </summary>
         </member>
         <member name="P:Server_DB_Postgres.Entities.Users.UserSession.createdAt">

@@ -19,28 +19,28 @@ public class Auth
 
     public static async Task<bool> AuthentificationAsync(DtoRequestAuthReg dto, AuthType authType, CancellationToken cancellationToken)
     {
-        AccessToken = null;
-        RefreshToken = null;
-        RefreshTokenExpirationAt = null;
+        accessToken = null;
+        refreshToken = null;
+        refreshTokenExpirationAt = null;
 
         if (cancellationToken.IsCancellationRequested)
         {
             logger.LogError("IsCancellationRequested");
             return false;
         }
-        string url = authType == AuthType.Login ? Url.AUTH_LOGIN : Url.AUTH_REFRESH_TOKENS;
+        string url = authType == AuthType.Login ? Url.authLogin : Url.authRefreshTokens;
 
         string? response = await HttpRequester.GetResponseAsync(url, JSON.Serialize(dto), cancellationToken).ConfigureAwait(false);
         if (response == null)
         {
-            logger.LogError("response is null", L.Error.Server.InvalidResponse);
+            logger.LogError("response is null", L.Error.Server.invalidResponse);
             return false;
         }
 
         DtoResponseAuthReg? dtoResponse = JSON.Deserialize<DtoResponseAuthReg>(response);
         if (dtoResponse == null)
         {
-            logger.LogError("dtoResponse is null", L.Error.Server.InvalidResponse);
+            logger.LogError("dtoResponse is null", L.Error.Server.invalidResponse);
             return false;
         }
 
@@ -50,13 +50,13 @@ public class Auth
             return false;
         }
 
-        AccessToken = dtoResponse.accessToken;
-        RefreshToken = dtoResponse.refreshToken;
-        RefreshTokenExpirationAt = dtoResponse.extraDateTimeOffset;
+        accessToken = dtoResponse.accessToken;
+        refreshToken = dtoResponse.refreshToken;
+        refreshTokenExpirationAt = dtoResponse.extraDateTimeOffset;
         return true;
     }
 
-    public static string? AccessToken { get; set; }
-    public static string? RefreshToken { get; private set; }
-    public static DateTimeOffset? RefreshTokenExpirationAt { get; private set; }
+    public static string? accessToken { get; set; }
+    public static string? refreshToken { get; private set; }
+    public static DateTimeOffset? refreshTokenExpirationAt { get; private set; }
 }

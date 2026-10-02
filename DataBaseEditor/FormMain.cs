@@ -1,8 +1,5 @@
 using DataBaseEditor.Tables;
 using General.DTO.Entities.GameData;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using Npgsql;
 using Server_DB_Postgres;
 
 namespace DataBaseEditor;
@@ -24,13 +21,13 @@ public partial class FormMain : Form
         using DbContextGame db = DB.Create();
         dgv_WeaponTypes.AutoGenerateColumns = false;
         //dgv_WeaponTypes.Columns[ColumnNameRu.Name].DataPropertyName = "NameRu";
-        dgv_WeaponTypes.DataSource = db.EquipmentTypes.ToList();
+        dgv_WeaponTypes.DataSource = db.equipmentTypes.ToList();
     }
     private void dgv_WeaponTypes_CellClick(object sender, DataGridViewCellEventArgs e)
     {
         int id = Convert.ToInt32(dgv_WeaponTypes.Rows[e.RowIndex].Cells["id"].Value);
         using DbContextGame db = DB.Create();
-        var damageTypes = db.DamageTypes.Where(a => a.id <= 4).ToList();
+        var damageTypes = db.damageTypes.Where(a => a.id <= 4).ToList();
         dgv_DamageTypes.RowCount = damageTypes.Count;
         for (int i = 0; i < damageTypes.Count; i++)
         {
@@ -61,8 +58,8 @@ public partial class FormMain : Form
                     damageTypeId = damageTypeId,
                     equipmentTypeId = id,
                     damageCoef = damageCoef,
-                    damageType = db.DamageTypes.First(a => a.id == damageTypeId),
-                    equipmentType = db.EquipmentTypes.First(a => a.id == id),
+                    damageType = db.damageTypes.First(a => a.id == damageTypeId),
+                    equipmentType = db.equipmentTypes.First(a => a.id == id),
                 };
                 _ = db.x_EquipmentTypes_DamageTypes.Add(x);
             }
@@ -81,9 +78,10 @@ public partial class FormMain : Form
     }
     #endregion
     #region BaseHeroes
-    void RefreshData_BaseHeroes() {
+    private void RefreshData_BaseHeroes()
+    {
         using DbContextGame db = DB.Create();
-        var list = db.BaseHeroes.OrderBy(a => a.rarity).ThenBy(a => a.id).ToList();
+        var list = db.baseHeroes.OrderBy(a => a.rarity).ThenBy(a => a.id).ToList();
         var list2 = list.Select(a => new
         {
             a.id,
@@ -120,7 +118,7 @@ public partial class FormMain : Form
                 int id = Convert.ToInt32(row.Cells[0].Value);
                 if (id > 0)
                 {
-                    new BaseHeroesForm(id).ShowDialog();
+                    _ = new BaseHeroesForm(id).ShowDialog();
                     RefreshData_BaseHeroes();
                 }
             }

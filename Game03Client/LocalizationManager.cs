@@ -79,22 +79,22 @@ public static class LocalizationManager
             return string.Empty;
         }
 
-        string keyError = root.TryGetProperty(L.KEY_LOCALIZATION, out JsonElement keyEl)
-            ? keyEl.GetString() ?? L.Error.UnknownError
-            : L.Error.UnknownError;
+        string keyError = root.TryGetProperty(L.keyLocalization, out JsonElement keyEl)
+            ? keyEl.GetString() ?? L.Error.unknownError
+            : L.Error.unknownError;
 
         string textError = GetValue(keyError);
 
         // --- Специальная обработка для ошибки "Аккаунт забанен" ---
-        if (keyError == L.Error.Server.AccountBannedUntil)
+        if (keyError == L.Error.Server.accountBannedUntil)
         {
-            string dateTimeExpiresAtString = root.TryGetProperty(L.DATETIME_EXPIRATION, out JsonElement dtEl)
+            string dateTimeExpiresAtString = root.TryGetProperty(L.datetimeExpiration, out JsonElement dtEl)
                 ? (dtEl.GetString() ?? string.Empty).Trim()
                 : string.Empty;
 
             if (dateTimeExpiresAtString != string.Empty)
             {
-                textError = textError.Replace(L.DATETIME_EXPIRATION, dateTimeExpiresAtString);
+                textError = textError.Replace(L.datetimeExpiration, dateTimeExpiresAtString);
 
                 string[] dtA = dateTimeExpiresAtString.Split([" ", ".", ":"], StringSplitOptions.None);
                 try
@@ -104,23 +104,23 @@ public static class LocalizationManager
                         int.Parse(dtA[3]), int.Parse(dtA[4]), int.Parse(dtA[5]));
 
                     long secondsRemaining = (long)(dtUnbanUtc - DateTime.UtcNow).TotalSeconds;
-                    textError = textError.Replace(L.TIME_REMAINING, GlobalHelper.SecondsToTimeStr(secondsRemaining));
+                    textError = textError.Replace(L.timeRemaining, GlobalHelper.SecondsToTimeStr(secondsRemaining));
                 }
                 catch { }
             }
         }
 
         // --- Специальная обработка для ошибки "Слишком много попыток входа" ---
-        if (keyError == L.Error.Server.TooManyRequests)
+        if (keyError == L.Error.Server.tooManyRequests)
         {
-            string secondsRemainingString = root.TryGetProperty(L.SECONDS_REMAINING, out JsonElement srEl)
+            string secondsRemainingString = root.TryGetProperty(L.secondsRemaining, out JsonElement srEl)
                 ? (srEl.GetString() ?? string.Empty).Trim()
                 : string.Empty;
 
             if (secondsRemainingString != string.Empty
                 && long.TryParse(secondsRemainingString, out long secondsRemaining))
             {
-                textError = textError.Replace(L.TIME_REMAINING, GlobalHelper.SecondsToTimeStr(secondsRemaining));
+                textError = textError.Replace(L.timeRemaining, GlobalHelper.SecondsToTimeStr(secondsRemaining));
             }
         }
 

@@ -5,26 +5,26 @@ namespace Server_DB_Postgres.Entities.Users;
 
 public class UserSession : ICreatedAt, IUpdatedAt, IVersion
 {
-    public Guid Id { get; init; }
-    public Guid UserId { get; set; }
+    public Guid id { get; init; }
+    public Guid userId { get; set; }
 
     /// <summary> Токен сессии. Имеет индекс уникальности для живых токенов. </summary>
-    public required byte[] RefreshTokenHash { get; set; }
+    public required byte[] refreshTokenHash { get; set; }
 
     /// <summary> Токен использован. </summary>
-    public bool IsUsed { get; set; }
+    public bool isUsed { get; set; }
 
     /// <summary> Токен анулирован. </summary>
-    public bool IsRevoked { get; set; }
+    public bool isRevoked { get; set; }
 
     /// <summary> Когда сессия была фактически завершена (для истории). </summary>
-    public DateTimeOffset? InactivatedAt { get; set; }
+    public DateTimeOffset? inactivatedAt { get; set; }
 
     /// <summary> Причина деактивации (например: "Rotation", "Logout", "SystemLock") </summary>
-    public int? UserSessionInactivationReasonId { get; set; }
-    public UserSessionInactivationReason? UserSessionInactivationReason { get; set; }
+    public int? userSessionInactivationReasonId { get; set; }
+    public UserSessionInactivationReason? userSessionInactivationReason { get; set; }
 
-    public DateTimeOffset ExpiresAt { get; set; }
+    public DateTimeOffset expiresAt { get; set; }
 
     /// <summary> <inheritdoc/> </summary>
     public DateTimeOffset createdAt { get; set; }
@@ -32,8 +32,8 @@ public class UserSession : ICreatedAt, IUpdatedAt, IVersion
     /// <summary> <inheritdoc/> </summary>
     public DateTimeOffset updatedAt { get; set; }
 
-    public Guid UserDeviceId { get; set; }
-    public UserDevice? UserDevice { get; set; }
+    public Guid userDeviceId { get; set; }
+    public UserDevice? userDevice { get; set; }
 
     /// <summary> <inheritdoc/> </summary>
     public long version { get; set; }

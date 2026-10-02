@@ -6,11 +6,11 @@ namespace Server_DB_Postgres.Entities.Users;
 /// <summary> Представляет запись о блокировке (бане) пользователя. </summary>
 public class UserBan : IVersion, ICreatedAt, IUpdatedAt
 {
-    public Guid Id { get; init; }
+    public Guid id { get; init; }
 
     /// <summary> Идентификатор пользователя, к которому применена блокировка. </summary>
-    public required Guid UserId { get; set; }
-    public User? User { get; set; }
+    public required Guid userId { get; set; }
+    public User? user { get; set; }
 
 
     /// <summary> <inheritdoc/> </summary>
@@ -23,11 +23,11 @@ public class UserBan : IVersion, ICreatedAt, IUpdatedAt
     public DateTimeOffset updatedAt { get; set; }
 
     /// <summary> Дата и время окончания блокировки. Null, если блокировка бессрочная. </summary>
-    public DateTimeOffset? ExpiresAt { get; set; }
+    public DateTimeOffset? expiresAt { get; set; }
 
 
     /// <summary> Идентификатор причины блокировки. </summary>
-    public int UserBanReasonId { get; set; }
-    public UserBanReason? UserBanReason { get; set; }
+    public int userBanReasonId { get; set; }
+    public UserBanReason? userBanReason { get; set; }
 
 }

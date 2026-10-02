@@ -2,5 +2,5 @@ namespace General;
 
 public static class Parametrs
 {
-    public static string SignalR_Address { get; } = "/ws/game";
+    public static string signalR_Address { get; } = "/ws/game";
 }

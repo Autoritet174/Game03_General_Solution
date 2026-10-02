@@ -28,7 +28,7 @@
         <member name="M:Server.Battlefield.BattlefieldManager.#ctor(System.Guid,Microsoft.EntityFrameworkCore.IDbContextFactory{Server_DB_Postgres.DbContextGame},Microsoft.Extensions.Logging.ILogger{Server.Hubs.Client},Server.Cache.CacheService)">
             <summary>Создаёт команды участников, рассчитывает бой и формирует последовательный журнал событий.</summary>
         </member>
-        <member name="M:Server.Battlefield.BattlefieldManager.CombatStartAsync(General.EBattleFiled,System.Guid[],System.Threading.CancellationToken)">
+        <member name="M:Server.Battlefield.BattlefieldManager.CombatStartAsync(General.EBattlefield,System.Guid[],System.Threading.CancellationToken)">
             <summary>Создаёт новый бой с выбранными героями либо возвращает уже запущенный бой.</summary>
             <returns>Начальное состояние боя или null при недопустимом количестве героев.</returns>
         </member>
@@ -38,7 +38,7 @@
         <member name="M:Server.Battlefield.BattlefieldManager.GetBattleLog">
             <summary>Рассчитывает активный бой и передаёт накопленный журнал, очищая буфер менеджера.</summary>
         </member>
-        <member name="M:Server.Battlefield.BattlefieldManager.CreateEnemyHeroes(General.EBattleFiled,System.Int32)">
+        <member name="M:Server.Battlefield.BattlefieldManager.CreateEnemyHeroes(General.EBattlefield,System.Int32)">
             <summary>Создаёт противников, выбирая сначала гарантированные записи с оставшимся количеством.</summary>
         </member>
         <member name="M:Server.Battlefield.BattlefieldManager.CreatePlayerHeroesAsync(System.Guid[],System.Threading.CancellationToken)">
@@ -91,7 +91,7 @@
         <member name="M:Server.BattleField.BattleAbilityContext.RecordAbilityUse(General.DTO.Battlefield.SpawnedHero,General.EBattlefieldLogAbility,System.Guid[])">
             <summary>Записывает применение способности и возвращает индекс причины её эффектов.</summary>
         </member>
-        <member name="P:Server.Cache.CacheService.GameDataJson">
+        <member name="P:Server.Cache.CacheService.gameDataJson">
             <summary> Возвращает JSON-строку с данными. </summary>
             <returns> JSON-строка со всеми константными игровыми данными необходимыми на стороне клиента. </returns>
             <exception cref="T:System.InvalidOperationException">
@@ -163,12 +163,12 @@
             <param name="path">Путь к значению в формате JSONPath (например: "$.user.name")</param>
             <returns>Значение как строка, если оно существует и может быть преобразовано в строку; иначе <c>null</c>.</returns>
         </member>
-        <member name="F:Server.Game.LootGenerator._getUserHeroIdsQuery">
+        <member name="F:Server.Game.LootGenerator.getUserHeroIdsQuery">
             <summary>
             Возвращает список id базовых героев, которых уже имеет пользователь, из заданного списка id базовых героев.
             </summary>
         </member>
-        <member name="F:Server.Game.LootGenerator._getUserEquipmentIdsQuery">
+        <member name="F:Server.Game.LootGenerator.getUserEquipmentIdsQuery">
             <summary>
             Возвращает список id базовых предметов, которых уже имеет пользователь, из заданного списка id базовых предметов.
             </summary>
@@ -215,7 +215,7 @@
             </summary>
             <returns>Ответ BadRequest с ключом локализации для ошибки неверного ответа.</returns>
             <remarks>
-            Соответствует ключу локализации <see cref="F:General.LocalizationKeys.Error.Server.InvalidResponse"/>.
+            Соответствует ключу локализации <see cref="F:General.LocalizationKeys.Error.Server.invalidResponse"/>.
             </remarks>
         </member>
         <member name="M:Server.Http_NS.Controllers_NS.ControllerBaseApi.BadRequestInvalidRequest">
@@ -275,17 +275,17 @@
             <param name="logger">Интерфейс логирования.</param>
             <param name="cacheService">Сервис для работы с кэшированными игровыми таблицами.</param>
         </member>
-        <member name="F:Server.Collection.EquipmentManager.GetHeroByIdAsync">
+        <member name="F:Server.Collection.EquipmentManager.getHeroByIdAsync">
             <summary>
             Скомпилированный запрос для получения героя по ID (без отслеживания изменений).
             </summary>
         </member>
-        <member name="F:Server.Collection.EquipmentManager.GetEquipmentByIdAsync">
+        <member name="F:Server.Collection.EquipmentManager.getEquipmentByIdAsync">
             <summary>
             Скомпилированный запрос для получения предмета экипировки по ID.
             </summary>
         </member>
-        <member name="F:Server.Collection.EquipmentManager.GetEquippedInSlotAsync">
+        <member name="F:Server.Collection.EquipmentManager.getEquippedInSlotAsync">
             <summary>
             Скомпилированный запрос для поиска предмета, надетого в конкретный слот героя.
             </summary>
@@ -353,13 +353,13 @@
             
             </summary>
         </member>
-        <member name="P:Server.Jwt_NS.JwtOptions.Issuer">
+        <member name="P:Server.Jwt_NS.JwtOptions.issuer">
             <summary>Эмитент токена.</summary>
         </member>
-        <member name="P:Server.Jwt_NS.JwtOptions.Audience">
+        <member name="P:Server.Jwt_NS.JwtOptions.audience">
             <summary>Аудитория токена.</summary>
         </member>
-        <member name="P:Server.Jwt_NS.JwtOptions.Lifetime">
+        <member name="P:Server.Jwt_NS.JwtOptions.lifetime">
             <summary>Время жизни токена.</summary>
         </member>
         <member name="T:Server.Jwt_NS.JwtService">
@@ -478,7 +478,7 @@
         <member name="M:Server.Program.LoadTestServiceAsync(Microsoft.AspNetCore.Builder.WebApplication,System.Threading.CancellationToken)">
             <summary> Загружаем в оперативную память константные серверные данные которые не меняются во время работы сервера. </summary>
         </member>
-        <member name="F:Server.TestService.GetFirstEquipmentCompiled">
+        <member name="F:Server.TestService.getFirstEquipmentCompiled">
             <summary>
             Скомпилированный запрос для получения первой записи Equipment.
             Позволяет избежать повторного парсинга LINQ-выражения.
@@ -569,7 +569,7 @@
             Лог авторизации с поддержкой повторной обработки и кэшированными данными устройства.
             </summary>
         </member>
-        <member name="F:Server.Users.AuthRegLoggerBackgroundService._cleanupTask">
+        <member name="F:Server.Users.AuthRegLoggerBackgroundService.cleanupTask">
             <summary> Задача на очистку старых логов. </summary>
         </member>
         <member name="M:Server.Users.AuthRegLoggerBackgroundService.EnqueueLog(System.Boolean,General.DTO.RestRequest.DtoRequestAuthReg,System.Nullable{System.Guid},System.Net.IPAddress,System.Boolean)">
@@ -603,7 +603,7 @@
             Контроллер для управления процессами регистрации и аутентификации через Passkeys.
             </summary>
         </member>
-        <member name="F:Server.Users.PasskeyController.IsEnabled">
+        <member name="F:Server.Users.PasskeyController.isEnabled">
             <summary>
             Флаг доступности функционала Passkey.
             </summary>

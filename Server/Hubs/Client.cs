@@ -9,17 +9,17 @@ using Server_DB_Postgres;
 namespace Server.Hubs;
 
 public class Client(
-    Guid userId,
+    Guid userIdInput,
     ILogger<Client> logger,
     IDbContextFactory<DbContextGame> dbContextFactory,
     CacheService cacheService,
     BattlefieldManager? battlefieldManagerOtherPlayer = null
     )
 {
-    private readonly Collection.EquipmentManager equipmentManager = new(userId, dbContextFactory, logger, cacheService);
-    public BattlefieldManager battleFieldManager { get; } = battlefieldManagerOtherPlayer ?? new(userId, dbContextFactory, logger, cacheService);
+    private readonly Collection.EquipmentManager equipmentManager = new(userIdInput, dbContextFactory, logger, cacheService);
+    public BattlefieldManager battleFieldManager { get; } = battlefieldManagerOtherPlayer ?? new(userIdInput, dbContextFactory, logger, cacheService);
 
-    public Guid UserId => userId;
+    public Guid userId => userIdInput;
 
 
     public async Task<bool> EquipmentTakeOnAsync(Guid heroId, Guid equipmentId, bool? inAltSlot, CancellationToken cancellationToken)
@@ -60,7 +60,7 @@ public class Client(
         return result.IsSuccess;
     }
 
-    public async Task<SpawnedBattlefield?> CombatStartAsync(EBattleFiled eBattleFiled, Guid[] spawnedHeroesId, CancellationToken cancellationToken)
+    public async Task<SpawnedBattlefield?> CombatStartAsync(EBattlefield eBattleFiled, Guid[] spawnedHeroesId, CancellationToken cancellationToken)
     {
         return await battleFieldManager.CombatStartAsync(eBattleFiled, spawnedHeroesId, cancellationToken).ConfigureAwait(false);
     }

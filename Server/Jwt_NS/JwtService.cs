@@ -12,12 +12,12 @@ namespace Server.Jwt_NS;
 /// </summary>
 public class JwtService
 {
-    public static readonly TimeSpan ClockSkew = TimeSpan.FromMinutes(2);
+    public static readonly TimeSpan cockSkew = TimeSpan.FromMinutes(2);
 
-    private readonly JwtOptions _options;
-    private readonly JwtSecurityTokenHandler _handler = new();
-    private readonly SigningCredentials _signingCredentials;
-    public SecurityKey IssuerSigningKey { get; private set; }
+    private readonly JwtOptions options;
+    private readonly JwtSecurityTokenHandler handler = new();
+    private readonly SigningCredentials signingCredentials;
+    public SecurityKey issuerSigningKey { get; private set; }
 
     /// <summary>
     /// Создаёт экземпляр <see cref="JwtService"/>, валидируя наличие и размер секретного ключа.
@@ -27,7 +27,7 @@ public class JwtService
     /// <exception cref="ArgumentException">Если длина секрета меньше 32nbsp;байт.</exception>
     public JwtService(IOptions<JwtOptions> options)
     {
-        _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
+        this.options = options?.Value ?? throw new ArgumentNullException(nameof(options));
         string secret = File.ReadAllText(@"C:\UnityProjects\Game03_Security\jwt_secret_key.txt");
 
         if (Encoding.UTF8.GetByteCount(secret) < 32)
@@ -37,8 +37,8 @@ public class JwtService
 
         byte[] keyBytes = Encoding.UTF8.GetBytes(secret);
 
-        IssuerSigningKey = new SymmetricSecurityKey(keyBytes);
-        _signingCredentials = new SigningCredentials(IssuerSigningKey, SecurityAlgorithms.HmacSha256);
+        issuerSigningKey = new SymmetricSecurityKey(keyBytes);
+        signingCredentials = new SigningCredentials(issuerSigningKey, SecurityAlgorithms.HmacSha256);
     }
 
     /// <summary>
@@ -64,16 +64,16 @@ public class JwtService
         }
 
         // Случайная задержка в +-10%, для снижения пиков нагрузки на сервер
-        int secondsRange = (int)(_options.Lifetime.TotalSeconds / 10.0);
+        int secondsRange = (int)(options.lifetime.TotalSeconds / 10.0);
         JwtSecurityToken token = new(
-            issuer: _options.Issuer,
-            audience: _options.Audience,
+            issuer: options.issuer,
+            audience: options.audience,
             notBefore: now,
-            expires: now.Add(_options.Lifetime + TimeSpan.FromSeconds(Random.Shared.Next(-secondsRange, secondsRange + 1))),
+            expires: now.Add(options.lifetime + TimeSpan.FromSeconds(Random.Shared.Next(-secondsRange, secondsRange + 1))),
             claims: claims,
-            signingCredentials: _signingCredentials);
+            signingCredentials: signingCredentials);
 
-        return _handler.WriteToken(token);
+        return handler.WriteToken(token);
     }
 
     /// <summary>
@@ -93,16 +93,16 @@ public class JwtService
         TokenValidationParameters parameters = new()
         {
             ValidateIssuer = true,
-            ValidIssuer = _options.Issuer,
+            ValidIssuer = options.issuer,
             ValidateAudience = true,
-            ValidAudience = _options.Audience,
+            ValidAudience = options.audience,
             ValidateLifetime = true,
-            ClockSkew = ClockSkew,
+            ClockSkew = cockSkew,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = IssuerSigningKey
+            IssuerSigningKey = issuerSigningKey
         };
 
-        return _handler.ValidateToken(token, parameters, out _);
+        return handler.ValidateToken(token, parameters, out _);
     }
     public Guid? AuthenticateByToken(string accessToken)
     {
@@ -115,7 +115,8 @@ public class JwtService
             ClaimsPrincipal principal = ValidateToken(accessToken);
             return principal.GetGuid() ?? null;
         }
-        catch {
+        catch
+        {
             return null;
         }
 

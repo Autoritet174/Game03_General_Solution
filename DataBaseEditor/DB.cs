@@ -13,7 +13,7 @@ public static class DB
     {
         var dataSourceBuilder = new NpgsqlDataSourceBuilder(CONNECTION_STRING);
         _ = dataSourceBuilder.EnableDynamicJson();
-        _ = dataSourceBuilder.ConfigureJsonOptions(JSON.Options);
+        _ = dataSourceBuilder.ConfigureJsonOptions(JSON.options);
         NpgsqlDataSource dataSource = dataSourceBuilder.Build();
         DbContextOptionsBuilder<DbContextGame> optionsBuilder = new();
         return new DbContextGame(optionsBuilder.UseNpgsql(dataSource).Options);

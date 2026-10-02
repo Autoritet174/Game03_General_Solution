@@ -30,7 +30,7 @@ public class CollectionProvider
         }
 
         // Получить коллекцию героев игрока
-        string? response = await HttpRequester.GetResponseAsync(General.Url.Collection.ALL, null, cancellationToken).ConfigureAwait(false);
+        string? response = await HttpRequester.GetResponseAsync(General.Url.Collection.all, null, cancellationToken).ConfigureAwait(false);
         if (string.IsNullOrWhiteSpace(response))
         {
             logger.LogError("response is null or empty");
@@ -45,7 +45,7 @@ public class CollectionProvider
         }
 
 
-        IEnumerable<BaseEquipment> baseEquipments = GameData.Container.baseEquipments;
+        IEnumerable<BaseEquipment> baseEquipments = GameData.container.baseEquipments;
         dictonaryEquipments.Clear();
         foreach (Equipment i in c.collectionEquipments)
         {
@@ -54,7 +54,7 @@ public class CollectionProvider
         }
 
 
-        IEnumerable<BaseHero> baseHeroes = GameData.Container.baseHeroes;
+        IEnumerable<BaseHero> baseHeroes = GameData.container.baseHeroes;
         dictonaryHeroes.Clear();
         foreach (Hero i in c.collectionHeroes)
         {
@@ -161,24 +161,36 @@ public class CollectionProvider
                     logger.LogError("hero.DtoBaseHero is null");
                     throw new Exception();
                 }
-                collectionElements.Add(new CollectionElement(hero.id, hero.baseHeroId, hero.baseHero.rarity, hero.baseHero.name, hero.baseHero.isUnique, TypeCollectionElement.Hero));
+                collectionElements.Add(new CollectionElement
+                {
+                    id = hero.id,
+                    baseId = hero.baseHeroId,
+                    rarity = hero.baseHero.rarity,
+                    name = hero.baseHero.name,
+                    isUnique = hero.baseHero.isUnique,
+                    typeCollectionElement = TypeCollectionElement.Hero
+                });
             }
 
-            GroupCollectionElement groupCollectionElement = new(groupName, collectionElements);
+            var groupCollectionElement = new GroupCollectionElement
+            {
+                name = groupName,
+                list = collectionElements
+            };
             result.Add(groupCollectionElement);
             if (groupName == string.Empty)
             {
-                groupCollectionElement.Priority = -1;
+                groupCollectionElement.priority = -1;
             }
         }
-        return result.OrderByDescending(a => a.Priority);
+        return result.OrderByDescending(a => a.priority);
     }
 
     /// <summary> Получить коллекцию экипировки сгруппированную по именам групп. </summary>
     public static IEnumerable<GroupCollectionElement> GetCollectionEquipmentesGroupByGroups(int page)
     {
         List<GroupCollectionElement> result = [];
-        collection.collectionEquipments.Sort(DtoEquipmentComparer);
+        collection.collectionEquipments.Sort(dtoEquipmentComparer);
         IEnumerable<Equipment> c = collection.collectionEquipments;
         if (page > 0)
         {
@@ -195,17 +207,29 @@ public class CollectionProvider
                     logger.LogError("Equipment.DtoBaseEquipment is null");
                     throw new Exception();
                 }
-                collectionElements.Add(new CollectionElement(equipment.id, equipment.baseEquipmentId, equipment.baseEquipment.rarity, equipment.baseEquipment.name, equipment.baseEquipment.isUnique, TypeCollectionElement.Equipment));
+                collectionElements.Add(new CollectionElement
+                {
+                    id = equipment.id,
+                    baseId = equipment.baseEquipmentId,
+                    rarity = equipment.baseEquipment.rarity,
+                    name = equipment.baseEquipment.name,
+                    isUnique = equipment.baseEquipment.isUnique,
+                    typeCollectionElement = TypeCollectionElement.Equipment
+                });
             }
 
-            GroupCollectionElement groupCollectionElement = new(groupName, collectionElements);
+            var groupCollectionElement = new GroupCollectionElement
+            {
+                name = groupName,
+                list = collectionElements
+            };
             result.Add(groupCollectionElement);
             if (groupName == string.Empty)
             {
-                groupCollectionElement.Priority = -1;
+                groupCollectionElement.priority = -1;
             }
         }
-        return result.OrderByDescending(a => a.Priority);
+        return result.OrderByDescending(a => a.priority);
     }
 
     public static bool EquipmentIsEquipped(Guid equipmentId)
@@ -278,7 +302,7 @@ public class CollectionProvider
             General.ESlotType.weapon => inAltSlot == true ? General.ESlot.leftHand : General.ESlot.rightHand,     // Оружие
             General.ESlotType.ring => inAltSlot == true ? General.ESlot.ring2 : General.ESlot.ring1,    // Кольцо
             General.ESlotType.trinket => inAltSlot == true ? General.ESlot.trinket2 : General.ESlot.trinket1,  // Аксессуар
-            _ => GameData.Container.Slots.First(a => a.slotTypeId == slotTypeId).id
+            _ => GameData.container.slots.First(a => a.slotTypeId == slotTypeId).id
         };
         /*
         return slotTypeId switch
@@ -358,7 +382,7 @@ public class CollectionProvider
         }
     }
 
-    private static readonly Comparer<Equipment> DtoEquipmentComparer = Comparer<Equipment>.Create(static (a, b) =>
+    private static readonly Comparer<Equipment> dtoEquipmentComparer = Comparer<Equipment>.Create(static (a, b) =>
     {
         BaseEquipment aBE = a.baseEquipment ?? throw new Exception("a.BaseEquipment is null");
         BaseEquipment bBE = b.baseEquipment ?? throw new Exception("b.BaseEquipment is null");

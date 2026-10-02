@@ -28,8 +28,8 @@ public sealed class PasskeyService(
         }
 
         List<PublicKeyCredentialDescriptor> existingCredentials = await dbContext.Set<UserAccesskey>()
-            .Where(p => p.UserId == userId)
-            .Select(p => new PublicKeyCredentialDescriptor(p.DescriptorId))
+            .Where(p => p.userId == userId)
+            .Select(p => new PublicKeyCredentialDescriptor(p.descriptorId))
             .ToListAsync(cancellationToken).ConfigureAwait(false);
 
         var user = new Fido2User
@@ -71,7 +71,7 @@ public sealed class PasskeyService(
             IsCredentialIdUniqueToUserCallback = async (args, ct) =>
             {
                 return !await dbContext.Set<UserAccesskey>()
-                    .AnyAsync(p => p.DescriptorId == args.CredentialId, ct).ConfigureAwait(false);
+                    .AnyAsync(p => p.descriptorId == args.CredentialId, ct).ConfigureAwait(false);
             }
         };
 
@@ -79,15 +79,15 @@ public sealed class PasskeyService(
 
         var passkey = new UserAccesskey
         {
-            Id = Guid.NewGuid(),
-            UserId = userId,
-            DescriptorId = credential.Id,
-            PublicKey = credential.PublicKey,
-            SignatureCounter = credential.SignCount,
+            id = Guid.NewGuid(),
+            userId = userId,
+            descriptorId = credential.Id,
+            publicKey = credential.PublicKey,
+            signatureCounter = credential.SignCount,
             createdAt = DateTimeOffset.UtcNow
         };
 
-        _ = dbContext.UserAccesskeys.Add(passkey);
+        _ = await dbContext.userAccesskeys.AddAsync(passkey, cancellationToken).ConfigureAwait(false);
         _ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
@@ -101,8 +101,8 @@ public sealed class PasskeyService(
         if (userId.HasValue && userId.Value != Guid.Empty)
         {
             allowedCredentials = await dbContext.Set<UserAccesskey>()
-                .Where(p => p.UserId == userId.Value)
-                .Select(p => new PublicKeyCredentialDescriptor(p.DescriptorId))
+                .Where(p => p.userId == userId.Value)
+                .Select(p => new PublicKeyCredentialDescriptor(p.descriptorId))
                 .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
@@ -125,27 +125,27 @@ public sealed class PasskeyService(
         CancellationToken cancellationToken)
     {
         UserAccesskey dbKey = await dbContext.Set<UserAccesskey>()
-            .FirstOrDefaultAsync(p => p.DescriptorId == clientResponse.RawId, cancellationToken: cancellationToken)
+            .FirstOrDefaultAsync(p => p.descriptorId == clientResponse.RawId, cancellationToken: cancellationToken)
             .ConfigureAwait(false) ?? throw new AuthenticationException("PASSKEY_NOT_FOUND");
 
         var parameters = new MakeAssertionParams
         {
             AssertionResponse = clientResponse,
             OriginalOptions = originalOptions,
-            StoredPublicKey = dbKey.PublicKey,
-            StoredSignatureCounter = dbKey.SignatureCounter,
+            StoredPublicKey = dbKey.publicKey,
+            StoredSignatureCounter = dbKey.signatureCounter,
             IsUserHandleOwnerOfCredentialIdCallback = async (args, ct) =>
             {
                 return await dbContext.Set<UserAccesskey>()
-                    .AnyAsync(p => p.DescriptorId == args.CredentialId, ct).ConfigureAwait(false);
+                    .AnyAsync(p => p.descriptorId == args.CredentialId, ct).ConfigureAwait(false);
             }
         };
 
         VerifyAssertionResult result = await fido2.MakeAssertionAsync(parameters, cancellationToken).ConfigureAwait(false);
 
-        dbKey.SignatureCounter = result.SignCount;
+        dbKey.signatureCounter = result.SignCount;
         _ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return dbKey.UserId;
+        return dbKey.userId;
     }
 }

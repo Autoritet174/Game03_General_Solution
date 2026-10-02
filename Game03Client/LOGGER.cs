@@ -8,32 +8,33 @@ public delegate void LoggerCallbackInfo(object message);
 
 public static class LoggerProvider
 {
-    public static LoggerCallbackError? LoggerCallbackError { get; set; }
-    public static LoggerCallbackInfo? LoggerCallbackInfo { get; set; }
+    public static LoggerCallbackError? loggerCallbackError { get; set; }
+    public static LoggerCallbackInfo? loggerCallbackInfo { get; set; }
 }
 
 public class Logger<T>
 {
 
-    private readonly string _className;
+    private readonly string className;
     public Logger()
     {
-        _className = typeof(T).Name;
+        className = typeof(T).Name;
     }
 
     public void LogError(string message, string? keyLocal = null)
     {
         if (!string.IsNullOrWhiteSpace(keyLocal))
         {
-            message = $"{message}; {L.KEY_LOCALIZATION}:<{keyLocal}>";
+            message = $"{message}; {L.keyLocalization}:<{keyLocal}>";
         }
-        if (LoggerProvider.LoggerCallbackError is null)
+        if (LoggerProvider.loggerCallbackError is null)
         {
             throw new InvalidOperationException("LoggerCallbackError is not set.");
         }
-        LoggerProvider.LoggerCallbackError.Invoke($"[{_className}] {message}");
+        LoggerProvider.loggerCallbackError.Invoke($"[{className}] {message}");
     }
-    public void LogException(Exception ex, string? keyLocal = null) {
+    public void LogException(Exception ex, string? keyLocal = null)
+    {
         LogError(ex.Message, keyLocal);
     }
 
@@ -41,13 +42,13 @@ public class Logger<T>
     {
         if (!string.IsNullOrWhiteSpace(keyLocal))
         {
-            message = $"{message}; {L.KEY_LOCALIZATION}:<{keyLocal}>";
+            message = $"{message}; {L.keyLocalization}:<{keyLocal}>";
         }
-        if (LoggerProvider.LoggerCallbackInfo is null)
+        if (LoggerProvider.loggerCallbackInfo is null)
         {
             throw new InvalidOperationException("LoggerCallbackInfo is not set.");
         }
-        LoggerProvider.LoggerCallbackInfo.Invoke($"[{_className}] {message}");
+        LoggerProvider.loggerCallbackInfo.Invoke($"[{className}] {message}");
     }
 
 }

@@ -51,9 +51,9 @@ public class HttpRequester
             {
                 request.Content = new StringContent(jsonBody, Encoding.UTF8, GlobalHelper.APPLICATION_JSON);
             }
-            if (!string.IsNullOrWhiteSpace(Auth.AccessToken))
+            if (!string.IsNullOrWhiteSpace(Auth.accessToken))
             {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Auth.AccessToken);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Auth.accessToken);
             }
 
 
@@ -61,7 +61,7 @@ public class HttpRequester
             string? responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (string.IsNullOrWhiteSpace(responseContent))
             {
-                logger.LogError($"responseContent IsEmpty, StatusCode={response.StatusCode}, url={url}", L.Error.Server.InvalidResponse);
+                logger.LogError($"responseContent IsEmpty, StatusCode={response.StatusCode}, url={url}", L.Error.Server.invalidResponse);
                 return null;
             }
 
@@ -69,19 +69,19 @@ public class HttpRequester
         }
         catch (TaskCanceledException ex) when (ex.InnerException is TimeoutException)
         {
-            logger.LogException(ex, L.Error.Server.Timeout);
+            logger.LogException(ex, L.Error.Server.timeout);
             return null;
         }
         catch (HttpRequestException ex) when (ex.InnerException is WebException)
         {
             bool haveInternet = await InternetChecker.CheckInternetConnectionAsync(cancellationToken).ConfigureAwait(false);
-            string key = haveInternet ? L.Error.Server.Unavailable : L.Error.Server.NoInternetConnection;
+            string key = haveInternet ? L.Error.Server.unavailable : L.Error.Server.noInternetConnection;
             logger.LogException(ex, key);
             return null;
         }
         catch (Exception ex)
         {
-            logger.LogException(ex, L.Error.Server.InvalidResponse);
+            logger.LogException(ex, L.Error.Server.invalidResponse);
             return null;
         }
     }

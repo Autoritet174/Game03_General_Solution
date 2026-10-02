@@ -1,14 +1,15 @@
 using General;
 using System.Net.WebSockets;
 using System.Text;
-using System.Text.Encodings.Web;
+
+namespace ConsoleAppForTests;
 
 public class WebSocketClient(string serverUrl)
 {
-    private readonly ClientWebSocket _webSocket = new();
-    private readonly Uri _serverUri = new(serverUrl);
-    private readonly CancellationTokenSource _cts = new();
-    private bool _isReceiving = false;
+    private readonly ClientWebSocket webSocket = new();
+    private readonly Uri serverUri = new(serverUrl);
+    private readonly CancellationTokenSource cts = new();
+    private bool isReceiving = false;
 
     public async Task ConnectAsync(CancellationToken cancellationToken)
     {
@@ -19,11 +20,11 @@ public class WebSocketClient(string serverUrl)
             try
             {
                 //Console.WriteLine($"Подключение к {_serverUri}...");
-                await _webSocket.ConnectAsync(_serverUri, cancellationToken).ConfigureAwait(false);
+                await webSocket.ConnectAsync(serverUri, cancellationToken).ConfigureAwait(false);
                 //Console.WriteLine("Подключение установлено!");
 
                 // Запускаем прием сообщений без привязки к _cts.Token
-                _isReceiving = true;
+                isReceiving = true;
                 _ = Task.Run(ReceiveMessagesAsync, cancellationToken);
                 connected = true;
             }
@@ -45,10 +46,10 @@ public class WebSocketClient(string serverUrl)
 
         try
         {
-            while (_isReceiving && _webSocket.State == WebSocketState.Open)
+            while (isReceiving && webSocket.State == WebSocketState.Open)
             {
                 // Используем CancellationToken.None вместо _cts.Token
-                WebSocketReceiveResult result = await _webSocket.ReceiveAsync(
+                WebSocketReceiveResult result = await webSocket.ReceiveAsync(
                     new ArraySegment<byte>(buffer),
                     CancellationToken.None
                 ).ConfigureAwait(false);
@@ -68,7 +69,7 @@ public class WebSocketClient(string serverUrl)
         }
         catch (Exception ex)
         {
-            if (_isReceiving) // Логируем только если не было запланированного отключения
+            if (isReceiving) // Логируем только если не было запланированного отключения
             {
                 Console.WriteLine($"Ошибка приема: {ex.Message}");
             }
@@ -77,7 +78,7 @@ public class WebSocketClient(string serverUrl)
 
     public async Task SendMessageAsync(string message)
     {
-        if (_webSocket.State != WebSocketState.Open)
+        if (webSocket.State != WebSocketState.Open)
         {
             Console.WriteLine("WebSocket не подключен");
             return;
@@ -86,11 +87,11 @@ public class WebSocketClient(string serverUrl)
         try
         {
             byte[] buffer = Encoding.UTF8.GetBytes(message);
-            await _webSocket.SendAsync(
+            await webSocket.SendAsync(
                 new ArraySegment<byte>(buffer),
                 WebSocketMessageType.Text,
                 true,
-                _cts.Token // Для отправки можно использовать _cts.Token
+                cts.Token // Для отправки можно использовать _cts.Token
             ).ConfigureAwait(false);
             //Console.WriteLine($"Отправлено: {message}");
         }
@@ -106,7 +107,7 @@ public class WebSocketClient(string serverUrl)
 
     public async Task StartSendingMessagesAsync(Action<int>? onMessagesSent = null)
     {
-        while (!_cts.Token.IsCancellationRequested && _webSocket.State == WebSocketState.Open)
+        while (!cts.Token.IsCancellationRequested && webSocket.State == WebSocketState.Open)
         {
             //for (int i = 0; i < 1; i++)
             //{
@@ -140,7 +141,7 @@ public class WebSocketClient(string serverUrl)
             // Сообщаем о количестве отправленных сообщений
             onMessagesSent?.Invoke(100);
 
-            await Task.Delay(10, _cts.Token).ConfigureAwait(false);
+            await Task.Delay(10, cts.Token).ConfigureAwait(false);
 
             if (Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Q)
             {
@@ -154,12 +155,12 @@ public class WebSocketClient(string serverUrl)
     {
         try
         {
-            _isReceiving = false; // Останавливаем прием сообщений
-            await _cts.CancelAsync().ConfigureAwait(false); // Отменяем операции отправки
+            isReceiving = false; // Останавливаем прием сообщений
+            await cts.CancelAsync().ConfigureAwait(false); // Отменяем операции отправки
 
-            if (_webSocket.State == WebSocketState.Open)
+            if (webSocket.State == WebSocketState.Open)
             {
-                await _webSocket.CloseAsync(
+                await webSocket.CloseAsync(
                     WebSocketCloseStatus.NormalClosure,
                     "Закрытие клиентом",
                     CancellationToken.None // Не используем _cts.Token здесь
@@ -172,7 +173,7 @@ public class WebSocketClient(string serverUrl)
         }
         finally
         {
-            _webSocket.Dispose();
+            webSocket.Dispose();
             Console.WriteLine("Отключено");
         }
     }

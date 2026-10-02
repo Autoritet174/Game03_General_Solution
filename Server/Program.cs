@@ -67,7 +67,7 @@ internal partial class Program
         var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
 
         _ = dataSourceBuilder.EnableDynamicJson();
-        _ = dataSourceBuilder.ConfigureJsonOptions(JSON.Options);
+        _ = dataSourceBuilder.ConfigureJsonOptions(JSON.options);
 
 
 
@@ -132,7 +132,7 @@ internal partial class Program
             })
             .AddJsonProtocol(options =>
             {
-                options.PayloadSerializerOptions = JSON.Options;
+                options.PayloadSerializerOptions = JSON.options;
             });
 
         // установить Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore
@@ -219,7 +219,7 @@ internal partial class Program
 
         // Разрешение WebSocket соединений
         _ = app.UseWebSockets();//WebSockets (ДО маршрутизации)
-        _ = app.MapHub<GameHub>(Parametrs.SignalR_Address);
+        _ = app.MapHub<GameHub>(Parametrs.signalR_Address);
         //InitWebSocket(app);
 
         // Подключение кастомного WebSocket middleware
@@ -404,14 +404,14 @@ internal partial class Program
         IServiceCollection services = builder.Services;
 
         // Сохраняем для использования в JWT
-        string issuer = Url.UrlDomain;
-        string audience = Url.UrlDomain;
+        string issuer = Url.urlDomain;
+        string audience = Url.urlDomain;
 
         _ = services.Configure<JwtOptions>(options =>
         {
             // Переопределяем Issuer и Audience из конфига значениями из URL
-            options.Issuer = issuer;
-            options.Audience = audience;
+            options.issuer = issuer;
+            options.audience = audience;
             // Lifetime оставляем из appsettings.json
         });
 
@@ -430,13 +430,13 @@ internal partial class Program
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
-                        ValidIssuer = jwtOptions.Issuer,
+                        ValidIssuer = jwtOptions.issuer,
                         ValidateAudience = true,
-                        ValidAudience = jwtOptions.Audience,
+                        ValidAudience = jwtOptions.audience,
                         ValidateLifetime = true,
-                        ClockSkew = JwtService.ClockSkew,
+                        ClockSkew = JwtService.cockSkew,
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = jwtService.IssuerSigningKey
+                        IssuerSigningKey = jwtService.issuerSigningKey
                     };
 
                     options.Events = new JwtBearerEvents
@@ -447,7 +447,7 @@ internal partial class Program
                             PathString path = context.HttpContext.Request.Path;
 
                             if (!string.IsNullOrWhiteSpace(accessToken) &&
-                                path.StartsWithSegments(Parametrs.SignalR_Address))
+                                path.StartsWithSegments(Parametrs.signalR_Address))
                             {
                                 context.Token = accessToken;
                             }
@@ -580,7 +580,7 @@ internal partial class Program
         }
     }
 
-    private static readonly string[] AdditionalMimeTypesForCompression = ["application/json", "application/xml", "text/plain", "text/html", "text/css", "text/javascript", "application/javascript", "image/svg+xml"];
+    private static readonly string[] additionalMimeTypesForCompression = ["application/json", "application/xml", "text/plain", "text/html", "text/css", "text/javascript", "application/javascript", "image/svg+xml"];
     private static void InitCompressionResponse(IServiceCollection services)
     {
         // Добавление сервисов сжатия ответов
@@ -591,7 +591,7 @@ internal partial class Program
             options.Providers.Add<GzipCompressionProvider>();
 
             // Настройка MIME-типов для сжатия
-            options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(AdditionalMimeTypesForCompression);
+            options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(additionalMimeTypesForCompression);
         });
 
         // настройка провайдеров сжатия

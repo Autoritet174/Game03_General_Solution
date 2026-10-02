@@ -14,30 +14,30 @@ public class GameLanguage(string nameEnglish, string nameLocale, string nameShor
     /// <summary>
     /// Наименование языка на английском языке.
     /// </summary>
-    public string NameEnglish { get; } = nameEnglish;
+    public string nameEnglish { get; } = nameEnglish;
 
     /// <summary>
     /// Наименование языка на этом же языке.
     /// </summary>
-    public string NameLocale { get; } = nameLocale;
+    public string nameLocale { get; } = nameLocale;
 
     /// <summary>
     /// Двухбуквенное имя в нижнем регистре.
     /// </summary>
-    public string NameShort { get; } = nameShort.ToLower();
+    public string nameShort { get; } = nameShort.ToLower();
 
     /// <summary>
     /// Английский.
     /// </summary>
-    public static GameLanguage En { get; } = new GameLanguage("English", "English", nameof(En));
+    public static GameLanguage en { get; } = new GameLanguage("English", "English", nameof(en));
 
     /// <summary>
     /// Русский.
     /// </summary>
-    public static GameLanguage Ru { get; } = new GameLanguage("Russian", "Русский", nameof(Ru));
+    public static GameLanguage ru { get; } = new GameLanguage("Russian", "Русский", nameof(ru));
 
     /// <summary>
     /// Все языки доступные в игре.
     /// </summary>
-    public static IEnumerable<GameLanguage> AllLanguages { get; } = [En, Ru];
+    public static IEnumerable<GameLanguage> allLanguages { get; } = [en, ru];
 }

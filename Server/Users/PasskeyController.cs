@@ -14,7 +14,7 @@ public sealed class PasskeyController(
     //,ILogger<PasskeyController> logger
     ) : ControllerBaseApi
 {
-    private static readonly TimeSpan SessionTimeout = TimeSpan.FromMinutes(5);
+    private static readonly TimeSpan sessionTimeout = TimeSpan.FromMinutes(5);
 
     private const string REGISTRATION_CACHE_PREFIX = "fido2_reg_";
     private const string ASSERTION_CACHE_PREFIX = "fido2_auth_";
@@ -22,7 +22,7 @@ public sealed class PasskeyController(
     /// <summary>
     /// Флаг доступности функционала Passkey.
     /// </summary>
-    private static readonly bool IsEnabled = false;
+    private static readonly bool isEnabled = false;
 
     /// <summary>
     /// Получает параметры для создания нового ключа доступа.
@@ -30,7 +30,7 @@ public sealed class PasskeyController(
     [HttpGet("register/options")]
     public async Task<IActionResult> GetRegisterOptionsAsync([FromQuery] Guid userId, [FromQuery] string email, CancellationToken cancellationToken)
     {
-        if (IsEnabled)
+        if (isEnabled)
         {
             return StatusCode(StatusCodes.Status503ServiceUnavailable, "Passkey registration is currently disabled.");
         }
@@ -43,7 +43,7 @@ public sealed class PasskeyController(
         CredentialCreateOptions options = await passkeyService.GetRegistrationOptionsAsync(userId, email, cancellationToken).ConfigureAwait(false);
 
         // Сохраняем опции в кэш для последующей верификации
-        _ = cache.Set($"{REGISTRATION_CACHE_PREFIX}{userId}", options, SessionTimeout);
+        _ = cache.Set($"{REGISTRATION_CACHE_PREFIX}{userId}", options, sessionTimeout);
 
         return Ok(options);
     }
@@ -54,24 +54,24 @@ public sealed class PasskeyController(
     [HttpPost("register/confirm")]
     public async Task<IActionResult> ConfirmRegisterAsync([FromBody] DtoRegisterConfirm request, CancellationToken cancellationToken)
     {
-        if (IsEnabled)
+        if (isEnabled)
         {
             return StatusCode(StatusCodes.Status503ServiceUnavailable, "Passkey registration is currently disabled.");
         }
 
-        if (request?.Response == null)
+        if (request?.response == null)
         {
             return BadRequest("Request body or response is missing.");
         }
 
-        if (!cache.TryGetValue($"{REGISTRATION_CACHE_PREFIX}{request.UserId}", out CredentialCreateOptions? originalOptions) || originalOptions == null)
+        if (!cache.TryGetValue($"{REGISTRATION_CACHE_PREFIX}{request.userId}", out CredentialCreateOptions? originalOptions) || originalOptions == null)
         {
             return Conflict("Registration session expired or not found.");
         }
 
-        await passkeyService.ConfirmRegistrationAsync(request.Response, originalOptions, request.UserId, cancellationToken).ConfigureAwait(false);
+        await passkeyService.ConfirmRegistrationAsync(request.response, originalOptions, request.userId, cancellationToken).ConfigureAwait(false);
 
-        cache.Remove($"{REGISTRATION_CACHE_PREFIX}{request.UserId}");
+        cache.Remove($"{REGISTRATION_CACHE_PREFIX}{request.userId}");
 
         return Ok(new { status = "Success" });
     }
@@ -82,7 +82,7 @@ public sealed class PasskeyController(
     [HttpGet("login/options")]
     public async Task<IActionResult> GetLoginOptionsAsync([FromQuery] Guid? userId, CancellationToken cancellationToken)
     {
-        if (IsEnabled)
+        if (isEnabled)
         {
             return StatusCode(StatusCodes.Status503ServiceUnavailable, "Passkey registration is currently disabled.");
         }
@@ -91,7 +91,7 @@ public sealed class PasskeyController(
 
         // Используем Challenge как ключ сессии
         string challengeKey = Convert.ToBase64String(options.Challenge);
-        _ = cache.Set($"{ASSERTION_CACHE_PREFIX}{challengeKey}", options, SessionTimeout);
+        _ = cache.Set($"{ASSERTION_CACHE_PREFIX}{challengeKey}", options, sessionTimeout);
 
         return Ok(options);
     }
@@ -102,25 +102,25 @@ public sealed class PasskeyController(
     [HttpPost("login/confirm")]
     public async Task<IActionResult> ConfirmLoginAsync([FromBody] DtoLoginConfirm request, CancellationToken cancellationToken)
     {
-        if (IsEnabled)
+        if (isEnabled)
         {
             return StatusCode(StatusCodes.Status503ServiceUnavailable, "Passkey registration is currently disabled.");
         }
 
-        if (request?.Response == null || string.IsNullOrEmpty(request.Challenge))
+        if (request?.response == null || string.IsNullOrEmpty(request.challenge))
         {
             return BadRequest("Invalid login confirmation request.");
         }
 
-        if (!cache.TryGetValue($"{ASSERTION_CACHE_PREFIX}{request.Challenge}", out AssertionOptions? originalOptions) || originalOptions == null)
+        if (!cache.TryGetValue($"{ASSERTION_CACHE_PREFIX}{request.challenge}", out AssertionOptions? originalOptions) || originalOptions == null)
         {
             return Conflict("Authentication session expired.");
         }
 
         // Выполняем проверку через сервис
-        Guid userId = await passkeyService.ConfirmLoginAsync(request.Response, originalOptions, cancellationToken).ConfigureAwait(false);
+        Guid userId = await passkeyService.ConfirmLoginAsync(request.response, originalOptions, cancellationToken).ConfigureAwait(false);
 
-        cache.Remove($"{ASSERTION_CACHE_PREFIX}{request.Challenge}");
+        cache.Remove($"{ASSERTION_CACHE_PREFIX}{request.challenge}");
 
         return Ok(new { UserId = userId });
     }
@@ -132,14 +132,14 @@ public sealed class PasskeyController(
 /// Данные для завершения регистрации ключа.
 /// </summary>
 public sealed record DtoRegisterConfirm(
-    [Required] Guid UserId,
-    [Required] AuthenticatorAttestationRawResponse Response);
+    [Required] Guid userId,
+    [Required] AuthenticatorAttestationRawResponse response);
 
 /// <summary>
 /// Данные для завершения входа по ключу.
 /// </summary>
 public sealed record DtoLoginConfirm(
-    [Required] string Challenge,
-    [Required] AuthenticatorAssertionRawResponse Response);
+    [Required] string challenge,
+    [Required] AuthenticatorAssertionRawResponse response);
 
 #endregion

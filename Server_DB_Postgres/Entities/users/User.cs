@@ -5,9 +5,9 @@ namespace Server_DB_Postgres.Entities.Users;
 
 public class User : IdentityUser<Guid>, IVersion, ICreatedAt, IUpdatedAt
 {
-    public string? TimeZone { get; set; }
+    public string? timeZone { get; set; }
 
-    public ICollection<UserBan> UserBans { get; set; } = [];
+    public ICollection<UserBan> userBans { get; set; } = [];
 
     /// <summary> <inheritdoc/> </summary>
     public DateTimeOffset createdAt { get; set; }

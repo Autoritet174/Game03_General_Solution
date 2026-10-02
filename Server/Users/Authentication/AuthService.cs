@@ -24,25 +24,25 @@ public sealed partial class AuthService(
     SessionService sessionService,
     ILogger<AuthService> logger)
 {
-    private static readonly TimeSpan _FloodPeriod = TimeSpan.FromSeconds(30);
+    private static readonly TimeSpan floodPeriod = TimeSpan.FromSeconds(30);
 
     #region Compiled Queries
 
     // 1. Быстрая проверка существования бана. Добавлен CancellationToken.
-    private static readonly Func<DbContextGame, Guid, DateTimeOffset, CancellationToken, Task<bool>> IsUserBannedQuery =
+    private static readonly Func<DbContextGame, Guid, DateTimeOffset, CancellationToken, Task<bool>> isUserBannedQuery =
         EF.CompileAsyncQuery(
             (DbContextGame db, Guid uId, DateTimeOffset now, CancellationToken ct) =>
-            db.UserBans.Any(b => b.UserId == uId && b.createdAt <= now && (b.ExpiresAt == null || b.ExpiresAt >= now))
+            db.userBans.Any(b => b.userId == uId && b.createdAt <= now && (b.expiresAt == null || b.expiresAt >= now))
         );
 
     // 2. Получение деталей бана. Добавлен CancellationToken.
-    private static readonly Func<DbContextGame, Guid, DateTimeOffset, CancellationToken, Task<UserBan?>> GetActiveBanDetailsQuery =
+    private static readonly Func<DbContextGame, Guid, DateTimeOffset, CancellationToken, Task<UserBan?>> getActiveBanDetailsQuery =
         EF.CompileAsyncQuery(
             (DbContextGame db, Guid uId, DateTimeOffset now, CancellationToken ct) =>
-            db.UserBans
-                .Where(b => b.UserId == uId && b.createdAt <= now && (b.ExpiresAt == null || b.ExpiresAt >= now))
-                .OrderByDescending(b => b.ExpiresAt == null)
-                .ThenByDescending(b => b.ExpiresAt)
+            db.userBans
+                .Where(b => b.userId == uId && b.createdAt <= now && (b.expiresAt == null || b.expiresAt >= now))
+                .OrderByDescending(b => b.expiresAt == null)
+                .ThenByDescending(b => b.expiresAt)
                 .FirstOrDefault()
         );
 
@@ -74,7 +74,7 @@ public sealed partial class AuthService(
         if (memoryCache.TryGetValue(floodKey, out int attempts) && attempts >= 10)
         {
             LogFlood(dto.email);
-            return Result.Ok(AuthRegResponse.TooManyRequests((long)_FloodPeriod.TotalSeconds));
+            return Result.Ok(AuthRegResponse.TooManyRequests((long)floodPeriod.TotalSeconds));
         }
 
         Guid? userId = null;
@@ -108,11 +108,11 @@ public sealed partial class AuthService(
 
             // --- ОПТИМИЗАЦИЯ ПРОВЕРКИ БАНА ---
             // Сначала легкий EXISTS для 95% случаев
-            if (await IsUserBannedQuery(dbContext, userId.Value, now, cancellationToken).ConfigureAwait(false))
+            if (await isUserBannedQuery(dbContext, userId.Value, now, cancellationToken).ConfigureAwait(false))
             {
                 // Только для 5% случаев запрашиваем сущность целиком
-                UserBan? ban = await GetActiveBanDetailsQuery(dbContext, userId.Value, now, cancellationToken).ConfigureAwait(false);
-                return Result.Ok(AuthRegResponse.Banned(ban?.ExpiresAt));
+                UserBan? ban = await getActiveBanDetailsQuery(dbContext, userId.Value, now, cancellationToken).ConfigureAwait(false);
+                return Result.Ok(AuthRegResponse.Banned(ban?.expiresAt));
             }
 
             success = true;
@@ -123,7 +123,7 @@ public sealed partial class AuthService(
 
             return sessionResult.IsFailed
                 ? Result.Ok(AuthRegResponse.InvalidResponse())
-                : Result.Ok(AuthRegResponse.Success(accessToken, sessionResult.Value.RefreshToken, sessionResult.Value.ExpiresAt));
+                : Result.Ok(AuthRegResponse.Success(accessToken, sessionResult.Value.refreshToken, sessionResult.Value.expiresAt));
         }
         catch (Exception ex)
         {
@@ -147,7 +147,7 @@ public sealed partial class AuthService(
     private void IncrementFlood(string key)
     {
         int count = memoryCache.Get<int?>(key) ?? 0;
-        _ = memoryCache.Set(key, count + 1, _FloodPeriod);
+        _ = memoryCache.Set(key, count + 1, floodPeriod);
     }
 
     private static long GetSecondsLeft(DateTimeOffset? end) =>

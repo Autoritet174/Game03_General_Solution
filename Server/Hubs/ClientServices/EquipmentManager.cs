@@ -26,23 +26,23 @@ public partial class EquipmentManager(
     /// <summary>
     /// Скомпилированный запрос для получения героя по ID (без отслеживания изменений).
     /// </summary>
-    private static readonly Func<DbContextGame, Guid, CancellationToken, Task<Hero?>> GetHeroByIdAsync =
+    private static readonly Func<DbContextGame, Guid, CancellationToken, Task<Hero?>> getHeroByIdAsync =
         EF.CompileAsyncQuery((DbContextGame db, Guid id, CancellationToken ct) =>
-            db.Heroes.AsNoTracking().FirstOrDefault(h => h.id == id));
+            db.heroes.AsNoTracking().FirstOrDefault(h => h.id == id));
 
     /// <summary>
     /// Скомпилированный запрос для получения предмета экипировки по ID.
     /// </summary>
-    private static readonly Func<DbContextGame, Guid, CancellationToken, Task<Equipment?>> GetEquipmentByIdAsync =
+    private static readonly Func<DbContextGame, Guid, CancellationToken, Task<Equipment?>> getEquipmentByIdAsync =
         EF.CompileAsyncQuery((DbContextGame db, Guid id, CancellationToken ct) =>
-            db.Equipments.FirstOrDefault(e => e.id == id));
+            db.equipments.FirstOrDefault(e => e.id == id));
 
     /// <summary>
     /// Скомпилированный запрос для поиска предмета, надетого в конкретный слот героя.
     /// </summary>
-    private static readonly Func<DbContextGame, Guid, ESlot, CancellationToken, Task<Equipment?>> GetEquippedInSlotAsync =
+    private static readonly Func<DbContextGame, Guid, ESlot, CancellationToken, Task<Equipment?>> getEquippedInSlotAsync =
         EF.CompileAsyncQuery((DbContextGame db, Guid heroId, ESlot slotId, CancellationToken ct) =>
-            db.Equipments.FirstOrDefault(e => e.heroId == heroId && e.slotId == slotId));
+            db.equipments.FirstOrDefault(e => e.heroId == heroId && e.slotId == slotId));
 
 
     #endregion
@@ -75,7 +75,7 @@ public partial class EquipmentManager(
         await using DbContextGame db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         // Проверка экипировки (существование и принадлежность)
-        Equipment? equipment = await GetEquipmentByIdAsync(db, equipmentId, cancellationToken).ConfigureAwait(false);
+        Equipment? equipment = await getEquipmentByIdAsync(db, equipmentId, cancellationToken).ConfigureAwait(false);
         if (equipment == null || equipment.userId != userId)
         {
             LogEquipmentNotFound(equipmentId, userId);
@@ -83,7 +83,7 @@ public partial class EquipmentManager(
         }
 
         // Проверка героя (существование и принадлежность)
-        Hero? hero = await GetHeroByIdAsync(db, heroId, cancellationToken).ConfigureAwait(false);
+        Hero? hero = await getHeroByIdAsync(db, heroId, cancellationToken).ConfigureAwait(false);
         if (hero == null)
         {
             LogHeroNotFound(heroId);
@@ -114,7 +114,7 @@ public partial class EquipmentManager(
         ESlot slotId = GetSlotId(equipment.baseEquipmentId, inAltSlot ?? false);
 
         // Обработка конфликта(если слот занят — снимаем текущий предмет)
-        Equipment? currentSlotItem = await GetEquippedInSlotAsync(db, heroId, slotId, cancellationToken).ConfigureAwait(false);
+        Equipment? currentSlotItem = await getEquippedInSlotAsync(db, heroId, slotId, cancellationToken).ConfigureAwait(false);
         if (currentSlotItem != null)
         {
             currentSlotItem.heroId = null;
@@ -142,7 +142,7 @@ public partial class EquipmentManager(
     {
         await using DbContextGame db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        Equipment? equipment = await GetEquipmentByIdAsync(db, equipmentId, cancellationToken).ConfigureAwait(false);
+        Equipment? equipment = await getEquipmentByIdAsync(db, equipmentId, cancellationToken).ConfigureAwait(false);
 
         if (equipment == null || equipment.userId != userId)
         {
@@ -173,7 +173,7 @@ public partial class EquipmentManager(
     /// <returns>ID конкретного слота из базы данных.</returns>
     private ESlot GetSlotId(int baseEquipmentId, bool inAltSlot)
     {
-        BaseEquipment baseEquip = cacheService.TableBaseEquipments[baseEquipmentId];
+        BaseEquipment baseEquip = cacheService.tableBaseEquipments[baseEquipmentId];
         ESlotType slotTypeId = baseEquip.equipmentType.slotType.id;
 
         return slotTypeId switch
@@ -181,7 +181,7 @@ public partial class EquipmentManager(
             ESlotType.weapon => inAltSlot ? ESlot.leftHand : ESlot.rightHand,     // Оружие
             ESlotType.ring => inAltSlot ? ESlot.ring2 : ESlot.ring1,    // Кольцо
             ESlotType.trinket => inAltSlot ? ESlot.trinket2 : ESlot.trinket1,  // Аксессуар
-            _ => cacheService.TableSlots.Values.First(a => a.slotTypeId == slotTypeId).id
+            _ => cacheService.tableSlots.Values.First(a => a.slotTypeId == slotTypeId).id
         };
     }
 }

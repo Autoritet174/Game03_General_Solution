@@ -266,20 +266,20 @@ public static class UserDeviceHelper
 
     public static UserDevice DtoToUserDevice(DtoRequestAuthReg dto, Guid userDeviceId) => new()
     {
-        Id = userDeviceId,
-        DeviceModel = dto.deviceModel,
-        DeviceType = dto.deviceType,
-        OperatingSystem = dto.operatingSystem,
-        ProcessorType = dto.processorType,
-        ProcessorCount = dto.processorCount,
-        SystemMemorySize = dto.systemMemorySize,
-        GraphicsDeviceName = dto.graphicsDeviceName,
-        DeviceUniqueIdentifier = dto.deviceUniqueIdentifier,
-        GraphicsMemorySize = dto.graphicsMemorySize,
-        SystemEnvironmentUserName = dto.system_Environment_UserName,
-        SystemInfoSupportsInstancing = dto.systemInfo_supportsInstancing,
-        SystemInfoNpotSupport = dto.systemInfo_npotSupport,
-        TimeZoneMinutes = dto.timeZoneInfo_Local_BaseUtcOffset_Minutes
+        id = userDeviceId,
+        deviceModel = dto.deviceModel,
+        deviceType = dto.deviceType,
+        operatingSystem = dto.operatingSystem,
+        processorType = dto.processorType,
+        processorCount = dto.processorCount,
+        systemMemorySize = dto.systemMemorySize,
+        graphicsDeviceName = dto.graphicsDeviceName,
+        deviceUniqueIdentifier = dto.deviceUniqueIdentifier,
+        graphicsMemorySize = dto.graphicsMemorySize,
+        systemEnvironmentUserName = dto.system_Environment_UserName,
+        systemInfoSupportsInstancing = dto.systemInfo_supportsInstancing,
+        systemInfoNpotSupport = dto.systemInfo_npotSupport,
+        timeZoneMinutes = dto.timeZoneInfo_Local_BaseUtcOffset_Minutes
     };
 
 }

@@ -20,7 +20,7 @@ public class GameDataController(CacheService cache) : ControllerBaseApi
         {
             lock (locker)
             {
-                result ??= Content(cache.GameDataJson, General.GlobalHelper.APPLICATION_JSON);
+                result ??= Content(cache.gameDataJson, General.GlobalHelper.APPLICATION_JSON);
             }
         }
 

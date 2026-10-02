@@ -25,9 +25,9 @@ public sealed class SessionController(SessionService sessionService, JwtService 
         }
 
         SessionResponseData data = result.Value;
-        string accessToken = jwtService.GenerateToken(data.UserId);
+        string accessToken = jwtService.GenerateToken(data.userId);
 
-        return Ok(AuthRegResponse.Success(accessToken, data.RefreshToken, data.ExpiresAt));
+        return Ok(AuthRegResponse.Success(accessToken, data.refreshToken, data.expiresAt));
     }
 
     /// <summary>

@@ -7,173 +7,176 @@ namespace General;
 /// </summary>
 public static class LocalizationKeys
 {
-#pragma warning disable
-
-    /// <summary>
-    /// Группа ключей, относящихся к элементам пользовательского интерфейса (UI).
-    /// </summary>
+    /// <summary>Группа ключей, относящихся к элементам пользовательского интерфейса (UI).</summary>
     public static class UI
     {
-        private const string _UI = $"{nameof(UI)}.";
+        private static readonly string uiPrefix = $"{nameof(UI)}.";
 
-        /// <summary>
-        /// Ключи для текста, отображаемого на кнопках.
-        /// </summary>
+        /// <summary>Ключи для текста, отображаемого на кнопках.</summary>
         public static class Button
         {
-            private const string _Button = $"{_UI}{nameof(Button)}.";
+            private static readonly string buttonPrefix = $"{uiPrefix}{nameof(Button)}.";
 
-            public const string Ok = $"{_Button}{nameof(Ok)}";
-            public const string Yes = $"{_Button}{nameof(Yes)}";
-            public const string No = $"{_Button}{nameof(No)}";
-            public const string Login = $"{_Button}{nameof(Login)}";
-            public const string Reg = $"{_Button}{nameof(Reg)}";
-            public const string ExitGame = $"{_Button}{nameof(ExitGame)}";
-            public const string Heroes = $"{_Button}{nameof(Heroes)}";
-            public const string Equipment = $"{_Button}{nameof(Equipment)}";
-            public const string ChangingEquipment = $"{_Button}{nameof(ChangingEquipment)}";
-            public const string Item = $"{_Button}{nameof(Item)}";
-            public const string TakeOn = $"{_Button}{nameof(TakeOn)}";
-            public const string TakeOff = $"{_Button}{nameof(TakeOff)}";
-            public const string TakeOnAlt = $"{_Button}{nameof(TakeOnAlt)}";
-            public const string Sell = $"{_Button}{nameof(Sell)}";
-            public const string ShowHero = $"{_Button}{nameof(ShowHero)}";
-            public const string Cancel = $"{_Button}{nameof(Cancel)}";
-            public const string StartBattle = $"{_Button}{nameof(StartBattle)}";
+            public static readonly string ok = $"{buttonPrefix}{nameof(ok)}";
+            public static readonly string yes = $"{buttonPrefix}{nameof(yes)}";
+            public static readonly string no = $"{buttonPrefix}{nameof(no)}";
+            public static readonly string login = $"{buttonPrefix}{nameof(login)}";
+            public static readonly string reg = $"{buttonPrefix}{nameof(reg)}";
+            public static readonly string exitGame = $"{buttonPrefix}{nameof(exitGame)}";
+            public static readonly string heroes = $"{buttonPrefix}{nameof(heroes)}";
+            public static readonly string equipment = $"{buttonPrefix}{nameof(equipment)}";
+            public static readonly string changingEquipment = $"{buttonPrefix}{nameof(changingEquipment)}";
+            public static readonly string item = $"{buttonPrefix}{nameof(item)}";
+            public static readonly string takeOn = $"{buttonPrefix}{nameof(takeOn)}";
+            public static readonly string takeOff = $"{buttonPrefix}{nameof(takeOff)}";
+            public static readonly string takeOnAlt = $"{buttonPrefix}{nameof(takeOnAlt)}";
+            public static readonly string sell = $"{buttonPrefix}{nameof(sell)}";
+            public static readonly string showHero = $"{buttonPrefix}{nameof(showHero)}";
+            public static readonly string cancel = $"{buttonPrefix}{nameof(cancel)}";
+            public static readonly string startBattle = $"{buttonPrefix}{nameof(startBattle)}";
 
             public static class Ability
             {
-                private const string _Ability = $"{_Button}{nameof(Ability)}.";
+                private static readonly string abilityPrefix = $"{buttonPrefix}{nameof(Ability)}.";
 
-                public const string Attack = $"{_Ability}{nameof(Attack)}";
+                public static readonly string attack = $"{abilityPrefix}{nameof(attack)}";
             }
         }
 
-        /// <summary>
-        /// Ключи для текста, отображаемого на метках (Label) или заголовках.
-        /// </summary>
+        /// <summary>Ключи для текста, отображаемого на метках (Label) или заголовках.</summary>
         public static class Label
         {
-            private const string _Label = $"{_UI}{nameof(Label)}.";
+            private static readonly string labelPrefix = $"{uiPrefix}{nameof(Label)}.";
 
-            public const string ExitGame = $"{_Label}{nameof(ExitGame)}";
-            public const string Email = $"{_Label}{nameof(Email)}";
-            public const string Password = $"{_Label}{nameof(Password)}";
+            public static readonly string exitGame = $"{labelPrefix}{nameof(exitGame)}";
+            public static readonly string email = $"{labelPrefix}{nameof(email)}";
+            public static readonly string password = $"{labelPrefix}{nameof(password)}";
 
-            public const string NoGroup = $"{_Label}{nameof(NoGroup)}";
-            public const string EndBattle = $"{_Label}{nameof(EndBattle)}";
+            public static readonly string noGroup = $"{labelPrefix}{nameof(noGroup)}";
+            public static readonly string endBattle = $"{labelPrefix}{nameof(endBattle)}";
 
-            public const string Battlefield = $"{_Label}{nameof(Battlefield)}";
-            public static readonly string ConnectionLost = $"{_Label}{nameof(ConnectionLost)}";
-            public static readonly string Reconnecting = $"{_Label}{nameof(Reconnecting)}";
-            public static readonly string Try = $"{_Label}{nameof(Try)}";
-            public static readonly string After = $"{_Label}{nameof(After)}";
-            public static readonly string Turn = $"{_Label}{nameof(Turn)}";
-            public static readonly string Dead = $"{_Label}{nameof(Dead)}";
-            public static readonly string Damage = $"{_Label}{nameof(Damage)}";
+            public static readonly string battlefield = $"{labelPrefix}{nameof(battlefield)}";
+            public static readonly string connectionLost = $"{labelPrefix}{nameof(connectionLost)}";
+            public static readonly string reconnecting = $"{labelPrefix}{nameof(reconnecting)}";
+            public static readonly string @try = $"{labelPrefix}{nameof(@try)}";
+            public static readonly string after = $"{labelPrefix}{nameof(after)}";
+            public static readonly string turn = $"{labelPrefix}{nameof(turn)}";
+            public static readonly string dead = $"{labelPrefix}{nameof(dead)}";
+            public static readonly string damage = $"{labelPrefix}{nameof(damage)}";
+            public static readonly string mainStat = $"{labelPrefix}{nameof(mainStat)}";
 
             public static class Slot
             {
-                private const string _Slots = $"{_Label}{nameof(Slot)}.";
-                public static string GetKey(string slot) => $"{_Slots}{slot}";
+                private static readonly string slotsPrefix = $"{labelPrefix}{nameof(Slot)}.";
+                public static string GetKey(string slot)
+                {
+                    return $"{slotsPrefix}{slot}";
+                }
 
-                public const string Head = $"{_Slots}{nameof(Head)}";
-                public const string Armor = $"{_Slots}{nameof(Armor)}";
-                public const string Hands = $"{_Slots}{nameof(Hands)}";
-                public const string Feet = $"{_Slots}{nameof(Feet)}";
-                public const string Waist = $"{_Slots}{nameof(Waist)}";
-                public const string Weapon = $"{_Slots}{nameof(Weapon)}";
-                public const string WeaponShield = $"{_Slots}{nameof(WeaponShield)}";
-                public const string Neck = $"{_Slots}{nameof(Neck)}";
-                public const string Ring = $"{_Slots}{nameof(Ring)}";
-                public const string Trinket = $"{_Slots}{nameof(Trinket)}";
+                public static readonly string head = $"{slotsPrefix}{nameof(head)}";
+                public static readonly string armor = $"{slotsPrefix}{nameof(armor)}";
+                public static readonly string hands = $"{slotsPrefix}{nameof(hands)}";
+                public static readonly string feet = $"{slotsPrefix}{nameof(feet)}";
+                public static readonly string waist = $"{slotsPrefix}{nameof(waist)}";
+                public static readonly string weapon = $"{slotsPrefix}{nameof(weapon)}";
+                public static readonly string weaponShield = $"{slotsPrefix}{nameof(weaponShield)}";
+                public static readonly string neck = $"{slotsPrefix}{nameof(neck)}";
+                public static readonly string ring = $"{slotsPrefix}{nameof(ring)}";
+                public static readonly string trinket = $"{slotsPrefix}{nameof(trinket)}";
             }
 
             public static class Stat
             {
-                private const string _Stat = $"{_Label}{nameof(Stat)}.";
-                public static string GetKey(string stat) => $"{_Stat}{stat}";
+                private static readonly string statPrefix = $"{labelPrefix}{nameof(Stat)}.";
+                public static string GetKey(string stat)
+                {
+                    return $"{statPrefix}{stat}";
+                }
 
-                public const string Level = $"{_Stat}{nameof(Level)}";
-                public const string Health = $"{_Stat}{nameof(Health)}";
-                public const string Strength = $"{_Stat}{nameof(Strength)}";
-                public const string Agility = $"{_Stat}{nameof(Agility)}";
-                public const string Intelligence = $"{_Stat}{nameof(Intelligence)}";
-                public const string CritChance = $"{_Stat}{nameof(CritChance)}";
-                public const string CritMultiplier = $"{_Stat}{nameof(CritMultiplier)}";
+                public static readonly string level = $"{statPrefix}{nameof(level)}";
+                public static readonly string health = $"{statPrefix}{nameof(health)}";
+                public static readonly string strength = $"{statPrefix}{nameof(strength)}";
+                public static readonly string agility = $"{statPrefix}{nameof(agility)}";
+                public static readonly string intelligence = $"{statPrefix}{nameof(intelligence)}";
+                public static readonly string critChance = $"{statPrefix}{nameof(critChance)}";
+                public static readonly string critMultiplier = $"{statPrefix}{nameof(critMultiplier)}";
+                public static readonly string versality = $"{statPrefix}{nameof(versality)}";
+                public static readonly string initiative = $"{statPrefix}{nameof(initiative)}";
+                public static readonly string haste = $"{statPrefix}{nameof(haste)}";
+                public static readonly string damage = $"{statPrefix}{nameof(damage)}";
+                public static readonly string universal = $"{statPrefix}{nameof(universal)}";
+                public static readonly string endurancePhysical = $"{statPrefix}{nameof(endurancePhysical)}";
+                public static readonly string enduranceMagical = $"{statPrefix}{nameof(enduranceMagical)}";
             }
+            public static class Rarity
+            {
+                private static readonly string rarityPrefix = $"{labelPrefix}{nameof(Rarity)}.";
+                public static string GetKey(string rarity)
+                {
+                    return $"{rarityPrefix}{rarity}";
+                }
 
-
-            //public const string BattleField_TestPlatforms = $"{_Label}{nameof(BattleField_TestPlatforms)}";
-            //public const string BattleField_TestPlatforms_Polygon = $"{_Label}{nameof(BattleField_TestPlatforms_Polygon)}";
-
-            //public const string BattleField_Mines = $"{_Label}{nameof(BattleField_Mines)}";
-            //public const string BattleField_Mines_Iron = $"{_Label}{nameof(BattleField_Mines_Iron)}";
-
-            //public const string BattleField_Dungeons = $"{_Label}{nameof(BattleField_Dungeons)}";
+                public static readonly string r1 = $"{rarityPrefix}{nameof(r1)}";
+                public static readonly string r2 = $"{rarityPrefix}{nameof(r2)}";
+                public static readonly string r3 = $"{rarityPrefix}{nameof(r3)}";
+                public static readonly string r4 = $"{rarityPrefix}{nameof(r4)}";
+                public static readonly string r5 = $"{rarityPrefix}{nameof(r5)}";
+            }
         }
     }
 
-    /// <summary>
-    /// Группа ключей, относящихся к сообщениям об ошибках.
-    /// </summary>
+    /// <summary>Группа ключей, относящихся к сообщениям об ошибках.</summary>
     public static class Error
     {
-        private const string _Error = $"{nameof(Error)}.";
+        private static readonly string errorPrefix = $"{nameof(Error)}.";
 
-        public const string UnknownError = $"{_Error}{nameof(UnknownError)}";
+        public static readonly string unknownError = $"{errorPrefix}{nameof(unknownError)}";
 
-        /// <summary>
-        /// Ключи для ошибок, связанных с взаимодействием с сервером.
-        /// </summary>
+        /// <summary>Ключи для ошибок, связанных с взаимодействием с сервером.</summary>
         public static class Server
         {
-            private const string _Server = $"{_Error}{nameof(Server)}.";
+            private static readonly string serverPrefix = $"{errorPrefix}{nameof(Server)}.";
 
-            public const string Timeout = $"{_Server}{nameof(Timeout)}";
-            public const string InvalidRequest = $"{_Server}{nameof(InvalidRequest)}";
-            public const string InvalidResponse = $"{_Server}{nameof(InvalidResponse)}";
-            public const string InvalidCredentials = $"{_Server}{nameof(InvalidCredentials)}";
-            public const string TooManyRequests = $"{_Server}{nameof(TooManyRequests)}";
-            public const string AccountBannedUntil = $"{_Server}{nameof(AccountBannedUntil)}";
-            public const string AccountBannedPermanently = $"{_Server}{nameof(AccountBannedPermanently)}";
-            public const string Unavailable = $"{_Server}{nameof(Unavailable)}";
-            public const string NoInternetConnection = $"{_Server}{nameof(NoInternetConnection)}";
-            public const string OpeningWebSocketFailed = $"{_Server}{nameof(OpeningWebSocketFailed)}";
-            public const string LoadingCollectionFailed = $"{_Server}{nameof(LoadingCollectionFailed)}";
-            public const string UserAlreadyExists = $"{_Server}{nameof(UserAlreadyExists)}";
-            public const string Required2FA = $"{_Server}{nameof(Required2FA)}";
-            public const string RefreshTokenErrorCreating = $"{_Server}{nameof(RefreshTokenErrorCreating)}";
-            public const string CombatBreak = $"{_Server}{nameof(CombatBreak)}";
+            public static readonly string timeout = $"{serverPrefix}{nameof(timeout)}";
+            public static readonly string invalidRequest = $"{serverPrefix}{nameof(invalidRequest)}";
+            public static readonly string invalidResponse = $"{serverPrefix}{nameof(invalidResponse)}";
+            public static readonly string invalidCredentials = $"{serverPrefix}{nameof(invalidCredentials)}";
+            public static readonly string tooManyRequests = $"{serverPrefix}{nameof(tooManyRequests)}";
+            public static readonly string accountBannedUntil = $"{serverPrefix}{nameof(accountBannedUntil)}";
+            public static readonly string accountBannedPermanently = $"{serverPrefix}{nameof(accountBannedPermanently)}";
+            public static readonly string unavailable = $"{serverPrefix}{nameof(unavailable)}";
+            public static readonly string noInternetConnection = $"{serverPrefix}{nameof(noInternetConnection)}";
+            public static readonly string openingWebSocketFailed = $"{serverPrefix}{nameof(openingWebSocketFailed)}";
+            public static readonly string loadingCollectionFailed = $"{serverPrefix}{nameof(loadingCollectionFailed)}";
+            public static readonly string userAlreadyExists = $"{serverPrefix}{nameof(userAlreadyExists)}";
+            public static readonly string required2FA = $"{serverPrefix}{nameof(required2FA)}";
+            public static readonly string refreshTokenErrorCreating = $"{serverPrefix}{nameof(refreshTokenErrorCreating)}";
+            public static readonly string combatBreak = $"{serverPrefix}{nameof(combatBreak)}";
         }
 
-        /// <summary>
-        /// Ключи для ошибок, связанных с некорректным вводом данных пользователем.
-        /// </summary>
+        /// <summary>Ключи для ошибок, связанных с некорректным вводом данных пользователем.</summary>
         public static class User
         {
-            private const string _User = $"{_Error}{nameof(User)}.";
+            private static readonly string userPrefix = $"{errorPrefix}{nameof(User)}.";
 
-            public const string NotEmail = $"{_User}{nameof(NotEmail)}";
-            public const string EmailEmpty = $"{_User}{nameof(EmailEmpty)}";
-            public const string PasswordEmpty = $"{_User}{nameof(PasswordEmpty)}";
+            public static readonly string notEmail = $"{userPrefix}{nameof(notEmail)}";
+            public static readonly string emailEmpty = $"{userPrefix}{nameof(emailEmpty)}";
+            public static readonly string passwordEmpty = $"{userPrefix}{nameof(passwordEmpty)}";
         }
     }
 
-    /// <summary>
-    /// Группа ключей, относящихся к информационным сообщениям (например, о статусе).
-    /// </summary>
+    /// <summary>Группа ключей, относящихся к информационным сообщениям (например, о статусе).</summary>
     public static class Info
     {
-        private const string _Info = $"{nameof(Info)}.";
+        private static readonly string infoPrefix = $"{nameof(Info)}.";
 
-        public const string Authentication = $"{_Info}{nameof(Authentication)}";
-        public const string AuthenticationSuccess = $"{_Info}{nameof(AuthenticationSuccess)}";
-        public const string OpeningWebSocket = $"{_Info}{nameof(OpeningWebSocket)}";
-        public const string LoadingData = $"{_Info}{nameof(LoadingData)}";
-        public const string LoadingCollection = $"{_Info}{nameof(LoadingCollection)}";
-        public const string CheckingServerAvailability = $"{_Info}{nameof(CheckingServerAvailability)}";
-        public const string SelectHero = $"{_Info}{nameof(SelectHero)}";
+        public static readonly string authentication = $"{infoPrefix}{nameof(authentication)}";
+        public static readonly string authenticationSuccess = $"{infoPrefix}{nameof(authenticationSuccess)}";
+        public static readonly string openingWebSocket = $"{infoPrefix}{nameof(openingWebSocket)}";
+        public static readonly string loadingData = $"{infoPrefix}{nameof(loadingData)}";
+        public static readonly string loadingCollection = $"{infoPrefix}{nameof(loadingCollection)}";
+        public static readonly string checkingServerAvailability = $"{infoPrefix}{nameof(checkingServerAvailability)}";
+        public static readonly string selectHero = $"{infoPrefix}{nameof(selectHero)}";
     }
 
 
@@ -181,25 +184,14 @@ public static class LocalizationKeys
     /// Специальный ключ-маркер для автоматического определения строк,
     /// которые должны быть получены из системы локализации.
     /// </summary>
-    public const string KEY_LOCALIZATION = nameof(KEY_LOCALIZATION);
+    public static readonly string keyLocalization = nameof(keyLocalization);
 
-    /// <summary>
-    /// Ключ-заполнитель для указания даты и времени истечения срока действия.
-    /// </summary>
-    //public const string DATE_TIME_EXPIRES_AT = nameof(DATE_TIME_EXPIRES_AT);
+    /// <summary>Ключ-заполнитель для указания даты и времени истечения срока.</summary>
+    public static readonly string datetimeExpiration = nameof(datetimeExpiration);
 
-    /// <summary>
-    /// Ключ-заполнитель для указания даты и времени истечения срока.
-    /// </summary>
-    public const string DATETIME_EXPIRATION = nameof(DATETIME_EXPIRATION);
+    /// <summary>Ключ-заполнитель для указания оставшегося времени (в формате времени).</summary>
+    public static readonly string timeRemaining = nameof(timeRemaining);
 
-    /// <summary>
-    /// Ключ-заполнитель для указания оставшегося времени (в формате времени).
-    /// </summary>
-    public const string TIME_REMAINING = nameof(TIME_REMAINING);
-
-    /// <summary>
-    /// Ключ-заполнитель для указания оставшегося времени (в секундах).
-    /// </summary>
-    public const string SECONDS_REMAINING = nameof(SECONDS_REMAINING);
+    /// <summary>Ключ-заполнитель для указания оставшегося времени (в секундах).</summary>
+    public static readonly string secondsRemaining = nameof(secondsRemaining);
 }

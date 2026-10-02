@@ -1,11 +1,10 @@
 using Game03Client;
-using System.Diagnostics;
 namespace ConsoleAppForTests;
 
 internal class Program
 {
     // Фиксированный namespace для устройств вашей системы (сгенерирован как UUID v4)
-    private static readonly Guid DeviceNamespace =
+    private static readonly Guid deviceNamespace =
     Guid.Parse("a1b2c3d4-e5f6-7890-abcd-ef1234567890");
 
 
@@ -69,7 +68,7 @@ internal class Program
         string Password = Game03Client.Password.HashSha512("testPassword");
         General.StringCapsule capsule = new()
         {
-            value = File.ReadAllText(@"C:\UnityProjects\Game03_Git\Client_Game03\Assets\Resources\localization\ru\data.json"),
+            value = await File.ReadAllTextAsync(@"C:\UnityProjects\Game03_Git\Client_Game03\Assets\Resources\localization\ru\data.json").ConfigureAwait(false),
         };
 
         Game03.Init(Path.Combine(@"c:\UnityProjects\Game03_Git\Client_Game03\Assets", @"GameData\Config\Main.ini"), capsule, Game_OnLog, Game_OnLog);
@@ -99,7 +98,7 @@ internal class Program
             ""),
             Auth.AuthType.Login,
             cancellationTokenSource.Token).ConfigureAwait(false);
-        string accessToken = Auth.AccessToken ?? string.Empty;
+        string accessToken = Auth.accessToken ?? string.Empty;
 
 
         //Game03Client.WebSocketClient webSocketClient = Game.WebSocketClient;
@@ -274,7 +273,8 @@ internal class Program
         }
     }
 
-    static void Test() {
-        
+    private static void Test()
+    {
+
     }
 }

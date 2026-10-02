@@ -284,11 +284,6 @@ partial class FormMain
     private BindingSource weaponTypeBindingSource;
     private DataGridView dgv_DamageTypes;
     private BindingSource damageTypeBindingSource;
-    private DataGridViewTextBoxColumn id;
-    private DataGridViewTextBoxColumn nameDataGridViewTextBoxColumn;
-    private DataGridViewTextBoxColumn nameRuDataGridViewTextBoxColumn;
-    private DataGridViewTextBoxColumn xWeaponTypeDamageTypeDataGridViewTextBoxColumn;
-    private DataGridViewTextBoxColumn damageTypesDataGridViewTextBoxColumn;
     private Button button_Save_WeaponTypes;
     private DataGridViewTextBoxColumn id1;
     private DataGridViewTextBoxColumn ColumnNameRu;

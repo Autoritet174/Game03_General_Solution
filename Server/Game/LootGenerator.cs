@@ -21,17 +21,17 @@ public class LootGenerator(
     /// <summary>
     /// Возвращает список id базовых героев, которых уже имеет пользователь, из заданного списка id базовых героев.
     /// </summary>
-    private static readonly Func<DbContextGame, Guid, List<int>, IEnumerable<int>> _getUserHeroIdsQuery =
+    private static readonly Func<DbContextGame, Guid, List<int>, IEnumerable<int>> getUserHeroIdsQuery =
     EF.CompileQuery((DbContextGame db, Guid userId, List<int> baseHeroIds) =>
-            db.Heroes.Where(h => h.userId == userId && baseHeroIds.Contains(h.baseHeroId))
+            db.heroes.Where(h => h.userId == userId && baseHeroIds.Contains(h.baseHeroId))
                 .Select(h => h.baseHeroId).Distinct());
 
     /// <summary>
     /// Возвращает список id базовых предметов, которых уже имеет пользователь, из заданного списка id базовых предметов.
     /// </summary>
-    private static readonly Func<DbContextGame, Guid, List<int>, IEnumerable<int>> _getUserEquipmentIdsQuery =
+    private static readonly Func<DbContextGame, Guid, List<int>, IEnumerable<int>> getUserEquipmentIdsQuery =
     EF.CompileQuery((DbContextGame db, Guid userId, List<int> baseEquipmentIds) =>
-            db.Equipments.Where(h => h.userId == userId && baseEquipmentIds.Contains(h.baseEquipmentId))
+            db.equipments.Where(h => h.userId == userId && baseEquipmentIds.Contains(h.baseEquipmentId))
                 .Select(h => h.baseEquipmentId).Distinct());
 
 
@@ -161,15 +161,15 @@ public class LootGenerator(
         for (int r = raritySelected; r > 0; r--)
         {
             // Получаем id базовых героев с выбранной редкостью, разделяя их на уникальных и неуникальных
-            List<int> baseHeroUniqueIds = [.. cacheService.TableBaseHeroesOnlyPlayable.Values
+            List<int> baseHeroUniqueIds = [.. cacheService.tableBaseHeroesOnlyPlayable.Values
                     .Where(a => a.rarity == r && a.isUnique)
                     .Select(b => b.id)];
-            List<int> baseHeroNotUniqueIds = [.. cacheService.TableBaseHeroesOnlyPlayable.Values
+            List<int> baseHeroNotUniqueIds = [.. cacheService.tableBaseHeroesOnlyPlayable.Values
                     .Where(a => a.rarity == r && !a.isUnique)
                     .Select(b => b.id)];
 
             // Получаем список id базовых героев с выбранной редкостью, которых уже имеет пользователь, из списка уникальных героев
-            List<int> existingUniqueIds = [.. _getUserHeroIdsQuery(db, userId, baseHeroUniqueIds)];
+            List<int> existingUniqueIds = [.. getUserHeroIdsQuery(db, userId, baseHeroUniqueIds)];
 
             // Получаем список id базовых уникальных героев, которых нет у пользователя
             List<int> notExistingUniqueHeroesId = [.. baseHeroUniqueIds.Except(existingUniqueIds)];
@@ -186,7 +186,7 @@ public class LootGenerator(
             // Выбираем случайного героя из списка доступных
             int randomIndex = Random.Shared.Next(heroesId.Count);
             int selectedBaseHeroId = heroesId[randomIndex];
-            return cacheService.TableBaseHeroesOnlyPlayable[selectedBaseHeroId];
+            return cacheService.tableBaseHeroesOnlyPlayable[selectedBaseHeroId];
         }
 
         return null;
@@ -194,7 +194,7 @@ public class LootGenerator(
 
     private BaseHero? SelectRandomBaseHero(int raritySelected)
     {
-        var list = cacheService.TableBaseHeroesOnlyPlayable.Values.Where(a => a.rarity == raritySelected).ToList();
+        var list = cacheService.tableBaseHeroesOnlyPlayable.Values.Where(a => a.rarity == raritySelected).ToList();
         return list.Count > 0 ? list[Random.Shared.Next(list.Count)] : null;
     }
 
@@ -209,15 +209,15 @@ public class LootGenerator(
         {
             int r = iR;
             // Получаем id базовых предметов с выбранной редкостью, разделяя их на уникальных и неуникальных
-            List<int> baseEquipmentUniqueIds = [.. cacheService.TableBaseEquipments.Values
+            List<int> baseEquipmentUniqueIds = [.. cacheService.tableBaseEquipments.Values
                     .Where(a => a.rarity == r && a.isUnique && (slotTypeId == ESlotType.none || a.equipmentType.slotTypeId == slotTypeId))
                     .Select(b => b.id)];
-            List<int> baseEquipmentNotUniqueIds = [.. cacheService.TableBaseEquipments.Values
+            List<int> baseEquipmentNotUniqueIds = [.. cacheService.tableBaseEquipments.Values
                     .Where(a => a.rarity == r && !a.isUnique && (slotTypeId == ESlotType.none || a.equipmentType.slotTypeId == slotTypeId))
                     .Select(b => b.id)];
 
             // Получаем список id базовых предметов с выбранной редкостью, которых уже имеет пользователь, из списка уникальных предметов
-            List<int> existingUniqueIds = [.. _getUserEquipmentIdsQuery(db, userId, baseEquipmentUniqueIds)];
+            List<int> existingUniqueIds = [.. getUserEquipmentIdsQuery(db, userId, baseEquipmentUniqueIds)];
 
             // Получаем список id базовых уникальных предметов, которых нет у пользователя
             List<int> notExistingUniqueEquipmentsId = [.. baseEquipmentUniqueIds.Except(existingUniqueIds)];
@@ -233,7 +233,7 @@ public class LootGenerator(
             // Выбираем случайный предмет из списка доступных
             int randomIndex = Random.Shared.Next(EquipmentsId.Count);
             int selectedBaseEquipmentId = EquipmentsId[randomIndex];
-            return cacheService.TableBaseEquipments[selectedBaseEquipmentId];
+            return cacheService.tableBaseEquipments[selectedBaseEquipmentId];
         }
 
         return null;
@@ -248,7 +248,7 @@ public class LootGenerator(
 
         Hero hero = HeroFactory.CreateFromBaseHero(baseHero, userId);
 
-        _ = await db.Heroes.AddAsync(hero, cancellationToken).ConfigureAwait(false);
+        _ = await db.heroes.AddAsync(hero, cancellationToken).ConfigureAwait(false);
         int rowsChanged = await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         if (rowsChanged < 1)
         {
@@ -268,7 +268,7 @@ public class LootGenerator(
 
         Equipment equipment = EquipmentFactory.CreateFromBaseEquipment(baseEquipment, userId);
 
-        _ = await db.Equipments.AddAsync(equipment, cancellationToken).ConfigureAwait(false);
+        _ = await db.equipments.AddAsync(equipment, cancellationToken).ConfigureAwait(false);
         int rowsChanged = await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         if (rowsChanged < 1)
         {

@@ -3,8 +3,8 @@ namespace Server_DB_Postgres.Entities.Server;
 /// <summary> Причины завершения сессии </summary>
 public class UserSessionInactivationReason
 {
-    public int Id { get; init; }
-    public required string Name { get; set; }
+    public int id { get; init; }
+    public required string name { get; set; }
     //public InactivationReason Code { get; set; }
 }
 

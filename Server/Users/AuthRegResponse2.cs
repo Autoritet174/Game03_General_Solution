@@ -24,7 +24,7 @@
 //    /// <returns>Результат ошибки.</returns>
 //    public static AuthRegResponse UserAlreadyExists()
 //    {
-//        return new() { ErrorKey = L.Error.Server.UserAlreadyExists };
+//        return new() { ErrorKey = L.Error.Server.userAlreadyExists };
 //    }
 
 //    /// <summary>
@@ -37,8 +37,8 @@
 //        return new()
 //        {
 //            ErrorKey = until == null
-//                    ? L.Error.Server.AccountBannedPermanently
-//                    : L.Error.Server.AccountBannedUntil,
+//                    ? L.Error.Server.accountBannedPermanently
+//                    : L.Error.Server.accountBannedUntil,
 //            Extra = until
 //        };
 //    }
@@ -50,12 +50,12 @@
 //    /// <returns>Результат ошибки с дополнительными данными.</returns>
 //    public static AuthRegResponse RequiresTwoFactor(Guid userId)
 //    {
-//        return new() { ErrorKey = L.Error.Server.Required2FA, Extra = userId };
+//        return new() { ErrorKey = L.Error.Server.required2FA, Extra = userId };
 //    }
 
 //    public static AuthRegResponse RefreshTokenErrorCreating()
 //    {
-//        return new() { ErrorKey = L.Error.Server.RefreshTokenErrorCreating };
+//        return new() { ErrorKey = L.Error.Server.refreshTokenErrorCreating };
 //    }
 
 

@@ -130,7 +130,7 @@
   <ItemGroup>
     <ProjectReference Include="..\General\General.csproj" />
     <ProjectReference Include="..\Server_DB_Postgres\Server_DB_Postgres.csproj" />
-    <PackageReference Include="Fido2.AspNet" Version="4.1.0" />
+    <PackageReference Include="Fido2.AspNet" Version="4.1.1" />
     <PackageReference Include="FluentResults.Extensions.AspNetCore" Version="0.2.0" />
     <PackageReference Include="Humanizer.Core" Version="3.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.12" />

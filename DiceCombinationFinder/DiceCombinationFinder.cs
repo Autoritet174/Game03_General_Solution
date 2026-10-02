@@ -6,16 +6,16 @@ public class DiceCombinationFinder
 {
     public class DiceCombination
     {
-        public required string Notation { get; set; }
-        public double Mean { get; set; }
-        public double CV { get; set; }
-        public double MeanError { get; set; }
-        public double CVError { get; set; }
-        public double TotalError { get; set; }
+        public required string notation { get; set; }
+        public double mean { get; set; }
+        public double cV { get; set; }
+        public double meanError { get; set; }
+        public double cVError { get; set; }
+        public double totalError { get; set; }
         public required string jsonb { get; set; }
-        public int Count { get; set; }
-        public int Sides { get; set; }
-        public int Mod { get; set; }
+        public int count { get; set; }
+        public int sides { get; set; }
+        public int mod { get; set; }
     }
 
     public static List<DiceCombination> FindDiceCombination(
@@ -29,7 +29,7 @@ public class DiceCombinationFinder
     {
         if (maxSides == -1)
         {
-            maxSides = (int)(targetMean * 2 - 1);
+            maxSides = (int)((targetMean * 2) - 1);
         }
 
         var results = new ConcurrentBag<DiceCombination>();
@@ -42,7 +42,7 @@ public class DiceCombinationFinder
         }
 
         // Параллельный перебор количества кубиков
-        Parallel.For(1, maxDice + 1, parallelOptions, numDice =>
+        _ = Parallel.For(1, maxDice + 1, parallelOptions, numDice =>
         {
             for (int sides = 2; sides <= maxSides; sides++)
             {
@@ -51,7 +51,7 @@ public class DiceCombinationFinder
         });
 
         // Сортируем по суммарной ошибке и возвращаем 10 лучших
-        return [.. results.OrderBy(r => r.TotalError).Take(10)];
+        return [.. results.OrderBy(r => r.totalError).Take(10)];
     }
 
     private static void ProcessCombination(
@@ -80,7 +80,7 @@ public class DiceCombinationFinder
         double cvError = Math.Abs(actualCV - targetCVPercent);
 
         // Общая ошибка (взвешенная)
-        double totalError = 0.7 * meanError + 0.3 * cvError;
+        double totalError = (0.7 * meanError) + (0.3 * cvError);
 
         // Формируем нотацию
         string notation;
@@ -107,16 +107,16 @@ public class DiceCombinationFinder
             jsonb += "}";
             results.Add(new DiceCombination
             {
-                Notation = notation,
-                Mean = actualMean,
-                CV = actualCV,
-                MeanError = meanError,
-                CVError = cvError,
-                TotalError = totalError,
+                notation = notation,
+                mean = actualMean,
+                cV = actualCV,
+                meanError = meanError,
+                cVError = cvError,
+                totalError = totalError,
                 jsonb = jsonb,
-                Count = numDice,
-                Sides = sides,
-                Mod = modificator
+                count = numDice,
+                sides = sides,
+                mod = modificator
             });
         }
     }

@@ -101,10 +101,10 @@ public enum ERank : int
 //    Boss = 2
 //}
 
-public enum EBattleFiled
+public enum EBattlefield
 {
-    TestPlatforms__Polygon = 1,
-    Mines__Iron = 2,
+    testPlatformsPolygon = 1,
+    minesIron = 2,
 }
 
 public enum COMBAT_LOG_EVENT

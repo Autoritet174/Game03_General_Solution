@@ -1,7 +1,4 @@
-
-using General.DTO;
 using General.DTO.Entities.Collection;
-using General.DTO.Entities.GameData;
 using Microsoft.EntityFrameworkCore;
 using Server.Game;
 using Server_DB_Postgres;
@@ -14,9 +11,9 @@ public class TestService(LootGenerator lootGenerator)
     /// Скомпилированный запрос для получения первой записи Equipment.
     /// Позволяет избежать повторного парсинга LINQ-выражения.
     /// </summary>
-    private static readonly Func<DbContextGame, CancellationToken, Task<Equipment?>> GetFirstEquipmentCompiled =
+    private static readonly Func<DbContextGame, CancellationToken, Task<Equipment?>> getFirstEquipmentCompiled =
         EF.CompileAsyncQuery((DbContextGame db, CancellationToken ct) =>
-            db.Equipments.FirstOrDefault());
+            db.equipments.FirstOrDefault());
 
     public async Task MainAsync(DbContextGame db, Cache.CacheService cacheService, CancellationToken cancellationToken)
     {
@@ -25,7 +22,7 @@ public class TestService(LootGenerator lootGenerator)
         //User user = db.Users.First(u => u.Id == userId);
         for (int i = 0; i < 0; i++)
         {
-            await lootGenerator.GenerateHeroAsync(userId, 5, 5, cancellationToken).ConfigureAwait(false);
+            _ = await lootGenerator.GenerateHeroAsync(userId, 5, 5, cancellationToken).ConfigureAwait(false);
             //await lootGenerator.GenerateEquipmentAsync(userId, ESlotType.None, 1, 4, cancellationToken).ConfigureAwait(false);
 
             //_ = await lootGenerator.AddNewEquipmentAsync(db, cacheService.TableBaseEquipmentsByName["Silver bracelet"], userId, cancellationToken).ConfigureAwait(false);
@@ -98,7 +95,7 @@ public class TestService(LootGenerator lootGenerator)
         //    eq.PossibleStats.Add(EStatType.CritMultiplier, new Dice(6, 4));
         //    eq.PossibleStats.Add(EStatType.Damage, new Dice(4, 4));
         //}
-        db.SaveChanges();
+        _ = await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
 }

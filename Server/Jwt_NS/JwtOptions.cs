@@ -7,11 +7,11 @@ namespace Server.Jwt_NS;
 public sealed record JwtOptions
 {
     /// <summary>Эмитент токена.</summary>
-    public required string Issuer { get; set; }
+    public required string issuer { get; set; }
 
     /// <summary>Аудитория токена.</summary>
-    public required string Audience { get; set; }
+    public required string audience { get; set; }
 
     /// <summary>Время жизни токена.</summary>
-    public TimeSpan Lifetime { get; init; } = TimeSpan.FromHours(2);
+    public TimeSpan lifetime { get; init; } = TimeSpan.FromHours(2);
 }

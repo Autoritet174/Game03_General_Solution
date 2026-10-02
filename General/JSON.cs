@@ -48,7 +48,7 @@ public static class JSON
     //    // Важно для производительности: включаем кэширование сериализаторов
     //    TypeInfoResolver = new DefaultJsonTypeInfoResolver()
     //};
-    public static JsonSerializerOptions Options { get; } = CreateOptions();
+    public static JsonSerializerOptions options { get; } = CreateOptions();
 
     private static JsonSerializerOptions CreateOptions()
     {
@@ -59,7 +59,9 @@ public static class JSON
         {
             // Если это не объект — пропускаем
             if (typeInfo.Kind != JsonTypeInfoKind.Object)
+            {
                 return;
+            }
 
             foreach (JsonPropertyInfo property in typeInfo.Properties)
             {
@@ -90,10 +92,10 @@ public static class JSON
     public static JsonDocument Parse(string json) => JsonDocument.Parse(json);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string Serialize<T>(T obj) => JsonSerializer.Serialize(obj, Options);
+    public static string Serialize<T>(T obj) => JsonSerializer.Serialize(obj, options);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T? Deserialize<T>(string json) => JsonSerializer.Deserialize<T>(json, Options);
+    public static T? Deserialize<T>(string json) => JsonSerializer.Deserialize<T>(json, options);
 
 }
 

@@ -13,7 +13,7 @@ using System.Security.Cryptography;
 
 namespace Server.Users.Authentication;
 
-public record SessionResponseData(Guid UserId, string RefreshToken, DateTimeOffset ExpiresAt);
+public record SessionResponseData(Guid userId, string refreshToken, DateTimeOffset expiresAt);
 
 /// <summary>
 /// Сервис управления игровыми сессиями и ротацией токенов.
@@ -26,23 +26,23 @@ public sealed partial class SessionService(
 {
     private const int TOKEN_SIZE = 32;
     private const int BASE_64_TOKEN_LENGTH = 44;
-    private static readonly TimeSpan RefreshTokenLifeTime = TimeSpan.FromDays(14);
+    private static readonly TimeSpan refreshTokenLifeTime = TimeSpan.FromDays(14);
 
-    private readonly int inactivationReasonIdRotation = cacheService.TableUserSessionInactivationReasons.Values.First(a => a.Name == "ROTATION").Id;
-    private readonly int inactivationReasonIdUserLogout = cacheService.TableUserSessionInactivationReasons.Values.First(a => a.Name == "USER_LOGOUT").Id;
-    private readonly int inactivationReasonIdServerRevoke = cacheService.TableUserSessionInactivationReasons.Values.First(a => a.Name == "SERVER_REVOKE").Id;
-    private readonly int inactivationReasonIdExpired = cacheService.TableUserSessionInactivationReasons.Values.First(a => a.Name == "EXPIRED").Id;
+    private readonly int inactivationReasonIdRotation = cacheService.tableUserSessionInactivationReasons.Values.First(a => a.name == "ROTATION").id;
+    private readonly int inactivationReasonIdUserLogout = cacheService.tableUserSessionInactivationReasons.Values.First(a => a.name == "USER_LOGOUT").id;
+    private readonly int inactivationReasonIdServerRevoke = cacheService.tableUserSessionInactivationReasons.Values.First(a => a.name == "SERVER_REVOKE").id;
+    private readonly int inactivationReasonIdExpired = cacheService.tableUserSessionInactivationReasons.Values.First(a => a.name == "EXPIRED").id;
 
     #region Compiled Queries
     // Предварительно скомпилированный запрос для поиска сессии по хешу
-    private static readonly Func<DbContextGame, byte[], CancellationToken, Task<UserSession?>> GetSessionByHashQuery =
+    private static readonly Func<DbContextGame, byte[], CancellationToken, Task<UserSession?>> getSessionByHashQuery =
         EF.CompileAsyncQuery((DbContextGame db, byte[] hash, CancellationToken ct) =>
-            db.UserSessions.FirstOrDefault(s => s.RefreshTokenHash == hash));
+            db.userSessions.FirstOrDefault(s => s.refreshTokenHash == hash));
 
     // Предварительно скомпилированный запрос для проверки существования устройства
-    private static readonly Func<DbContextGame, Guid, CancellationToken, Task<bool>> DeviceExistsQuery =
+    private static readonly Func<DbContextGame, Guid, CancellationToken, Task<bool>> deviceExistsQuery =
         EF.CompileAsyncQuery((DbContextGame db, Guid id, CancellationToken ct) =>
-            db.UserDevices.Any(d => d.Id == id));
+            db.userDevices.Any(d => d.id == id));
     #endregion
 
     #region LoggerMessages
@@ -75,7 +75,7 @@ public sealed partial class SessionService(
 
         byte[] hash;
         string refreshTokenBase64;
-        DateTimeOffset expiresAt = DateTimeOffset.UtcNow.Add(RefreshTokenLifeTime);
+        DateTimeOffset expiresAt = DateTimeOffset.UtcNow.Add(refreshTokenLifeTime);
 
         // Ограничиваем область видимости Span, чтобы он не попал в State Machine асинхронного метода
         {
@@ -89,15 +89,15 @@ public sealed partial class SessionService(
 
         UserSession session = new()
         {
-            Id = UUID.CreateV7(),
-            UserId = userId,
-            RefreshTokenHash = hash,
-            ExpiresAt = expiresAt,
-            UserDeviceId = deviceId,
+            id = UUID.CreateV7(),
+            userId = userId,
+            refreshTokenHash = hash,
+            expiresAt = expiresAt,
+            userDeviceId = deviceId,
             createdAt = DateTimeOffset.UtcNow
         };
 
-        _ = dbContext.UserSessions.Add(session);
+        _ = await dbContext.userSessions.AddAsync(session, cancellationToken).ConfigureAwait(false);
 
         _ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
@@ -124,7 +124,7 @@ public sealed partial class SessionService(
         _ = SHA256.HashData(rawToken, hashBuffer);
         byte[] hashArray = hashBuffer.ToArray();
 
-        UserSession? session = await GetSessionByHashQuery(dbContext, hashArray, cancellationToken).ConfigureAwait(false);
+        UserSession? session = await getSessionByHashQuery(dbContext, hashArray, cancellationToken).ConfigureAwait(false);
 
         if (session == null)
         {
@@ -132,40 +132,40 @@ public sealed partial class SessionService(
         }
 
         // Проверка безопасности (Token Reuse Detection)
-        if (session.IsUsed || session.IsRevoked)
+        if (session.isUsed || session.isRevoked)
         {
-            LogTokenReuse(session.UserId, session.Id);
-            await RevokeAllUserSessionsAsync(session.UserId, cancellationToken).ConfigureAwait(false);
+            LogTokenReuse(session.userId, session.id);
+            await RevokeAllUserSessionsAsync(session.userId, cancellationToken).ConfigureAwait(false);
             return Result.Fail("Security risk: Token reuse");
         }
 
-        if (session.ExpiresAt < DateTimeOffset.UtcNow)
+        if (session.expiresAt < DateTimeOffset.UtcNow)
         {
-            _ = await dbContext.UserSessions
-            .Where(s => s.Id == session.Id)
+            _ = await dbContext.userSessions
+            .Where(s => s.id == session.id)
             .ExecuteUpdateAsync(set => set
-                .SetProperty(s => s.IsRevoked, true)
-                .SetProperty(s => s.InactivatedAt, DateTimeOffset.UtcNow)
-                .SetProperty(s => s.UserSessionInactivationReasonId, inactivationReasonIdExpired),
+                .SetProperty(s => s.isRevoked, true)
+                .SetProperty(s => s.inactivatedAt, DateTimeOffset.UtcNow)
+                .SetProperty(s => s.userSessionInactivationReasonId, inactivationReasonIdExpired),
                 cancellationToken).ConfigureAwait(false);
             return Result.Fail("Expired");
         }
 
         Guid currentDeviceId = UserDeviceHelper.ComputeUUIDv8(dto);
-        if (session.UserDeviceId != currentDeviceId)
+        if (session.userDeviceId != currentDeviceId)
         {
-            LogDeviceMismatch(session.Id);
+            LogDeviceMismatch(session.id);
             return Result.Fail("Device mismatch");
         }
 
         await using IDbContextTransaction transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
         try
         {
-            session.IsUsed = true;
-            session.InactivatedAt = DateTimeOffset.UtcNow;
-            session.UserSessionInactivationReasonId = inactivationReasonIdRotation;
+            session.isUsed = true;
+            session.inactivatedAt = DateTimeOffset.UtcNow;
+            session.userSessionInactivationReasonId = inactivationReasonIdRotation;
 
-            DateTimeOffset nextExpiry = DateTimeOffset.UtcNow.Add(RefreshTokenLifeTime);
+            DateTimeOffset nextExpiry = DateTimeOffset.UtcNow.Add(refreshTokenLifeTime);
             string nextRawTokenBase64;
             byte[] nextTokenHash;
 
@@ -183,21 +183,21 @@ public sealed partial class SessionService(
 
             UserSession nextSession = new()
             {
-                Id = UUID.CreateV7(),
-                UserId = session.UserId,
-                RefreshTokenHash = nextTokenHash,
-                ExpiresAt = nextExpiry,
-                UserDeviceId = session.UserDeviceId,
+                id = UUID.CreateV7(),
+                userId = session.userId,
+                refreshTokenHash = nextTokenHash,
+                expiresAt = nextExpiry,
+                userDeviceId = session.userDeviceId,
                 createdAt = DateTimeOffset.UtcNow
             };
 
-            _ = dbContext.UserSessions.Add(nextSession);
+            _ = await dbContext.userSessions.AddAsync(nextSession, cancellationToken).ConfigureAwait(false);
 
             // Теперь await безопасен, так как Span больше не существует в контексте метода
             _ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
 
-            return Result.Ok(new SessionResponseData(session.UserId, nextRawTokenBase64, nextExpiry));
+            return Result.Ok(new SessionResponseData(session.userId, nextRawTokenBase64, nextExpiry));
         }
         catch (Exception ex)
         {
@@ -221,12 +221,12 @@ public sealed partial class SessionService(
 
         byte[] hash = SHA256.HashData(tokenBytes);
 
-        int affected = await dbContext.UserSessions
-            .Where(s => s.RefreshTokenHash == hash)
+        int affected = await dbContext.userSessions
+            .Where(s => s.refreshTokenHash == hash)
             .ExecuteUpdateAsync(set => set
-                .SetProperty(s => s.IsRevoked, true)
-                .SetProperty(s => s.InactivatedAt, DateTimeOffset.UtcNow)
-                .SetProperty(s => s.UserSessionInactivationReasonId, inactivationReasonIdUserLogout), cancellationToken: cancellationToken).ConfigureAwait(false);
+                .SetProperty(s => s.isRevoked, true)
+                .SetProperty(s => s.inactivatedAt, DateTimeOffset.UtcNow)
+                .SetProperty(s => s.userSessionInactivationReasonId, inactivationReasonIdUserLogout), cancellationToken: cancellationToken).ConfigureAwait(false);
 
         return affected > 0 ? Result.Ok() : Result.Fail("Session not found");
     }
@@ -249,10 +249,10 @@ public sealed partial class SessionService(
         }
 
         // Используем Compiled Query для БД
-        if (!await DeviceExistsQuery(dbContext, deviceId, cancellationToken).ConfigureAwait(false))
+        if (!await deviceExistsQuery(dbContext, deviceId, cancellationToken).ConfigureAwait(false))
         {
             UserDevice newDevice = UserDeviceHelper.DtoToUserDevice(dto, deviceId);
-            _ = dbContext.UserDevices.Add(newDevice);
+            _ = await dbContext.userDevices.AddAsync(newDevice, cancellationToken).ConfigureAwait(false);
             try
             {
                 _ = await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
@@ -272,12 +272,12 @@ public sealed partial class SessionService(
     /// </summary>
     private async Task RevokeAllUserSessionsAsync(Guid userId, CancellationToken cancellationToken)
     {
-        _ = await dbContext.UserSessions
-            .Where(s => s.UserId == userId && !s.IsRevoked)
+        _ = await dbContext.userSessions
+            .Where(s => s.userId == userId && !s.isRevoked)
             .ExecuteUpdateAsync(set => set
-                .SetProperty(s => s.IsRevoked, true)
-                .SetProperty(s => s.InactivatedAt, DateTimeOffset.UtcNow)
-                .SetProperty(s => s.UserSessionInactivationReasonId, inactivationReasonIdServerRevoke)
+                .SetProperty(s => s.isRevoked, true)
+                .SetProperty(s => s.inactivatedAt, DateTimeOffset.UtcNow)
+                .SetProperty(s => s.userSessionInactivationReasonId, inactivationReasonIdServerRevoke)
                 , cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 

@@ -1,7 +1,6 @@
 using General.DTO.RestRequest;
 using General.DTO.RestResponse;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Server.Jwt_NS;
 using Server_DB_Postgres.Entities.Users;
@@ -20,7 +19,7 @@ public sealed class RegService(
     AuthRegLoggerBackgroundService backgroundLoggerAuthentificationService,
     ILogger<RegService> logger)
 {
-    private static readonly TimeSpan _LockoutPeriod = TimeSpan.FromMinutes(2); // Период блокировки при неудачных попытках
+    private static readonly TimeSpan lockoutPeriod = TimeSpan.FromMinutes(2); // Период блокировки при неудачных попытках
 
     public async Task<DtoResponseAuthReg> RegisterAsync(DtoRequestAuthReg dto, IPAddress? ip, CancellationToken cancellationToken)
     {
@@ -134,7 +133,7 @@ public sealed class RegService(
     /// <summary>
     /// Запись для попыток.
     /// </summary>
-    private record Attempt(int Count, DateTimeOffset ExpiresAt);
+    private record Attempt(int count, DateTimeOffset expiresAt);
 
     /// <summary>
     /// Увеличение счетчика неудачных попыток.
@@ -149,7 +148,7 @@ public sealed class RegService(
 
         // Формирование ключа кэша
         string key = $"register-attempts:{email.Trim().ToUpperInvariant()}";
-        DateTimeOffset expires = DateTimeOffset.UtcNow + _LockoutPeriod;
+        DateTimeOffset expires = DateTimeOffset.UtcNow + lockoutPeriod;
 
         // Получение или создание попытки в кэше
         Attempt? attempt = cache.GetOrCreate(key, e =>
@@ -160,8 +159,8 @@ public sealed class RegService(
 
         // Обновление кэша с увеличенным счетчиком
         _ = cache.Set(key,
-            new Attempt(attempt!.Count + 1, expires),
-            _LockoutPeriod);
+            new Attempt(attempt!.count + 1, expires),
+            lockoutPeriod);
     }
 
     /// <summary>
@@ -184,7 +183,7 @@ public sealed class RegService(
     private long GetRemainingLockoutTime(string email) => cache.TryGetValue(
             $"register-attempts:{email.Trim().ToUpperInvariant()}",
             out Attempt? attempt)
-            && attempt!.ExpiresAt > DateTimeOffset.UtcNow
-            ? (long)Math.Ceiling((attempt.ExpiresAt - DateTimeOffset.UtcNow).TotalSeconds)
+            && attempt!.expiresAt > DateTimeOffset.UtcNow
+            ? (long)Math.Ceiling((attempt.expiresAt - DateTimeOffset.UtcNow).TotalSeconds)
             : 0;
 }

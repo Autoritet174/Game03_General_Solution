@@ -74,7 +74,7 @@ public class DbContextGameConfig
     {
         //_ = builder.Property(static e => e.Rarity).HasDefaultValue(int.Common).HasSentinel(int.Common);
         _ = builder.Property(static e => e.mainStat).HasDefaultValue(EMainStat.universal).HasSentinel(EMainStat.universal);
-        builder.ToTable(nameof(DbContextGame.BaseHeroes), gameData);
+        builder.ToTable(nameof(DbContextGame.baseHeroes), gameData);
         builder.HasIndex(e => e.name).IsUnique();
         builder.Property(e => e.name).HasMaxLength(256);
         builder.Property(e => e.isUnique).HasDefaultValue(false);
@@ -101,7 +101,7 @@ public class DbContextGameConfig
     private static void Configure(EntityTypeBuilder<BaseEquipment> builder)
     {
         //_ = builder.Property(static e => e.Rarity).HasDefaultValue(int.Common).HasSentinel(int.Common);
-        builder.ToTable(nameof(DbContextGame.BaseEquipments), gameData);
+        builder.ToTable(nameof(DbContextGame.baseEquipments), gameData);
         builder.HasIndex(e => e.name).IsUnique();
         builder.Property(e => e.name).HasMaxLength(256);
         builder.Property(e => e.isUnique).HasDefaultValue(false);
@@ -111,7 +111,7 @@ public class DbContextGameConfig
     }
     private static void Configure(EntityTypeBuilder<SlotType> builder)
     {
-        builder.ToTable(nameof(DbContextGame.SlotTypes), gameData);
+        builder.ToTable(nameof(DbContextGame.slotTypes), gameData);
         builder.HasKey(x => x.id);
         builder.Property(x => x.id).ValueGeneratedNever();
         builder.Property(x => x.name).HasMaxLength(256).IsRequired();
@@ -120,7 +120,7 @@ public class DbContextGameConfig
     }
     private static void Configure(EntityTypeBuilder<Slot> builder)
     {
-        builder.ToTable(nameof(DbContextGame.Slots), gameData);
+        builder.ToTable(nameof(DbContextGame.slots), gameData);
         builder.HasIndex(e => e.name).IsUnique();
         builder.Property(e => e.name).HasMaxLength(256);
         builder.Property(e => e.mainSlot).HasDefaultValue(true);
@@ -128,7 +128,7 @@ public class DbContextGameConfig
     }
     private static void Configure(EntityTypeBuilder<EquipmentType> builder)
     {
-        builder.ToTable(nameof(DbContextGame.EquipmentTypes), gameData);
+        builder.ToTable(nameof(DbContextGame.equipmentTypes), gameData);
         builder.HasIndex(e => e.name).IsUnique();
         builder.Property(e => e.name).HasMaxLength(256);
         builder.Property(e => e.nameRu).HasMaxLength(256);
@@ -143,20 +143,20 @@ public class DbContextGameConfig
     }
     private static void Configure(EntityTypeBuilder<MaterialDamagePercent> builder)
     {
-        builder.ToTable(nameof(DbContextGame.MaterialDamagePercents), gameData);
+        builder.ToTable(nameof(DbContextGame.materialDamagePercents), gameData);
         builder.HasOne(e => e.smithingMaterials).WithMany().HasForeignKey(e => e.smithingMaterialsId);
         builder.HasOne(e => e.damageType).WithMany().HasForeignKey(e => e.damageTypeId);
     }
     private static void Configure(EntityTypeBuilder<SmithingMaterial> builder)
     {
-        builder.ToTable(nameof(DbContextGame.SmithingMaterials), gameData);
+        builder.ToTable(nameof(DbContextGame.smithingMaterials), gameData);
         builder.HasIndex(e => e.name).IsUnique();
         builder.Property(e => e.name).HasMaxLength(256);
         builder.Property(e => e.nameRu).HasMaxLength(256);
     }
     private static void Configure(EntityTypeBuilder<Battlefield> builder)
     {
-        builder.ToTable(nameof(DbContextGame.Battlefields), gameData);
+        builder.ToTable(nameof(DbContextGame.battlefields), gameData);
         builder.HasIndex(e => e.name).IsUnique();
         builder.Property(e => e.name).HasMaxLength(256);
         builder.Property(e => e.enumName).HasMaxLength(256);
@@ -165,13 +165,13 @@ public class DbContextGameConfig
     }
     private static void Configure(EntityTypeBuilder<CreatureType> builder)
     {
-        builder.ToTable(nameof(DbContextGame.CreatureTypes), gameData);
+        builder.ToTable(nameof(DbContextGame.creatureTypes), gameData);
         builder.HasIndex(e => e.name).IsUnique();
         builder.Property(e => e.name).HasMaxLength(256);
     }
     private static void Configure(EntityTypeBuilder<DamageType> builder)
     {
-        builder.ToTable(nameof(DbContextGame.DamageTypes), gameData);
+        builder.ToTable(nameof(DbContextGame.damageTypes), gameData);
         builder.HasIndex(e => e.name).IsUnique();
         builder.Property(e => e.name).HasMaxLength(256);
         builder.Property(e => e.nameRu).HasMaxLength(256);
@@ -180,7 +180,7 @@ public class DbContextGameConfig
     }
     private static void Configure(EntityTypeBuilder<Ability> builder)
     {
-        builder.ToTable(nameof(DbContextGame.Abilities), gameData);
+        builder.ToTable(nameof(DbContextGame.abilities), gameData);
         builder.Property(x => x.name).HasMaxLength(256).IsRequired();
         builder.HasIndex(x => x.name).IsUnique();
         builder.Property(x => x.cooldown).HasDefaultValue(0);
@@ -218,7 +218,7 @@ public class DbContextGameConfig
     #region Collection
     private static void Configure(EntityTypeBuilder<Hero> builder)
     {
-        builder.ToTable(nameof(DbContextGame.Heroes), collection);
+        builder.ToTable(nameof(DbContextGame.heroes), collection);
 
         //builder.HasOne(e => e.User).WithMany().HasForeignKey(e => e.UserId);
 
@@ -233,7 +233,7 @@ public class DbContextGameConfig
     }
     private static void Configure(EntityTypeBuilder<Equipment> builder)
     {
-        builder.ToTable(nameof(DbContextGame.Equipments), collection);
+        builder.ToTable(nameof(DbContextGame.equipments), collection);
         builder.HasIndex(e => new { e.heroId, e.slotId });
 
         //builder.HasOne(e => e.User).WithMany().HasForeignKey(e => e.UserId);
@@ -430,7 +430,7 @@ public class DbContextGameConfig
 
     private static void Configure(EntityTypeBuilder<DropRate> builder)
     {
-        builder.ToTable(nameof(DbContextGame.DropRates), collection);
+        builder.ToTable(nameof(DbContextGame.dropRates), collection);
         builder.HasOne(e => e.user).WithMany().HasForeignKey(e => e.userId);
     }
     #endregion
@@ -438,69 +438,69 @@ public class DbContextGameConfig
     private static void Configure(EntityTypeBuilder<User> builder)
     {
         builder.ToTable(nameof(DbContextGame.Users));
-        builder.Property(e => e.TimeZone).HasMaxLength(256);
+        builder.Property(e => e.timeZone).HasMaxLength(256);
     }
     private static void Configure(EntityTypeBuilder<UserAccesskey> builder)
     {
-        builder.ToTable(nameof(DbContextGame.UserAccesskeys), users);
-        builder.HasOne(e => e.User).WithMany().HasForeignKey(e => e.UserId);
-        builder.Property(e => e.DeviceName).HasMaxLength(256);
+        builder.ToTable(nameof(DbContextGame.userAccesskeys), users);
+        builder.HasOne(e => e.user).WithMany().HasForeignKey(e => e.userId);
+        builder.Property(e => e.deviceName).HasMaxLength(256);
     }
     private static void Configure(EntityTypeBuilder<UserBan> builder)
     {
-        builder.ToTable(nameof(DbContextGame.UserBans), users);
-        builder.HasOne(e => e.User).WithMany().HasForeignKey(e => e.UserId);
-        builder.HasOne(e => e.UserBanReason).WithMany().HasForeignKey(e => e.UserBanReasonId);
+        builder.ToTable(nameof(DbContextGame.userBans), users);
+        builder.HasOne(e => e.user).WithMany().HasForeignKey(e => e.userId);
+        builder.HasOne(e => e.userBanReason).WithMany().HasForeignKey(e => e.userBanReasonId);
     }
     private static void Configure2(EntityTypeBuilder<UserBan> builder)
     {
         // Переопределение для каскадного удаления только для нужных связей
         // Настройка для UserBan: Cascade при удалении ApplicationUser
-        _ = builder.HasOne(static b => b.User) // Навигационное свойство в UserBan
-            .WithMany(static u => u.UserBans)      // Коллекция в ApplicationUser
-            .HasForeignKey(static b => b.UserId) // FK в UserBan
+        _ = builder.HasOne(static b => b.user) // Навигационное свойство в UserBan
+            .WithMany(static u => u.userBans)      // Коллекция в ApplicationUser
+            .HasForeignKey(static b => b.userId) // FK в UserBan
             .OnDelete(DeleteBehavior.Cascade); // Включить каскад: удалять UserBan при удалении ApplicationUser
     }
     private static void Configure(EntityTypeBuilder<UserDevice> builder)
     {
-        builder.ToTable(nameof(DbContextGame.UserDevices), users);
-        builder.Property(e => e.SystemEnvironmentUserName).HasMaxLength(256);
-        builder.Property(e => e.DeviceUniqueIdentifier).HasMaxLength(256);
-        builder.Property(e => e.DeviceModel).HasMaxLength(256);
-        builder.Property(e => e.DeviceType).HasMaxLength(256);
-        builder.Property(e => e.OperatingSystem).HasMaxLength(256);
-        builder.Property(e => e.ProcessorType).HasMaxLength(256);
-        builder.Property(e => e.GraphicsDeviceName).HasMaxLength(256);
-        builder.Property(e => e.SystemInfoNpotSupport).HasMaxLength(256);
+        builder.ToTable(nameof(DbContextGame.userDevices), users);
+        builder.Property(e => e.systemEnvironmentUserName).HasMaxLength(256);
+        builder.Property(e => e.deviceUniqueIdentifier).HasMaxLength(256);
+        builder.Property(e => e.deviceModel).HasMaxLength(256);
+        builder.Property(e => e.deviceType).HasMaxLength(256);
+        builder.Property(e => e.operatingSystem).HasMaxLength(256);
+        builder.Property(e => e.processorType).HasMaxLength(256);
+        builder.Property(e => e.graphicsDeviceName).HasMaxLength(256);
+        builder.Property(e => e.systemInfoNpotSupport).HasMaxLength(256);
     }
     private static void Configure(EntityTypeBuilder<UserSession> builder)
     {
-        builder.ToTable(nameof(DbContextGame.UserSessions), users);
-        builder.HasOne(e => e.UserSessionInactivationReason).WithMany().HasForeignKey(e => e.UserSessionInactivationReasonId).IsRequired(false);
-        builder.HasOne(e => e.UserDevice).WithMany().HasForeignKey(e => e.UserDeviceId);
+        builder.ToTable(nameof(DbContextGame.userSessions), users);
+        builder.HasOne(e => e.userSessionInactivationReason).WithMany().HasForeignKey(e => e.userSessionInactivationReasonId).IsRequired(false);
+        builder.HasOne(e => e.userDevice).WithMany().HasForeignKey(e => e.userDeviceId);
 
         //_ = builder.HasQueryFilter(s => !s.IsUsed && !s.IsRevoked);// Глобальный фильтр для выборок - только живые токены
 
         // Уникальный индекс на живые токены (неиспользованные и неаннулированные)
-        _ = builder.HasIndex(static s => s.RefreshTokenHash).IsUnique().HasFilter($"{nameof(UserSession.IsUsed).ToSnakeCase()} = false AND {nameof(UserSession.IsRevoked).ToSnakeCase()} = false");
+        _ = builder.HasIndex(static s => s.refreshTokenHash).IsUnique().HasFilter($"{nameof(UserSession.isUsed).ToSnakeCase()} = false AND {nameof(UserSession.isRevoked).ToSnakeCase()} = false");
     }
     #endregion
     #region Server
     private static void Configure(EntityTypeBuilder<UserBanReason> builder)
     {
-        builder.ToTable(nameof(DbContextGame.UserBanReasons), server);
-        builder.HasIndex(e => e.Name).IsUnique();
+        builder.ToTable(nameof(DbContextGame.userBanReasons), server);
+        builder.HasIndex(e => e.name).IsUnique();
     }
     private static void Configure(EntityTypeBuilder<UserSessionInactivationReason> builder)
     {
-        builder.ToTable(nameof(DbContextGame.UserSessionInactivationReasons), server);
-        builder.HasIndex(e => e.Name).IsUnique();
+        builder.ToTable(nameof(DbContextGame.userSessionInactivationReasons), server);
+        builder.HasIndex(e => e.name).IsUnique();
     }
     #endregion
     #region Logs
     private static void Configure(EntityTypeBuilder<AuthenticationLog> builder)
     {
-        builder.ToTable(nameof(DbContextGame.AuthenticationLogs), logs);
+        builder.ToTable(nameof(DbContextGame.authenticationLogs), logs);
         builder.Property(e => e.email).HasMaxLength(256);
         builder.HasOne(e => e.user).WithMany().HasForeignKey(e => e.userId).IsRequired(false);
         builder.HasOne(e => e.userDevice).WithMany().HasForeignKey(e => e.userDeviceId).IsRequired(false);
@@ -516,7 +516,7 @@ public class DbContextGameConfig
     }
     private static void Configure(EntityTypeBuilder<RegistrationLog> builder)
     {
-        builder.ToTable(nameof(DbContextGame.RegistrationLogs), logs);
+        builder.ToTable(nameof(DbContextGame.registrationLogs), logs);
         builder.Property(e => e.email).HasMaxLength(256);
         builder.HasOne(e => e.user).WithMany().HasForeignKey(e => e.userId).IsRequired(false);
         builder.HasOne(e => e.userDevice).WithMany().HasForeignKey(e => e.userDeviceId).IsRequired(false);

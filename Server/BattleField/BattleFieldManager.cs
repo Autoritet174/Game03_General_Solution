@@ -29,7 +29,7 @@ public class BattlefieldManager(Guid userId,
 
     /// <summary>Создаёт новый бой с выбранными героями либо возвращает уже запущенный бой.</summary>
     /// <returns>Начальное состояние боя или null при недопустимом количестве героев.</returns>
-    public async Task<SpawnedBattlefield?> CombatStartAsync(EBattleFiled eBattleFiled, Guid[] spawnedHeroesId, CancellationToken cancellationToken)
+    public async Task<SpawnedBattlefield?> CombatStartAsync(EBattlefield eBattleFiled, Guid[] spawnedHeroesId, CancellationToken cancellationToken)
     {
         if (inCombat)
         {
@@ -41,7 +41,7 @@ public class BattlefieldManager(Guid userId,
             return null;
         }
 
-        BattlefieldDefinition battlefield = cacheService.TableBattlefields[eBattleFiled];
+        BattlefieldDefinition battlefield = cacheService.tableBattlefields[eBattleFiled];
         if (spawnedHeroesId.Length > battlefield.maxHeroCount)
         {
             return null;
@@ -105,11 +105,11 @@ public class BattlefieldManager(Guid userId,
     #region Подготовка участников
 
     /// <summary>Создаёт противников, выбирая сначала гарантированные записи с оставшимся количеством.</summary>
-    private List<ServerSpawnedHero> CreateEnemyHeroes(EBattleFiled battlefieldId, int maxEnemyCount)
+    private List<ServerSpawnedHero> CreateEnemyHeroes(EBattlefield battlefieldId, int maxEnemyCount)
     {
         List<X_Battlefield_BaseHero> enemyPool =
         [
-            .. cacheService.TableX_Battlefields_BaseHeroes.Values
+            .. cacheService.tableX_Battlefields_BaseHeroes.Values
                 .Where(enemy => enemy.battlefieldId == battlefieldId)
                 .Select(enemy => enemy.Copy())
         ];
@@ -149,20 +149,20 @@ public class BattlefieldManager(Guid userId,
     {
         await using DbContextGame db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        var heroesWithEquipment = db.Heroes
+        var heroesWithEquipment = db.heroes
             .AsNoTracking()
             .Where(hero => hero.userId == userId && spawnedHeroesId.Contains(hero.id))
             .Select(hero => new
             {
                 hero,
-                items = db.Equipments.Where(equipment => equipment.heroId == hero.id).ToList()
+                items = db.equipments.Where(equipment => equipment.heroId == hero.id).ToList()
             })
             .ToList();
 
         List<ServerSpawnedHero> spawnedHeroes = [];
         foreach (var row in heroesWithEquipment)
         {
-            ServerSpawnedHero hero = SpawnedHeroFactory.CreateFromHero(row.hero, row.items, cacheService.TableBaseHeroes[row.hero.baseHeroId]);
+            ServerSpawnedHero hero = SpawnedHeroFactory.CreateFromHero(row.hero, row.items, cacheService.tableBaseHeroes[row.hero.baseHeroId]);
             spawnedHeroes.Add(hero);
             hero.team = 1;
             InitActionPoints(hero);

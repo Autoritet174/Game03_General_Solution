@@ -29,11 +29,11 @@ public abstract class ControllerBaseApi : ControllerBase
     ///// </summary>
     ///// <returns>Ответ BadRequest с ключом локализации для ошибки неверных учетных данных.</returns>
     ///// <remarks>
-    ///// Соответствует ключу локализации <see cref="L.Error.Server.InvalidCredentials"/>.
+    ///// Соответствует ключу локализации <see cref="L.Error.Server.invalidCredentials"/>.
     ///// </remarks>
     //protected IActionResult BadRequestAuthInvalidCredentials()
     //{
-    //    return BadRequestWithServerError(L.Error.Server.InvalidCredentials);
+    //    return BadRequestWithServerError(L.Error.Server.invalidCredentials);
     //}
 
     /// <summary>
@@ -41,13 +41,13 @@ public abstract class ControllerBaseApi : ControllerBase
     /// </summary>
     /// <returns>Ответ BadRequest с ключом локализации для ошибки неверного ответа.</returns>
     /// <remarks>
-    /// Соответствует ключу локализации <see cref="L.Error.Server.InvalidResponse"/>.
+    /// Соответствует ключу локализации <see cref="L.Error.Server.invalidResponse"/>.
     /// </remarks>
-    protected IActionResult BadRequestInvalidResponse() => BadRequestWithServerError(L.Error.Server.InvalidResponse);
+    protected IActionResult BadRequestInvalidResponse() => BadRequestWithServerError(L.Error.Server.invalidResponse);
 
     /// <summary>
     /// Входные данные были неверны.
     /// </summary>
     /// <returns></returns>
-    protected IActionResult BadRequestInvalidRequest() => BadRequestWithServerError(L.Error.Server.InvalidRequest);
+    protected IActionResult BadRequestInvalidRequest() => BadRequestWithServerError(L.Error.Server.invalidRequest);
 }

@@ -8,27 +8,27 @@ namespace Game03Client;
 public class IniFile
 {
     private static readonly Logger<IniFile> logger = new();
-    private static readonly FileIniDataParser _fileIniDataParser = new();
-    public static string FileName { get; internal set; } = null!;
+    private static readonly FileIniDataParser fileIniDataParser = new();
+    public static string fileName { get; internal set; } = null!;
     public static string? Read(string section, string key)
     {
-        if (File.Exists(FileName))
+        if (File.Exists(fileName))
         {
             try
             {
-                IniData data = _fileIniDataParser.ReadFile(FileName);
+                IniData data = fileIniDataParser.ReadFile(fileName);
                 try
                 {
                     return data[section][key];
                 }
                 catch
                 {
-                    logger.LogError($"error read section=[{section}] key=[{key}] in file <{FileName}>");
+                    logger.LogError($"error read section=[{section}] key=[{key}] in file <{fileName}>");
                 }
             }
             catch
             {
-                logger.LogError($"error read ini file <{FileName}>");
+                logger.LogError($"error read ini file <{fileName}>");
             }
         }
         return null;
@@ -51,8 +51,8 @@ public class IniFile
 
     public static void Write(string section, string key, string value)
     {
-        IniData data = _fileIniDataParser.ReadFile(FileName);
+        IniData data = fileIniDataParser.ReadFile(fileName);
         data[section][key] = value;
-        _fileIniDataParser.WriteFile(FileName, data);
+        fileIniDataParser.WriteFile(fileName, data);
     }
 }

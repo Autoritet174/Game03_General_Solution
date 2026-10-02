@@ -15,7 +15,7 @@ public partial class BaseHeroesForm : Form
 
     private void SaveData()
     {
-        BaseHero baseHero = db.BaseHeroes.First(a => a.id == id);
+        BaseHero baseHero = db.baseHeroes.First(a => a.id == id);
         try
         {
             baseHero.health = ucDice_Health.GetValue();
@@ -28,7 +28,7 @@ public partial class BaseHeroesForm : Form
 
     private void RefreshData()
     {
-        BaseHero baseHero = db.BaseHeroes.First(a => a.id == id);
+        BaseHero baseHero = db.baseHeroes.First(a => a.id == id);
         ucDice_Health.SetValue(baseHero.health);
         ucDice_Damage.SetValue(baseHero.damage);
     }
@@ -46,7 +46,7 @@ public partial class BaseHeroesForm : Form
 
     private void BaseHeroesForm_Load(object sender, EventArgs e)
     {
-        BaseHero baseHero = db.BaseHeroes.First(a => a.id == id);
+        BaseHero baseHero = db.baseHeroes.First(a => a.id == id);
         ucDice_Health.Init("Health", baseHero);
         ucDice_Damage.Init("Damage", baseHero);
         RefreshData();

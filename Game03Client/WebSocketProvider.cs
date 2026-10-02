@@ -13,27 +13,27 @@ namespace Game03Client;
 public class WebSocketProvider
 {
     private static readonly Logger<WebSocketProvider> logger = new();
-    private static HubConnection? _connection;
+    private static HubConnection? connection;
     public static RetryPolicy? retryPolicy = null;
 
-    public static bool IsConnected => _connection?.State == HubConnectionState.Connected;
+    public static bool sConnected => connection?.State == HubConnectionState.Connected;
 
-    public static HubConnectionState State => _connection?.State ?? HubConnectionState.Disconnected;
+    public static HubConnectionState state => connection?.State ?? HubConnectionState.Disconnected;
 
     // Pre-allocated logging delegates
-    private static readonly Action<Logger<WebSocketProvider>, string, Exception> _errorInvokeLogger =
+    private static readonly Action<Logger<WebSocketProvider>, string, Exception> errorInvokeLogger =
         (l, method, ex) => l.LogError($"Error invoking {method}, {ex}");
 
-    private static readonly Action<Logger<WebSocketProvider>, string, Exception> _errorSendLogger =
+    private static readonly Action<Logger<WebSocketProvider>, string, Exception> errorSendLogger =
         (l, method, ex) => l.LogError($"Error sending {method}, {ex}");
 
-    private static readonly Action<Logger<WebSocketProvider>, string, Exception> _errorDisconnectLogger =
+    private static readonly Action<Logger<WebSocketProvider>, string, Exception> errorDisconnectLogger =
         (l, msg, ex) => l.LogError($"Disconnect error: {msg}, {ex}");
 
-    private static readonly Action<Logger<WebSocketProvider>, Exception> _errorConnectLogger =
+    private static readonly Action<Logger<WebSocketProvider>, Exception> errorConnectLogger =
         (l, ex) => l.LogError($"Connection error: Exception: {ex}");
 
-    private static readonly Action<Logger<WebSocketProvider>, string, Exception> _infoReceiveLogger =
+    private static readonly Action<Logger<WebSocketProvider>, string, Exception?> infoReceiveLogger =
         (l, msg, ex) => l.LogInfo($"Server log: {msg}, {ex}");
 
     public static async Task<bool> ConnectAsync(CancellationToken ctOpen, CancellationToken ctReceive)
@@ -47,19 +47,19 @@ public class WebSocketProvider
         {
             retryPolicy = new();
             await DisconnectAsync().ConfigureAwait(false);
-            string url = Url.UrlDomain + Parametrs.SignalR_Address;
+            string url = Url.urlDomain + Parametrs.signalR_Address;
 
-            _connection = new HubConnectionBuilder()
+            connection = new HubConnectionBuilder()
                 .WithUrl(url, options =>
                 {
-                    if (!string.IsNullOrWhiteSpace(Auth.AccessToken))
+                    if (!string.IsNullOrWhiteSpace(Auth.accessToken))
                     {
-                        options.AccessTokenProvider = () => Task.FromResult(Auth.AccessToken)!;
+                        options.AccessTokenProvider = () => Task.FromResult(Auth.accessToken)!;
                     }
                 })
                 .AddJsonProtocol(options =>
                 {
-                    options.PayloadSerializerOptions = JSON.Options;
+                    options.PayloadSerializerOptions = JSON.options;
                 })
                 .WithAutomaticReconnect(retryPolicy)
                 .Build();
@@ -67,7 +67,7 @@ public class WebSocketProvider
             RegisterServerEvents();
 
             using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ctOpen, ctReceive);
-            await _connection.StartAsync(linkedCts.Token).ConfigureAwait(false);
+            await connection.StartAsync(linkedCts.Token).ConfigureAwait(false);
 
             return true;
         }
@@ -77,7 +77,7 @@ public class WebSocketProvider
         }
         catch (Exception ex)
         {
-            _errorConnectLogger(logger, ex);
+            errorConnectLogger(logger, ex);
             return false;
         }
     }
@@ -87,12 +87,12 @@ public class WebSocketProvider
     /// </summary>
     private static void RegisterServerEvents()
     {
-        if (_connection == null)
+        if (connection == null)
         {
             return;
         }
 
-        _ = _connection.On<string>("ReceiveLog", message => _infoReceiveLogger(logger, message, null));
+        _ = connection.On<string>("ReceiveLog", message => infoReceiveLogger(logger, message, null));
 
         // Register new server events here as needed:
         // _connection.On<SomeDto>("EventName", dto => { ... });
@@ -106,7 +106,7 @@ public class WebSocketProvider
         CancellationToken ct,
         params object?[] args)
     {
-        if (_connection == null || !IsConnected)
+        if (connection == null || !sConnected)
         {
             return default;
         }
@@ -117,23 +117,23 @@ public class WebSocketProvider
         {
             return await (args.Length switch
             {
-                0 => _connection.InvokeAsync<TResponse>(methodName, ct),
-                1 => _connection.InvokeAsync<TResponse>(methodName, args[0], ct),
-                2 => _connection.InvokeAsync<TResponse>(methodName, args[0], args[1], ct),
-                3 => _connection.InvokeAsync<TResponse>(methodName, args[0], args[1], args[2], ct),
-                4 => _connection.InvokeAsync<TResponse>(methodName, args[0], args[1], args[2], args[3], ct),
-                5 => _connection.InvokeAsync<TResponse>(methodName, args[0], args[1], args[2], args[3], args[4], ct),
-                6 => _connection.InvokeAsync<TResponse>(methodName, args[0], args[1], args[2], args[3], args[4], args[5], ct),
-                7 => _connection.InvokeAsync<TResponse>(methodName, args[0], args[1], args[2], args[3], args[4], args[5], args[6], ct),
-                8 => _connection.InvokeAsync<TResponse>(methodName, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], ct),
-                9 => _connection.InvokeAsync<TResponse>(methodName, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], ct),
-                10 => _connection.InvokeAsync<TResponse>(methodName, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], ct),
+                0 => connection.InvokeAsync<TResponse>(methodName, ct),
+                1 => connection.InvokeAsync<TResponse>(methodName, args[0], ct),
+                2 => connection.InvokeAsync<TResponse>(methodName, args[0], args[1], ct),
+                3 => connection.InvokeAsync<TResponse>(methodName, args[0], args[1], args[2], ct),
+                4 => connection.InvokeAsync<TResponse>(methodName, args[0], args[1], args[2], args[3], ct),
+                5 => connection.InvokeAsync<TResponse>(methodName, args[0], args[1], args[2], args[3], args[4], ct),
+                6 => connection.InvokeAsync<TResponse>(methodName, args[0], args[1], args[2], args[3], args[4], args[5], ct),
+                7 => connection.InvokeAsync<TResponse>(methodName, args[0], args[1], args[2], args[3], args[4], args[5], args[6], ct),
+                8 => connection.InvokeAsync<TResponse>(methodName, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], ct),
+                9 => connection.InvokeAsync<TResponse>(methodName, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], ct),
+                10 => connection.InvokeAsync<TResponse>(methodName, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], ct),
                 _ => throw new ArgumentOutOfRangeException(nameof(args), "Too many arguments (max 10)")
             }).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
-            _errorInvokeLogger(logger, methodName, ex);
+            errorInvokeLogger(logger, methodName, ex);
             return default;
         }
     }
@@ -143,19 +143,19 @@ public class WebSocketProvider
     /// </summary>
     public static async Task<bool> SendAsync(string methodName, CancellationToken ct = default, params object?[] args)
     {
-        if (_connection == null || !IsConnected)
+        if (connection == null || !sConnected)
         {
             return false;
         }
 
         try
         {
-            await _connection.InvokeAsync(methodName, args, ct).ConfigureAwait(false);
+            await connection.InvokeAsync(methodName, args, ct).ConfigureAwait(false);
             return true;
         }
         catch (Exception ex)
         {
-            _errorSendLogger(logger, methodName, ex);
+            errorSendLogger(logger, methodName, ex);
             return false;
         }
     }
@@ -165,7 +165,7 @@ public class WebSocketProvider
     /// </summary>
     public static async Task DisconnectAsync()
     {
-        if (_connection == null)
+        if (connection == null)
         {
             return;
         }
@@ -173,16 +173,16 @@ public class WebSocketProvider
         retryPolicy = null;
         try
         {
-            await _connection.StopAsync().ConfigureAwait(false);
-            await _connection.DisposeAsync().ConfigureAwait(false);
+            await connection.StopAsync().ConfigureAwait(false);
+            await connection.DisposeAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
         {
-            _errorDisconnectLogger(logger, ex.Message, ex);
+            errorDisconnectLogger(logger, ex.Message, ex);
         }
         finally
         {
-            _connection = null;
+            connection = null;
         }
     }
 }
@@ -192,19 +192,19 @@ public class WebSocketProvider
 /// </summary>
 public class RetryPolicy : IRetryPolicy
 {
-    public long CurrentAttemptCount { get; private set; }
-    public TimeSpan? CurrentDelay { get; private set; }
+    public long currentAttemptCount { get; private set; }
+    public TimeSpan? currentDelay { get; private set; }
 
     // Свойство: идет ли попытка переподключения прямо сейчас
-    public bool IsReconnecting { get; private set; }
+    public bool isReconnecting { get; private set; }
 
-    private DateTime _nextAttemptTime;
+    private DateTime nextAttemptTime;
 
-    public double SecondsUntilNextAttempt
+    public double secondsUntilNextAttempt
     {
         get
         {
-            TimeSpan remaining = _nextAttemptTime - DateTime.UtcNow;
+            TimeSpan remaining = nextAttemptTime - DateTime.UtcNow;
             return remaining.TotalSeconds > 0 ? remaining.TotalSeconds : 0;
         }
     }
@@ -212,11 +212,11 @@ public class RetryPolicy : IRetryPolicy
     public TimeSpan? NextRetryDelay(RetryContext retryContext)
     {
         // Начинаем попытку переподключения
-        IsReconnecting = true;
+        isReconnecting = true;
 
-        CurrentAttemptCount = retryContext.PreviousRetryCount + 1;
+        currentAttemptCount = retryContext.PreviousRetryCount + 1;
 
-        CurrentDelay = retryContext.PreviousRetryCount switch
+        currentDelay = retryContext.PreviousRetryCount switch
         {
             < 1 => TimeSpan.FromSeconds(0.2),
             < 10 => TimeSpan.FromSeconds(5),
@@ -224,8 +224,8 @@ public class RetryPolicy : IRetryPolicy
         };
 
         // Устанавливаем время следующей попытки
-        _nextAttemptTime = DateTime.UtcNow + (CurrentDelay ?? TimeSpan.Zero);
+        nextAttemptTime = DateTime.UtcNow + (currentDelay ?? TimeSpan.Zero);
 
-        return CurrentDelay;
+        return currentDelay;
     }
 }

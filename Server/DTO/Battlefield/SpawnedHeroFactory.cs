@@ -82,7 +82,8 @@ public static class SpawnedHeroFactory
             }
             foreach (KeyValuePair<EStatType, List<float>> stat in e.stats)
             {
-                if (stat.Value == null || stat.Value.Count < 1) {
+                if (stat.Value == null || stat.Value.Count < 1)
+                {
                     continue;
                 }
                 switch (stat.Key)

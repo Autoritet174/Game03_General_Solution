@@ -5,20 +5,20 @@ namespace Game03Client.Collection;
 /// <summary>
 /// Группа элемента коллекции.
 /// </summary>
-public class GroupCollectionElement(string name, IEnumerable<CollectionElement> list)
+public class GroupCollectionElement
 {
     /// <summary>
     /// Возвращает имя группы элемента коллекции.
     /// </summary>
-    public string Name { get; } = name;
+    public required string name { get; init; }
 
     /// <summary>
     /// Получает коллекцию, содержащихся в этом экземпляре.
     /// </summary>
-    public IEnumerable<CollectionElement> List { get; } = list;
+    public required IEnumerable<CollectionElement> list { get; init; }
 
     /// <summary>
     /// Возвращает или устанавливает уровень приоритета группы.
     /// </summary>
-    public int Priority { get; set; } = 0;
+    public int priority { get; set; } = 0;
 }

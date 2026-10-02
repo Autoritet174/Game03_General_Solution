@@ -32,7 +32,7 @@ public partial class FormMain : Form
         foreach (DiceCombinationFinder.DiceCombinationFinder.DiceCombination i in list)
         {
             //stringBuilder.AppendLine($"{i.Notation};    {i.CV}; {i.Mean}; {i.MeanError}; {i.CVError}; {i.TotalError}");
-            _ = stringBuilder.AppendLine($"{i.Notation};    {i.CV:0.0};      {i.jsonb}");
+            _ = stringBuilder.AppendLine($"{i.notation};    {i.cV:0.0};      {i.jsonb}");
         }
         textBox_Results.Text = stringBuilder.ToString();
     }

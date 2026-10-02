@@ -105,9 +105,9 @@ public partial class UCDice : UserControl
 
             List<DCF.DiceCombination> list = DCF.FindDiceCombination((int)Math.Round(exp, 0), 0, 10, 10000);
             double target = 10;
-            DCF.DiceCombination d = list.OrderBy(x => Math.Abs(x.CV - target)).First();
+            DCF.DiceCombination d = list.OrderBy(x => Math.Abs(x.cV - target)).First();
 
-            return new Dice(d.Count, d.Sides, d.Mod != 0 ? d.Mod : null);
+            return new Dice(d.count, d.sides, d.mod != 0 ? d.mod : null);
         }
 
     }

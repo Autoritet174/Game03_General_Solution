@@ -23,43 +23,43 @@ public sealed class AuthRegLoggerBackgroundService(
     /// Лог авторизации с поддержкой повторной обработки и кэшированными данными устройства.
     /// </summary>
     private sealed record LogEntry(
-        bool Success,
+        bool success,
         DtoRequestAuthReg dto,
-        Guid? UserId,
-        IPAddress? Ip,
-        int RetryCount,
-        DateTimeOffset NextRetryAt,
-        bool ActionIsAuthentication,
-        Guid UserDeviceId);
+        Guid? userId,
+        IPAddress? ip,
+        int retryCount,
+        DateTimeOffset nextRetryAt,
+        bool actionIsAuthentication,
+        Guid userDeviceId);
 
-    private readonly ConcurrentQueue<LogEntry> _queue = new();
-    private readonly SemaphoreSlim _semaphore = new(1, 1);
+    private readonly ConcurrentQueue<LogEntry> queue = new();
+    private readonly SemaphoreSlim semaphore = new(1, 1);
 
-    private readonly CancellationTokenSource _internalCts = new();
-    private CancellationTokenSource? _linkedCts;
-    private Task? _processingTask;
+    private readonly CancellationTokenSource internalCts = new();
+    private CancellationTokenSource? linkedCts;
+    private Task? processingTask;
 
     /// <summary> Задача на очистку старых логов. </summary>
-    private Task? _cleanupTask;
+    private Task? cleanupTask;
 
     /// <summary>
     /// Добавляет лог в очередь с предварительным вычислением данных устройства.
     /// </summary>
     public void EnqueueLog(bool success, DtoRequestAuthReg dto, Guid? userId, IPAddress? ip, bool actionIsAuthentication)
     {
-        if (_queue.Count >= MAX_QUEUE_SIZE)
+        if (queue.Count >= MAX_QUEUE_SIZE)
         {
             logger.LogWarning("Очередь логов переполнена. Запись отброшена.");
             return;
         }
 
-        _queue.Enqueue(new LogEntry(
+        queue.Enqueue(new LogEntry(
             success,
             dto,
             userId,
             ip,
-            RetryCount: 0,
-            NextRetryAt: DateTimeOffset.UtcNow,
+            retryCount: 0,
+            nextRetryAt: DateTimeOffset.UtcNow,
             actionIsAuthentication,
             UserDeviceHelper.ComputeUUIDv8(dto)));
     }
@@ -68,11 +68,11 @@ public sealed class AuthRegLoggerBackgroundService(
     public Task StartAsync(CancellationToken ct)
     {
         logger.LogInformation("Запуск сервиса фонового логирования.");
-        _linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct, _internalCts.Token);
+        linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct, internalCts.Token);
 
-        _processingTask = Task.Run(() => ProcessingLoopAsync(_linkedCts.Token), _linkedCts.Token);
+        processingTask = Task.Run(() => ProcessingLoopAsync(linkedCts.Token), linkedCts.Token);
 
-        _cleanupTask = null;
+        cleanupTask = null;
         //_cleanupTask = Task.Run(() => CleanupLoopAsync(_linkedCts.Token), _linkedCts.Token);
 
         return Task.CompletedTask;
@@ -119,12 +119,12 @@ public sealed class AuthRegLoggerBackgroundService(
     /// <returns>True, если пакет успешно записан или очередь была пуста; иначе false.</returns>
     private async Task<bool> ProcessBatchAsync(CancellationToken ct)
     {
-        if (_queue.IsEmpty)
+        if (queue.IsEmpty)
         {
             return true;
         }
 
-        if (!await _semaphore.WaitAsync(TimeSpan.FromSeconds(5), ct).ConfigureAwait(false))
+        if (!await semaphore.WaitAsync(TimeSpan.FromSeconds(5), ct).ConfigureAwait(false))
         {
             return false;
         }
@@ -135,14 +135,14 @@ public sealed class AuthRegLoggerBackgroundService(
             List<LogEntry> batch = [];
 
             // Оптимизированное извлечение с учетом времени повтора
-            while (batch.Count < BATCH_SIZE && _queue.TryPeek(out LogEntry? peekEntry))
+            while (batch.Count < BATCH_SIZE && queue.TryPeek(out LogEntry? peekEntry))
             {
-                if (peekEntry.NextRetryAt > now)
+                if (peekEntry.nextRetryAt > now)
                 {
                     break;
                 }
 
-                if (_queue.TryDequeue(out LogEntry? entry))
+                if (queue.TryDequeue(out LogEntry? entry))
                 {
                     batch.Add(entry);
                 }
@@ -163,13 +163,13 @@ public sealed class AuthRegLoggerBackgroundService(
             {
                 foreach (LogEntry item in batch)
                 {
-                    if (item.RetryCount + 1 < MAX_RETRIES)
+                    if (item.retryCount + 1 < MAX_RETRIES)
                     {
-                        var delay = TimeSpan.FromSeconds(Math.Pow(2, item.RetryCount + 1));
-                        _queue.Enqueue(item with
+                        var delay = TimeSpan.FromSeconds(Math.Pow(2, item.retryCount + 1));
+                        queue.Enqueue(item with
                         {
-                            RetryCount = item.RetryCount + 1,
-                            NextRetryAt = DateTimeOffset.UtcNow.Add(delay)
+                            retryCount = item.retryCount + 1,
+                            nextRetryAt = DateTimeOffset.UtcNow.Add(delay)
                         });
                     }
                     else
@@ -186,7 +186,7 @@ public sealed class AuthRegLoggerBackgroundService(
         }
         finally
         {
-            _ = _semaphore.Release();
+            _ = semaphore.Release();
         }
     }
 
@@ -197,52 +197,52 @@ public sealed class AuthRegLoggerBackgroundService(
 
         try
         {
-            List<Guid> uniqueDevicesId = [.. batch.Where(l => l.UserDeviceId != Guid.Empty)
-                .DistinctBy(l => l.UserDeviceId)
-                .Select(a=>a.UserDeviceId)];
+            List<Guid> uniqueDevicesId = [.. batch.Where(l => l.userDeviceId != Guid.Empty)
+                .DistinctBy(l => l.userDeviceId)
+                .Select(a=>a.userDeviceId)];
             for (int i = uniqueDevicesId.Count - 1; i >= 0; i--)
             {
-                if (db.UserDevices.Any(a => a.Id == uniqueDevicesId[i]))
+                if (db.userDevices.Any(a => a.id == uniqueDevicesId[i]))
                 {
                     uniqueDevicesId.RemoveAt(i);
                 }
             }
 
             List<UserDevice> uniqueDevices = [.. batch
-                .Where(l => l.UserDeviceId != Guid.Empty && uniqueDevicesId.Any(a=>a == l.UserDeviceId))
-                .DistinctBy(l => l.UserDeviceId)
-                .Select(item => UserDeviceHelper.DtoToUserDevice(item.dto, item.UserDeviceId))];
+                .Where(l => l.userDeviceId != Guid.Empty && uniqueDevicesId.Any(a=>a == l.userDeviceId))
+                .DistinctBy(l => l.userDeviceId)
+                .Select(item => UserDeviceHelper.DtoToUserDevice(item.dto, item.userDeviceId))];
 
             if (uniqueDevices.Count > 0)
             {
-                List<Guid> deviceIds = [.. uniqueDevices.Select(d => d.Id)];
+                List<Guid> deviceIds = [.. uniqueDevices.Select(d => d.id)];
 
-                HashSet<Guid> existingIds = await db.UserDevices
-                    .Where(d => deviceIds.Contains(d.Id))
-                    .Select(d => d.Id)
+                HashSet<Guid> existingIds = await db.userDevices
+                    .Where(d => deviceIds.Contains(d.id))
+                    .Select(d => d.id)
                     .ToHashSetAsync(ct).ConfigureAwait(false);
 
                 foreach (UserDevice device in uniqueDevices)
                 {
-                    if (!existingIds.Contains(device.Id))
+                    if (!existingIds.Contains(device.id))
                     {
-                        _ = db.UserDevices.Add(device);
+                        _ = await db.userDevices.AddAsync(device, ct).ConfigureAwait(false);
                     }
                 }
             }
 
             foreach (LogEntry item in batch)
             {
-                _ = db.AuthenticationLogs.Add(new Server_DB_Postgres.Entities.Logs.AuthenticationLog
+                _ = await db.authenticationLogs.AddAsync(new Server_DB_Postgres.Entities.Logs.AuthenticationLog
                 {
                     id = UUID.CreateV7(),
                     email = item.dto.email,
-                    success = item.Success,
-                    userId = item.UserId,
-                    userDeviceId = item.UserDeviceId,
+                    success = item.success,
+                    userId = item.userId,
+                    userDeviceId = item.userDeviceId,
                     createdAt = DateTimeOffset.UtcNow,
-                    ip = item.Ip,
-                });
+                    ip = item.ip,
+                }, ct).ConfigureAwait(false);
             }
 
             _ = await db.SaveChangesAsync(ct).ConfigureAwait(false);
@@ -269,7 +269,7 @@ public sealed class AuthRegLoggerBackgroundService(
         try
         {
             DateTimeOffset cutoff = DateTimeOffset.UtcNow.AddMonths(-24);
-            int deleted = await db.AuthenticationLogs
+            int deleted = await db.authenticationLogs
                 .Where(a => a.createdAt < cutoff)
                 .ExecuteDeleteAsync(ct).ConfigureAwait(false);
 
@@ -291,24 +291,24 @@ public sealed class AuthRegLoggerBackgroundService(
     public async Task StopAsync(CancellationToken ct)
     {
         logger.LogInformation("Запрос на остановку сервиса логирования...");
-        await _internalCts.CancelAsync().ConfigureAwait(false);
+        await internalCts.CancelAsync().ConfigureAwait(false);
 
         // Дожидаемся graceful завершения основных циклов
-        if (_processingTask != null)
+        if (processingTask != null)
         {
-            await _processingTask.WaitAsync(ct).ContinueWith(_ => { }, TaskScheduler.Default).ConfigureAwait(false);
+            await processingTask.WaitAsync(ct).ContinueWith(_ => { }, TaskScheduler.Default).ConfigureAwait(false);
         }
 
-        if (_cleanupTask != null)
+        if (cleanupTask != null)
         {
-            await _cleanupTask.WaitAsync(ct).ContinueWith(_ => { }, TaskScheduler.Default).ConfigureAwait(false);
+            await cleanupTask.WaitAsync(ct).ContinueWith(_ => { }, TaskScheduler.Default).ConfigureAwait(false);
         }
 
         // "Умный" финальный flush: до 20 попыток, но не более 2 ошибок БД подряд
         int consecutiveFailures = 0;
         const int maxConsecutiveFailures = 2;
 
-        while (!_queue.IsEmpty && !ct.IsCancellationRequested && consecutiveFailures < maxConsecutiveFailures)
+        while (!queue.IsEmpty && !ct.IsCancellationRequested && consecutiveFailures < maxConsecutiveFailures)
         {
             bool success = await ProcessBatchAsync(ct).ConfigureAwait(false);
 
@@ -325,17 +325,17 @@ public sealed class AuthRegLoggerBackgroundService(
                 }
             }
 
-            if (!_queue.IsEmpty && !ct.IsCancellationRequested)
+            if (!queue.IsEmpty && !ct.IsCancellationRequested)
             {
                 await Task.Delay(success ? 100 : 1000, ct).ConfigureAwait(false);
             }
         }
 
-        if (!_queue.IsEmpty)
+        if (!queue.IsEmpty)
         {
             if (logger.IsEnabled(LogLevel.Warning))
             {
-                logger.LogWarning("При остановке осталось {Count} необработанных логов.", _queue.Count);
+                logger.LogWarning("При остановке осталось {Count} необработанных логов.", queue.Count);
             }
         }
         else
@@ -347,9 +347,9 @@ public sealed class AuthRegLoggerBackgroundService(
     /// <inheritdoc />
     public void Dispose()
     {
-        _linkedCts?.Dispose();
-        _internalCts.Dispose();
-        _semaphore.Dispose();
+        linkedCts?.Dispose();
+        internalCts.Dispose();
+        semaphore.Dispose();
         GC.SuppressFinalize(this);
     }
 }

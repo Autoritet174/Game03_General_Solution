@@ -3,7 +3,7 @@ namespace General.DTO.Entities.GameData;
 public class X_Battlefield_BaseHero
 {
     public int id { get; set; }
-    public EBattleFiled battlefieldId { get; set; }
+    public EBattlefield battlefieldId { get; set; }
     public Battlefield battlefield { get; set; } = null!;
     public int baseHeroId { get; set; }
     public BaseHero baseHero { get; set; } = null!;

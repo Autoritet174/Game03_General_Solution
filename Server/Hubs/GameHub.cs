@@ -9,27 +9,27 @@ namespace Server.Hubs;
 [Authorize]
 public class GameHub(ClientManager clientManager, IClientFactory clientFactory, ILogger<GameHub> logger) : Hub
 {
-    private static readonly Action<ILogger, Exception?> _logUserExtractionFailed =
+    private static readonly Action<ILogger, Exception?> logUserExtractionFailed =
        LoggerMessage.Define(LogLevel.Warning, new EventId(1, "UserExtractionFailed"),
            "Не удалось извлечь userId из токена. Отклоняем подключение.");
 
-    private static readonly Action<ILogger, string, Exception?> _logClientAddFailed =
+    private static readonly Action<ILogger, string, Exception?> logClientAddFailed =
         LoggerMessage.Define<string>(LogLevel.Error, new EventId(2, "ClientAddFailed"),
             "Не удалось добавить клиента ConnectionId={ConnectionId} в ClientManager");
 
-    private static readonly Action<ILogger, string, Guid, Exception?> _logClientConnected =
+    private static readonly Action<ILogger, string, Guid, Exception?> logClientConnected =
         LoggerMessage.Define<string, Guid>(LogLevel.Information, new EventId(3, "ClientConnected"),
             "Client: ConnectionId={ConnectionId}; userId: {UserId}; connected");
 
-    private static readonly Action<ILogger, string, Guid, Exception?> _logClientDisconnected =
+    private static readonly Action<ILogger, string, Guid, Exception?> logClientDisconnected =
         LoggerMessage.Define<string, Guid>(LogLevel.Information, new EventId(4, "ClientDisconnected"),
             "Client: ConnectionId={ConnectionId}$ userId: {UserId}; disconnected");
 
-    private static readonly Action<ILogger, string, Exception?> _logClientNotFoundOnDisconnect =
+    private static readonly Action<ILogger, string, Exception?> logClientNotFoundOnDisconnect =
         LoggerMessage.Define<string>(LogLevel.Warning, new EventId(5, "ClientNotFoundOnDisconnect"),
             "Client ConnectionId={ConnectionId} не найден в ClientManager при отключении");
 
-    private static readonly Action<ILogger, string, Exception?> _logClientNotFoundForMethod =
+    private static readonly Action<ILogger, string, Exception?> logClientNotFoundForMethod =
         LoggerMessage.Define<string>(LogLevel.Error, new EventId(6, "ClientNotFoundForMethod"),
             "Client не найден для ConnectionId={ConnectionId}");
 
@@ -38,7 +38,7 @@ public class GameHub(ClientManager clientManager, IClientFactory clientFactory, 
         string? userIdStr = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userIdStr) || !Guid.TryParse(userIdStr, out Guid userId))
         {
-            _logUserExtractionFailed(logger, null);
+            logUserExtractionFailed(logger, null);
             Context.Abort();
             return;
         }
@@ -48,13 +48,13 @@ public class GameHub(ClientManager clientManager, IClientFactory clientFactory, 
 
         if (!added)
         {
-            _logClientAddFailed(logger, Context.ConnectionId, null);
+            logClientAddFailed(logger, Context.ConnectionId, null);
             Context.Abort();
             return;
         }
 
         await Clients.Caller.SendAsync("ReceiveLog", $"Добро пожаловать! Ваш userId: {userId}").ConfigureAwait(false);
-        _logClientConnected(logger, Context.ConnectionId, userId, null);
+        logClientConnected(logger, Context.ConnectionId, userId, null);
 
         await base.OnConnectedAsync().ConfigureAwait(false);
     }
@@ -63,11 +63,11 @@ public class GameHub(ClientManager clientManager, IClientFactory clientFactory, 
     {
         if (clientManager.TryRemove(Context.ConnectionId, out Client? client))
         {
-            _logClientDisconnected(logger, Context.ConnectionId, client?.UserId ?? Guid.Empty, null);
+            logClientDisconnected(logger, Context.ConnectionId, client?.userId ?? Guid.Empty, null);
         }
         else
         {
-            _logClientNotFoundOnDisconnect(logger, Context.ConnectionId, null);
+            logClientNotFoundOnDisconnect(logger, Context.ConnectionId, null);
         }
         await base.OnDisconnectedAsync(exception).ConfigureAwait(false);
     }
@@ -77,7 +77,7 @@ public class GameHub(ClientManager clientManager, IClientFactory clientFactory, 
         Client? client = clientManager.Get(Context.ConnectionId);
         if (client == null)
         {
-            _logClientNotFoundForMethod(logger, Context.ConnectionId, null);
+            logClientNotFoundForMethod(logger, Context.ConnectionId, null);
         }
         return client;
     }
@@ -103,7 +103,7 @@ public class GameHub(ClientManager clientManager, IClientFactory clientFactory, 
     }
 
     [HubMethodName(HubMethodNames.COMBAT_START)]
-    public async Task<SpawnedBattlefield?> CombatStartAsync(EBattleFiled eBattleFiled, Guid[] spawnedHeroesId)
+    public async Task<SpawnedBattlefield?> CombatStartAsync(EBattlefield eBattleFiled, Guid[] spawnedHeroesId)
     {
         Client? client = GetClient();
         return client == null

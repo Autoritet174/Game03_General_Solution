@@ -21,46 +21,46 @@ public class DbContextGame(DbContextOptions<DbContextGame> options) : IdentityDb
 {
     #region collection
 
-    public DbSet<Equipment> Equipments { get; set; }
-    public DbSet<Hero> Heroes { get; set; }
-    public DbSet<DropRate> DropRates { get; set; }
+    public DbSet<Equipment> equipments { get; set; }
+    public DbSet<Hero> heroes { get; set; }
+    public DbSet<DropRate> dropRates { get; set; }
 
     #endregion  collection
 
     #region gameData
 
     /// <summary> Способности героев и нпс. </summary>
-    public DbSet<Ability> Abilities { get; set; }
+    public DbSet<Ability> abilities { get; set; }
 
     /// <summary> Экипировка, болванки. </summary>
-    public DbSet<BaseEquipment> BaseEquipments { get; set; }
+    public DbSet<BaseEquipment> baseEquipments { get; set; }
 
     /// <summary> Данные героев. </summary>
-    public DbSet<BaseHero> BaseHeroes { get; set; }
+    public DbSet<BaseHero> baseHeroes { get; set; }
 
     /// <summary> Не игровые персонажи. </summary>
-    public DbSet<BaseHero> BaseHeroNpcs { get; set; }
+    public DbSet<BaseHero> baseHeroNpcs { get; set; }
 
-    public DbSet<Battlefield> Battlefields { get; set; }
+    public DbSet<Battlefield> battlefields { get; set; }
 
     /// <summary> Типы существ. </summary>
-    public DbSet<CreatureType> CreatureTypes { get; set; }
+    public DbSet<CreatureType> creatureTypes { get; set; }
 
     /// <summary> Типы урона. </summary>
-    public DbSet<DamageType> DamageTypes { get; set; }
+    public DbSet<DamageType> damageTypes { get; set; }
 
     /// <summary> Типы экипировки. </summary>
-    public DbSet<EquipmentType> EquipmentTypes { get; set; }
+    public DbSet<EquipmentType> equipmentTypes { get; set; }
 
     /// <summary> Дополнительный процентный урон от материала. </summary>
-    public DbSet<MaterialDamagePercent> MaterialDamagePercents { get; set; }
+    public DbSet<MaterialDamagePercent> materialDamagePercents { get; set; }
 
     /// <summary> Типы слотов экипировки. </summary>
-    public DbSet<Slot> Slots { get; set; }
-    public DbSet<SlotType> SlotTypes { get; set; }
+    public DbSet<Slot> slots { get; set; }
+    public DbSet<SlotType> slotTypes { get; set; }
 
     /// <summary> Материалы для кузнечного дела. </summary>
-    public DbSet<SmithingMaterial> SmithingMaterials { get; set; }
+    public DbSet<SmithingMaterial> smithingMaterials { get; set; }
 
     /// <summary> Таблица связи многие ко мноким между Heroes и CreatureTypes. </summary>
     public DbSet<X_Hero_CreatureType> x_Heroes_CreatureTypes { get; set; }
@@ -75,24 +75,24 @@ public class DbContextGame(DbContextOptions<DbContextGame> options) : IdentityDb
     #region logs
 
     /// <summary> Лог авторизации пользователей. </summary>
-    public DbSet<AuthenticationLog> AuthenticationLogs { get; set; }
-    public DbSet<RegistrationLog> RegistrationLogs { get; set; }
+    public DbSet<AuthenticationLog> authenticationLogs { get; set; }
+    public DbSet<RegistrationLog> registrationLogs { get; set; }
 
     #endregion logs
 
     #region server
 
     /// <summary> Причины бана пользователей. </summary>
-    public DbSet<UserBanReason> UserBanReasons { get; set; }
-    public DbSet<UserSessionInactivationReason> UserSessionInactivationReasons { get; set; }
+    public DbSet<UserBanReason> userBanReasons { get; set; }
+    public DbSet<UserSessionInactivationReason> userSessionInactivationReasons { get; set; }
 
     #endregion server
 
     #region users
-    public DbSet<UserBan> UserBans { get; set; }
-    public DbSet<UserDevice> UserDevices { get; set; }
-    public DbSet<UserSession> UserSessions { get; set; }
-    public DbSet<UserAccesskey> UserAccesskeys { get; set; }
+    public DbSet<UserBan> userBans { get; set; }
+    public DbSet<UserDevice> userDevices { get; set; }
+    public DbSet<UserSession> userSessions { get; set; }
+    public DbSet<UserAccesskey> userAccesskeys { get; set; }
     #endregion users
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -115,10 +115,10 @@ public class DbContextGame(DbContextOptions<DbContextGame> options) : IdentityDb
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.Ignore<Dice>();
+        _ = modelBuilder.Ignore<Dice>();
 
         _ = modelBuilder.Ignore<IdentityPasskeyData>();
-        
+
         modelBuilder.AddConcurrencyTokenToVersion();
         modelBuilder.ApplyDefaultValues();
 
@@ -173,9 +173,9 @@ public class DbContextGame(DbContextOptions<DbContextGame> options) : IdentityDb
     }
 
 
-    private static readonly ConcurrentDictionary<IEntityType, IProperty?> _versionPropertyCache = new();
-    private static readonly ConcurrentDictionary<Type, bool> _interfaceCreatedAtCache = new();
-    private static readonly ConcurrentDictionary<Type, bool> _interfaceUpdatedAtCache = new();
+    private static readonly ConcurrentDictionary<IEntityType, IProperty?> versionPropertyCache = new();
+    private static readonly ConcurrentDictionary<Type, bool> interfaceCreatedAtCache = new();
+    private static readonly ConcurrentDictionary<Type, bool> interfaceUpdatedAtCache = new();
 
 
 
@@ -184,7 +184,7 @@ public class DbContextGame(DbContextOptions<DbContextGame> options) : IdentityDb
         IEnumerable<EntityEntry> entries = ChangeTracker.Entries().Where(static e => e.State == EntityState.Modified);
         foreach (EntityEntry entry in entries)
         {
-            IProperty? versionProp = _versionPropertyCache.GetOrAdd(entry.Metadata, static type =>
+            IProperty? versionProp = versionPropertyCache.GetOrAdd(entry.Metadata, static type =>
             {
                 IProperty? prop = type.FindProperty("Version");
                 return prop?.IsConcurrencyToken == true ? prop : null;
@@ -209,8 +209,8 @@ public class DbContextGame(DbContextOptions<DbContextGame> options) : IdentityDb
         foreach (EntityEntry? entry in entries)
         {
             Type entityType = entry.Entity.GetType();
-            bool hasCreatedAt = _interfaceCreatedAtCache.GetOrAdd(entityType, type => typeof(ICreatedAt).IsAssignableFrom(type));
-            bool hasUpdatedAt = _interfaceUpdatedAtCache.GetOrAdd(entityType, type => typeof(IUpdatedAt).IsAssignableFrom(type));
+            bool hasCreatedAt = interfaceCreatedAtCache.GetOrAdd(entityType, type => typeof(ICreatedAt).IsAssignableFrom(type));
+            bool hasUpdatedAt = interfaceUpdatedAtCache.GetOrAdd(entityType, type => typeof(IUpdatedAt).IsAssignableFrom(type));
 
             if (hasCreatedAt)
             {

@@ -9,8 +9,8 @@ namespace Game03Client;
 
 public static class GameData
 {
-    public static DtoContainerGameData Container = null!;
-    private static readonly Dictionary<int, BaseHero> DictonaryBaseHero = [];
+    public static DtoContainerGameData container = null!;
+    private static readonly Dictionary<int, BaseHero> dictonaryBaseHero = [];
 
     public static async Task<bool> LoadGameDataAsync(CancellationToken cancellationToken)
     {
@@ -19,7 +19,7 @@ public static class GameData
             return false;
         }
 
-        string? response = await HttpRequester.GetResponseAsync(Url.GAME_DATA, null, cancellationToken).ConfigureAwait(false);
+        string? response = await HttpRequester.GetResponseAsync(Url.gameData, null, cancellationToken).ConfigureAwait(false);
         if (string.IsNullOrWhiteSpace(response))
         {
             return false;
@@ -46,17 +46,17 @@ public static class GameData
             i.damageType = c.damageTypes.FirstOrDefault(a => a.id == i.damageTypeId);
         }
 
-        foreach (Slot i in c.Slots)
+        foreach (Slot i in c.slots)
         {
             i.slotType = c.slotTypes.FirstOrDefault(a => a.id == i.slotTypeId);
         }
 
-        Container = c;
+        container = c;
 
-        DictonaryBaseHero.Clear();
+        dictonaryBaseHero.Clear();
         foreach (BaseHero i in c.baseHeroes)
         {
-            DictonaryBaseHero.Add(i.id, i);
+            dictonaryBaseHero.Add(i.id, i);
         }
 
 
@@ -65,6 +65,6 @@ public static class GameData
 
     public static BaseHero? GetBaseHeroById(int id)
     {
-        return DictonaryBaseHero.TryGetValue(id, out BaseHero baseHero) ? baseHero : null;
+        return dictonaryBaseHero.TryGetValue(id, out BaseHero baseHero) ? baseHero : null;
     }
 }

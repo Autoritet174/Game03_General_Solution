@@ -12,7 +12,7 @@ public static class RandomShared
     // RandomNumberGenerator.Fill даёт криптографически стойкий сид —
     // никакой корреляции между потоками даже при одновременном старте,
     // без lock и без счётчика.
-    private static readonly ThreadLocal<Random> _threadLocal = new(CreateRandom);
+    private static readonly ThreadLocal<Random> threadLocal = new(CreateRandom);
 
     private static Random CreateRandom()
     {
@@ -21,45 +21,45 @@ public static class RandomShared
         return new Random(BitConverter.ToInt32(buf));
     }
 
-    private static Random Current
+    private static Random current
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => _threadLocal.Value!;
+        get => threadLocal.Value!;
     }
 
     // === int ===
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static int Next() => Current.Next();
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static int Next(int maxValue) => Current.Next(maxValue);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static int Next(int minValue, int maxValue) => Current.Next(minValue, maxValue);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static int Next() => current.Next();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static int Next(int maxValue) => current.Next(maxValue);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static int Next(int minValue, int maxValue) => current.Next(minValue, maxValue);
 
     // === double / float ===
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static double NextDouble() => Current.NextDouble();
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float NextSingle() => (float)Current.NextDouble();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static double NextDouble() => current.NextDouble();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float NextSingle() => (float)current.NextDouble();
 
     public static double NextDouble(double minValue, double maxValue)
     {
         return minValue > maxValue
             ? throw new ArgumentOutOfRangeException(nameof(minValue))
-            : minValue + (Current.NextDouble() * (maxValue - minValue));
+            : minValue + (current.NextDouble() * (maxValue - minValue));
     }
 
     public static float NextSingle(float minValue, float maxValue)
     {
         return minValue > maxValue
             ? throw new ArgumentOutOfRangeException(nameof(minValue))
-            : minValue + ((float)Current.NextDouble() * (maxValue - minValue));
+            : minValue + ((float)current.NextDouble() * (maxValue - minValue));
     }
 
     // === bytes ===
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static void NextBytes(byte[] buffer) => Current.NextBytes(buffer);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static void NextBytes(Span<byte> buffer) => Current.NextBytes(buffer);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static void NextBytes(byte[] buffer) => current.NextBytes(buffer);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static void NextBytes(Span<byte> buffer) => current.NextBytes(buffer);
 
     // === bool ===
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static bool NextBool() => Current.Next(2) == 0;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static bool NextBool() => current.Next(2) == 0;
 
     // === long ===
 
@@ -111,7 +111,7 @@ public static class RandomShared
 
     public static void Shuffle<T>(Span<T> span)
     {
-        Random rng = Current;
+        Random rng = current;
         for (int i = span.Length - 1; i > 0; i--)
         {
             int j = rng.Next(i + 1);
@@ -125,7 +125,7 @@ public static class RandomShared
     // Три вызова: 31 + 31 + 2 = 64 бита с равномерным распределением.
     private static ulong NextUInt64()
     {
-        Random rng = Current;
+        Random rng = current;
         ulong a = (uint)rng.Next(); // биты  0–30
         ulong b = (uint)rng.Next(); // биты 31–61
         ulong c = (uint)rng.Next() & 0b11uL; // биты 62–63
@@ -133,8 +133,8 @@ public static class RandomShared
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int NextInclusive(int maxValue) => Current.Next(maxValue + 1);
+    public static int NextInclusive(int maxValue) => current.Next(maxValue + 1);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int NextInclusive(int minValue, int maxValue) => Current.Next(minValue, maxValue + 1);
+    public static int NextInclusive(int minValue, int maxValue) => current.Next(minValue, maxValue + 1);
 }
