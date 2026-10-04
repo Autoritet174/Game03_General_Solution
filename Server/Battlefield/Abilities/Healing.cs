@@ -35,9 +35,7 @@ public sealed class Healing(Ability definition) : BattleAbility(definition)
             return false;
         }
 
-        SpawnedHero? target = context.heroes
-            .Where(hero => hero.health > 0 && hero.team == caster.team && hero.health < hero.healthMax)
-            .OrderByDescending(h => h.healthMax - h.health).FirstOrDefault();
+        SpawnedHero? target = context.heroes.Where(hero => hero.health > 0 && hero.team == caster.team && hero.health < hero.healthMax).MaxBy(h => h.healthMax - h.health);
         if (target == null)
         {
             return false;
