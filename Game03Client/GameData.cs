@@ -24,6 +24,7 @@ public static class GameData
         {
             return false;
         }
+
         DtoContainerGameData? c = JSON.Deserialize<DtoContainerGameData>(response);
         if (c == null)
         {
