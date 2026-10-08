@@ -14,24 +14,24 @@ public sealed class Attack(Ability definition) : BattleAbility(definition)
     public override void CalcEffectiveness(SpawnedHero caster, BattleAbilityContext context)
     {
         effectiveness = 0f;
-        if (cooldownRemaining > 0 || caster.health <= 0 || definition.cost > caster.actionPoints)
+        if (cooldownRemaining > 0 || caster.health <= 0f || definition.cost > caster.actionPoints)
         {
             return;
         }
 
-        float damage = caster.damage * (1 + (caster.critChance / 100f * (caster.critMultiplier / 100f)));
-        if (!float.IsFinite(damage))
+        float damageExpected = caster.damage * GetExpectedCritMultiplier(caster);
+        if (!float.IsFinite(damageExpected))
         {
             return;
         }
 
         float maxHp = context.heroes.Where(h => h.health > 0 && h.team != caster.team)
             .Select(h => h.health).DefaultIfEmpty(0f).Max();
-        if (damage > maxHp)
+        if (damageExpected > maxHp)
         {
-            damage = maxHp;
+            damageExpected = maxHp;
         }
-        effectiveness = damage * COEF_EFFECTIVENESS;
+        effectiveness = damageExpected * COEF_EFFECTIVENESS;
     }
 
     public override bool UseAbility(SpawnedHero caster, BattleAbilityContext context)
@@ -47,13 +47,8 @@ public sealed class Attack(Ability definition) : BattleAbility(definition)
             return false;
         }
 
-        float damage = caster.damage;
-        bool isCrit = false;
-        if (Random.Shared.NextSingle() * 100 < caster.critChance)
-        {
-            damage *= (caster.critMultiplier / 100f) + 1;
-            isCrit = true;
-        }
+        (float damage, bool isCrit) = CalculateCritValue(caster.damage, caster);
+       
         damage = MathF.Min(damage, target.health);
         if (!float.IsFinite(damage))
         {

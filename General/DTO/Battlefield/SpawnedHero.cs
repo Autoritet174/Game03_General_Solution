@@ -29,18 +29,5 @@ public class SpawnedHero
     #endregion Характеристики
 
     [JsonIgnore]
-    public float healthPercent
-    {
-        get
-        {
-            if (healthMax > 0 && health > 0)
-            {
-                return health / healthMax;
-            }
-            else
-            {
-                return 0;
-            }
-        }
-    }
+    public float healthPercent => healthMax > 0 && health > 0 ? health / healthMax : 0;
 }

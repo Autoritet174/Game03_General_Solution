@@ -8,16 +8,21 @@ namespace Server.Battlefield.Abilities;
 public sealed class Fire_bolt(Ability definition) : BattleAbility(definition)
 {
     private const float COEF_EFFECTIVENESS = 1.0f;
+    private const float BASE_DAMAGE = 50.0f;
 
     public override void CalcEffectiveness(SpawnedHero caster, BattleAbilityContext context)
     {
         effectiveness = 0f;
-        if (cooldownRemaining > 0 || caster.health <= 0 || definition.cost > caster.actionPoints)
+        if (cooldownRemaining > 0 || caster.health <= 0f || definition.cost > caster.actionPoints)
         {
             return;
         }
 
-        float healing = caster.intelligence * (1 + (caster.critChance / 100f * (caster.critMultiplier / 100f)));
+        float damageExpected = BASE_DAMAGE * GetExpectedCritMultiplier(caster);
+        if (!float.IsFinite(damageExpected))
+        {
+            return;
+        }
         float maxHp = context.heroes.Where(h => h.health > 0 && h.team != caster.team)
             .Select(h => h.health).DefaultIfEmpty(0f).Max();
         if (healing > maxHp)

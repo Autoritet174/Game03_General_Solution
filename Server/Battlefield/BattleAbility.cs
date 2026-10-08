@@ -37,4 +37,38 @@ public abstract class BattleAbility(Ability definition)
     /// <summary>Проверяет условия, выбирает цели и применяет способность, запуская её кулдаун.</summary>
     /// <returns>True, если способность применена; при false состояние боя и журнал не изменяются.</returns>
     public abstract bool UseAbility(SpawnedHero caster, BattleAbilityContext context);
+
+    /// <summary>Возвращает средний множитель урона с учётом вероятности крита.</summary>
+    public static float GetExpectedCritMultiplier(SpawnedHero caster)
+    {
+        float critBonus = caster.critMultiplier;
+        float chance = caster.critChance;
+
+        if (critBonus <= 0f || chance <= 0f)
+        {
+            return 1f;
+        }
+
+        critBonus /= 100f;
+        return chance >= 100f ? 1f + critBonus : 1f + (chance / 100f * critBonus);
+    }
+
+    /// <summary>Рассчитывает значение и определяет, сработал ли крит.</summary>
+    public static (float value, bool isCrit) CalculateCritValue(float value, SpawnedHero caster)
+    {
+        float critBonus = caster.critMultiplier;
+        float chance = caster.critChance;
+
+        if (critBonus <= 0f || chance <= 0f)
+        {
+            return (value, false);
+        }
+
+        if (chance >= 100f || Random.Shared.NextSingle() * 100f < chance)
+        {
+            return (value * (1f + (critBonus / 100f)), true);
+        }
+
+        return (value, false);
+    }
 }
