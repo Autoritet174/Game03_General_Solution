@@ -39,11 +39,7 @@ public class CacheService()
 
     public Dictionary<EBattlefield, General.DTO.Entities.GameData.Battlefield> tableBattlefields { get; private set; } = null!;
 
-    /// <summary>
-    /// Загрузка константных данных в оперативную память. Эти данные меняются только при не работающем сервере.
-    /// </summary>
-    /// <param name="db"></param>
-    /// <returns></returns>
+    /// <summary>Загрузка константных данных в оперативную память. Эти данные меняются только при не работающем сервере.</summary>
     public void LoadServerData(DbContextGame db)
     {
         tableUserBanReasons = db.userBanReasons.AsNoTracking().ToDictionary(a => a.id);

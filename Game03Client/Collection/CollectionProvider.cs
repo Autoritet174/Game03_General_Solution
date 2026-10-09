@@ -23,7 +23,7 @@ public class CollectionProvider
 
     public static async Task<bool> LoadAllCollectionFromServerAsync(CancellationToken cancellationToken)
     {
-        if (cancellationToken.IsCancellationRequested)
+        if (cancellationToken.IsCancellationRequested  )
         {
             logger.LogError("LoadAllCollectionFromServerAsync cancelled");
             return false;

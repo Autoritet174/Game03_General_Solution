@@ -101,7 +101,7 @@ internal class Program
         string accessToken = Auth.accessToken ?? string.Empty;
 
 
-        //Game03Client.WebSocketClient webSocketClient = Game.WebSocketClient;
+        //Game03Client.WebSocketProvider webSocketClient = Game.WebSocketClient;
         //cancellationTokenSource = new(TimeSpan.FromSeconds(30));
         //await WebSocketClient.ConnectAsync(cancellationTokenSource.Token);
         //if (webSocketClient.Connected)
@@ -116,7 +116,7 @@ internal class Program
 
 
         //cancellationTokenSource = new(TimeSpan.FromSeconds(30));
-        //Game.GameData.LoadGameData(cancellationTokenSource.Token, jwtToken).Wait();
+        //GameData.LoadGameDataAsync(cancellationTokenSource.Token, jwtToken).Wait();
 
         //cancellationTokenSource = new(TimeSpan.FromSeconds(30));
         //Game.Collection.LoadAllCollectionFromServerAsync(cancellationTokenSource.Token, jwtToken).Wait();
@@ -125,8 +125,8 @@ internal class Program
         //IEnumerable<GroupCollectionElement> coll1 = Game.Collection.GetCollectionHeroesGroupedByGroupNames(1);
         //Console.WriteLine(coll.Count());
 
-        ////Console.ReadLine();
-        ////webSocketClient.DisconnectAsync().Wait();
+        //Console.ReadLine();
+        //webSocketClient.DisconnectAsync().Wait();
 
     }
 

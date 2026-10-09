@@ -13,6 +13,12 @@
         <member name="M:Server.Battlefield.Abilities.Attack.CalcEffectiveness(General.DTO.Battlefield.SpawnedHero,Server.BattleField.BattleAbilityContext)">
             <summary>Оценивает урон доступной атаки; во время кулдауна эффективность равна нулю.</summary>
         </member>
+        <member name="T:Server.Battlefield.Abilities.Fire_bolt">
+            <summary></summary>
+        </member>
+        <member name="M:Server.Battlefield.Abilities.Fire_bolt.#ctor(General.DTO.Entities.GameData.Ability)">
+            <summary></summary>
+        </member>
         <member name="T:Server.Battlefield.Abilities.Healing">
             <summary>Самостоятельно выбирает одного раненого союзника и восстанавливает его здоровье.</summary>
         </member>
@@ -75,6 +81,12 @@
         <member name="M:Server.BattleField.BattleAbility.UseAbility(General.DTO.Battlefield.SpawnedHero,Server.BattleField.BattleAbilityContext)">
             <summary>Проверяет условия, выбирает цели и применяет способность, запуская её кулдаун.</summary>
             <returns>True, если способность применена; при false состояние боя и журнал не изменяются.</returns>
+        </member>
+        <member name="M:Server.BattleField.BattleAbility.GetExpectedCritMultiplier(General.DTO.Battlefield.SpawnedHero)">
+            <summary>Возвращает средний множитель урона с учётом вероятности крита.</summary>
+        </member>
+        <member name="M:Server.BattleField.BattleAbility.CalculateCritValue(System.Single,General.DTO.Battlefield.SpawnedHero)">
+            <summary>Рассчитывает значение и определяет, сработал ли крит.</summary>
         </member>
         <member name="T:Server.BattleField.BattleAbilityContext">
             <summary>Предоставляет всех участников боя и операции изменения состояния с записью в общий журнал.</summary>

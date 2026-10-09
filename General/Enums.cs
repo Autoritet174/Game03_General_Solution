@@ -121,4 +121,5 @@ public enum EBattlefieldLogAbility : int
 {
     attack = 1,
     healing = 2,
+    fireBolt = 3,
 }

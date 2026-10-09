@@ -48,7 +48,6 @@ public sealed class Attack(Ability definition) : BattleAbility(definition)
         }
 
         (float damage, bool isCrit) = CalculateCritValue(caster.damage, caster);
-       
         damage = MathF.Min(damage, target.health);
         if (!float.IsFinite(damage))
         {

@@ -1,6 +1,7 @@
 using General.DTO.Battlefield;
 using General.DTO.Entities.GameData;
 using Server.BattleField;
+using Server.Extensions;
 
 namespace Server.Battlefield.Abilities;
 
@@ -23,13 +24,13 @@ public sealed class Fire_bolt(Ability definition) : BattleAbility(definition)
         {
             return;
         }
-        float maxHp = context.heroes.Where(h => h.health > 0 && h.team != caster.team)
+        float maxHp = context.heroes.Where(h => h.health > 0f && h.team != caster.team)
             .Select(h => h.health).DefaultIfEmpty(0f).Max();
-        if (healing > maxHp)
+        if (damageExpected > maxHp)
         {
-            healing = maxHp;
+            damageExpected = maxHp;
         }
-        effectiveness = healing * COEF_EFFECTIVENESS;
+        effectiveness = damageExpected * COEF_EFFECTIVENESS;
     }
 
     public override bool UseAbility(SpawnedHero caster, BattleAbilityContext context)
@@ -39,36 +40,28 @@ public sealed class Fire_bolt(Ability definition) : BattleAbility(definition)
             return false;
         }
 
-        SpawnedHero? target = context.heroes.Where(hero => hero.health > 0 && hero.team == caster.team && hero.health < hero.healthMax).MaxBy(h => h.healthMax - h.health);
+        SpawnedHero? target = context.heroes.Where(hero => hero.health > 0f && hero.team == caster.team && hero.health < hero.healthMax).GetRandomElement();
         if (target == null)
         {
             return false;
         }
 
-        float healing = caster.intelligence;
-        bool isCrit = false;
-        if (Random.Shared.NextSingle() * 100 < caster.critChance)
-        {
-            healing *= (caster.critMultiplier / 100f) + 1;
-            isCrit = true;
-        }
-
-        float missingHealth = MathF.Max(0, target.healthMax - target.health);
-        float actualHealing = MathF.Min(healing, missingHealth);
-        if (!float.IsFinite(actualHealing))
+        (float damage, bool isCrit) = CalculateCritValue(caster.damage, caster);
+        damage = MathF.Min(damage, target.health);
+        if (!float.IsFinite(damage))
         {
             return false;
         }
 
         context.ChangeActionPoints(caster, -definition.cost);
         int indexReason = context.RecordAbilityUse(caster, id, [target.spawnedId]);
-        target.health += actualHealing;
-        _ = context.AddLog(new BattlefieldLogRecord_Healing
+        target.health += damage;
+        _ = context.AddLog(new BattlefieldLogRecord_Damage
         {
             hero1Id = caster.spawnedId,
             hero2Id = target.spawnedId,
             indexReason = indexReason,
-            healing = actualHealing,
+            damage = damage,
             isCrit = isCrit,
             isPerodic = false,
         });

@@ -1,19 +1,19 @@
-
 using System;
 using System.Collections.Generic;
-using L = General.LocalizationKeys;
 using JsonDocument = System.Text.Json.JsonDocument;
 using JsonElement = System.Text.Json.JsonElement;
-using JsonValueKind = System.Text.Json.JsonValueKind;
 using JsonProperty = System.Text.Json.JsonProperty;
+using JsonValueKind = System.Text.Json.JsonValueKind;
+using L = General.LocalizationKeys;
 
 namespace Game03Client;
 
 /// <summary>
 /// Реализация провайдера для управления локализацией, загружающая данные из JSON.
 /// </summary>
-public static class LocalizationManager
+public class LocalizationManager
 {
+    //private static readonly Logger<LocalizationManager> logger = new();
     private static readonly Dictionary<string, string> localization = [];
 
     public static void Init(StringCapsule jsonFileData)
@@ -45,8 +45,10 @@ public static class LocalizationManager
     /// Получает локализованное строковое значение по ключу.
     /// </summary>
     /// <returns>Локализованная строка, или сам ключ, если значение не найдено.</returns>
-    public static string GetValue(string key) =>
-        localization.TryGetValue(key, out string value) ? value : key;
+    public static string GetValue(string key)
+    {
+        return localization.TryGetValue(key, out string value) ? value : key;
+    }
 
     /// <summary>
     /// Получить локализованную строку текста ошибки на основе данных из JSON-строки.

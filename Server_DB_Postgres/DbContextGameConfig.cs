@@ -91,6 +91,8 @@ public class DbContextGameConfig
         builder.Property(e => e.endurancePhysical).HasColumnType("jsonb");
         builder.Property(e => e.enduranceMagical).HasColumnType("jsonb");
         builder.Property(e => e.initiative).HasColumnType("jsonb");
+        builder.Property(e => e.threat).HasColumnType("jsonb");
+
         // Способности связаны с героями через существующую таблицу многие ко многим.
         builder.HasMany(e => e.abilities)
             .WithMany()

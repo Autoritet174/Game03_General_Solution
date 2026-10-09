@@ -50,7 +50,7 @@ public abstract class BattleAbility(Ability definition)
         }
 
         critBonus /= 100f;
-        return chance >= 100f ? 1f + critBonus : 1f + (chance / 100f * critBonus);
+        return 1f + (chance >= 100f ? critBonus : chance / 100f * critBonus);
     }
 
     /// <summary>Рассчитывает значение и определяет, сработал ли крит.</summary>

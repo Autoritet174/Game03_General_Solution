@@ -68,6 +68,9 @@ public static class JSON
                 // Проверяем, что тип свойства — bool (не nullable)
                 if (property.PropertyType == typeof(bool))
                 {
+                    // Отсутствующий bool оставляем равным false, даже если в C# указан required.
+                    property.IsRequired = false;
+
                     // Устанавливаем условие игнорирования:
                     // если значение — default (false) → не пишем в JSON
                     property.ShouldSerialize = static (obj, value) =>
