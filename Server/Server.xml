@@ -13,11 +13,17 @@
         <member name="M:Server.Battlefield.Abilities.Attack.CalcEffectiveness(General.DTO.Battlefield.SpawnedHero,Server.BattleField.BattleAbilityContext)">
             <summary>Оценивает урон доступной атаки; во время кулдауна эффективность равна нулю.</summary>
         </member>
-        <member name="T:Server.Battlefield.Abilities.Fire_bolt">
-            <summary></summary>
+        <member name="T:Server.Battlefield.Abilities.Fireball">
+            <summary>Выбирает живого противника и наносит урон огненным снарядом с возможностью критического попадания.</summary>
         </member>
-        <member name="M:Server.Battlefield.Abilities.Fire_bolt.#ctor(General.DTO.Entities.GameData.Ability)">
-            <summary></summary>
+        <member name="M:Server.Battlefield.Abilities.Fireball.#ctor(General.DTO.Entities.GameData.Ability)">
+            <summary>Выбирает живого противника и наносит урон огненным снарядом с возможностью критического попадания.</summary>
+        </member>
+        <member name="M:Server.Battlefield.Abilities.Fireball.CalcEffectiveness(General.DTO.Battlefield.SpawnedHero,Server.BattleField.BattleAbilityContext)">
+            <summary>Оценивает урон снаряда с учётом критического попадания, здоровья противника и доступности способности.</summary>
+        </member>
+        <member name="M:Server.Battlefield.Abilities.Fireball.UseAbility(General.DTO.Battlefield.SpawnedHero,Server.BattleField.BattleAbilityContext)">
+            <summary>Выпускает снаряд в живого противника, записывает урон и запускает кулдаун.</summary>
         </member>
         <member name="T:Server.Battlefield.Abilities.Healing">
             <summary>Самостоятельно выбирает одного раненого союзника и восстанавливает его здоровье.</summary>
@@ -111,11 +117,7 @@
             </exception>
         </member>
         <member name="M:Server.Cache.CacheService.LoadServerData(Server_DB_Postgres.DbContextGame)">
-            <summary>
-            Загрузка константных данных в оперативную память. Эти данные меняются только при не работающем сервере.
-            </summary>
-            <param name="db"></param>
-            <returns></returns>
+            <summary>Загрузка константных данных в оперативную память. Эти данные меняются только при не работающем сервере.</summary>
         </member>
         <member name="T:Server.Cache.GameDataController">
             <summary>

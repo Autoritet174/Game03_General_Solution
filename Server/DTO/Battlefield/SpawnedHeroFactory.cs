@@ -142,6 +142,7 @@ public static class SpawnedHeroFactory
             {
                 EBattlefieldLogAbility.attack => new Attack(definition),
                 EBattlefieldLogAbility.healing => new Healing(definition),
+                EBattlefieldLogAbility.fireball => new Fireball(definition),
                 _ => null
             };
 
